@@ -23,6 +23,11 @@
 | [docs/EXPERIENCE.md](docs/EXPERIENCE.md) | 体験仕様。VR の空間モード、PC・スマホの物語モード、部屋で見る。数値と受け入れ条件 |
 | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) | 要件定義。ID、課題・人・場面との対応、優先度、受け入れ条件 |
 | [docs/JOURNEY.md](docs/JOURNEY.md) | ユーザージャーニー。来場者・オンラインの人・持ち主・海外の人・作家の 5 つの旅 |
+| [docs/TASKS.md](docs/TASKS.md) | タスク分解。日ごとに 2〜4 時間の単位、誰が、依存、完了の条件 |
+| [docs/SPIKES.md](docs/SPIKES.md) | 技術検証。最初に潰す不安 8 つと逃げ道 |
+| [docs/CONTENT.md](docs/CONTENT.md) | コンテンツ計画。作品の選び方、撮影、メッセージ、声、部屋のイメージ、UI 文言、音 |
+| [docs/PITCH.md](docs/PITCH.md) | 提出と見せ方。ピッチ構成、デモ動画の絵コンテ、想定質問 |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | 決めたこと（理由つき）と未決定（期限つき） |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | 技術選定、構成、流体と変形、生成パイプライン、3 環境の入力切替、言語 |
 | [docs/WORK_FORMAT.md](docs/WORK_FORMAT.md) | 作品定義ファイル（`works/<id>/work.json`）の仕様 |
 | [docs/SCHEDULE.md](docs/SCHEDULE.md) | 7 日間の日程とマイルストーン |

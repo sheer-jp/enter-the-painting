@@ -8,6 +8,11 @@
 - `docs/EXPERIENCE.md`：体験仕様。VR の空間モード（S1〜S5）、PC・スマホの物語モード（T0〜T5）、部屋で見る。迷ったらここ
 - `docs/REQUIREMENTS.md`：要件の一覧（ID 付き、優先度、受け入れ条件）。実装するときは ID を挙げる
 - `docs/JOURNEY.md`：ユーザージャーニー。離脱しそうな点と「旅の交差点」を設計で押さえる
+- `docs/TASKS.md`：タスク分解。今日のタスク ID を挙げて作業する
+- `docs/SPIKES.md`：技術検証。失敗したら逃げ道に切り替え、記録欄に書く
+- `docs/DECISIONS.md`：決定と未決定。未決定は期限までに決め、決めたら CHANGELOG にも書く
+- `docs/CONTENT.md`：作家が作るもの（撮影、メッセージ、声、部屋のイメージ、UI 文言）
+- `docs/PITCH.md`：提出と見せ方
 - `docs/ARCHITECTURE.md`：技術選定と構成。ここに無い技術を足すときは理由を docs に書く
 - `docs/WORK_FORMAT.md`：作品定義ファイルの仕様。作家が触るのは `works/<id>/` だけ
 - `docs/SCHEDULE.md`：日程。遅れたら「遅れたときの優先順位」に従う
@@ -17,7 +22,8 @@
 
 ## ルーチン（毎回）
 
-- 作業の最初に `docs/LOG.md` の「次にやる」を読む
+- 作業の最初に `docs/LOG.md` の「次にやる」と `docs/TASKS.md` の当日分を読む。タスク ID を挙げて進める
+- 実装は `docs/ARCHITECTURE.md` の「モジュールの境界」のインターフェースに従う。変えるなら docs を先に変える
 - 体験や機能を決めるときは `/dig` で「誰のどの悩みに効くか」を確かめてから作る
 - 作業の最後は必ず `/close`（テスト → `/code-review` → `/log` → コミット → push）。飛ばした手順はログに理由を書く
 - 実機チェック（PC / スマホ / Quest）は毎日 1 回。結果は `docs/LOG.md` と `docs/USERS.md` の記録欄に書く

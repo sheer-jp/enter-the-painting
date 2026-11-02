@@ -124,3 +124,61 @@ VR 対応端末でも作品ページは 2D。「VR で入る」で immersive-vr 
 - `main` への push で GitHub Pages にビルド・配置（Actions）。実機テストは本番 URL でも行う
 - 生成物（`works/*/generated/`）はコミットする（1 作品あたり部屋の合成を含めて 10MB 程度）。翻訳と物語のキャッシュ（`translations.json`、`stories.json`）もコミットして API 呼び出しを繰り返さない
 - 部屋の画像（`rooms/`）は一度作ってコミット。生成に使ったツールとプロンプトを `rooms/README.md` に書く
+
+## 11. モジュールの境界（Day 1 に書き始めるための約束）
+
+両モードが同じものを使う部分は、先にインターフェースを固定する。実装はあとから差し替えられる。
+
+```ts
+// fluid/ : GPU 流体シム。どこに描くかは知らない
+interface Fluid {
+  init(painting: THREE.Texture, flow: THREE.Texture, p: FluidParams): void;
+  setStrength(v: number): void;            // 0〜1。S1 のかすかな流れ〜本来の強さ
+  fizz(progress: number): void;            // シュワシュワ。縁からの進行 0〜1
+  splat(uv: [number, number], force: [number, number], radius: number): void;
+  injectFlow(region: [number, number, number, number]): void;  // 表情の切り替え
+  step(dt: number): void;
+  texture: THREE.Texture;                  // 色の出力。球面にも平面にも貼れる
+  setQuality(q: 'high' | 'medium' | 'low'): void;
+}
+interface FluidParams { vorticity: number; speed: number; quality: 'high' | 'medium' | 'low' }
+
+// text/ : 文字の浮上。置き方だけ 2 種類
+interface FloatingText {
+  show(sentence: string, lang: Lang): Promise<void>;   // 浮上 → 滞在 → 溶けるまで待つ
+  skip(): void;
+  setPlacement(p: 'space' | 'screen'): void;
+  setGazeDirection(dir: THREE.Vector3): void;         // space のときだけ使う
+}
+
+// audio/ : 音。すべて「入る」後に resume() 済みの前提
+interface Soundscape {
+  unlock(): Promise<void>;                 // 「入る」のハンドラ内で呼ぶ
+  playVoice(url: string): Promise<void>;   // 終了で resolve
+  voiceTime(): number;                     // 現在秒。文字の同期に使う
+  ambient(preset: 'calm' | 'wind' | 'water' | 'drone' | 'none', gainDb: number): void;
+  fizz(on: boolean): void;
+  drone(gainDb: number): void;
+  fadeOutAll(sec: number): void;
+}
+
+// 場面の状態機械。space/ と story/ がそれぞれ実装
+interface Stage { enter(): void; update(dt: number): void; exit(): void }
+interface StageMachine { start(): void; goto(name: string): void; current: string }
+
+// 実行時が読む唯一の定義
+interface Space {
+  id: string; title: Record<Lang, string>; size_cm: [number, number];
+  painting: string; palette: string[]; text_color: string; back_color: string;
+  flow: { texture: string; strength: number };
+  fluid: FluidParams;
+  space: { radius_m: number; melt_distance_m: number };
+  audio: { voice?: string; ambient: string };
+  messages: { at: number } & Record<Lang, string>[];
+  rooms: { name: string; image: string; story?: Record<Lang, string> }[];
+  availability?: 'available' | 'sold' | 'not_for_sale'; contact?: string;
+}
+type Lang = 'ja' | 'en' | 'zh-Hans' | 'zh-Hant' | 'ko' | 'fr' | 'de' | 'es' | 'it' | 'pt';
+```
+
+守ること：`fluid/`・`text/`・`audio/` は `space/`・`story/` を import しない。逆だけ。`ui/` は両方の状態機械を起動するだけで、描画を持たない。
