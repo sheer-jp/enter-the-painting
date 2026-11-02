@@ -30,4 +30,4 @@ npm run build                # 静的ビルド（dist/）
 
 ## 状態
 
-2026-11-02：計画フェーズ。コードは未着手。GitHub リモートは未設定（トークン無効のため）。
+2026-11-02：計画フェーズ。コードは未着手。リモートは https://github.com/sheer-jp/enter-the-painting（public）。
