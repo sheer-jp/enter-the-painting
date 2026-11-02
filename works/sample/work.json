@@ -1,17 +1,22 @@
 {
   "id": "sample",
-  "title": "（見本）作品タイトル",
+  "title": { "ja": "（見本）作品タイトル", "en": "(Sample) Title" },
   "year": 2025,
   "size_cm": [18, 14],
-  "medium": "キャンバスに油彩",
-  "note": "ここに作家メモを 3〜10 行。どこで、何を見て、どんな気持ちで描いたか。字幕とナレーションの土台になる。",
+  "medium": { "ja": "キャンバスに油彩", "en": "Oil on canvas" },
+  "messages": [
+    "ここに、奥から浮いてくる文を 1 文ずつ書く。",
+    "1 文は 40 文字以内。3〜10 文。",
+    "声があるなら、声で語る文と同じにする。"
+  ],
   "audio": {
     "voice": "voice.mp3",
     "ambient": "calm"
   },
   "overrides": {
-    "layers": 6,
-    "motion_speed": 0.4,
-    "motion_amount": 0.5
+    "flow_strength": 0.6,
+    "vorticity": 0.5,
+    "speed": 0.4,
+    "radius_m": 2.5
   }
 }
