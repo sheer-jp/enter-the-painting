@@ -40,8 +40,8 @@ works/<id>/
 
   // 作品ページ
   "availability": "available",          // available | sold | not_for_sale。任意。無ければ表示しない
-  "contact": "mailto:you@example.com",  // 作家への連絡。任意。無ければ site.json の既定値
-  "rooms": ["living-tokyo", "hotel-lobby", "cafe"],  // 部屋で見るに使う部屋。省略時は rooms/ の全部
+  "contact": "https://forms.example/...", // 作家への連絡（フォームの URL を推奨。mailto は public に書かない）。無ければ site.json の既定値
+  "rooms": ["living-apartment", "hotel-lobby", "cafe"],  // 部屋で見るに使う部屋。省略時は rooms/ の全部
 
   // 音
   "audio": {
@@ -68,11 +68,11 @@ works/<id>/
 
 | ファイル | 内容 |
 | --- | --- |
-| `painting_2048.jpg` / `painting_1024.jpg` | 流体の色テクスチャ用と入口表示用 |
+| `painting_1024.jpg` | 作品ページの表示と流体の色場の絵の部分（1 サイズ） |
 | `flow.png` | 筆致の流れ場（R=cos θ、G=sin θ、B=強さ） |
-| `rooms/<name>.jpg` | 部屋のイメージに絵を実寸で合成したもの（部屋ごと） |
-| `stories.json` | 部屋ごとの小さな物語（日本語の下書き。作家が直す。再生成で上書きしない） |
-| `translations.json` | メッセージ・物語・タイトルの 10 言語分（キャッシュ。手で直してよい） |
+| `rooms/<name>.jpg` | 部屋のイメージに絵を寸法の目安で合成したもの（部屋ごと） |
+| `stories.json` | 小さな物語（1 作品 1 本。日本語の下書き。作家が直す。再生成で上書きしない） |
+| `translations.json` | メッセージ・物語・タイトルの 10 言語分。鍵は原文（ja）のハッシュ。原文を直せば再翻訳、直さなければ手直しを保持。英語は `messages_en` があればそれが正で、ここには生成しない |
 | `space.json` | 実行時に読む唯一の定義 |
 | `qr.svg` / `qr.png` | `BASE_URL/w/<id>/` の QR |
 | `card.svg` | 作品カード印刷用（タイトル、寸法、QR） |
@@ -86,7 +86,7 @@ works/<id>/
   "id": "blue-tide-2025",
   "title": { "ja": "青い潮", "en": "Blue Tide", "fr": "Marée bleue", "...": "..." },
   "size_cm": [18, 14],
-  "painting": "painting_2048.jpg",
+  "painting": "painting_1024.jpg",
   "palette": ["#0b1a2a", "#1f5f7a", "#5fa8b8", "#e8f0ff", "#c9a86a", "#2f3d2a"],
   "text_color": "#e8f0ff",
   "back_color": "#0b1a2a",
@@ -95,10 +95,10 @@ works/<id>/
   "space": { "radius_m": 2.5, "melt_distance_m": 1.0 },
   "audio": { "voice": "voice.mp3", "ambient": "water" },
   "availability": "available",
-  "contact": "mailto:you@example.com",
+  "contact": "https://forms.example/...",
+  "story": { "ja": "朝、コーヒーを淹れながらこの絵の前を通る。…", "en": "...", "...": "..." },
   "rooms": [
-    { "name": "living-tokyo", "image": "rooms/living-tokyo.jpg",
-      "story": { "ja": "朝、コーヒーを淹れながらこの絵の前を通る。…", "en": "...", "...": "..." } }
+    { "name": "living-apartment", "image": "rooms/living-apartment.jpg", "wall_width_cm": 320 }
   ],
   "messages": [
     { "at": 0,    "ja": "海辺の町で描いた。", "en": "I painted this in a town by the sea.", "fr": "...", "...": "..." },
@@ -114,24 +114,24 @@ works/<id>/
 ```
 rooms/
 ├─ README.md             生成に使ったツールとプロンプト
-├─ living-tokyo.jpg      AI 生成の部屋。空いた壁がある。人や家具で大きさがわかる
-└─ living-tokyo.json     下記
+├─ living-apartment.jpg      AI 生成の部屋。空いた壁がある。人や家具で大きさがわかる
+└─ living-apartment.json     下記
 ```
 
 ```jsonc
 {
-  "name": "living-tokyo",
+  "name": "living-apartment",
   "label": { "ja": "マンションのリビング", "en": "Apartment living room" },
   "scene": "東京のマンションのリビング。朝の光。ソファの向かいの白い壁。",   // 物語の下書きに使う
   "wall": {
     "corners_px": [[612, 180], [1410, 196], [1402, 980], [618, 964]],  // 壁の 4 隅（左上から時計回り）
-    "width_cm": 320,                                                   // その壁の実寸の幅
+    "width_cm": 320,                                                   // その壁の幅の目安（作家が決める。AI の部屋なので正確ではない）
     "hang_center_ratio": [0.5, 0.42]                                   // 絵の中心を壁のどこに置くか（0〜1）
   }
 }
 ```
 
-絵の画像は AI に入れない。合成は `generate` が射影変換で行い、「部屋は AI 生成のイメージ。絵は実物の写真を実寸で合成」と作品ページに出る。
+絵の画像は AI に入れない。合成は `generate` がホモグラフィの逆写像で行い、「部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安（壁幅 約 3m として合成）」と作品ページに出る。`rooms/README.md` に生成ツールと商用利用の可否を書く。
 
 ## 追加の手順
 

@@ -4,5 +4,7 @@ dist/
 .env.*
 .DS_Store
 *.log
-# 生成物（画像レイヤー・QR）は works/<id>/generated/ に出る。小さいうちはコミットしてよい
+# 生成物（流れ場・部屋の合成・訳・QR）は works/<id>/generated/ に出る。1 作品 10MB 程度までコミットしてよい
+# 声の原本（wav）はコミットしない
+*.wav
 works/*/generated/*.tmp

@@ -12,11 +12,11 @@
 | ビルド | Vite + TypeScript | 立ち上げが速く、静的出力。作品ページ `/w/<id>/` はビルド時に生成 |
 | 生成パイプライン | Node スクリプト（`sharp` + 自前の k-means / Sobel） | ブラウザ側を軽くするため、重い解析はビルド時に済ませる |
 | 翻訳・物語の下書き | Claude API（生成時のみ） | 日本語原文 + 英語を渡して 8 言語に訳す。部屋ごとの小さな物語を作家のメッセージから下書きする。実行時には呼ばない |
-| 部屋の合成 | `sharp` の affine / 自前の射影変換 | AI 生成の部屋画像に、絵の写真を壁の 4 隅へ実寸で射影。絵の画像は生成モデルに入れない |
+| 部屋の合成 | 自前の射影変換（ホモグラフィの逆写像 + バイリニア、Node で `sharp` の raw バッファに対して） | `sharp.affine()` はアフィンのみで台形の壁に貼れない。逆写像は数十行。逃げ道は CSS `matrix3d` で実行時に貼る |
 | 部屋の画像 | 画像生成モデルは問わない（作家の好きなツールで可） | 一度だけ 6〜10 枚作り `rooms/` にコミット。全作品で使い回す |
 | QR | `qrcode` npm パッケージ | PNG / SVG を出せる。印刷用に SVG |
 | 音 | three.js `Audio` / `PositionalAudio`（Web Audio） | ナレーションは非位置、環境音は位置付き |
-| ホスティング | 静的（GitHub Pages、または Cloudflare Pages） | HTTPS が必須。サーバーは不要 |
+| ホスティング | 静的（GitHub Pages + 作家所有の独自ドメイン） | HTTPS が必須。サーバーは不要。独自ドメインは印刷 QR の永続性のため（N-14）。Vite の `base` は `/` に固定 |
 
 フレームワーク（React など）は使わない。画面は「ギャラリー」「作品ページ」「空間（VR）」「物語（PC・スマホ）」の 4 つ。
 
@@ -32,8 +32,8 @@ enter-the-painting/
 │     ├─ voice.mp3        作家ナレーション（任意）
 │     └─ generated/       npm run generate の出力（flow.png、space.json、訳文、部屋の合成、物語、qr.svg）
 ├─ rooms/                 部屋のイメージ（AI 生成、全作品で共用）
-│  ├─ living-tokyo.jpg    空いた壁のある場面
-│  └─ living-tokyo.json   壁の 4 隅（px）と壁の実寸（cm）、場面の説明（物語の下書き用）
+│  ├─ living-apartment.jpg    空いた壁のある場面
+│  └─ living-apartment.json   壁の 4 隅（px）と壁の実寸（cm）、場面の説明（物語の下書き用）
 ├─ scripts/
 │  └─ generate/           画像 → 流れ場・主要色、翻訳、部屋の合成、物語の下書き、QR、作品ページの生成
 ├─ src/
@@ -54,7 +54,7 @@ enter-the-painting/
 
 入力：`works/<id>/painting.jpg` と `work.json`。出力：`works/<id>/generated/`。
 
-1. **前処理**：長辺 2048px に縮小（流体の色テクスチャ用）。入口表示用に 1024px の JPEG も作る
+1. **前処理**：絵を幅 1024px の JPEG に縮小（作品ページの表示と、流体の色場の中の絵の部分、の両方に使う。1 サイズだけ）
 2. **主要色**：k-means で主要色 6 個。面積順に並べ、最も明るい色を文字色、面積最大の色を球面の裏側（絵が無かった方向）の基調色にする
 3. **筆致の流れ場**：Sobel で勾配を取り、構造テンソルを平滑化して各画素の主方向を求める。方向と強さを `flow.png`（R=cos、G=sin、B=強さ）に書き出す。S1 のかすかな流れと、S2 で流体が流れ出す初期速度に使う
 4. **動きのパラメータ**：画像のコントラスト・エッジ密度から、流体の渦度の強さ・流れの速さの初期値を決める。穏やかな絵はゆっくり、激しい絵は速く
@@ -69,13 +69,16 @@ enter-the-painting/
 
 ## 4. 流体、変形、物語モード（実行時）
 
-- **流体シム**：速度場 256×256、色（染料）1024×1024 の 2 枚の RenderTarget を ping-pong。毎フレーム、移流 → 渦度の補強 → 発散計算 → 圧力解法（Jacobi 20 回）→ 速度の補正 → 色の移流。拡散は 0、色の減衰は 0（濁らせない・薄れさせない）
+- **シムの領域**：2:1 の等距離円筒（equirect）。品質 high = 色 2048×1024 / 速度 512×256、medium = 1024×512 / 256×128、low = 512×256 / 128×64。絵は領域の前方のサブ矩形（幅の約半分、絵の比率を保つ）に置き、残りは `back_color` のグラデーションで初期化する。S3 で球面に貼るとそのまま全方向に色があり、「流れ込む」先がある。物語モードは同じ領域の絵の部分を切り出して画面に描く
+- **流体シム**：速度場と色（染料）の 2 枚の RenderTarget を ping-pong。毎フレーム、移流 → 渦度の補強 → 発散計算 → 圧力解法（Jacobi 20 回）→ 速度の補正 → 色の移流。拡散は 0、色の減衰は 0（濁らせない・薄れさせない）
+- **数値拡散への対策**：バイリニア補間の移流は毎フレームぼける（パラメータの拡散 0 では防げない）。色の移流は MacCormack（前進 + 後退で誤差を補正）にし、さらに毎フレーム原画へ弱く回帰させる（係数 0.002 程度。減衰ではなく「元の絵に戻ろうとする力」）。最長 3 分後も構図が残ることを S-1 で確認する
 - **初期状態**：色 = 絵の画像、速度 = `flow.png` × 強さ。S1 では速度を 1〜2px 相当に抑え、距離が縮むほど強める。S2 / T2 で本来の強さにする
 - **シュワシュワ**：S2 / T2 の 3 秒間、縁から内側へ向かって半径 2〜6px の小さな速度 splat を毎秒 200 個打つ。進行は縁からの距離で制御し、絵全体がほどけていくように見せる
 - **物語モード**：同じシムの色テクスチャを全画面の平面に描く。T1 の拡大は UV のスケールで行い、中心は主要色の中で最も明るい色の重心。T3 では 10〜20 秒ごとに `flow.png` の別の領域を初期速度として注入し、流れの表情を変える。T4 は元の画像へクロスフェード
 - **視線の影響**：S4 で、視線方向に対応する球面上の点に毎フレーム弱い力（splat）を加える。流れが視線に引き寄せられる
 - **平面 → 球面**：1 枚のメッシュ（分割 128×64）を用意し、頂点シェーダで `t`（0=平面、1=球面）に応じて位置を補間する。UV は絵の範囲を球面の前方 90°×70° に写し、残りの球面（裏側）は基調色のグラデーション + 流体の流れ込みで埋める。カメラは動かさない
-- **文字**：troika の Text を 1 つ。空間モードでは視線方向の 8m 先に置き、6 秒で 2m まで前進、滞在、3 秒で不透明度 0 に。前進中は視線の変化にゆっくり追従（毎秒 30%）。物語モードでは画面中央に、スケール 0.3 → 1.0、ぼかし → くっきり、不透明度 0 → 1 を 6 秒で。縦画面は 14 文字以上で折り返す
+- **文字**：troika の Text を 1 つ。空間モードでは視線方向の 8m 先に置き、6 秒で 2m まで前進、滞在、3 秒で不透明度 0 に。前進中は視線の変化にゆっくり追従（毎秒 30%）。物語モードでは画面中央に、スケール 0.3 → 1.0、ぼかし → くっきり、不透明度 0 → 1 を 6 秒で。縦画面は 14 文字以上で折り返す。文字の背後に柔らかい暗いにじみ（半透明の放射状グラデーション）を置き、どの色の上でも読める（N-13）
+- **接近（S1）**：WebXR ではカメラではなくリグ（親 Group）を動かす。トリガー時の頭の位置から絵までの距離で補間し、1.0m で止める。1.2 秒の間、周辺を暗くするビネットを掛けて酔いを抑える（N-08）。`prefers-reduced-motion` なら 0.6 秒 + 強いビネット
 - **性能目安**：Quest で 72fps。落ちたら色を 512×512、圧力の反復を 12 回に下げる。段階は `space.json` の `quality` で指定でき、実行時に fps を見て自動で 1 段下げる
 
 ## 5. 場面の進行（`space/` と `story/`）
@@ -92,36 +95,49 @@ enter-the-painting/
 | 物語（PC） | それ以外で「入る」 | クリックで一時停止、Esc で閉じる | 全画面の平面に流体を描く |
 | 物語（スマホ） | 同上 | タップで一時停止、右上で閉じる。傾きで流れが寄る（推奨、`deviceorientation`。iOS は「入る」内で `requestPermission()`） | 縦・横どちらでも |
 
-VR 対応端末でも作品ページは 2D。「VR で入る」で immersive-vr に移る。
+VR 対応端末でも作品ページは 2D。「VR で入る」は `isSessionSupported('immersive-vr')` かつ UA に `OculusBrowser` のときだけ出す（Android Chrome が Cardboard で true を返す場合があるため。要確認）。`?vr=1` で強制。
+
+### フォールバックの分岐（F-54）
+
+| 検出 | 落ち先 |
+| --- | --- |
+| WebGL2 なし、または half float の RenderTarget が作れない | 静止画モード：絵の静止画に CSS のクロスフェードとゆらぎ、文字と声はそのまま |
+| `webglcontextlost`（iOS でバックグラウンド復帰時に起きる） | その場で静止画モードに切り替え、文字と声は続行 |
+| XR セッションの開始に失敗、または拒否 | 物語モードへ |
+| `voice.mp3` が無い、または再生に失敗 | 文字だけ。文字の滞在は文字数から |
+| `space.json` が 404 | 作品ページの絵とメッセージ（HTML に埋め込み）だけ |
+| フォントの読み込みに失敗 | システムフォントで Canvas に描いたスプライト |
 
 ## 7. ルーティング、ギャラリー、作品ページ、QR
 
 - ギャラリー：`/`。5 作品を実物の寸法比で並べる。背景に部屋のイメージ 1 枚。選ぶと作品ページへ
 - 作品ページ：`/w/<id>/`。ビルド時に生成する静的 HTML。絵（1024px JPEG）、タイトル・寸法・技法・年、販売状況、「入る」、部屋で見る（画像 6〜10 枚と物語、横スクロール）、連絡リンク、共有、他の作品、OGP メタ。絵と部屋の画像は HTML に直接あり JS を待たない。JS バンドル（gzip 300KB 以下）は `defer`。流体の 2048px テクスチャとフォントは「入る」を押してから読む
-- 連絡リンク：`work.json` の `contact`（`mailto:` またはフォームの URL）。無ければ `site.json` の既定値
-- 計測（推奨）：Cookie なしのカウンタ（GoatCounter など）に `enter / finished / contact` の 3 イベントだけ送る。IP は保存しない
-- 言語：`navigator.languages` から 10 言語のうち最初に一致するものを選ぶ。無ければ英語。`?lang=ja` で固定。切り替えは `localStorage` に覚える
+- 連絡リンク：`work.json` の `contact`（フォームの URL を推奨。`mailto:` は public の HTML に書かない）。無ければ `site.json` の既定値
+- 計測（推奨）：Cookie なしのカウンタ（GoatCounter など）に `enter / finished / contact` の 3 イベントと入口（`from=qr` か否か）を送る。IP は保存しない。作品ページに 1 行明記（N-16）
+- 言語：`navigator.languages` を順に正規化して、10 言語のうち最初に一致するものを選ぶ。無ければ英語。`?lang=ja` で固定。切り替えは `localStorage` に覚える。正規化：`zh-TW | zh-HK | zh-MO | zh-Hant*` → `zh-Hant`、それ以外の `zh*` → `zh-Hans`、`pt*` → `pt`、その他は言語サブタグ（`en-US` → `en`）。単体テストに含める
+- 開発中は `?w=<id>` でも開けるようにし、本番はパス `/w/<id>/`。QR は本番パス + `?from=qr`
 - QR の中身は `BASE_URL/w/<id>/`。`BASE_URL` は `.env` で設定
 
 ## 8. 言語（`i18n/`）
 
 - メッセージと小さな物語の訳は `space.json` に 10 言語分を埋め込む（1 作品 10 文 + 物語 10 本 × 10 言語でも数十 KB）
 - UI 文言（「入る」「戻る」「VR で入る」「他の作品」など 15 個程度）は `src/i18n/ui.json` に 10 言語分
-- フォントは言語ごとに 1 つだけ読む：`ja` → Noto Sans JP、`zh-Hans` → SC、`zh-Hant` → TC、`ko` → KR、それ以外 → Noto Sans。メッセージと UI 文言に使う文字だけでサブセット化（`pyftsubset` または `subset-font`）して各 300KB 以下にする
+- フォントは言語ごとに 1 つだけ読む：`ja` → Noto Sans JP、`zh-Hans` → SC、`zh-Hant` → TC、`ko` → KR、それ以外 → Noto Sans。**静的 TTF** を使う（troika は独自パーサで、woff2 と可変フォントは要確認）。サブセットは `npm run build` の中で `subset-font`（npm）により毎回作り直す。入力はその言語の全メッセージ + 物語 + UI 文言。出力は `.ttf`、各 300KB 以下
 - 言語を切り替えたら、文字の Text・UI・物語だけ差し替える。流体・音はそのまま
 
 ## 9. 音
 
-- **ナレーション**：`voice.mp3`（日本語のみ、訳さない）。S3 完了 / T2 完了で再生。非位置（`THREE.Audio`）。文字の出現を `messages[].at` に揃える
-- **環境音**：プリセット（`calm / wind / water / drone`）。S1 では絵の位置の `PositionalAudio`、S3 以降と物語モードは全方向
+- **ナレーション**：`voice.mp3`（日本語のみ、訳さない）。S3 完了 / T2 完了で再生。**`<audio>` 要素で再生する**（iOS のサイレントスイッチで Web Audio は消音されるが、`<audio>` は鳴る。要確認）。`voiceTime()` は `currentTime`。文字の出現を `messages[].at` に揃える。消音でも文字だけで成立させる
+- **環境音**：Web Audio で合成。MVP は `calm` 1 つ（他は余裕があれば）。S1 では絵の位置の `PositionalAudio`、S3 以降と物語モードは全方向
 - **泡**：S2 / T2 の 3 秒間、高域のノイズ（-18dB）
 - **ドローン**：S2 / T2 で立ち上がり S3 / T3 冒頭で最大、その後落ち着く低い持続音
 - すべて「入る」ボタンのクリック内で `AudioContext.resume()` してから開始する
 
 ## 10. 開発とデプロイ
 
-- `npm run dev -- --host` + basic-ssl で LAN の HTTPS。Quest / スマホから `https://<PCのIP>:5173` で確認
-- `main` への push で GitHub Pages にビルド・配置（Actions）。実機テストは本番 URL でも行う
+- **Day 1 に公開**。`main` への push で GitHub Pages にビルド・配置（Actions）。独自ドメインを当てる。毎日の実機チェックは本番 URL で行う（Claude のセッションはクラウドで、LAN のサーバーは立てられない）
+- 作家の手元では `npm run dev -- --host` + basic-ssl で LAN の HTTPS でも確認できる（Quest の自己署名証明書の扱いは要確認）
+- `?debug=1` でアプリ内に fps と品質段階を表示する（Quest のブラウザに性能表示は無い）
 - 生成物（`works/*/generated/`）はコミットする（1 作品あたり部屋の合成を含めて 10MB 程度）。翻訳と物語のキャッシュ（`translations.json`、`stories.json`）もコミットして API 呼び出しを繰り返さない
 - 部屋の画像（`rooms/`）は一度作ってコミット。生成に使ったツールとプロンプトを `rooms/README.md` に書く
 
@@ -132,7 +148,8 @@ VR 対応端末でも作品ページは 2D。「VR で入る」で immersive-vr 
 ```ts
 // fluid/ : GPU 流体シム。どこに描くかは知らない
 interface Fluid {
-  init(painting: THREE.Texture, flow: THREE.Texture, p: FluidParams): void;
+  init(painting: THREE.Texture, flow: THREE.Texture, p: FluidParams, placement: PaintingRect): void;
+  // placement: 等距離円筒の領域の中で、絵が占める矩形（0〜1）
   setStrength(v: number): void;            // 0〜1。S1 のかすかな流れ〜本来の強さ
   fizz(progress: number): void;            // シュワシュワ。縁からの進行 0〜1
   splat(uv: [number, number], force: [number, number], radius: number): void;
@@ -141,7 +158,8 @@ interface Fluid {
   texture: THREE.Texture;                  // 色の出力。球面にも平面にも貼れる
   setQuality(q: 'high' | 'medium' | 'low'): void;
 }
-interface FluidParams { vorticity: number; speed: number; quality: 'high' | 'medium' | 'low' }
+interface FluidParams { vorticity: number; speed: number; quality: 'high' | 'medium' | 'low'; restore: number /* 原画への回帰 */ }
+interface PaintingRect { x: number; y: number; w: number; h: number }
 
 // text/ : 文字の浮上。置き方だけ 2 種類
 interface FloatingText {
@@ -168,14 +186,15 @@ interface StageMachine { start(): void; goto(name: string): void; current: strin
 
 // 実行時が読む唯一の定義
 interface Space {
-  id: string; title: Record<Lang, string>; size_cm: [number, number];
+  id: string; title: Partial<Record<Lang, string>>; size_cm: [number, number];
   painting: string; palette: string[]; text_color: string; back_color: string;
   flow: { texture: string; strength: number };
   fluid: FluidParams;
   space: { radius_m: number; melt_distance_m: number };
   audio: { voice?: string; ambient: string };
-  messages: { at: number } & Record<Lang, string>[];
-  rooms: { name: string; image: string; story?: Record<Lang, string> }[];
+  messages: ({ at: number } & Partial<Record<Lang, string>>)[];
+  rooms: { name: string; image: string; wall_width_cm: number; story?: Partial<Record<Lang, string>> }[];
+  story?: Partial<Record<Lang, string>>;   // 1 作品 1 本の小さな物語（MVP）
   availability?: 'available' | 'sold' | 'not_for_sale'; contact?: string;
 }
 type Lang = 'ja' | 'en' | 'zh-Hans' | 'zh-Hant' | 'ko' | 'fr' | 'de' | 'es' | 'it' | 'pt';

@@ -48,7 +48,7 @@
 - 本録音（Day 6）：同じ条件で丁寧に。文と文の間に 1 秒空ける（文字の切り替えに使う）
 - 1〜3 分。長いと最後まで聞かれない
 - mp3、128kbps、モノラル。`works/<id>/voice.mp3`
-- 各文の開始秒を `work.json` の `voice_at` に書く（Claude が波形から下書き、作家が確認）
+- 各文の開始秒を `work.json` の `voice_at` に書く。初期値は等間隔。作家が聞きながら直す（文と文の間の 1 秒の無音を目印に。Claude が無音検出で下書きするのは余裕があれば）
 - 訳さない。声は日本語のまま、文字が母語で出る
 
 ## 5. 部屋のイメージ（AI 生成、全作品で共用）
@@ -57,13 +57,13 @@
 
 | # | name | 場面 | 誰の生活か |
 | --- | --- | --- | --- |
-| 1 | living-apartment | マンションのリビング。ソファの向かいの白い壁。朝の光 | 持ち主 A |
+| 1 | living-apartment | マンションのリビング。ソファの向かいの白い壁。朝の光 | 持ち主 A |（MVP）
 | 2 | entrance-house | 一軒家の玄関。靴を脱ぐところから見える壁 | 持ち主 A |
 | 3 | bedroom | 寝室。ベッドの横の壁。夜の明かり | 持ち主 A |
 | 4 | study | 書斎。机の前の壁。本棚の横 | 持ち主 A |
-| 5 | hotel-lobby | ホテルのロビー。ソファと観葉植物。天井が高い | オンラインの人 E（憧れ） |
+| 5 | hotel-lobby | ホテルのロビー。ソファと観葉植物。天井が高い | オンラインの人 E（憧れ） |（MVP）
 | 6 | hotel-room | ホテルの客室。ベッドの頭の壁 | E |
-| 7 | cafe | カフェ。カウンターの奥の壁。客が 1〜2 人 | E |
+| 7 | cafe | カフェ。カウンターの奥の壁。客が 1〜2 人 | E |（MVP）
 | 8 | office-reception | オフィスの受付。ロゴの横 | E |
 | 9 | hallway | 廊下。細長い壁。小品が並ぶ | A |
 | 10 | gallery | 白いギャラリー。何もない壁 | 比較用 |
@@ -73,16 +73,17 @@
 <場面の説明>, a blank empty wall suitable for hanging a painting, no artwork on the wall,
 natural light, photorealistic interior photo, a person or furniture for scale, 16:9
 ```
+- MVP は 3〜4 枚（上の（MVP）印 + 1 枚）。6〜10 枚は余裕があれば
 - 壁に絵や額が描かれてしまったら作り直す（合成で絵を貼る場所が要る）
-- 生成に使ったツールとプロンプトを `rooms/README.md` に書く
-- 作品ページには「部屋は AI 生成のイメージ。絵は実物の写真を実寸で合成」と出る
+- 生成に使ったツール、プロンプト、**そのツールの商用利用の可否**を `rooms/README.md` に書く（販売状況を出すページで使うため）
+- 作品ページには「部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安（壁幅 約 3m として合成）」と出る
 
-壁の 4 隅と実寸（`rooms/<name>.json`）は、画像を見て Claude が下書きし、作家が「この壁の幅は 3m くらい」と決める。
+壁の 4 隅と壁幅の目安（`rooms/<name>.json`）は、画像を見て Claude が下書きし、作家が「この壁の幅は 3m くらい」と決める。AI の部屋は遠近が正確でないので「実寸」とは言わない。
 
-## 6. 小さな物語（部屋ごと、3〜5 文）
+## 6. 小さな物語（1 作品 1 本、3〜5 文）
 
-- その場所で、この絵のある日々を描く。小説のような語り。作家の声
-- Claude が「場面の説明 + メッセージ」から下書き（`stories.json`）。作家が直す。直したものは再生成で消えない
+- この絵のある日々を描く。小説のような語り。作家の声。MVP は 1 作品 1 本（部屋ごとは将来。30 本を作家が直しきれないため）
+- Claude が「メッセージ」から下書き（`stories.json`）。作家が直す。直したものは再生成で消えない。直していない下書きは公開しない（AI の文が作家名義で出ないように）
 - 実在の人・出来事と誤認させない。作品ページに「物語」と明記
 
 例（living-apartment × 青い潮）：
@@ -102,7 +103,11 @@ natural light, photorealistic interior photo, a person or furniture for scale, 1
 | back | 戻る | Back |
 | again | もう一度 | Again |
 | rooms | 部屋で見る | See it in a room |
-| rooms_note | 部屋は AI 生成のイメージ。絵は実物の写真を実寸で合成 | Rooms are AI-generated images. The painting is a real photo, composited at actual size |
+| rooms_note | 部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安 | Rooms are AI-generated images. The painting is a real photo. Size is approximate |
+| wall_note | 壁幅 約 {w} m として合成 | Composited assuming a wall about {w} m wide |
+| once_more | 実物の前でもう一度 | Now, stand in front of the real one |
+| save | 保存・共有 | Save / Share |
+| privacy | 計測は Cookie なし、IP は保存しません | No cookies, no IP stored |
 | story_note | 物語 | A short story |
 | contact | 作家に連絡 | Contact the artist |
 | share | 共有 | Share |
@@ -121,7 +126,8 @@ natural light, photorealistic interior photo, a person or furniture for scale, 1
 
 ## 8. 音
 
-- 環境音は Web Audio で合成（ノイズ + フィルタ）。ライセンスの心配をなくす。プリセット：`calm`（低いノイズ）、`wind`（帯域が揺れる）、`water`（粒状のノイズ）、`drone`（低い持続音）
+- 環境音は Web Audio で合成（ノイズ + フィルタ）。ライセンスの心配をなくす。MVP は `calm`（低いノイズ）だけ。余裕があれば `wind`、`water`、`drone`
+- 声は `<audio>` 要素で再生する（iOS の消音スイッチでも鳴る。要確認）。消音でも文字だけで成立させる
 - 泡の音：高域ノイズの短いバースト
 - 外部の音源を使うなら CC0 のみ。出どころを `docs/CONTENT.md` に書く
 

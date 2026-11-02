@@ -2,23 +2,20 @@
 
 抽象画の中に入れる WebXR ギャラリー。AI ハッカソン（1 週間）の試作。
 
-## まず読む
+## まず読む（毎回、この 3 つだけ）
 
-- `docs/PLAN.md`：何を・なぜ。スコープと完成の定義
+- `docs/LOG.md`：作業ログ。先頭の「次にやる」
+- `docs/TASKS.md`：当日のタスク。ID を挙げて進める
 - `docs/EXPERIENCE.md`：体験仕様。VR の空間モード（S1〜S5）、PC・スマホの物語モード（T0〜T5）、部屋で見る。迷ったらここ
-- `docs/REQUIREMENTS.md`：要件の一覧（ID 付き、優先度、受け入れ条件）。実装するときは ID を挙げる
-- `docs/JOURNEY.md`：ユーザージャーニー。離脱しそうな点と「旅の交差点」を設計で押さえる
-- `docs/TASKS.md`：タスク分解。今日のタスク ID を挙げて作業する
-- `docs/SPIKES.md`：技術検証。失敗したら逃げ道に切り替え、記録欄に書く
-- `docs/DECISIONS.md`：決定と未決定。未決定は期限までに決め、決めたら CHANGELOG にも書く
-- `docs/CONTENT.md`：作家が作るもの（撮影、メッセージ、声、部屋のイメージ、UI 文言）
-- `docs/PITCH.md`：提出と見せ方
-- `docs/ARCHITECTURE.md`：技術選定と構成。ここに無い技術を足すときは理由を docs に書く
-- `docs/WORK_FORMAT.md`：作品定義ファイルの仕様。作家が触るのは `works/<id>/` だけ
-- `docs/SCHEDULE.md`：日程。遅れたら「遅れたときの優先順位」に従う
-- `docs/USERS.md`：誰のどの悩みに効くか。体験や機能を決める前に見る
-- `docs/ROUTINE.md`：作業の始め方・終わり方、レビューの観点、テストの層
-- `docs/LOG.md`：作業ログ。作業の最初に「次にやる」を読む
+
+## 必要なときに読む
+
+- 実装するとき：`docs/ARCHITECTURE.md`（技術選定、モジュールの境界。ここに無い技術を足すときは理由を docs に書く）、`docs/REQUIREMENTS.md`（要件 ID と受け入れ条件）、`docs/WORK_FORMAT.md`（作品定義ファイル）
+- 技術的に詰まったとき：`docs/SPIKES.md`（検証と逃げ道、記録欄）、`docs/RISKS.md`
+- 体験や機能を決めるとき：`docs/USERS.md`（誰のどの悩み）、`docs/JOURNEY.md`（離脱点と交差点）、`docs/DECISIONS.md`（決定と未決定）
+- 全体を見直すとき：`docs/PLAN.md`、`docs/SCHEDULE.md`、`docs/CHANGELOG.md`
+- 作家向け：`docs/CONTENT.md`（撮影、メッセージ、声、部屋のイメージ）、`docs/PITCH.md`（提出）
+- 作業の型：`docs/ROUTINE.md`
 
 ## ルーチン（毎回）
 
@@ -39,9 +36,12 @@
 - 部屋のイメージと小さな物語には「AI 生成のイメージ」「物語」と明記し、実在の部屋・出来事と誤認させない
 - 音声の開始・ジャイロ許可・XR セッション開始は、必ずユーザー操作（「入る」ボタン）のハンドラ内で行う
 - 文字は閲覧者の母語。言語は端末の言語で自動判定し、選ばせない（切り替えはできる）
-- 性能の上限：色テクスチャ 2048px、速度場 256、圧力反復 20 回、Quest で 72fps。超えるなら相談
+- 性能の上限：流体の領域は等距離円筒 2:1、品質 high で色 2048×1024 / 速度 512×256、圧力反復 20 回、Quest で 72fps。超えるなら相談
+- 数値拡散の対策（MacCormack + 原画への回帰）を外さない。3 分後も構図が残ること
+- 声は `<audio>` 要素。消音でも文字だけで成立させる
+- フォールバック（静止画モード）を壊さない。`prefers-reduced-motion` を尊重する
 - VR のカメラは S2〜S5 で動かさない（酔い対策）。絵の方が動く
-- 作品ページは JS を待たずに絵が出る。JS バンドルは gzip 300KB 以下
+- 作品ページは JS を待たずに絵が出る。ページ用 JS は gzip 20KB 以下、体験バンドルは「入る」後に `import()` で gzip 300KB 以下
 - 依存は最小に。React などの UI フレームワークは入れない
 - コードのコメントと UI 文言は日本語。識別子は英語
 
@@ -56,4 +56,4 @@ npm run build                # 静的ビルド（dist/）
 
 ## 状態
 
-2026-11-02：計画 V2（`docs/CHANGELOG.md`）。課題を 3 場面に広げ、VR は空間モード、PC・スマホは物語モード、作品ページに「部屋で見る」と小さな物語。要件は `docs/REQUIREMENTS.md`。コードは未着手。リモートは https://github.com/sheer-jp/enter-the-painting（public）。
+2026-11-02：計画 V2.1（`docs/CHANGELOG.md`）。独立レビューの指摘を反映済み。Day 0 の未決定 U-12〜U-14（落とすもの、独自ドメイン、VR を誰が使うか）は作家の判断待ち。コードは未着手。リモートは https://github.com/sheer-jp/enter-the-painting（public）。
