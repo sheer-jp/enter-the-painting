@@ -19,6 +19,9 @@ VR ヘッドセット・パソコン・スマホのどれでも、同じ絵の�
 | [docs/WORK_FORMAT.md](docs/WORK_FORMAT.md) | 作品定義ファイル（`works/<id>/work.json`）の仕様 |
 | [docs/SCHEDULE.md](docs/SCHEDULE.md) | 7 日間の日程とマイルストーン |
 | [docs/RISKS.md](docs/RISKS.md) | リスクと逃げ道 |
+| [docs/USERS.md](docs/USERS.md) | 誰のどの悩みに効くか（登場人物、仮説、聞き方、記録） |
+| [docs/ROUTINE.md](docs/ROUTINE.md) | 作業ルーチン（テスト → レビュー → ログ → コミット） |
+| [docs/LOG.md](docs/LOG.md) | 作業ログ |
 | [CLAUDE.md](CLAUDE.md) | Claude Code 向けの作業ルール |
 
 ## 予定している技術
