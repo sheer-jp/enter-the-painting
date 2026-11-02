@@ -1,0 +1,17 @@
+{
+  "id": "sample",
+  "title": "（見本）作品タイトル",
+  "year": 2025,
+  "size_cm": [18, 14],
+  "medium": "キャンバスに油彩",
+  "note": "ここに作家メモを 3〜10 行。どこで、何を見て、どんな気持ちで描いたか。字幕とナレーションの土台になる。",
+  "audio": {
+    "voice": "voice.mp3",
+    "ambient": "calm"
+  },
+  "overrides": {
+    "layers": 6,
+    "motion_speed": 0.4,
+    "motion_amount": 0.5
+  }
+}

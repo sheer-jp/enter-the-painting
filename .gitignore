@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.*
+.DS_Store
+*.log
+# 生成物（画像レイヤー・QR）は works/<id>/generated/ に出る。小さいうちはコミットしてよい
+works/*/generated/*.tmp
