@@ -1,4 +1,4 @@
-# 作品定義ファイル（`works/<id>/work.json`）
+# 作品定義ファイル V2（`works/<id>/work.json`）
 
 作家が触るのはこのファイルと画像・音声だけ。他はすべて `npm run generate -- <id>` が作る。
 
@@ -38,6 +38,11 @@ works/<id>/
     "I wanted to keep that moment at a size that fits in the palm of a hand."
   ],
 
+  // 作品ページ
+  "availability": "available",          // available | sold | not_for_sale。任意。無ければ表示しない
+  "contact": "mailto:you@example.com",  // 作家への連絡。任意。無ければ site.json の既定値
+  "rooms": ["living-tokyo", "hotel-lobby", "cafe"],  // 部屋で見るに使う部屋。省略時は rooms/ の全部
+
   // 音
   "audio": {
     "voice": "voice.mp3",                 // 無ければ文字のみ
@@ -65,7 +70,9 @@ works/<id>/
 | --- | --- |
 | `painting_2048.jpg` / `painting_1024.jpg` | 流体の色テクスチャ用と入口表示用 |
 | `flow.png` | 筆致の流れ場（R=cos θ、G=sin θ、B=強さ） |
-| `translations.json` | メッセージ・タイトルの 10 言語分（キャッシュ。手で直してよい） |
+| `rooms/<name>.jpg` | 部屋のイメージに絵を実寸で合成したもの（部屋ごと） |
+| `stories.json` | 部屋ごとの小さな物語（日本語の下書き。作家が直す。再生成で上書きしない） |
+| `translations.json` | メッセージ・物語・タイトルの 10 言語分（キャッシュ。手で直してよい） |
 | `space.json` | 実行時に読む唯一の定義 |
 | `qr.svg` / `qr.png` | `BASE_URL/w/<id>/` の QR |
 | `card.svg` | 作品カード印刷用（タイトル、寸法、QR） |
@@ -87,6 +94,12 @@ works/<id>/
   "fluid": { "vorticity": 0.5, "speed": 0.4, "quality": "high" },
   "space": { "radius_m": 2.5, "melt_distance_m": 1.0 },
   "audio": { "voice": "voice.mp3", "ambient": "water" },
+  "availability": "available",
+  "contact": "mailto:you@example.com",
+  "rooms": [
+    { "name": "living-tokyo", "image": "rooms/living-tokyo.jpg",
+      "story": { "ja": "朝、コーヒーを淹れながらこの絵の前を通る。…", "en": "...", "...": "..." } }
+  ],
   "messages": [
     { "at": 0,    "ja": "海辺の町で描いた。", "en": "I painted this in a town by the sea.", "fr": "...", "...": "..." },
     { "at": 7.5,  "ja": "朝の光が水面で割れるとき、…", "en": "...", "...": "..." }
@@ -96,13 +109,37 @@ works/<id>/
 
 言語コードは `ja, en, zh-Hans, zh-Hant, ko, fr, de, es, it, pt` の 10 個。無い言語は `en` に落ちる。
 
+## 部屋のイメージ（`rooms/`、全作品で共用）
+
+```
+rooms/
+├─ README.md             生成に使ったツールとプロンプト
+├─ living-tokyo.jpg      AI 生成の部屋。空いた壁がある。人や家具で大きさがわかる
+└─ living-tokyo.json     下記
+```
+
+```jsonc
+{
+  "name": "living-tokyo",
+  "label": { "ja": "マンションのリビング", "en": "Apartment living room" },
+  "scene": "東京のマンションのリビング。朝の光。ソファの向かいの白い壁。",   // 物語の下書きに使う
+  "wall": {
+    "corners_px": [[612, 180], [1410, 196], [1402, 980], [618, 964]],  // 壁の 4 隅（左上から時計回り）
+    "width_cm": 320,                                                   // その壁の実寸の幅
+    "hang_center_ratio": [0.5, 0.42]                                   // 絵の中心を壁のどこに置くか（0〜1）
+  }
+}
+```
+
+絵の画像は AI に入れない。合成は `generate` が射影変換で行い、「部屋は AI 生成のイメージ。絵は実物の写真を実寸で合成」と作品ページに出る。
+
 ## 追加の手順
 
 ```bash
 mkdir works/<id>
 # painting.jpg, work.json, voice.mp3 を置く
-npm run generate -- <id>     # 流れ場・翻訳・QR を生成（翻訳には ANTHROPIC_API_KEY が要る。無ければ ja / en のみ）
+npm run generate -- <id>     # 流れ場・部屋の合成・物語の下書き・翻訳・QR を生成（翻訳と物語には ANTHROPIC_API_KEY が要る。無ければ ja / en のみ、物語は空）
 npm run dev -- --host        # https://<PCのIP>:5173/w/<id>/ で確認
 ```
 
-翻訳が気に入らなければ `generated/translations.json` を直接直す。再生成しても手で直した訳は上書きしない。
+翻訳が気に入らなければ `generated/translations.json` を、物語は `generated/stories.json` を直接直す。再生成しても手で直したものは上書きしない。
