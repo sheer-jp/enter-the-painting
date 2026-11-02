@@ -7,6 +7,7 @@
 - `docs/PLAN.md`：何を・なぜ。スコープと完成の定義
 - `docs/EXPERIENCE.md`：体験仕様。VR の空間モード（S1〜S5）、PC・スマホの物語モード（T0〜T5）、部屋で見る。迷ったらここ
 - `docs/REQUIREMENTS.md`：要件の一覧（ID 付き、優先度、受け入れ条件）。実装するときは ID を挙げる
+- `docs/JOURNEY.md`：ユーザージャーニー。離脱しそうな点と「旅の交差点」を設計で押さえる
 - `docs/ARCHITECTURE.md`：技術選定と構成。ここに無い技術を足すときは理由を docs に書く
 - `docs/WORK_FORMAT.md`：作品定義ファイルの仕様。作家が触るのは `works/<id>/` だけ
 - `docs/SCHEDULE.md`：日程。遅れたら「遅れたときの優先順位」に従う
