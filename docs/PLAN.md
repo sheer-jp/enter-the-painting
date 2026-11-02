@@ -1,6 +1,6 @@
 # 計画 V2：抽象画の中に入りこめる・デジタルギャラリー
 
-V1 との差分は `docs/CHANGELOG.md`。V1 は git タグ `plan-v1`。
+V1 との差分は `docs/CHANGELOG.md`。V1 の初版はコミット `530bcde`、V2 直前は `9cec3ee`。
 
 ## 1. 背景（作家の言葉）
 
