@@ -77,11 +77,11 @@ enter-the-painting/
 
 | モード | 判定 | 見回し | 接近 | 戻る | 備考 |
 | --- | --- | --- | --- | --- | --- |
-| `vr` | `navigator.xr.isSessionSupported('immersive-vr')` が true | ヘッドセット | 歩く / スティック 0.8m/s | B / Y 長押し | three.js の `VRButton`。セッション中は `renderer.xr` がカメラを握る |
-| `mobile` | タッチ端末で `DeviceOrientationEvent` がある | 端末の向き | 長押し 1.0m/s | 右上ボタン | iOS は「入る」ボタン内で `requestPermission()`。three.js 本体に `DeviceOrientationControls` は無いので小さな自前実装（約 60 行）を置く |
-| `desktop` | それ以外 | `PointerLockControls`（マウス） | W / ↑ 1.2m/s | Esc | ポインターロック拒否時はドラッグで見回す |
+| `vr` | `navigator.xr.isSessionSupported('immersive-vr')` が true | ヘッドセット | 絵に向けてトリガー → 1.2 秒で接近（歩く / スティック 0.8m/s でも） | B / Y 長押し | three.js の `VRButton`。セッション中は `renderer.xr` がカメラを握る |
+| `mobile` | タッチ端末で `DeviceOrientationEvent` がある | 端末の向き | 絵をタップ → 1.2 秒で接近（長押し 1.0m/s でも） | 右上ボタン | iOS は「入る」ボタン内で `requestPermission()`。three.js 本体に `DeviceOrientationControls` は無いので小さな自前実装（約 60 行）を置く |
+| `desktop` | それ以外 | `PointerLockControls`（マウス） | 絵をクリック → 1.2 秒で接近（W / ↑ 1.2m/s でも） | Esc | ポインターロック拒否時はドラッグで見回す |
 
-全モード共通：15 秒無操作で自動接近 0.3m/s。VR 対応端末でもまず 2D で表示し、「VR で入る」で immersive-vr に移る。
+絵への当たり判定は Raycaster（VR はコントローラの向き、PC は画面中央、スマホはタップ位置）。接近はカメラ位置の補間で、S2 の開始距離（1.0m）に正確に止める。全モード共通：15 秒無操作で自動接近 0.3m/s（入れるかは実機で決める）。VR 対応端末でもまず 2D で表示し、「VR で入る」で immersive-vr に移る。
 
 ## 7. ルーティング、ギャラリー、QR
 
