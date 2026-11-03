@@ -33,7 +33,7 @@ export function rememberLang(lang: Lang) {
 export function applyLang(root: ParentNode, lang: Lang) {
   root.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n!;
-    if (UI[key]) el.textContent = t(key, lang);
+    if (UI[key]) el.textContent = t(key, lang, el.dataset.i18nW ? { w: el.dataset.i18nW } : undefined);
   });
   root.querySelectorAll<HTMLElement>('[data-lang]').forEach((el) => { el.hidden = el.dataset.lang !== lang; });
   // data-lang の段落が閲覧者の言語に無ければ en、それも無ければ ja を出す

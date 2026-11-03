@@ -23,7 +23,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
   const rooms = (space.rooms || []).map((r) => `
       <figure class="room">
         <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(title)} を部屋に置いたイメージ（AI 生成の部屋）" loading="lazy">
-        <figcaption><span data-i18n="rooms_note">${UI_JA.rooms_note}</span>${r.wall_width_cm ? `（壁幅 約 ${(r.wall_width_cm / 100).toFixed(1)} m）` : ''}</figcaption>
+        <figcaption><span data-i18n="rooms_note">${UI_JA.rooms_note}</span>${r.wall_width_cm ? `（<span data-i18n="wall_note" data-i18n-w="${(r.wall_width_cm / 100).toFixed(1)}">壁幅 約 ${(r.wall_width_cm / 100).toFixed(1)} m として合成</span>）` : ''}</figcaption>
       </figure>`).join('');
   const story = space.story ? `
     <section class="story">
@@ -58,7 +58,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
   </figure>
   <header>
     <h1>${esc(title)}${titleEn && titleEn !== title ? `<small>${esc(titleEn)}</small>` : ''}</h1>
-    <p class="meta">${work.year ? `${esc(work.year)} · ` : ''}${w} × ${h} cm · ${esc(t(work.medium, 'ja'))} ${avail}</p>
+    <p class="meta">${work.year ? `${esc(work.year)} · ` : ''}${w} × ${h} cm · ${LANGS.map((l) => work.medium?.[l] ? `<span data-lang="${l}" hidden>${esc(work.medium[l])}</span>` : '').join('')} ${avail}</p>
   </header>
   <div class="actions">
     <button class="btn primary" id="enter" data-i18n="enter"${space.audio?.voice ? ` data-voice="../../works/${id}/${esc(space.audio.voice)}"` : ''}>${UI_JA.enter}</button>
