@@ -56,10 +56,14 @@ export async function run(o: RunOptions): Promise<void> {
     o.onExit?.();
   };
   try {
+    let fellBack = false;
     if (o.vr && renderer && fluid) {
       const { SpaceMode } = await import('../space/SpaceMode');
-      await new SpaceMode({ ...ctx, renderer, fluid }, o.xrSession ?? null).start();
-    } else {
+      const r = await new SpaceMode({ ...ctx, renderer, fluid }, o.xrSession ?? null).start();
+      fellBack = r === 'fallback';
+    }
+    if (!o.vr || fellBack || !renderer || !fluid) {
+      fluid?.reset();
       await new StoryMode(ctx).start();
     }
   } finally {

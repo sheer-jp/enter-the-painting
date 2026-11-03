@@ -1,5 +1,6 @@
 // 作品ページ / ギャラリーの小さなスクリプト。言語の切り替えと「入る」だけ。体験は「入る」で読む
 import { detectLang, rememberLang, applyLang, fillLangSelect, t, type Lang } from './i18n';
+import { Soundscape } from './audio/Soundscape';
 import './ui/page.css';
 
 const workId = document.querySelector<HTMLMetaElement>('meta[name="work"]')?.content || null;
@@ -49,10 +50,20 @@ if (workId) {
   const start = async (vr: boolean) => {
     enter.disabled = true; enterVr.disabled = true;
     const label = enter.textContent; enter.textContent = t('loading', lang) + '…';
+    // 「入る」のハンドラ内で（ユーザー操作の直後に）：音の許可、声の準備、XR セッションの要求
+    const sound = new Soundscape();
+    const unlocking = sound.unlock();
+    const voiceUrl = enter.dataset.voice;
+    if (voiceUrl) { const a = new Audio(voiceUrl); a.muted = true; a.play().then(() => { a.pause(); a.muted = false; }).catch(() => {}); }
+    let xrSession: XRSession | null = null;
+    if (vr) {
+      try { xrSession = await (navigator as Navigator & { xr: XRSystem }).xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor'] }); }
+      catch (e) { console.warn('XR セッションを要求できない', e); }
+    }
     try {
-      // 「入る」のハンドラ内で：音の許可（AudioContext）と XR はこの中で始める
+      await unlocking;
       const { run } = await import('./experience/main');
-      await run({ workId, lang, vr, fromQr, debug, onExit: () => { enter.disabled = false; enterVr.disabled = false; enter.textContent = label; } });
+      await run({ workId, lang, vr, fromQr, debug, sound, xrSession, onExit: () => { enter.disabled = false; enterVr.disabled = false; enter.textContent = label; } });
     } catch (e) {
       console.error(e);
       enter.disabled = false; enterVr.disabled = false; enter.textContent = label;

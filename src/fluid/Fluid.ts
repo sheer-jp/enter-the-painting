@@ -204,7 +204,7 @@ export class Fluid {
     P.curl.mat.uniforms.uVelocity.value = this.vel.read.texture; P.curl.mat.uniforms.uTexel.value = simTexel;
     this.run(P.curl, this.curl);
     P.vorticity.mat.uniforms.uVelocity.value = this.vel.read.texture; P.vorticity.mat.uniforms.uCurl.value = this.curl.texture;
-    P.vorticity.mat.uniforms.uTexel.value = simTexel; P.vorticity.mat.uniforms.uCurlStrength.value = this.params.vorticity * 10; P.vorticity.mat.uniforms.uDt.value = dt;
+    P.vorticity.mat.uniforms.uTexel.value = simTexel; P.vorticity.mat.uniforms.uCurlStrength.value = this.params.vorticity * 6; P.vorticity.mat.uniforms.uDt.value = dt;
     this.run(P.vorticity, this.vel.write); this.vel.swap();
 
     // 圧力

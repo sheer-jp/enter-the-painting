@@ -32,8 +32,10 @@
     "three": "^0.170.0"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
     "@types/node": "^22.20.5",
     "@types/three": "^0.170.0",
+    "@types/webxr": "^0.5.24",
     "@vitejs/plugin-basic-ssl": "^1.2.0",
     "qrcode": "1.5",
     "sharp": "^0.33.5",

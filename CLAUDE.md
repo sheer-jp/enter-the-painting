@@ -45,15 +45,30 @@
 - 依存は最小に。React などの UI フレームワークは入れない
 - コードのコメントと UI 文言は日本語。識別子は英語
 
-## コマンド（実装後に更新する）
+## コマンド
 
 ```bash
 npm install
-npm run dev -- --host        # LAN の HTTPS で開発。スマホ / Quest から確認
-npm run generate -- <id>     # works/<id>/ から空間と QR を生成
-npm run build                # 静的ビルド（dist/）
+npm run generate [-- <id>]   # works/<id>/ から流れ場・主要色・翻訳・部屋の合成・QR・作品ページを生成（全作品 or 1 作品）
+npm run dev                  # LAN の HTTPS で開発（https://<PCのIP>:5173/w/<id>/）。スマホ / Quest から確認
+npm run build                # 静的ビルド（dist/）。generate のあとに
+npm test                     # 単体テスト（vitest）
+npm run smoke                # ビルド済みの dist を Playwright で確認（作品ページ → 入る → 物語モード、静止画モード、ギャラリー）
+npm run typecheck            # tsc
+node tests/longrun.mjs <dir> # 流体の長時間の構図の残り方をスクリーンショットで見る
+BASE_URL=https://... npm run generate   # QR と OGP の URL（Actions では vars.BASE_URL）
+ANTHROPIC_API_KEY=... npm run generate  # 翻訳と小さな物語の下書きも生成
 ```
+
+生成物は `works/<id>/generated/`（コミットする）、ページは `w/<id>/index.html` と `index.html`（生成物。コミットしない。Actions が作る）。
+
+## コードの場所
+
+- `scripts/generate/`：生成パイプライン（JS）。`color.js` 主要色、`flow.js` 流れ場、`rooms.js` 射影合成、`translate.js` 翻訳キャッシュ、`claude.js` Claude API、`pages.js` HTML
+- `src/page.ts`：作品ページの小さなスクリプト（言語、入る、共有）。`src/experience/main.ts`：「入る」後に読む体験の入口
+- `src/fluid/`：GPU 流体。`src/story/`：物語モード。`src/space/`：VR 空間モード。`src/text/`：文字の浮上。`src/audio/`：音。`src/i18n/`：言語
+- `tests/`：`generate.test.ts`（単体）、`smoke.mjs`（Playwright）、`longrun.mjs`
 
 ## 状態
 
-2026-11-02：計画 V2.1（`docs/CHANGELOG.md`）。独立レビューの指摘を反映済み。Day 0 の未決定 U-12〜U-14（落とすもの、独自ドメイン、VR を誰が使うか）は作家の判断待ち。コードは未着手。リモートは https://github.com/sheer-jp/enter-the-painting（public）。
+2026-11-03：Day 1〜2 相当を実装。生成パイプライン、GPU 流体（等距離円筒、MacCormack、原画回帰、シュワシュワ）、物語モード（T0〜T5、文字、音、一時停止、静止画フォールバック）、VR 空間モード（S1〜S5。実機未確認）、作品ページとギャラリー、10 言語の UI、Playwright のスモーク。GitHub Pages は作家が Settings で有効化する必要あり。サブドメインは `enter.sheerarts.com` を提案中。リモートは https://github.com/sheer-jp/enter-the-painting（public）。

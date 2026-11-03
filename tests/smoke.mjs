@@ -10,11 +10,19 @@ const shotsDir = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : 
 if (shotsDir) mkdirSync(shotsDir, { recursive: true });
 const PORT = 4173;
 
-const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: ['ignore', 'pipe', 'pipe'] });
+// preview をプロセスグループで起動し、終わりにグループごと止める（残ったプロセスがポートを塞がないように）
+const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+server.stderr.on('data', (d) => process.stderr.write(d));
+const stop = () => { try { process.kill(-server.pid, 'SIGTERM'); } catch {} };
+process.on('exit', stop); process.on('SIGINT', () => { stop(); process.exit(130); });
 await new Promise((res, rej) => {
-  const t = setTimeout(() => rej(new Error('preview が起動しない')), 20000);
-  server.stdout.on('data', (d) => { if (String(d).includes('Local')) { clearTimeout(t); res(); } });
-  server.stderr.on('data', (d) => process.stderr.write(d));
+  const t0 = Date.now();
+  const poll = async () => {
+    try { const r = await fetch(`http://localhost:${PORT}/`); if (r.ok) return res(); } catch {}
+    if (Date.now() - t0 > 40000) return rej(new Error('preview が起動しない'));
+    setTimeout(poll, 500);
+  };
+  poll();
 });
 
 let failed = 0;
@@ -38,9 +46,13 @@ async function runCase(name, { webgl = true, lang = 'ja', query = '' } = {}) {
   if (shotsDir) await page.screenshot({ path: `${shotsDir}/${name}-T0.png` });
   await page.waitForTimeout(5000);
   if (shotsDir) await page.screenshot({ path: `${shotsDir}/${name}-T2.png` });
-  await page.waitForTimeout(8000);
+  // 文字が出るまで最大 20 秒待つ（文と文の間は空になる）
+  let floatText = '';
+  for (let i = 0; i < 40 && !floatText; i++) {
+    await page.waitForTimeout(500);
+    floatText = await page.locator('.float-text').evaluate((el) => (getComputedStyle(el).opacity !== '0' ? el.textContent : '')).catch(() => '');
+  }
   if (shotsDir) await page.screenshot({ path: `${shotsDir}/${name}-T3.png` });
-  const floatText = await page.locator('.float-text').textContent().catch(() => '');
   check(!!floatText, `${name}: 文字が出ている（${floatText?.slice(0, 20)}）`);
   const hasCanvas = await page.locator('#stage canvas').count();
   check(webgl ? hasCanvas === 1 : true, `${name}: canvas ${hasCanvas}`);
@@ -73,7 +85,7 @@ try {
 } catch (e) {
   console.error(e); failed++;
 } finally {
-  server.kill();
+  stop();
 }
 console.log(failed ? `\n${failed} 件失敗` : '\nすべて通過');
 process.exit(failed ? 1 : 0);

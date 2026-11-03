@@ -19,7 +19,16 @@
 
 ## 状態
 
-**計画 V2.1**（AI ハッカソン 1 週間）。コードはまだありません。まず `docs/` を読んでください。V1 からの差分とレビューでの修正は `docs/CHANGELOG.md`。
+**実装中**（AI ハッカソン 1 週間、Day 1〜2 相当まで）。計画は `docs/`、変更履歴は `docs/CHANGELOG.md`、作業ログは `docs/LOG.md`。
+
+```bash
+npm install
+npm run generate     # works/<id>/ から流れ場・主要色・翻訳・部屋の合成・QR・作品ページを生成
+npm run dev          # https://localhost:5173/w/harmoney/ （LAN の HTTPS。スマホ / Quest から確認）
+npm test && npm run build && npm run smoke
+```
+
+動いているもの：生成パイプライン、GPU 流体、物語モード（PC・スマホ）、静止画フォールバック、作品ページとギャラリー、10 言語の UI、Playwright のスモーク。VR 空間モードは実装済みだが Quest で未確認。
 
 | ドキュメント | 内容 |
 | --- | --- |

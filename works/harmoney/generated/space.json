@@ -32,13 +32,13 @@
   "flow": {
     "texture": "flow.png",
     "strength": 0.6,
-    "edge_density": 0.298
+    "edge_density": 0.311
   },
   "fluid": {
-    "vorticity": 0.59,
-    "speed": 0.54,
+    "vorticity": 0.61,
+    "speed": 0.56,
     "quality": "high",
-    "restore": 0.002
+    "restore": 0.003
   },
   "space": {
     "radius_m": 2.5,
@@ -119,5 +119,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-03T04:05:16.725Z"
+  "generated_at": "2026-11-03T04:18:20.463Z"
 }

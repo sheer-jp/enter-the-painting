@@ -38,7 +38,7 @@ async function generateWork(id) {
   const g = await sharp(src).rotate().resize({ width: FLOW_W, height: flowH, fit: 'fill' }).grayscale().raw().toBuffer({ resolveWithObject: true });
   const gray = new Float32Array(g.data.length);
   for (let i = 0; i < gray.length; i++) gray[i] = g.data[i];
-  const flow = structureTensorFlow(gray, FLOW_W, flowH, 3);
+  const flow = structureTensorFlow(gray, FLOW_W, flowH, work.overrides?.flow_sigma ?? 6);   // 大きめに平滑化：渦が細かくなりすぎない
   await sharp(Buffer.from(flowToRGB(flow)), { raw: { width: FLOW_W, height: flowH, channels: 3 } }).png().toFile(join(gen, 'flow.png'));
   const motion = motionFromFlow(flow);
 
@@ -47,7 +47,14 @@ async function generateWork(id) {
   const texts = [...messages];
   if (work.title?.ja) texts.push({ ja: work.title.ja, en: work.title.en });
   const storyPath = join(gen, 'stories.json');
-  const stories = existsSync(storyPath) ? JSON.parse(readFileSync(storyPath, 'utf8')) : {};
+  let stories = existsSync(storyPath) ? JSON.parse(readFileSync(storyPath, 'utf8')) : {};
+  // 小さな物語の下書き：無ければ Claude API で 1 本（キーが無ければスキップ）。作家が直したものは再生成で消えない
+  if (!stories.ja && messages.length && process.env.ANTHROPIC_API_KEY) {
+    const { draftStory } = await import('./claude.js');
+    stories = { ja: await draftStory({ title: work.title?.ja || id, messages: messages.map((m) => m.ja), note: work.note }, process.env.ANTHROPIC_API_KEY) };
+    writeFileSync(storyPath, JSON.stringify(stories, null, 2) + '\n');
+    console.log('  小さな物語を下書きした → generated/stories.json（作家が直す）');
+  }
   if (stories.ja) texts.push({ ja: stories.ja, en: stories.en });
   const tr = await translateAll(texts, join(gen, 'translations.json'));
 
@@ -70,7 +77,7 @@ async function generateWork(id) {
     painting: 'painting_1024.jpg',
     palette: paletteHex, text_color: ov.text_color || textColor(palette), back_color: ov.back_color || backColor(palette),
     flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density },
-    fluid: { vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.002 },
+    fluid: { vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.003 },
     space: { radius_m: ov.radius_m ?? 2.5, melt_distance_m: ov.melt_distance_m ?? 1.0 },
     audio: { voice: work.audio?.voice && existsSync(join(dir, work.audio.voice)) ? work.audio.voice : null, ambient: work.audio?.ambient || 'calm' },
     messages: messages.map((m, i) => ({ at: at[i], ...tr(m.ja), ja: m.ja, ...(m.en ? { en: m.en } : {}) })),

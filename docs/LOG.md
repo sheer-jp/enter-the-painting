@@ -6,6 +6,33 @@
 
 ---
 
+## 2026-11-03（Day 1〜2）
+
+**やった**
+- 作家の決定を記録：落とすもの（U-12）、`sheerarts.com` のサブドメイン（U-13）、会場に Quest 1 台（U-14）。最初の作品 harmoney を `works/` に
+- 生成パイプライン `scripts/generate/`：縮小、k-means 主要色、構造テンソルの流れ場 `flow.png`、翻訳キャッシュ（原文のハッシュ）、部屋のホモグラフィ合成、space.json、QR、作品カード、作品ページとギャラリーの HTML。Claude API での翻訳と物語の下書き（キーがあるときだけ）
+- GPU 流体 `src/fluid/`：等距離円筒 2:1、MacCormack 移流 + 原画への回帰、渦度、圧力、シュワシュワ（縁からの泡）、品質 3 段階
+- 物語モード `src/story/`：T0〜T5、画面の奥から浮く文字（DOM）、声は `<audio>`、環境音・泡・ドローンは Web Audio で合成、一時停止・次へ・閉じる、静止画フォールバック、`?from=qr` の一言
+- VR 空間モード `src/space/`：壁の実寸の絵、トリガーでリグが 1.2 秒接近 + ビネット、溶ける、平面 → 球面の変形、空間内の文字（Canvas）、視線の動きで流れが寄る、B / Y 長押しで戻る。**実機（Quest）未確認**
+- 作品ページ：絵は JS を待たず表示、OGP、言語の自動判定（zh-TW → zh-Hant など）と切り替え、共有、10 言語の UI 文言。ページ用 JS 7.8KB gzip、体験バンドル 128KB gzip
+- テスト：vitest 9 件、Playwright スモーク（物語モード ja / en、静止画、ギャラリー）、長時間スクリーンショット
+- GitHub Actions（generate → test → build → Pages）
+
+**決めた**
+- 文字は troika ではなく、物語モードは DOM、VR は Canvas のスプライト（フォントの同梱なしで CJK が出る。S-2 の逃げ道を先に採用。troika は文字がにじむなら後で）
+- 声は `<audio>` 要素、環境音は Web Audio（iOS の消音対策）
+- 流体の初期速度の符号は低周波ノイズで滑らかに。渦度 ×6、流れ場の平滑化 σ=6、原画回帰 0.003（渦が細かくなりすぎて構図が崩れたため）
+
+**困った・学んだ**
+- `vite preview` にも basic-ssl が効いて HTTPS になり、スモークが通らなかった。`isPreview` で除外
+- `pkill -f "vite preview"` や `fuser -k` が自分のシェルまで殺した。ポートの後始末は PID を見て個別に
+- GitHub Pages の有効化は API がプロキシで拒否される。作家が Settings → Pages → Source: GitHub Actions にする必要がある
+- SwiftShader（CPU 描画）では 90 秒で 20〜80 fps。実機の GPU なら十分速いはずだが、Quest は未確認
+
+**次にやる**
+- 作家：Pages を有効化、サブドメインの DNS、Harmoney の寸法・メッセージ・声、部屋の AI 画像、Quest で VR を試す
+- Claude：Quest の結果を見て品質段階を調整。troika の検討。作品を増やす
+
 ## 2026-11-02（Day 0）
 
 **やった**
