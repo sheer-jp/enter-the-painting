@@ -1,0 +1,44 @@
+{
+  "name": "enter-the-painting",
+  "version": "1.0.0",
+  "description": "小さな抽象画の持ち主が QR を読む（またはオンラインギャラリーで選ぶ）と、その絵の世界の中に入れる Web アプリ。",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate": "node scripts/generate/index.js",
+    "smoke": "node tests/smoke.mjs",
+    "typecheck": "tsc -p ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sheer-jp/enter-the-painting.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sheer-jp/enter-the-painting/issues"
+  },
+  "homepage": "https://github.com/sheer-jp/enter-the-painting#readme",
+  "type": "module",
+  "private": "true",
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/three": "^0.170.0",
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
+    "qrcode": "1.5",
+    "sharp": "^0.33.5",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.5",
+    "vitest": "^2.1.9"
+  }
+}

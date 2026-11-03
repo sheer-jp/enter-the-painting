@@ -8,3 +8,7 @@ dist/
 # 声の原本（wav）はコミットしない
 *.wav
 works/*/generated/*.tmp
+# ビルドの中間物
+.vite/
+w/*/index.html
+index.html

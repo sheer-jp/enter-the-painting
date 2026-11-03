@@ -1,0 +1,19 @@
+{
+  "id": "harmoney",
+  "title": { "ja": "Harmoney", "en": "Harmoney" },
+  "year": 2025,
+  "size_cm": [41, 51],
+  "medium": { "ja": "キャンバスにアクリル", "en": "Acrylic on canvas" },
+  "messages": [
+    "（下書き。作家が書き直す）色と色がぶつかって、ほどけて、また重なる。",
+    "そのたびに、小さな調和が生まれては消えていった。",
+    "消えたものも、ここに残っている。",
+    "手のひらの中で、その全部を持っていてほしい。"
+  ],
+  "audio": {
+    "voice": "voice.mp3",
+    "ambient": "calm"
+  },
+  "availability": "available",
+  "overrides": {}
+}
