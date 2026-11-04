@@ -74,7 +74,8 @@ export class StoryMode {
   private resolveEnd: ((v: 'again' | 'exit') => void) | null = null;
   private restoreBase: number;
   // 押している指・マウス（docs/EXPERIENCE.md 8.2）。渦は frame で毎フレーム育てる
-  private touch: { x: number; y: number; uv: [number, number] | null; p: number; startTime: number; moved: number; lastMoveTime: number } | null = null;
+  // moved：押し始めた点からの最大の距離（px）。累計にすると指のわずかな震えで「止めている」判定が外れる
+  private touch: { x: number; y: number; x0: number; y0: number; uv: [number, number] | null; p: number; startTime: number; moved: number } | null = null;
 
   constructor(private ctx: StoryCtx) {
     this.text = new ScreenText(ctx.hud.textLayer, ctx.space.text_color);
@@ -142,7 +143,7 @@ export class StoryMode {
     stageEl.addEventListener('pointerdown', (e) => {
       if ((e.target as HTMLElement).closest('button')) return;
       const now = performance.now();
-      this.touch = { x: e.clientX, y: e.clientY, uv: this.screenToUv(e.clientX, e.clientY), p: pressureOf(e), startTime: now, moved: 0, lastMoveTime: now };
+      this.touch = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, uv: this.screenToUv(e.clientX, e.clientY), p: pressureOf(e), startTime: now, moved: 0 };
       try { stageEl.setPointerCapture(e.pointerId); } catch {}
     });
     stageEl.addEventListener('pointermove', (e) => {
@@ -150,10 +151,9 @@ export class StoryMode {
       if (!t) return;
       const now = performance.now();
       const dx = e.clientX - t.x, dy = e.clientY - t.y;
-      t.moved += Math.hypot(dx, dy);
+      t.moved = Math.max(t.moved, Math.hypot(e.clientX - t.x0, e.clientY - t.y0));
       t.p = pressureOf(e);
       t.x = e.clientX; t.y = e.clientY; t.uv = this.screenToUv(e.clientX, e.clientY);
-      if (dx || dy) t.lastMoveTime = now;
       if (!this.touchable()) return;
       if (t.uv && (dx || dy)) {
         // 指の速さに比例した力（texel/秒）。方向は指の動き。y は画面とテクスチャで上下が逆

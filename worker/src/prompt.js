@@ -6,7 +6,8 @@ export const LANG_NAMES = {
   fr: 'フランス語（Français）', de: 'ドイツ語（Deutsch）', es: 'スペイン語（Español）', it: 'イタリア語（Italiano）', pt: 'ポルトガル語（Português）',
 };
 
-export const MAX_TOKENS = 600;
+// 思考（effort low でも消せない）が max_tokens に数えられるので、文 2〜3 文 + JSON のために余裕を持たせる（レビューで 600 → 1500）
+export const MAX_TOKENS = 1500;
 // 安全分類で拒否されたとき、サーバー側で推奨のモデルに引き継ぐ（fallbacks: "default"）。対応するモデルだけに付ける
 export const FALLBACK_BETA = 'server-side-fallback-2026-07-01';
 const FALLBACK_MODELS = ['claude-opus-5-5', 'claude-opus-5', 'claude-fable-5-1', 'claude-sonnet-5-5'];
@@ -133,7 +134,8 @@ export function buildBody(catalog, lang, messages, model) {
   return body;
 }
 
-export const LIMITS = { messages: 10, chars: 600 };
+// user は 600 文字まで。assistant はブラウザが AI の文をそのまま返すので、長めに（2000）
+export const LIMITS = { messages: 10, chars: 600, assistantChars: 2000 };
 
 /**
  * 要求の本文を確かめる（docs/RECOMMEND.md 8.4 の制限）。問題があれば理由の文字列、無ければ null
@@ -148,7 +150,7 @@ export function validateRequest(body, turns = [2, 4]) {
   if (!Array.isArray(ms) || ms.length === 0 || ms.length > LIMITS.messages) return 'messages';
   for (const m of ms) {
     if (!m || (m.role !== 'user' && m.role !== 'assistant')) return 'role';
-    if (typeof m.content !== 'string' || !m.content.trim() || m.content.length > LIMITS.chars) return 'content';
+    if (typeof m.content !== 'string' || !m.content.trim() || m.content.length > (m.role === 'assistant' ? LIMITS.assistantChars : LIMITS.chars)) return 'content';
   }
   // 最初と最後は user（最後が assistant だと先読み扱いで API が 400 を返す）
   if (ms[0].role !== 'user' || ms[ms.length - 1].role !== 'user') return 'order';

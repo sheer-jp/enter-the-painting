@@ -49,8 +49,8 @@ if (rec) {
   const api = document.querySelector<HTMLMetaElement>('meta[name="recommend-api"]')?.content.trim() || null;
   let loading: Promise<void> | null = null;
   const mount = () => (loading ||= import('./recommend/index').then((m) => {
-    off();
     m.mountRecommend(rec, { lang, api, catalogUrl: 'catalog.json' });
+    off();   // 載せられてから外す（失敗したら入口のハンドラを残して、次の操作でやり直す）
   }).catch((e) => { loading = null; console.warn('おすすめを読めない', e); }));
   // 読み込み前の操作は止めておき、読めたらもう一度起こす
   const later = (e: Event, again: () => void) => { e.preventDefault(); e.stopImmediatePropagation(); mount().then(() => { if (!loading) return; again(); }); };

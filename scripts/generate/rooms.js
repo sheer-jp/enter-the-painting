@@ -85,21 +85,22 @@ export function paintingRectFromScale(def, sizeCm, imageWidthPx) {
   // (b) 下端 bottom_from_floor_cm（床の線から）、(c) 中心 center_from_floor_cm（立って見る壁 145cm など）
   let cy;
   if (def.hang.furniture_top_y_px != null) cy = def.hang.furniture_top_y_px * k - (def.hang.gap_cm ?? 20) * pxPerCm - h / 2;
-  else {
-    const centerCm = def.hang.center_from_floor_cm ?? (def.hang.bottom_from_floor_cm + sizeCm[1] / 2);
-    cy = def.hang.floor_y_px * k - centerCm * pxPerCm;
-  }
+  else if (def.hang.center_from_floor_cm != null) cy = def.hang.floor_y_px * k - def.hang.center_from_floor_cm * pxPerCm;
+  else cy = def.hang.floor_y_px * k - (def.hang.bottom_from_floor_cm + sizeCm[1] / 2) * pxPerCm;
   const x0 = cx - w / 2, x1 = cx + w / 2, y0 = cy - h / 2, y1 = cy + h / 2;
   return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
 }
 
 // 絵の中心の床からの高さ（cm）。文章用。家具の上端で決めたときは、置いた位置と床の線から逆算する
 // quad と pxPerCm は実際に使う画像幅（k 倍）で揃っていること。k は def.image_width_px に対する比率
+// 優先順位は paintingRectFromScale と同じ（家具の上端 → 下端 → 中心）。文章が合成と食い違わないように
 export function hangCenterCm(def, sizeCm, quad, pxPerCm, k = 1) {
+  if (def.hang.furniture_top_y_px != null) {
+    const cy = (quad[0][1] + quad[2][1]) / 2;
+    return Math.round((def.hang.floor_y_px * k - cy) / pxPerCm);
+  }
   if (def.hang.center_from_floor_cm != null) return def.hang.center_from_floor_cm;
-  if (def.hang.bottom_from_floor_cm != null) return Math.round(def.hang.bottom_from_floor_cm + sizeCm[1] / 2);
-  const cy = (quad[0][1] + quad[2][1]) / 2;
-  return Math.round((def.hang.floor_y_px * k - cy) / pxPerCm);
+  return Math.round(def.hang.bottom_from_floor_cm + sizeCm[1] / 2);
 }
 
 // ---- 手前の物と絵の前後（docs/SIZE_UX.md 11 節）----

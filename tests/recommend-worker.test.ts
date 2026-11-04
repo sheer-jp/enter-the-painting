@@ -42,10 +42,10 @@ describe('worker/src/prompt.js', () => {
     expect(ko.map((b) => b.text).join('')).toContain('韓国語');
     expect(fr[0].text + fr[1].text).toBe(ko[0].text + ko[1].text);
   });
-  it('buildBody は stream: true、max_tokens 600、cache_control を持つ', () => {
+  it('buildBody は stream: true、max_tokens 1500、cache_control を持つ', () => {
     const body = buildBody(catalog, 'ja', [{ role: 'user', content: '朝、静かに始めたい', extra: 1 }], 'claude-opus-5-5');
     expect(body.stream).toBe(true);
-    expect(body.max_tokens).toBe(600);
+    expect(body.max_tokens).toBe(1500);
     expect(body.model).toBe('claude-opus-5-5');
     expect(body.system.some((b: { cache_control?: unknown }) => b.cache_control)).toBe(true);
     expect(body.messages).toEqual([{ role: 'user', content: '朝、静かに始めたい' }]);

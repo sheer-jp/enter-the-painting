@@ -127,8 +127,13 @@ async function handle(req, env, ctx) {
         try { send({ error: 'upstream' }); send({ done: true }); } catch { /* 閉じたあと */ }
       } finally {
         try { await events.return(undefined); } catch { /* すでに閉じた */ }
-        controller.close();
+        try { controller.close(); } catch { /* 相手が先に切った */ }
       }
+    },
+    // ブラウザが切った（12 秒の見切り、ページ移動、「もう一度」）ら上流も止める。読み続けると出力トークンが無駄になる
+    cancel() {
+      try { events.return(undefined); } catch { /* すでに閉じた */ }
+      try { up.body.cancel(); } catch { /* すでに閉じた */ }
     },
   });
   return new Response(stream, { status: 200, headers: { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no', ...cors } });

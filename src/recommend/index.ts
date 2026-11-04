@@ -7,7 +7,7 @@ import './recommend.css';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
-const FIRST_BYTE_MS = 12000;   // 最初の文字がこれだけ来なければルールだけの版へ
+const FIRST_BYTE_MS = 20000;   // 最初の文字がこれだけ来なければルールだけの版へ（モデルの思考で最初の文が遅れることがあるので 20 秒）
 
 // ルールだけの版の 3 問
 const QUESTIONS = [
@@ -35,7 +35,6 @@ export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: st
   const form = section.querySelector<HTMLFormElement>('.rec-form')!;
   const input = form.querySelector<HTMLInputElement>('input')!;
   const send = form.querySelector<HTMLButtonElement>('button')!;
-  thread.setAttribute('aria-live', 'polite');
 
   // API が無い・オフラインなら最初からルールだけの版。一度落ちたらこのページではそのまま
   let rulesMode = !opts.api || navigator.onLine === false;
@@ -179,6 +178,16 @@ export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: st
       if (!c?.works.length) { offline(); return false; }
       out!.textContent = prose;
       showCard(c, resolveRecommendation(json, c), out!);
+      return true;
+    }
+    // 最大の往復まで来てもおすすめが出なかった（JSON が無い）：次の送信は Worker が 400 にするので、先にルールだけの版へ
+    const maxTurns = (await catalogReady)?.turns?.[1] ?? 4;
+    if (messages.filter((m) => m.role === 'user').length >= maxTurns) {
+      if (my !== session) return false;
+      rulesMode = true;
+      form.hidden = true;
+      startRules();
+      return false;
     }
     return true;
   }
