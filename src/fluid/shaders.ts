@@ -274,3 +274,117 @@ void main() {
   gl_FragColor = vec4(texture2D(uDye, uv).rgb, 1.0);
 }
 `;
+
+// 厚みの初期値：relief.png（R）を絵の矩形内に。外側は 0
+export const INIT_THICK = /* glsl */ `
+varying vec2 vUv;
+uniform sampler2D uRelief;
+uniform vec4 uRect;
+uniform float uHas;
+void main() {
+  vec2 p = (vUv - uRect.xy) / uRect.zw;
+  float t = 0.0;
+  if (uHas > 0.5 && p.x >= 0.0 && p.x <= 1.0 && p.y >= 0.0 && p.y <= 1.0) t = texture2D(uRelief, p).r;
+  gl_FragColor = vec4(t, 0.0, 0.0, 1.0);
+}
+`;
+
+export const MAX_STAMPS = 16;
+
+// 厚みの更新（1 パス）：MacCormack の補正 → 収束で増・発散で減 → 触れた跡・泡・渦の凹み → 原画の厚みへ回帰
+// 跡（stamp）：uStamp = (x, y, r, amount)、uStampDir = (dx, dy, kind, ring)。r は SPLAT と同じ exp(-d²/r) の r
+//   kind 0：凹み（中心）、1：溝（中心 −、進行方向と直交に ±√r で +）、2：輪（中心 −、半径 ring に +）
+export const THICK_UPDATE = /* glsl */ `
+varying vec2 vUv;
+uniform sampler2D uVelocity;
+uniform sampler2D uPhi0;
+uniform sampler2D uPhiHat1;
+uniform sampler2D uPhiHat0;
+uniform sampler2D uOriginal;
+uniform sampler2D uDiv;
+uniform vec2 uTexel;
+uniform float uDt;
+uniform float uRestore;
+uniform float uDivK;          // −div × uDivK（= 0.5 × dt）
+uniform vec4 uRect;
+uniform float uFizzProgress;  // < 0 で泡なし
+uniform float uFizzAmount;
+uniform float uTime;
+uniform float uAspect;
+uniform float uWrapX;
+uniform int uStampCount;
+uniform vec4 uStamp[${MAX_STAMPS}];
+uniform vec4 uStampDir[${MAX_STAMPS}];
+${HASH}
+float g2(vec2 d, float r) { return exp(-dot(d, d) / r); }
+void main() {
+  vec2 vel = texture2D(uVelocity, vUv).xy;
+  vec2 back = vUv - uDt * vel * uTexel;
+  back.y = clamp(back.y, 0.0, 1.0);
+  float h1 = texture2D(uPhiHat1, vUv).r;
+  float h0 = texture2D(uPhiHat0, vUv).r;
+  float p0 = texture2D(uPhi0, vUv).r;
+  float r = h1 + 0.5 * (p0 - h0);
+  vec2 st = back / uTexel - 0.5;
+  vec2 b = (floor(st) + 0.5) * uTexel;
+  float a0 = texture2D(uPhi0, b).r, a1 = texture2D(uPhi0, b + vec2(uTexel.x, 0.0)).r, a2 = texture2D(uPhi0, b + vec2(0.0, uTexel.y)).r, a3 = texture2D(uPhi0, b + uTexel).r;
+  r = clamp(r, min(min(a0, a1), min(a2, a3)), max(max(a0, a1), max(a2, a3)));
+  // 収束する所で盛り上がり、発散する所で薄くなる
+  r -= texture2D(uDiv, vUv).x * uDivK;
+  // 触れた跡
+  for (int i = 0; i < ${MAX_STAMPS}; i++) {
+    if (i >= uStampCount) break;
+    vec4 s = uStamp[i]; vec4 sd = uStampDir[i];
+    vec2 d = vUv - s.xy;
+    if (uWrapX > 0.5) d.x = min(abs(d.x), 1.0 - abs(d.x)) * sign(d.x);
+    d.x *= uAspect;
+    float v = -g2(d, s.z);
+    if (sd.z > 1.5) {
+      float l = length(d) - sd.w;
+      v += 0.8 * exp(-l * l / (s.z * 0.5));
+    } else if (sd.z > 0.5) {
+      vec2 n = vec2(-sd.y, sd.x) * sqrt(s.z);
+      v += 0.7 * (g2(d - n, s.z * 0.6) + g2(d + n, s.z * 0.6));
+    }
+    r += v * s.w;
+  }
+  // 泡：縁から進む帯に小さな凸凹
+  if (uFizzProgress >= 0.0) {
+    vec2 p = (vUv - uRect.xy) / uRect.zw;
+    if (p.x >= 0.0 && p.x <= 1.0 && p.y >= 0.0 && p.y <= 1.0) {
+      float e = 2.0 * min(min(p.x, 1.0 - p.x), min(p.y, 1.0 - p.y));
+      float band = 1.0 - smoothstep(0.0, 0.22, abs(e - uFizzProgress * 1.1));
+      float m = max(band, e < uFizzProgress * 1.1 ? 0.25 : 0.0) * uFizzAmount;
+      vec2 cell = floor(vUv * vec2(240.0, 120.0) + uTime * 7.0);
+      r += (hash12(cell * 1.3 + uTime) - 0.5) * m;
+    }
+  }
+  float orig = texture2D(uOriginal, vUv).r;
+  r = mix(r, orig, uRestore);
+  gl_FragColor = vec4(clamp(r, 0.0, 1.0), 0.0, 0.0, 1.0);
+}
+`;
+
+// 渦：uPoint を中心に、反時計回りの接線方向の速度と、中心へのわずかな吸い込み（回転の 0.25 倍）
+// 速さの形は (r/R)·exp(-r²/R²)：角速度は中心ほど速く、R/√2 で最大の速さ
+export const VORTEX = /* glsl */ `
+varying vec2 vUv;
+uniform sampler2D uVelocity;
+uniform vec2 uPoint;
+uniform float uRadius;
+uniform float uStrength;
+uniform float uAspect;
+uniform float uWrapX;
+void main() {
+  vec2 d = vUv - uPoint;
+  if (uWrapX > 0.5) d.x = min(abs(d.x), 1.0 - abs(d.x)) * sign(d.x);
+  d.x *= uAspect;
+  float r = length(d);
+  float x = r / uRadius;
+  float prof = 2.3316 * x * exp(-x * x);   // 最大が 1
+  vec2 dir = d / (r + 1e-6);
+  vec2 tang = vec2(-dir.y, dir.x);
+  vec2 vel = texture2D(uVelocity, vUv).xy + (tang - 0.25 * dir) * prof * uStrength;
+  gl_FragColor = vec4(vel, 0.0, 1.0);
+}
+`;

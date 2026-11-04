@@ -56,6 +56,21 @@ A blank, empty wall with clear space for one framed painting about 65 cm tall an
 
 JSON には、家具の上端（`hang.furniture_top_y_px`）と家具の実寸（`references`）を書く。絵は家具の上端から 20 cm 空けて掛かる。
 
+## ふつうのワンルーム（賃貸 6 畳。ゴージャスにしない。作家の指示 11-04）
+
+これまでの画像は設計事務所の写真のように整いすぎている。多くの買い手の部屋は、賃貸のワンルーム（6 畳、天井 2.3 m、白いビニールクロス、ベージュのフローリング、アルミサッシ、シングルベッド、ローテーブル、カラーボックス）。生活感は少し、散らかりはなし。光は均一（直射日光なし）。
+
+| # | name | 場所 | 向く作品 | プロンプト（英語） |
+| --- | --- | --- | --- | --- |
+| 23 | oneroom-bed-wall | ベッドの横の壁 | F0〜F8 | `A small, ordinary Japanese rental studio apartment (one-room, about 10 square meters). A single bed (100 cm wide) with a simple grey duvet against a plain white vinyl-wallpaper wall, beige laminate flooring, a low ceiling (about 230 cm), an aluminum-sash window with a plain beige curtain. Modest, lived-in, not styled, not luxurious. Camera straight-on at eye level. Empty wall above the bed for a small painting.` + 共通 |
+| 24 | oneroom-lowtable | ローテーブルの向かいの壁 | F0〜F8 | `A small, ordinary Japanese rental studio apartment. A low wooden table (about 35 cm tall) on a beige rug, a floor cushion, a small TV on a low stand against a plain white wallpaper wall, beige laminate flooring, low ceiling (about 230 cm). Modest and plain, not styled. Camera straight-on at eye level. Empty wall above the TV stand for a small painting.` + 共通 |
+| 25 | oneroom-colorbox | カラーボックスの上 | F0〜F6 | `A small, ordinary Japanese rental studio apartment. A three-tier white "color box" shelf (about 88 cm tall, 42 cm wide) against a plain white wallpaper wall, a few books and a mug on top, beige laminate flooring. Modest and plain. Camera close to the wall (about 2 m), straight-on at eye level. Empty wall above the shelf for a small painting.` + 共通（絵の寸法を 30 × 24 cm に） |
+| 26 | oneroom-entrance | 賃貸の玄関 | F0〜F4 | `The tiny entrance of a Japanese rental studio apartment. A narrow space with a small white shoe cabinet (about 85 cm tall), a pair of sneakers on grey tiles, a plain white wallpaper wall, the unit bath door at the side. Modest and plain. Camera straight-on at eye level. Empty wall above the shoe cabinet for a small painting.` + 共通（絵の寸法を 30 × 24 cm に） |
+| 27 | oneroom-desk-window | 窓際の小さな机 | F0〜F6 | `A small, ordinary Japanese rental studio apartment. A compact desk (about 100 cm wide, 72 cm tall) beside an aluminum-sash window with a plain curtain, a simple chair, a laptop closed, a plain white wallpaper wall above the desk, low ceiling. Modest and plain, not styled. Camera straight-on at eye level. Empty wall above the desk for a small painting.` + 共通（絵の寸法を 30 × 24 cm に） |
+| 28 | onek-kitchen-wall | 1K のキッチン横の壁 | F0〜F6 | `A small Japanese 1K rental apartment. A compact single-burner kitchen counter (about 85 cm tall) with a stainless sink, a kettle and a mug, a plain white wallpaper wall beside it, a refrigerator, beige flooring. Modest and plain. Camera straight-on at eye level. Empty wall beside the kitchen for a small painting.` + 共通（絵の寸法を 30 × 24 cm に） |
+
+`suits_cm` は `[15, 70]`（F15 も置いて「狭い部屋では大きく見える」を見せる）。基準物：シングルベッド幅 100 cm、カラーボックス高さ 88 cm、机 72 cm、天井 230 cm（`ceiling_old`）。
+
 ## 受け取ったあとの手順
 
 1. `rooms/<name>.jpg` として保存（横 1600px 以上）

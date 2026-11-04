@@ -5,7 +5,9 @@ export interface Space {
   painting: string; painting_full?: string; painting_blur?: string; source_px?: [number, number];
   palette: string[]; text_color: string; back_color: string;
   flow: { texture: string; strength: number; edge_density: number };
-  fluid: { vorticity: number; speed: number; quality: 'high' | 'medium' | 'low'; restore: number; drive?: number };
+  relief?: { texture: string };               // 絵の具の厚みの初期値（docs/FLUID_LOOK.md）
+  bright_center?: [number, number];           // 最も明るい主要色の重心（UV、v は下 → 上）。入りの渦の中心
+  fluid: { vorticity: number; speed: number; quality: 'high' | 'medium' | 'low'; restore: number; drive?: number; look?: Partial<Look> };
   space: { radius_m: number; melt_distance_m: number };
   audio: { voice: string | null; ambient: 'calm' | 'wind' | 'water' | 'drone' | 'none' };
   messages: ({ at: number } & Multi)[];
@@ -24,4 +26,14 @@ export interface Room {
   compare2?: Multi | null;   // 2 つ目の比較（基準物の実寸つき）
   about?: Multi | null;      // 部屋の説明（壁の幅、掛ける高さ）
   note?: Multi | null;       // 注記（AI のイメージ、目安）
+}
+
+// 質感のパラメータ（space.json の fluid.look。docs/FLUID_LOOK.md 2 節）
+export interface Look {
+  relief: number;      // 厚みの陰影の強さ 0〜1
+  gloss: number;       // 鏡面の強さ 0〜1（アクリル：小さく）
+  sharpness: number;   // 鏡面の指数（大きいほど小さく鋭い）
+  bloom: number;       // 明るい所のにじみ 0〜0.5
+  grain: number;       // 粒子 0〜0.1
+  vivid: number;       // 彩度の補正
 }

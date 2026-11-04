@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import type { StoryCtx } from '../story/StoryMode';
 import type { Fluid } from '../fluid/Fluid';
+import { SHADING, LIGHT_DIR, lookOf, shadingUniforms, updateShading } from '../fluid/shading';
 import { SpaceText } from '../text/FloatingText';
 import { pick } from '../i18n';
 
@@ -18,6 +19,8 @@ uniform vec3 uPlaneRight;    // 絵の右方向 × 絵の幅（m）
 uniform vec3 uPlaneUp;       // 絵の上方向 × 絵の高さ（m）
 varying vec2 vUv;
 varying float vInside;
+// 質感のための接空間（ビュー空間）：T = u の向き、B = v の向き、N = 見る人の側
+varying vec3 vT; varying vec3 vB; varying vec3 vN; varying vec3 vViewPos;
 const float PI = 3.141592653589793;
 void main() {
   vUv = uv;
@@ -30,23 +33,34 @@ void main() {
   vec3 dir = vec3(sin(lon) * cos(lat), sin(lat), -cos(lon) * cos(lat));
   vec3 spherePos = uHead + dir * uRadius;
   vec3 pos = mix(planePos, spherePos, uMorph);
-  gl_Position = projectionMatrix * viewMatrix * vec4(pos, 1.0);
+  // 接空間：平面は絵の右・上・手前、球面は経度・緯度の向きと中心の側
+  vec3 tP = normalize(uPlaneRight), bP = normalize(uPlaneUp), nP = normalize(cross(tP, bP));
+  vec3 tS = vec3(cos(lon), 0.0, sin(lon)), bS = vec3(-sin(lon) * sin(lat), cos(lat), cos(lon) * sin(lat)), nS = -dir;
+  mat3 vm = mat3(viewMatrix);
+  vT = vm * normalize(mix(tP, tS, uMorph)); vB = vm * normalize(mix(bP, bS, uMorph)); vN = vm * normalize(mix(nP, nS, uMorph));
+  vec4 vp = viewMatrix * vec4(pos, 1.0);
+  vViewPos = vp.xyz;
+  gl_Position = projectionMatrix * vp;
 }
 `;
 const MORPH_FRAG = /* glsl */ `
-uniform sampler2D uDye;
 uniform float uMorph;
 uniform float uFade;
-uniform float uVivid;
+uniform vec3 uLightView;     // 光の向き（ビュー空間で一定 = 頭の向きに対して固定。頭を振ると光沢が走る）
 varying vec2 vUv;
 varying float vInside;
+varying vec3 vT; varying vec3 vB; varying vec3 vN; varying vec3 vViewPos;
+${SHADING}
 void main() {
   float a = vInside > 0.5 ? 1.0 : smoothstep(0.0, 0.35, uMorph);
   if (a < 0.01) discard;
-  vec3 c = texture2D(uDye, vUv).rgb;
-  float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
-  c = mix(vec3(luma), c, 1.0 + 0.35 * uVivid) * (1.0 + 0.08 * uVivid);
-  gl_FragColor = vec4(max(c, 0.0) * uFade, a);
+  vec3 T = normalize(vT), B = normalize(vB), N = normalize(vN);
+  vec3 V = normalize(-vViewPos);
+  vec3 Lt = vec3(dot(uLightView, T), dot(uLightView, B), dot(uLightView, N));
+  vec3 Vt = vec3(dot(V, T), dot(V, B), dot(V, N));
+  if (Vt.z < 0.0) { Lt.z = -Lt.z; Vt.z = -Vt.z; }   // 裏から見たとき
+  vec3 c = paintShade(vUv, normalize(Lt), normalize(Vt));
+  gl_FragColor = vec4(c * uFade, a);
   #include <colorspace_fragment>
 }
 `;
@@ -80,11 +94,14 @@ export class SpaceMode {
   private tmpV = new THREE.Vector3();
   private fps: number[] = [];
   private lastT = 0;
+  private look = lookOf();
+  private t0 = performance.now();
 
   constructor(private ctx: Ctx, private session: XRSession | null) {}
 
   private build() {
     const { space, fluid, renderer } = this.ctx;
+    this.look = lookOf(space.fluid.look);
     this.paintingW = space.size_cm[0] / 100; this.paintingH = space.size_cm[1] / 100;
     this.paintingCenter.set(0, this.eyeY, this.wallZ);
     this.scene.background = new THREE.Color(space.back_color).multiplyScalar(0.25);
@@ -101,7 +118,7 @@ export class SpaceMode {
         uMorph: { value: 0 }, uRect: { value: new THREE.Vector4(fluid.placement.x, fluid.placement.y, fluid.placement.w, fluid.placement.h) },
         uHead: { value: new THREE.Vector3(0, this.eyeY, 0) }, uRadius: { value: space.space.radius_m },
         uPlaneCenter: { value: this.paintingCenter.clone() }, uPlaneRight: { value: new THREE.Vector3(this.paintingW, 0, 0) }, uPlaneUp: { value: new THREE.Vector3(0, this.paintingH, 0) },
-        uDye: { value: fluid.texture }, uFade: { value: 1 }, uVivid: { value: 0 },
+        ...shadingUniforms(fluid, this.look), uFade: { value: 1 }, uLightView: { value: LIGHT_DIR.clone() },
       },
     });
     this.morphMesh = new THREE.Mesh(geo, this.morphMat);
@@ -194,9 +211,8 @@ export class SpaceMode {
       this.camera.getWorldDirection(this.tmpV); this.text.setGazeDirection(this.tmpV);
     }
     fluid.step(dt);
-    this.morphMat.uniforms.uDye.value = fluid.texture;
+    updateShading(this.morphMat.uniforms, fluid, this.look, (now - this.t0) / 1000, Math.min(1, strength));
     this.morphMat.uniforms.uMorph.value = this.morph;
-    this.morphMat.uniforms.uVivid.value = Math.min(1, strength);
     // B / Y 長押しで戻る
     const { bHeld } = this.pollButtons();
     if (bHeld) { if (!this.bHoldStart) this.bHoldStart = now; else if (now - this.bHoldStart > 800 && this.stage !== 'S5') this.resolveEnd?.('exit'); } else this.bHoldStart = 0;
@@ -207,10 +223,10 @@ export class SpaceMode {
     }
   };
 
-  private tween(sec: number, f: (t: number) => void): Promise<void> {
+  private tween(sec: number, f: (t: number) => void, ease: (t: number) => number = easeInOut): Promise<void> {
     const t0 = performance.now();
     return new Promise((res) => {
-      const tick = () => { if (!this.running) return res(); const t = Math.min(1, (performance.now() - t0) / (sec * 1000)); f(easeInOut(t)); if (t < 1) setTimeout(tick, 16); else res(); };
+      const tick = () => { if (!this.running) return res(); const t = Math.min(1, (performance.now() - t0) / (sec * 1000)); f(ease(t)); if (t < 1) setTimeout(tick, 16); else res(); };
       tick();
     });
   }
@@ -256,26 +272,41 @@ export class SpaceMode {
       // 15 秒操作がなければ、声をかける代わりに自動で始める（U-12 で自動接近は落としたが、止まったままにしない保険として 40 秒）
       if (performance.now() - t0 > 40000) break;
     }
-    // 接近：頭の位置から絵の 1.0m 手前へ、1.2 秒。ビネットで酔いを抑える
+    // S1〜S3（設計変更 11-04）：近づき始めると同時に絵が溶け、渦の中心に吸い込まれるように球面がふくらむ。
+    // 接近 1.2 秒 + 溶ける 3 秒 + 包まれる 4 秒を重ねて合計 5 秒（reduced は 0.6 + 2.0 = 2.6 秒、泡なし、渦は半分）。カメラは回さない
     const head = this.camera.getWorldPosition(new THREE.Vector3());
     const target = this.paintingCenter.clone(); target.y = head.y; target.z += space.space.melt_distance_m;
     const delta = target.sub(head);
     const from = this.rig.position.clone();
     const vmat = this.vignette.material as THREE.MeshBasicMaterial;
+    const APPROACH = reduced ? 0.6 : 1.2, MELT = reduced ? 1.5 : 3, TOTAL = reduced ? 2.6 : 5;
+    const center = fluid.rectToUv(0.5, 0.5);
+    const rectH = fluid.placement.h;
     sound.setAmbientDb(-16, 1);
-    await this.tween(reduced ? 0.6 : 1.2, (t) => { this.rig.position.copy(from).addScaledVector(delta, t); vmat.opacity = 0.9 * Math.sin(t * Math.PI); });
-    vmat.opacity = 0;
-    // S2 溶ける（3 秒）
-    this.stage = 'S2';
     sound.fizz(!reduced, -18); sound.drone(-14, 2);
-    if (!reduced) await this.tween(3, (t) => { fluid.fizz(t, 1); this.strength = 0.1 + 0.9 * t; });
-    else await this.tween(1.5, (t) => (this.strength = 0.1 + 0.9 * t));
+    this.stage = 'S2';
+    let headSet = false;
+    await this.tween(TOTAL, (u) => {
+      const t = u * TOTAL;
+      // 接近（ビネットで酔いを抑える）
+      const a = Math.min(1, t / APPROACH);
+      this.rig.position.copy(from).addScaledVector(delta, easeInOut(a));
+      vmat.opacity = a < 1 ? 0.9 * Math.sin(a * Math.PI) : 0;
+      // 溶ける（縁から泡）
+      const m = Math.min(1, t / MELT);
+      if (!reduced && m < 1) fluid.fizz(m, 1);
+      this.strength = Math.max(this.strength, 0.1 + 0.9 * m);
+      // 包まれる：接近の終わりから morph。球の中心はそのときの頭の位置
+      if (t >= APPROACH) {
+        if (!headSet) { this.camera.getWorldPosition(this.morphMat.uniforms.uHead.value as THREE.Vector3); headSet = true; this.stage = 'S3'; }
+        this.morph = easeInOut(Math.min(1, (t - APPROACH) / (TOTAL - APPROACH)));
+      }
+      // 渦：絵の中心。強さは山形で morph の終わりに 0、半径は広がる（絵の高さに対して 0.05 → 0.35）
+      const v = t / TOTAL;
+      fluid.vortex(center, Math.sin(Math.PI * Math.pow(v, 0.8)) * (reduced ? 0.5 : 1), rectH * (0.05 + 0.3 * v));
+    }, (x) => x);
+    vmat.opacity = 0; this.morph = 1; this.strength = 1;
     sound.fizz(false);
-    // S3 包まれる（4 秒）：平面 → 球面。球の中心は今の頭の位置
-    this.stage = 'S3';
-    this.camera.getWorldPosition(this.morphMat.uniforms.uHead.value as THREE.Vector3);
-    // 絵の矩形の外側も、壁の延長から球面へ
-    await this.tween(reduced ? 2 : 4, (t) => { this.morph = t; });
     sound.setAmbientDb(-18, 2);
     setTimeout(() => sound.drone(-22, 3), 2000);
     // S4 漂う：文字と声

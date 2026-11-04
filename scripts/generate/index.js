@@ -3,8 +3,8 @@ import sharp from 'sharp';
 import QRCode from 'qrcode';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync, unlinkSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { kmeans, toHex, textColor, backColor } from './color.js';
-import { structureTensorFlow, flowToRGB, motionFromFlow } from './flow.js';
+import { kmeans, toHex, textColor, backColor, brightCenter } from './color.js';
+import { structureTensorFlow, flowToRGB, motionFromFlow, reliefFromGray, toGray8 } from './flow.js';
 import { translateAll } from './translate.js';
 import { workPage, galleryPage, cardSvg } from './pages.js';
 import { compositeRooms } from './rooms.js';
@@ -12,6 +12,7 @@ import { compositeRooms } from './rooms.js';
 const ROOT = resolve(new URL('../..', import.meta.url).pathname);
 const BASE_URL = (process.env.BASE_URL || 'https://sheer-jp.github.io/enter-the-painting').replace(/\/$/, '');
 const FLOW_W = 256;
+const LOOK_DEFAULT = { relief: 0.5, gloss: 0.18, sharpness: 96, bloom: 0.08, grain: 0.02, vivid: 0.35 };
 
 async function generateWork(id) {
   const dir = join(ROOT, 'works', id);
@@ -39,6 +40,8 @@ async function generateWork(id) {
   const small = await sharp(src).rotate().resize({ width: 96 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const palette = kmeans(new Uint8Array(small.data), work.overrides?.palette_k ?? 6);
   const paletteHex = palette.map((p) => toHex(p.rgb));
+  // 入りの渦の中心：最も明るい主要色の重心
+  const bright = brightCenter(new Uint8Array(small.data), small.info.width, small.info.height, palette);
 
   // 3. 筆致の流れ場
   const flowH = Math.round(FLOW_W / aspect);
@@ -48,6 +51,9 @@ async function generateWork(id) {
   const flow = structureTensorFlow(gray, FLOW_W, flowH, work.overrides?.flow_sigma ?? 6);   // 大きめに平滑化：渦が細かくなりすぎない
   await sharp(Buffer.from(flowToRGB(flow)), { raw: { width: FLOW_W, height: flowH, channels: 3 } }).png().toFile(join(gen, 'flow.png'));
   const motion = motionFromFlow(flow);
+  // 絵の具の厚みの初期値（docs/FLUID_LOOK.md 2 節）。flow.png と同じ大きさ
+  const relief = reliefFromGray(gray, FLOW_W, flowH, flow.str);
+  await sharp(Buffer.from(toGray8(relief)), { raw: { width: FLOW_W, height: flowH, channels: 1 } }).png().toFile(join(gen, 'relief.png'));
 
   // 4. 部屋の合成（文章は次の翻訳にまとめて通す）
   const rooms = await compositeRooms({ root: ROOT, work, paintingPath: join(gen, 'painting_1024.jpg'), outDir: gen });
@@ -91,8 +97,14 @@ async function generateWork(id) {
     painting: 'painting_1024.jpg', painting_full: 'painting_full.jpg', painting_blur: 'painting_blur.jpg',
     source_px: [meta.width, meta.height],
     palette: paletteHex, text_color: ov.text_color || textColor(palette), back_color: ov.back_color || backColor(palette),
+    bright_center: bright,
     flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density },
-    fluid: { vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.008, drive: ov.drive ?? 0.3 },
+    relief: { texture: 'relief.png' },
+    fluid: {
+      vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.008, drive: ov.drive ?? 0.3,
+      // 質感（docs/FLUID_LOOK.md 2 節のパラメータ）。作品ごとに overrides.look で上書き
+      look: { ...LOOK_DEFAULT, ...(ov.look || {}) },
+    },
     space: { radius_m: ov.radius_m ?? 2.5, melt_distance_m: ov.melt_distance_m ?? 1.0 },
     audio: { voice: work.audio?.voice && existsSync(join(dir, work.audio.voice)) ? work.audio.voice : null, ambient: work.audio?.ambient || 'calm' },
     messages: messages.map((m, i) => ({ at: at[i], ...tr(m.ja), ja: m.ja, ...(m.en ? { en: m.en } : {}) })),

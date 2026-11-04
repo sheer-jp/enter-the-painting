@@ -1,6 +1,7 @@
-// 物語モード（PC・スマホ）：T0 絵 → T1 接近 → T2 溶ける → T3 流れと語り → T4 余韻 → T5 終わり
+// 物語モード（PC・スマホ）：T0 絵 → T1〜T2 近づきながら溶けて渦に吸い込まれる → T3 流れと語り → T4 余韻 → T5 終わり
 import * as THREE from 'three';
 import type { Fluid } from '../fluid/Fluid';
+import { SHADING, LIGHT_DIR, lookOf, shadingUniforms, updateShading } from '../fluid/shading';
 import type { Soundscape } from '../audio/Soundscape';
 import type { Hud } from '../experience/hud';
 import type { Space } from '../experience/types';
@@ -12,16 +13,27 @@ export interface StoryCtx {
   reduced: boolean; fromQr: boolean; base: string; debug: boolean; canvas: HTMLCanvasElement;
 }
 
+// 表示：質感（SHADING）+ 視界の回転（入りの渦）+ 周辺減光
 const DISPLAY_FRAG = /* glsl */ `
-varying vec2 vUv; uniform sampler2D uDye; uniform vec4 uView; uniform float uFade; uniform float uVivid;
+varying vec2 vUv; uniform vec4 uView; uniform float uFade;
+uniform vec3 uLight;
+uniform float uRot;          // 視界の回転（ラジアン、反時計回り）。画面の中心のまわりに、画素の縦横比を保って回す
+uniform vec2 uRotCenter;     // 回転の中心（メッシュの UV）
+uniform float uMeshAspect;   // メッシュの画素の幅 / 高さ
+uniform float uVignette;     // 周辺減光 0〜1
+uniform vec2 uResolution;
+${SHADING}
 void main() {
-  vec2 uv = uView.xy + vUv * uView.zw;
-  vec3 c = texture2D(uDye, uv).rgb;
-  // 流れている間（uVivid 0〜1）は彩度とコントラストをわずかに上げ、混ざって鈍った色を戻す
-  float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
-  c = mix(vec3(luma), c, 1.0 + 0.35 * uVivid);
-  c = (c - 0.5 * luma * uVivid * 0.1) * (1.0 + 0.08 * uVivid);
-  gl_FragColor = vec4(max(c, 0.0) * uFade, 1.0);
+  vec2 q = vUv - uRotCenter;
+  q.x *= uMeshAspect;
+  float cr = cos(uRot), sr = sin(uRot);
+  q = vec2(cr * q.x + sr * q.y, -sr * q.x + cr * q.y);
+  q.x /= uMeshAspect;
+  vec2 uv = uView.xy + (uRotCenter + q) * uView.zw;
+  vec3 c = paintShade(uv, uLight, vec3(0.0, 0.0, 1.0));
+  vec2 s = gl_FragCoord.xy / uResolution - 0.5;
+  c *= 1.0 - uVignette * smoothstep(0.2, 0.75, length(s) * 1.2);
+  gl_FragColor = vec4(c * uFade, 1.0);
   #include <colorspace_fragment>
 }`;
 const VERT = /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
@@ -29,7 +41,11 @@ const VERT = /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position =
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 // 「バーッ」「シューッ」用：急に加速して急に止まる
 const easeInOutExpo = (t: number) => (t === 0 ? 0 : t === 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2);
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
+const Z_AXIS = new THREE.Vector3(0, 0, 1);
 
 export class StoryMode {
   private scene = new THREE.Scene();
@@ -49,6 +65,11 @@ export class StoryMode {
   private scaleNow = { x: 1, y: 1 };
   private fade = 0;
   private strength = 0;
+  private rot = 0;              // 視界の回転（ラジアン）
+  private vignette = 0;         // 周辺減光
+  private look = lookOf();
+  private t0 = performance.now();
+  private bufSize = new THREE.Vector2();
   private fpsSamples: number[] = [];
   private resolveEnd: ((v: 'again' | 'exit') => void) | null = null;
   private restoreBase: number;
@@ -56,6 +77,7 @@ export class StoryMode {
   constructor(private ctx: StoryCtx) {
     this.text = new ScreenText(ctx.hud.textLayer, ctx.space.text_color);
     this.restoreBase = ctx.space.fluid.restore;
+    this.look = lookOf(ctx.space.fluid.look);
   }
 
   private layout() {
@@ -67,9 +89,9 @@ export class StoryMode {
     this.ctx.renderer?.setSize(vw, vh, false);
   }
 
-  private coverScale(): { x: number; y: number } {
+  private coverScale(mult = 1.15): { x: number; y: number } {
     const vw = innerWidth, vh = innerHeight;
-    const k = Math.max(vw / (this.scaleContain.x * vw), vh / (this.scaleContain.y * vh)) * 1.15;
+    const k = Math.max(vw / (this.scaleContain.x * vw), vh / (this.scaleContain.y * vh)) * mult;
     return { x: this.scaleContain.x * k, y: this.scaleContain.y * k };
   }
 
@@ -77,7 +99,15 @@ export class StoryMode {
     const { fluid, renderer, space, canvas } = this.ctx;
     this.layout();
     if (fluid && renderer) {
-      this.mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: DISPLAY_FRAG, uniforms: { uDye: { value: fluid.texture }, uView: { value: new THREE.Vector4(fluid.placement.x, fluid.placement.y, fluid.placement.w, fluid.placement.h) }, uFade: { value: 0 }, uVivid: { value: 0 } }, depthTest: false });
+      this.mat = new THREE.ShaderMaterial({
+        vertexShader: VERT, fragmentShader: DISPLAY_FRAG, depthTest: false,
+        uniforms: {
+          ...shadingUniforms(fluid, this.look),
+          uView: { value: new THREE.Vector4(fluid.placement.x, fluid.placement.y, fluid.placement.w, fluid.placement.h) }, uFade: { value: 0 },
+          uLight: { value: LIGHT_DIR.clone() }, uRot: { value: 0 }, uRotCenter: { value: new THREE.Vector2(0.5, 0.5) }, uMeshAspect: { value: 1 },
+          uVignette: { value: 0 }, uResolution: { value: new THREE.Vector2(1, 1) },
+        },
+      });
       this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.mat);
       this.scene.add(this.mesh);
       renderer.setClearColor(0x000000, 1);
@@ -168,9 +198,19 @@ export class StoryMode {
       if (!this.paused) { fluid.setStrength(this.strength); fluid.step(dt); }
       this.mesh.scale.set(this.scaleNow.x, this.scaleNow.y, 1);
       this.mesh.position.set(this.posNow.x, this.posNow.y, 0);
-      this.mat.uniforms.uFade.value = this.fade;
-      this.mat.uniforms.uVivid.value = Math.min(1, this.strength);
-      this.mat.uniforms.uDye.value = fluid.texture;
+      const U = this.mat.uniforms;
+      const time = (now - this.t0) / 1000;
+      U.uFade.value = this.fade;
+      updateShading(U, fluid, this.look, time, Math.min(1, this.strength));
+      // 光は 60 秒で ±10° ゆっくり揺れる（画面の奥行きの軸のまわり）
+      const a = this.ctx.reduced ? 0 : (10 * Math.PI / 180) * Math.sin((time / 60) * Math.PI * 2);
+      (U.uLight.value as THREE.Vector3).copy(LIGHT_DIR).applyAxisAngle(Z_AXIS, a);
+      // 視界の回転：画面の中心（メッシュの UV）のまわり
+      U.uRot.value = this.rot;
+      (U.uRotCenter.value as THREE.Vector2).set((-this.posNow.x / this.scaleNow.x + 1) / 2, (-this.posNow.y / this.scaleNow.y + 1) / 2);
+      U.uMeshAspect.value = (this.scaleNow.x * innerWidth) / Math.max(1, this.scaleNow.y * innerHeight);
+      U.uVignette.value = this.vignette;
+      renderer.getDrawingBufferSize(this.bufSize); (U.uResolution.value as THREE.Vector2).copy(this.bufSize);
       renderer.setRenderTarget(null);
       renderer.render(this.scene, this.camera);
       if (this.ctx.debug) {
@@ -237,7 +277,7 @@ export class StoryMode {
         const timeline = this.timeline();
         result = await Promise.race([ended, timeline.then(() => ended)]);
         this.text.clear();
-        if (result === 'again') { this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; this.ctx.hud.caption.style.opacity = '0'; }
+        if (result === 'again') { this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.rot = 0; this.vignette = 0; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; this.ctx.hud.caption.style.opacity = '0'; }
       } while (result === 'again' && this.running);
     } finally {
       this.running = false;
@@ -247,13 +287,72 @@ export class StoryMode {
     return result;
   }
 
+  // 入り：0〜0.6 秒 縁から泡（拡大 1.0 → 1.1）、0.6〜2.4 秒 渦が立ち上がり、その中心へ拡大（→ cover × 1.3）・回転（→ 6°）・周辺減光（→ 0.5）、
+  // 2.4〜3.0 秒 回転を戻し、周辺減光 0.15、渦はほどける。数値は docs/EXPERIENCE.md の T1〜T2（設計変更 11-04）
+  private async enter() {
+    const { sound, space, reduced, fluid } = this.ctx;
+    const k = reduced ? 0.5 : 1;                 // reduced は時間を半分に
+    const T1 = 0.6 * k, T2 = 2.4 * k, TOTAL = 3.0 * k;
+    const maxRot = reduced ? 0 : (6 * Math.PI) / 180;
+    const vortexGain = reduced ? 0.5 : 1;
+    const bc = space.bright_center ?? [0.5, 0.5];
+    const center = fluid ? fluid.rectToUv(bc[0], bc[1]) : ([0.5, 0.5] as [number, number]);
+    const lc = { x: bc[0] * 2 - 1, y: bc[1] * 2 - 1 };   // 渦の中心（メッシュのローカル、-1〜1）
+    const s0 = { ...this.scaleContain }, s1 = { x: s0.x * 1.1, y: s0.y * 1.1 }, s2 = this.coverScale(1.3);
+    // 拡大しながら、渦の中心を画面の中心へ寄せる（絵が画面を覆う範囲で）
+    const posFor = (sc: { x: number; y: number }, p: number) => {
+      const fit = (l: number, s: number) => { const want = -l * s * p; const lim = Math.max(0, s - 1); return Math.max(-lim, Math.min(lim, want)); };
+      return { x: fit(lc.x, sc.x), y: fit(lc.y, sc.y) };
+    };
+    this.stage = 'T1';
+    sound.setAmbientDb(-16, 1);
+    sound.fizz(!reduced, -18); sound.drone(-14, 2);
+    if (this.img) this.img.style.transform = 'translate(-50%,-50%) scale(1.9)';
+    let rotAtT2 = 0, vigAtT2 = 0, droneUp = false;
+    await this.tween(TOTAL, (u) => {
+      const t = u * TOTAL;
+      if (t < T1) {
+        const p = t / T1;
+        this.scaleNow = { x: lerp(s0.x, s1.x, p), y: lerp(s0.y, s1.y, p) };
+        this.posNow = { x: 0, y: 0 };
+        if (!reduced) fluid?.fizz(0.2 * p, 1);
+        this.strength = lerp(0.05, 0.2, p);
+      } else if (t < T2) {
+        this.stage = 'T2';
+        if (!droneUp) { sound.drone(-10, 1.2); sound.fizz(!reduced, -14); droneUp = true; }   // 泡 + ドローンを高める
+        const p = (t - T1) / (T2 - T1);
+        const z = easeInOutCubic(Math.pow(p, 1.4));       // 急加速
+        const sc = { x: lerp(s1.x, s2.x, z), y: lerp(s1.y, s2.y, z) };
+        this.scaleNow = sc;
+        this.posNow = posFor(sc, z);
+        this.rot = maxRot * easeInOut(p);
+        this.vignette = 0.5 * easeInOut(p);
+        if (!reduced) fluid?.fizz(lerp(0.2, 1.0, p), 1);
+        this.strength = lerp(0.2, 1.0, p);
+        // 渦：強さは山形、半径は 0.05 → 0.35
+        fluid?.vortex(center, Math.sin(Math.PI * p) * vortexGain, lerp(0.05, 0.35, p));
+        rotAtT2 = this.rot; vigAtT2 = this.vignette;
+      } else {
+        this.stage = 'T2';
+        const p = easeInOut((t - T2) / (TOTAL - T2));
+        this.scaleNow = { ...s2 }; this.posNow = posFor(s2, 1);
+        this.rot = rotAtT2 * (1 - p);
+        this.vignette = lerp(vigAtT2, 0.15, p);
+        this.strength = 1.0;
+      }
+    }, (x) => clamp01(x));
+    this.rot = 0; this.vignette = 0.15; this.strength = 1;
+    this.scaleNow = { ...s2 }; this.posNow = posFor(s2, 1);
+    sound.fizz(false); sound.drone(-14, 1.5);
+  }
+
   private async timeline() {
     const { sound, space, hud, lang, reduced, fluid } = this.ctx;
     const msgs = space.messages;
     // T0 絵（3 秒）
     this.stage = 'T0';
     hud.skip.hidden = false;
-    this.scaleNow = { ...this.scaleContain }; this.strength = 0.05;
+    this.scaleNow = { ...this.scaleContain }; this.posNow = { x: 0, y: 0 }; this.strength = 0.05; this.rot = 0; this.vignette = 0;
     sound.ambient(space.audio.ambient || 'calm', -24);
     hud.title.textContent = pick(space.title, lang); hud.title.style.opacity = '1';
     if (this.img) { this.img.style.opacity = '1'; }
@@ -266,19 +365,8 @@ export class StoryMode {
       if (fps < 40 && fluid.getQuality() === 'high') fluid.setQuality('medium');
       else if (fps < 30 && fluid.getQuality() === 'medium') fluid.setQuality('low');
     }
-    // T1 接近（1.2 秒）：画面いっぱい × 1.15 まで拡大
-    this.stage = 'T1';
-    const from = { ...this.scaleContain }, to = this.coverScale();
-    sound.setAmbientDb(-16, 1);
-    if (this.img) this.img.style.transform = 'translate(-50%,-50%) scale(1.9)';
-    await this.tween(reduced ? 0.6 : 1.2, (t) => { this.scaleNow = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t }; }, reduced ? easeInOut : easeInOutExpo);
-    // T2 溶ける（3 秒）：縁からシュワシュワ
-    this.stage = 'T2';
-    sound.fizz(!reduced, -18); sound.drone(-14, 2);
-    if (fluid && !reduced) {
-      await this.tween(3, (t) => { fluid.fizz(t, 1); this.strength = 0.1 + 0.9 * t; });
-    } else { await this.tween(1.5, (t) => (this.strength = 0.1 + 0.9 * t)); }
-    sound.fizz(false);
+    // T1〜T2（設計変更 11-04）：近づきながら溶けて、渦に吸い込まれる。1 つの 3 秒の場面（reduced は 1.5 秒、回転なし、渦は半分）
+    await this.enter();
     // T3 流れと語り
     this.stage = 'T3';
     setTimeout(() => sound.drone(-22, 3), 4000);
@@ -306,10 +394,12 @@ export class StoryMode {
     hud.skip.hidden = true;
     sound.fadeOutAll(4);
     fluid?.setRestore(0.08);
-    const back = { ...this.scaleNow }, target = { ...this.scaleContain };
+    const back = { ...this.scaleNow }, target = { ...this.scaleContain }, pos = { ...this.posNow }, vig = this.vignette;
     await this.tween(reduced ? 1.0 : 1.6, (t) => {
       this.strength = 1 - t;
       this.scaleNow = { x: back.x + (target.x - back.x) * t, y: back.y + (target.y - back.y) * t };
+      this.posNow = { x: pos.x * (1 - t), y: pos.y * (1 - t) };
+      this.vignette = vig * (1 - t);
     }, reduced ? easeInOut : easeInOutExpo);
     if (this.img) { this.img.style.transform = 'translate(-50%,-50%) scale(1)'; }
     await this.tween(2.2, () => { /* 静止した絵を見せる。回帰で元の絵に戻りきる */ });

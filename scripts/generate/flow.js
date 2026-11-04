@@ -72,3 +72,23 @@ export function motionFromFlow({ str }) {
   const t = Math.min(1, Math.max(0, (m - 0.08) / 0.3));
   return { speed: +(0.25 + 0.4 * t).toFixed(2), vorticity: +(0.3 + 0.4 * t).toFixed(2), edge_density: +m.toFixed(3) };
 }
+
+// 絵の具の厚みの初期値（relief.png 用）。明度の高周波（元 − ガウシアン σ=4 の差の絶対値）を 0〜1 にし、
+// 筆致の強さ（flow の str）と 0.6 : 0.4 で混ぜ、軽くぼかす（σ=1）。写真から計算するだけで、絵は加工しない
+export function reliefFromGray(gray, w, h, str) {
+  const low = Float32Array.from(gray);
+  blur(low, w, h, 4);
+  const hf = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) hf[i] = Math.abs(gray[i] - low[i]);
+  // 上位 2% で飽和（flow の強さと同じ正規化）
+  const sorted = Float32Array.from(hf).sort();
+  const p98 = sorted[Math.floor(sorted.length * 0.98)] || 1;
+  const out = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) out[i] = 0.6 * Math.min(1, hf[i] / (p98 || 1)) + 0.4 * (str ? str[i] : 0);
+  blur(out, w, h, 1);
+  for (let i = 0; i < w * h; i++) out[i] = Math.min(1, Math.max(0, out[i]));
+  return out;
+}
+
+// 0〜1 の Float32Array → 8bit グレースケール
+export const toGray8 = (a) => Uint8Array.from(a, (v) => Math.round(v * 255));

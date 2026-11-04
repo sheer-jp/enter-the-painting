@@ -61,3 +61,23 @@ export function backColor(palette) {
   const c = palette[0].rgb;
   return toHex(c.map((v) => Math.round(v * 0.35)));
 }
+
+// 最も明るい主要色の重心（入りの渦の中心）。pixels は幅 w・高さ h の RGB。
+// 返すのは UV（u は左 → 右、v は下 → 上。three のテクスチャと同じ向き）。該当が無ければ中央
+export function brightCenter(pixels, w, h, palette) {
+  if (!palette?.length) return [0.5, 0.5];
+  const bi = palette.reduce((b, p, i) => (luminance(p.rgb) > luminance(palette[b].rgb) ? i : b), 0);
+  let sx = 0, sy = 0, n = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const o = (y * w + x) * 3;
+    let best = Infinity, bc = 0;
+    for (let c = 0; c < palette.length; c++) {
+      const [r, g, b] = palette[c].rgb;
+      const d = (pixels[o] - r) ** 2 + (pixels[o + 1] - g) ** 2 + (pixels[o + 2] - b) ** 2;
+      if (d < best) { best = d; bc = c; }
+    }
+    if (bc === bi) { sx += x + 0.5; sy += y + 0.5; n++; }
+  }
+  if (!n) return [0.5, 0.5];
+  return [+(sx / n / w).toFixed(4), +(1 - sy / n / h).toFixed(4)];
+}

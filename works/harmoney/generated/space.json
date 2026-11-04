@@ -35,17 +35,32 @@
   ],
   "text_color": "#ecdad4",
   "back_color": "#392b22",
+  "bright_center": [
+    0.5097,
+    0.5537
+  ],
   "flow": {
     "texture": "flow.png",
     "strength": 0.6,
     "edge_density": 0.311
+  },
+  "relief": {
+    "texture": "relief.png"
   },
   "fluid": {
     "vorticity": 0.61,
     "speed": 0.56,
     "quality": "high",
     "restore": 0.008,
-    "drive": 0.3
+    "drive": 0.3,
+    "look": {
+      "relief": 0.5,
+      "gloss": 0.18,
+      "sharpness": 96,
+      "bloom": 0.08,
+      "grain": 0.02,
+      "vivid": 0.35
+    }
   },
   "space": {
     "radius_m": 2.5,
@@ -325,5 +340,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T12:36:44.585Z"
+  "generated_at": "2026-11-04T13:04:14.781Z"
 }

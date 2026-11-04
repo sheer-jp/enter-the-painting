@@ -35,6 +35,9 @@ export function placementFor(aspect: number): PaintingRect {
   return { x: 0.5 - w / 2, y: 0.5 - h / 2, w, h };
 }
 
+// 渦の強さの係数（入りの見え方で調整）
+const VORTEX_GAIN = 4;
+
 class Pass {
   mat: THREE.ShaderMaterial;
   constructor(frag: string, uniforms: Record<string, THREE.IUniform>) {
@@ -68,6 +71,13 @@ export class Fluid {
   private curl!: THREE.WebGLRenderTarget; private div!: THREE.WebGLRenderTarget;
   private tmp1!: THREE.WebGLRenderTarget; private tmp2!: THREE.WebGLRenderTarget;
   private original!: THREE.WebGLRenderTarget;
+  // 絵の具の厚み（R だけ使う）。品質 medium / low では色場の半分の解像度
+  private thick!: Double; private thickOriginal!: THREE.WebGLRenderTarget;
+  private thickTmp1!: THREE.WebGLRenderTarget; private thickTmp2!: THREE.WebGLRenderTarget;
+  private thickDims: [number, number] = [1, 1];
+  private relief: THREE.Texture | null = null;
+  private stamps: { x: number; y: number; r: number; amount: number; dx: number; dy: number; kind: number; ring: number }[] = [];
+  private pendingVortex: { uv: [number, number]; strength: number; radius: number }[] = [];
   private passes!: Record<string, Pass>;
   private params: FluidParams;
   private quality: Quality;
@@ -100,9 +110,13 @@ export class Fluid {
 
   get texture(): THREE.Texture { return this.dye.read.texture; }
   get size(): [number, number] { return this.sizes.dye; }
+  // 絵の具の厚み（R、0〜1）。表示のシェーダが法線に使う
+  get thickness(): THREE.Texture { return this.thick.read.texture; }
+  get thicknessSize(): [number, number] { return this.thickDims; }
 
   // domain = painting のときは placement を無視して絵が領域全体になる。aspect は絵の幅/高さ
-  init(painting: THREE.Texture, flow: THREE.Texture, p: FluidParams, placement: PaintingRect, back: string, back2?: string, domain: Domain = 'equirect', aspect = 1) {
+  // relief は厚みの初期値（relief.png）。無ければ平ら
+  init(painting: THREE.Texture, flow: THREE.Texture, p: FluidParams, placement: PaintingRect, back: string, back2?: string, domain: Domain = 'equirect', aspect = 1, relief: THREE.Texture | null = null) {
     this.params = { ...p };
     this.domain = domain; this.aspect = aspect;
     this.painting = painting; this.flow = flow;
@@ -110,6 +124,8 @@ export class Fluid {
     this.back.set(back); this.back2.set(back2 || back);
     painting.colorSpace = THREE.SRGBColorSpace;
     flow.colorSpace = THREE.NoColorSpace;
+    this.relief = relief;
+    if (relief) relief.colorSpace = THREE.NoColorSpace;
     this.allocate(p.quality);
     this.buildPasses();
     this.reset();
@@ -124,6 +140,7 @@ export class Fluid {
     const wrap = this.domain === 'equirect' ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
     this.dye?.dispose(); this.vel?.dispose(); this.pressure?.dispose();
     this.curl?.dispose(); this.div?.dispose(); this.tmp1?.dispose(); this.tmp2?.dispose(); this.original?.dispose();
+    this.disposeThick();
     this.dye = new Double(sz.dye[0], sz.dye[1], type, wrap);
     this.original = makeRT(sz.dye[0], sz.dye[1], type, wrap);
     this.tmp1 = makeRT(sz.dye[0], sz.dye[1], type, wrap);
@@ -132,11 +149,27 @@ export class Fluid {
     this.pressure = new Double(sz.sim[0], sz.sim[1], type, wrap);
     this.curl = makeRT(sz.sim[0], sz.sim[1], type, wrap);
     this.div = makeRT(sz.sim[0], sz.sim[1], type, wrap);
+    // 厚み：high は色場と同じ、medium / low は半分。同じ大きさなら色の作業用を共用する（色の移流のあとに使うので衝突しない）
+    const half = q !== 'high';
+    const tw = half ? Math.max(16, Math.round(sz.dye[0] / 2)) : sz.dye[0], th = half ? Math.max(16, Math.round(sz.dye[1] / 2)) : sz.dye[1];
+    this.thickDims = [tw, th];
+    this.thick = new Double(tw, th, type, wrap);
+    this.thickOriginal = makeRT(tw, th, type, wrap);
+    this.thickTmp1 = half ? makeRT(tw, th, type, wrap) : this.tmp1;
+    this.thickTmp2 = half ? makeRT(tw, th, type, wrap) : this.tmp2;
+  }
+
+  private disposeThick() {
+    if (!this.thick) return;
+    this.thick.dispose(); this.thickOriginal.dispose();
+    if (this.thickTmp1 !== this.tmp1) this.thickTmp1.dispose();
+    if (this.thickTmp2 !== this.tmp2) this.thickTmp2.dispose();
   }
 
   private buildPasses() {
     const u = (o: Record<string, unknown>) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, { value: v }]));
     const rect = new THREE.Vector4(this.placement.x, this.placement.y, this.placement.w, this.placement.h);
+    const wrapX = this.domain === 'equirect' ? 1 : 0;
     this.passes = {
       initDye: new Pass(S.INIT_DYE, u({ uPainting: this.painting, uRect: rect, uBack: this.back, uBack2: this.back2 })),
       initVel: new Pass(S.INIT_VEL, u({ uFlow: this.flow, uRect: rect, uStrength: 1 })),
@@ -151,6 +184,13 @@ export class Fluid {
       fizz: new Pass(S.FIZZ, u({ uVelocity: null, uRect: rect, uProgress: 0, uAmount: 0, uTime: 0 })),
       drive: new Pass(S.DRIVE, u({ uVelocity: null, uFlow: this.flow, uRect: rect, uRate: 0, uTarget: 0, uTime: 0 })),
       copy: new Pass(S.DISPLAY, u({ uDye: null, uView: new THREE.Vector4(0, 0, 1, 1) })),
+      initThick: new Pass(S.INIT_THICK, u({ uRelief: this.relief, uRect: rect, uHas: this.relief ? 1 : 0 })),
+      thick: new Pass(S.THICK_UPDATE, u({
+        uVelocity: null, uPhi0: null, uPhiHat1: null, uPhiHat0: null, uOriginal: null, uDiv: null, uTexel: new THREE.Vector2(), uDt: 0, uRestore: 0, uDivK: 0,
+        uRect: rect, uFizzProgress: -1, uFizzAmount: 0, uTime: 0, uAspect: this.thickDims[0] / this.thickDims[1], uWrapX: wrapX,
+        uStampCount: 0, uStamp: Array.from({ length: S.MAX_STAMPS }, () => new THREE.Vector4()), uStampDir: Array.from({ length: S.MAX_STAMPS }, () => new THREE.Vector4()),
+      })),
+      vortex: new Pass(S.VORTEX, u({ uVelocity: null, uPoint: new THREE.Vector2(), uRadius: 0.1, uStrength: 0, uAspect: this.sizes.sim[0] / this.sizes.sim[1], uWrapX: wrapX })),
     };
   }
 
@@ -171,6 +211,9 @@ export class Fluid {
     this.run(this.passes.initDye, this.original);
     this.passes.initVel.mat.uniforms.uStrength.value = 1;
     this.run(this.passes.initVel, this.vel.read);
+    this.run(this.passes.initThick, this.thick.read);
+    this.run(this.passes.initThick, this.thickOriginal);
+    this.stamps.length = 0; this.pendingVortex.length = 0; this.pendingSplats.length = 0;
     // 圧力を 0 に
     this.renderer.setRenderTarget(this.pressure.read); this.renderer.clear(); this.renderer.setRenderTarget(null);
     this.time = 0;
@@ -187,7 +230,12 @@ export class Fluid {
   fizz(progress: number, amount = 1) { this.fizzProgress = progress; this.fizzAmount = amount; }
 
   // uv は色場の座標（0〜1）。force は texel/秒 相当、radius は正規化
-  splat(uv: [number, number], force: [number, number], radius = 0.002) { this.pendingSplats.push({ uv, force, radius }); }
+  // 厚みには、軌跡の中心に溝（−）、両脇に盛り上がり（+）。深さは指の速さに比例
+  splat(uv: [number, number], force: [number, number], radius = 0.002) {
+    this.pendingSplats.push({ uv, force, radius });
+    const f = Math.hypot(force[0], force[1]);
+    if (f > 1e-3) this.stamp({ x: uv[0], y: uv[1], r: radius, amount: Math.min(0.12, f * 0.0012), dx: force[0] / f, dy: force[1] / f, kind: 1, ring: 0 });
+  }
   // タップ：その点から外へ広がる力（8 方向）。strength は texel/秒 相当
   burst(uv: [number, number], strength = 60, radius = 0.003) {
     const aspect = this.sizes.dye[0] / this.sizes.dye[1];
@@ -196,6 +244,19 @@ export class Fluid {
       const off = 0.012;
       this.pendingSplats.push({ uv: [uv[0] + Math.cos(a) * off / aspect, uv[1] + Math.sin(a) * off], force: [Math.cos(a) * strength, Math.sin(a) * strength], radius });
     }
+    // 厚み：中心が凹み、輪が盛り上がる
+    this.stamp({ x: uv[0], y: uv[1], r: radius * 1.5, amount: Math.min(0.35, strength * 0.004), dx: 0, dy: 0, kind: 2, ring: Math.sqrt(radius) * 1.6 });
+  }
+
+  // 渦：uv を中心に、中心へ向かう回転 + わずかな吸い込み。strength 1 で常時の駆動の目標の速さ程度を毎秒加える。
+  // radius は領域の高さに対する割合（ガウシアンの幅）。毎フレーム呼ぶ前提。厚みは中心が凹む
+  vortex(uv: [number, number], strength: number, radius: number) {
+    if (strength <= 0 || radius <= 0) return;
+    this.pendingVortex.push({ uv, strength, radius });
+  }
+
+  private stamp(s: Fluid['stamps'][number]) {
+    if (this.stamps.length < S.MAX_STAMPS) this.stamps.push(s);
   }
 
   // 絵の矩形内の座標（0〜1）→ 色場の UV
@@ -230,7 +291,6 @@ export class Fluid {
       P.fizz.mat.uniforms.uAmount.value = this.fizzAmount * 1.6 * dt * 60;
       P.fizz.mat.uniforms.uTime.value = this.time;
       this.run(P.fizz, this.vel.write); this.vel.swap();
-      this.fizzProgress = -1;
     }
     for (const s of this.pendingSplats) {
       P.splat.mat.uniforms.uTarget.value = this.vel.read.texture;
@@ -240,6 +300,16 @@ export class Fluid {
       this.run(P.splat, this.vel.write); this.vel.swap();
     }
     this.pendingSplats.length = 0;
+    const V = P.vortex.mat.uniforms;
+    for (const v of this.pendingVortex) {
+      V.uVelocity.value = this.vel.read.texture;
+      V.uPoint.value.set(v.uv[0], v.uv[1]);
+      V.uRadius.value = v.radius;
+      V.uStrength.value = v.strength * sz.sim[1] * 0.03 * dt * VORTEX_GAIN;
+      this.run(P.vortex, this.vel.write); this.vel.swap();
+      this.stamp({ x: v.uv[0], y: v.uv[1], r: (v.radius * 0.6) ** 2, amount: Math.min(0.05, v.strength * dt * 0.8), dx: 0, dy: 0, kind: 0, ring: 0 });
+    }
+    this.pendingVortex.length = 0;
 
     // 渦度の補強
     P.curl.mat.uniforms.uVelocity.value = this.vel.read.texture; P.curl.mat.uniforms.uTexel.value = simTexel;
@@ -274,6 +344,26 @@ export class Fluid {
     M.uVelocity.value = this.vel.read.texture; M.uPhi0.value = this.dye.read.texture; M.uPhiHat1.value = this.tmp1.texture; M.uPhiHat0.value = this.tmp2.texture;
     M.uOriginal.value = this.original.texture; M.uTexel.value = dyeTexel; M.uDt.value = dyeDt; M.uRestore.value = this.params.restore * dt * 60;
     this.run(P.maccormack, this.dye.write); this.dye.swap();
+
+    // 厚みの移流（MacCormack、色と同じ）+ 増減・跡・泡・回帰を 1 パスに
+    const td = this.thickDims;
+    const thickTexel = new THREE.Vector2(1 / td[0], 1 / td[1]);
+    const thickDt = dt * speed * td[1] * 0.22;
+    P.advect.mat.uniforms.uTexel.value = thickTexel;
+    P.advect.mat.uniforms.uSource.value = this.thick.read.texture; P.advect.mat.uniforms.uDt.value = thickDt;
+    this.run(P.advect, this.thickTmp1);
+    P.advect.mat.uniforms.uSource.value = this.thickTmp1.texture; P.advect.mat.uniforms.uDt.value = -thickDt;
+    this.run(P.advect, this.thickTmp2);
+    const T = P.thick.mat.uniforms;
+    T.uVelocity.value = this.vel.read.texture; T.uPhi0.value = this.thick.read.texture; T.uPhiHat1.value = this.thickTmp1.texture; T.uPhiHat0.value = this.thickTmp2.texture;
+    T.uOriginal.value = this.thickOriginal.texture; T.uDiv.value = this.div.texture; T.uTexel.value = thickTexel; T.uDt.value = thickDt;
+    T.uRestore.value = this.params.restore * dt * 60; T.uDivK.value = 0.5 * dt;
+    T.uFizzProgress.value = this.fizzProgress; T.uFizzAmount.value = this.fizzAmount * 0.04 * dt * 60; T.uTime.value = this.time;
+    T.uStampCount.value = this.stamps.length;
+    this.stamps.forEach((st, i) => { (T.uStamp.value as THREE.Vector4[])[i].set(st.x, st.y, st.r, st.amount); (T.uStampDir.value as THREE.Vector4[])[i].set(st.dx, st.dy, st.kind, st.ring); });
+    this.run(P.thick, this.thick.write); this.thick.swap();
+    this.stamps.length = 0;
+    this.fizzProgress = -1;
   }
 
   // 色場の矩形を別の RenderTarget や画面に描く（表示用）
@@ -286,6 +376,7 @@ export class Fluid {
   dispose() {
     this.dye.dispose(); this.vel.dispose(); this.pressure.dispose();
     this.curl.dispose(); this.div.dispose(); this.tmp1.dispose(); this.tmp2.dispose(); this.original.dispose();
+    this.disposeThick();
     for (const p of Object.values(this.passes)) p.mat.dispose();
   }
 }
