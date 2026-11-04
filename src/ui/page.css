@@ -55,8 +55,9 @@ main.work { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-a
 .actions .lang { margin-left: auto; }
 section { margin: 0 0 56px; }
 .strip { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 0 10px; scrollbar-width: thin; }
-.room { flex: 0 0 min(88%, 560px); margin: 0; scroll-snap-align: start; min-width: 0; }
-.room img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; }
+/* 部屋は正方形（スマホでも PC でも同じ見え方。作家の決定 11-04）。横長の画像が混ざっても中央を正方形に切る */
+.room { flex: 0 0 min(78%, 420px); margin: 0; scroll-snap-align: start; min-width: 0; }
+.room img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
 .story p { font-family: var(--serif); font-size: 17px; line-height: 2.1; letter-spacing: .04em; white-space: pre-line; max-width: 36em; margin: 0; }
 .other { flex: 0 0 132px; scroll-snap-align: start; font-size: 11px; letter-spacing: .08em; color: var(--ink-2); min-width: 0; }
 .other img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; margin-bottom: 8px; }

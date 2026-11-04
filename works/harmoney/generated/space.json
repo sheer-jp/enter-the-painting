@@ -74,55 +74,28 @@
   "messages": [
     {
       "at": 0,
-      "ja": "（下書き。作家が書き直す）色と色がぶつかって、ほどけて、また重なる。",
-      "en": "(Draft, to be rewritten by the artist) Colors collide, come undone, and overlap again.",
-      "zh-Hans": "（草稿，艺术家将改写）色彩相撞，散开，又再次重叠。",
-      "zh-Hant": "（草稿，藝術家將改寫）色彩相撞，散開，又再次重疊。",
-      "ko": "(초고. 작가가 다시 씁니다) 색과 색이 부딪히고, 풀리고, 다시 겹친다.",
-      "fr": "(Brouillon, à réécrire par l'artiste) Les couleurs se heurtent, se dénouent, se superposent à nouveau.",
-      "de": "(Entwurf, wird von der Künstlerin neu geschrieben) Farben prallen aufeinander, lösen sich, überlagern sich wieder.",
-      "es": "(Borrador, la artista lo reescribirá) Los colores chocan, se deshacen y vuelven a superponerse.",
-      "it": "(Bozza, l'artista la riscriverà) I colori si scontrano, si sciolgono, si sovrappongono di nuovo.",
-      "pt": "(Rascunho, a artista vai reescrever) As cores colidem, desfazem-se e voltam a sobrepor-se."
+      "ja": "ハーモニーって、何だろう。",
+      "en": "What is harmony, really?"
     },
     {
-      "at": 11.5,
-      "ja": "そのたびに、小さな調和が生まれては消えていった。",
-      "en": "Each time, a small harmony was born and faded away.",
-      "zh-Hans": "每一次，一点小小的和谐诞生，又消失。",
-      "zh-Hant": "每一次，一點小小的和諧誕生，又消失。",
-      "ko": "그때마다 작은 조화가 태어났다가 사라져 갔다.",
-      "fr": "À chaque fois, une petite harmonie naissait puis s'effaçait.",
-      "de": "Jedes Mal entstand eine kleine Harmonie und verschwand wieder.",
-      "es": "Cada vez nacía una pequeña armonía y se desvanecía.",
-      "it": "Ogni volta nasceva una piccola armonia e svaniva.",
-      "pt": "De cada vez, nascia uma pequena harmonia e desaparecia."
+      "at": 7,
+      "ja": "好きな音楽を流しながら、ずっと考えていた。",
+      "en": "I kept wondering, with my favorite music playing."
     },
     {
-      "at": 20.5,
-      "ja": "消えたものも、ここに残っている。",
-      "en": "What faded is still here, too.",
-      "zh-Hans": "消失的，也仍留在这里。",
-      "zh-Hant": "消失的，也仍留在這裡。",
-      "ko": "사라진 것도, 여기에 남아 있다.",
-      "fr": "Ce qui s'est effacé est encore là, lui aussi.",
-      "de": "Auch das Verschwundene ist noch hier.",
-      "es": "Lo que se desvaneció también sigue aquí.",
-      "it": "Anche ciò che è svanito è ancora qui.",
-      "pt": "O que desapareceu também continua aqui."
+      "at": 15.3,
+      "ja": "いろんな色が奏で合って、溶け合って、それでいて踊っている。",
+      "en": "Colors play together, melt into each other, and still they dance."
     },
     {
-      "at": 27.5,
-      "ja": "手のひらの中で、その全部を持っていてほしい。",
-      "en": "I want you to hold all of it, in the palm of your hand.",
-      "zh-Hans": "愿你把这一切，都握在掌心。",
-      "zh-Hant": "願你把這一切，都握在掌心。",
-      "ko": "손바닥 안에, 그 전부를 품고 있어 주면 좋겠다.",
-      "fr": "J'aimerais que vous gardiez tout cela, au creux de votre main.",
-      "de": "Ich möchte, dass du all das in deiner Hand hältst.",
-      "es": "Quiero que guardes todo eso en la palma de tu mano.",
-      "it": "Vorrei che tenessi tutto questo nel palmo della mano.",
-      "pt": "Quero que guardes tudo isso na palma da mão."
+      "at": 25.5,
+      "ja": "その世界に没頭しながら、どこかで釣り合いが取れている。",
+      "en": "Lost in that world, and yet somehow in balance."
+    },
+    {
+      "at": 35.3,
+      "ja": "それが、私の思うハーモニー。",
+      "en": "That, to me, is harmony."
     }
   ],
   "story": {
@@ -319,132 +292,28 @@
         ]
       ],
       "px_per_cm": 4.25,
-      "confidence": "low",
+      "confidence": "high",
       "occlusion": false,
       "compare": {
-        "ja": "このダブルベッドの約 3 分の 1 の幅（寸法は目安）。",
-        "en": "About one third the width of the bed (size is approximate)."
+        "ja": "このダブルベッドの約 3 分の 1 の幅。",
+        "en": "About one third the width of the bed."
       },
       "compare2": {
-        "ja": "このヘッドボード（約 90 cm）の約 3 分の 2 の高さ。",
-        "en": "About two thirds the height of the headboard (about 90 cm)."
+        "ja": "この枕（約 70 cm）の約 0.8 倍の幅。",
+        "en": "About 0.8 times the width of the pillow (about 70 cm)."
       },
       "about": {
         "ja": "壁の幅は約 2.4 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 140 cm）。",
         "en": "The wall is about 2.4 m wide. The painting hangs about 20 cm above the furniture (center about 140 cm from the floor)."
       },
       "note": {
-        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide."
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
       },
       "primary_ref": "bed_double"
-    },
-    {
-      "name": "studio-desk",
-      "image": "room_studio-desk.jpg",
-      "category": "studio",
-      "label": {
-        "ja": "机の上",
-        "en": "Above the desk"
-      },
-      "wall_width_cm": 167,
-      "image_px": [
-        1586,
-        992
-      ],
-      "quad_px": [
-        [
-          614,
-          155
-        ],
-        [
-          946,
-          155
-        ],
-        [
-          946,
-          564
-        ],
-        [
-          614,
-          564
-        ]
-      ],
-      "px_per_cm": 6.273,
-      "confidence": "mid",
-      "occlusion": false,
-      "compare": {
-        "ja": "この机とほぼ同じ高さ。",
-        "en": "About the same height as the desk."
-      },
-      "compare2": {
-        "ja": "このデスクランプ（約 40 cm）の約 1.6 倍の高さ。",
-        "en": "About 1.6 times the height of the desk lamp (about 40 cm)."
-      },
-      "about": {
-        "ja": "壁の幅は約 1.7 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 125 cm）。",
-        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 125 cm from the floor)."
-      },
-      "note": {
-        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
-      },
-      "primary_ref": "desk"
-    },
-    {
-      "name": "studio-bedside",
-      "image": "room_studio-bedside.jpg",
-      "category": "studio",
-      "label": {
-        "ja": "ベッド脇",
-        "en": "Beside the bed"
-      },
-      "wall_width_cm": 188,
-      "image_px": [
-        1586,
-        992
-      ],
-      "quad_px": [
-        [
-          919,
-          272
-        ],
-        [
-          1201,
-          272
-        ],
-        [
-          1201,
-          620
-        ],
-        [
-          919,
-          620
-        ]
-      ],
-      "px_per_cm": 5.333,
-      "confidence": "high",
-      "occlusion": false,
-      "compare": {
-        "ja": "このナイトテーブルの約 1.2 倍の高さ。",
-        "en": "About 1.2 times the height of the nightstand."
-      },
-      "compare2": {
-        "ja": "このランプ（約 45 cm）の約 1.4 倍の高さ。",
-        "en": "About 1.4 times the height of the lamp (about 45 cm)."
-      },
-      "about": {
-        "ja": "壁の幅は約 1.9 m。座ったときの目の高さ（床から約 125 cm）に掛けています。",
-        "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor)."
-      },
-      "note": {
-        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
-      },
-      "primary_ref": "nightstand"
     }
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T15:27:51.048Z"
+  "generated_at": "2026-11-04T15:59:11.638Z"
 }
