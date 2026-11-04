@@ -1,0 +1,51 @@
+{
+  "name": "sq-sideboard",
+  "image_width_px": 1024,
+  "image_height_px": 1024,
+  "category": "house",
+  "label": {
+    "ja": "ローボードの上",
+    "en": "Above the low board"
+  },
+  "scene": "ウォルナットの低いボード。花瓶と本。ラグ。",
+  "references": [
+    {
+      "ref": "vase.height",
+      "px": 120,
+      "primary": true
+    },
+    {
+      "ref": "tv_board.height",
+      "px": 175
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1024,
+        0
+      ],
+      [
+        1024,
+        775
+      ],
+      [
+        0,
+        775
+      ]
+    ]
+  },
+  "hang": {
+    "x_px": 512,
+    "floor_y_px": 775,
+    "center_from_floor_cm": 140
+  },
+  "suits_cm": [
+    20,
+    120
+  ]
+}

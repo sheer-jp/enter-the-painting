@@ -1,0 +1,56 @@
+{
+  "name": "sq-bedroom",
+  "image_width_px": 1024,
+  "image_height_px": 1024,
+  "category": "house",
+  "label": {
+    "ja": "寝室のヘッドボードの上",
+    "en": "Above the headboard"
+  },
+  "scene": "寝室。木のヘッドボードと、両脇のペンダントライト。暖かい光。",
+  "references": [
+    {
+      "ref": "bed_double.width",
+      "px": 595,
+      "primary": true
+    },
+    {
+      "ref": "headboard.height",
+      "px": 170
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1024,
+        0
+      ],
+      [
+        1024,
+        917
+      ],
+      [
+        0,
+        917
+      ]
+    ]
+  },
+  "hang": {
+    "x_px": 512,
+    "floor_y_px": 917,
+    "bottom_from_floor_cm": 110,
+    "note": "ヘッドボード（90cm）の上端 + 20cm"
+  },
+  "occlusion": {
+    "mode": "wall-key",
+    "tolerance": 0.1
+  },
+  "suits_cm": [
+    20,
+    90
+  ]
+}

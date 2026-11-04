@@ -179,5 +179,42 @@
       "ja": "シングルベッド",
       "en": "the bed"
     }
+  },
+  "bed_double": {
+    "width_cm": 140,
+    "label": {
+      "ja": "ダブルベッド",
+      "en": "the bed"
+    }
+  },
+  "sofa_3seat": {
+    "height_cm": 85,
+    "width_cm": 220,
+    "label": {
+      "ja": "ソファ",
+      "en": "the sofa"
+    }
+  },
+  "tv_board": {
+    "height_cm": 42,
+    "width_cm": 200,
+    "label": {
+      "ja": "テレビボード",
+      "en": "the low board"
+    }
+  },
+  "dining_chair": {
+    "height_cm": 80,
+    "label": {
+      "ja": "ダイニングチェア",
+      "en": "the dining chair"
+    }
+  },
+  "vase": {
+    "height_cm": 30,
+    "label": {
+      "ja": "花瓶",
+      "en": "the vase"
+    }
   }
 }

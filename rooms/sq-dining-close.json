@@ -1,0 +1,56 @@
+{
+  "name": "sq-dining-close",
+  "image_width_px": 1024,
+  "image_height_px": 1024,
+  "category": "house",
+  "label": {
+    "ja": "ダイニングの壁（寄り）",
+    "en": "The dining wall, close"
+  },
+  "scene": "木のテーブルと椅子、花瓶、木のペンダントライト。",
+  "references": [
+    {
+      "ref": "dining_table.height",
+      "px": 305,
+      "primary": true
+    },
+    {
+      "ref": "vase.height",
+      "px": 140
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1024,
+        0
+      ],
+      [
+        1024,
+        985
+      ],
+      [
+        0,
+        985
+      ]
+    ]
+  },
+  "hang": {
+    "x_px": 470,
+    "floor_y_px": 985,
+    "center_from_floor_cm": 138
+  },
+  "occlusion": {
+    "mode": "wall-key",
+    "tolerance": 0.1,
+    "note": "花瓶とペンダントが手前"
+  },
+  "suits_cm": [
+    20,
+    90
+  ]
+}

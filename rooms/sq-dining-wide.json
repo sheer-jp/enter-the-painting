@@ -1,0 +1,56 @@
+{
+  "name": "sq-dining-wide",
+  "image_width_px": 1024,
+  "image_height_px": 1024,
+  "category": "house",
+  "label": {
+    "ja": "ダイニングの壁（引き）",
+    "en": "The dining wall"
+  },
+  "scene": "丸いテーブルと椅子 2 脚。小さなペンダントライトが壁の前に下がっている。",
+  "references": [
+    {
+      "ref": "dining_chair.height",
+      "px": 310,
+      "primary": true
+    },
+    {
+      "ref": "dining_table.height",
+      "px": 350
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1024,
+        0
+      ],
+      [
+        1024,
+        770
+      ],
+      [
+        0,
+        770
+      ]
+    ]
+  },
+  "hang": {
+    "x_px": 512,
+    "floor_y_px": 770,
+    "center_from_floor_cm": 138
+  },
+  "occlusion": {
+    "mode": "wall-key",
+    "tolerance": 0.1,
+    "note": "ペンダントの紐と傘が絵の前にかかる"
+  },
+  "suits_cm": [
+    20,
+    100
+  ]
+}

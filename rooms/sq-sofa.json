@@ -1,0 +1,52 @@
+{
+  "name": "sq-sofa",
+  "image_width_px": 1024,
+  "image_height_px": 1024,
+  "category": "house",
+  "label": {
+    "ja": "ソファの上の壁",
+    "en": "Above the sofa"
+  },
+  "scene": "濃紺の 3 人掛けソファ、フロアランプ、ローテーブル。",
+  "references": [
+    {
+      "ref": "sofa_3seat.width",
+      "px": 890,
+      "primary": true
+    },
+    {
+      "ref": "sofa_3seat.height",
+      "px": 325
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1024,
+        0
+      ],
+      [
+        1024,
+        930
+      ],
+      [
+        0,
+        930
+      ]
+    ]
+  },
+  "hang": {
+    "x_px": 530,
+    "floor_y_px": 930,
+    "bottom_from_floor_cm": 105,
+    "note": "ソファの背（85cm）の上端 + 20cm"
+  },
+  "suits_cm": [
+    30,
+    140
+  ]
+}
