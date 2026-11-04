@@ -77,7 +77,12 @@ export function warpOnto(room, painting, quad, { shadow = 0.35 } = {}) {
 export async function compositeRooms({ root, work, paintingPath, outDir, aspect }) {
   const roomsDir = join(root, 'rooms');
   if (!existsSync(roomsDir)) return [];
-  const names = work.rooms || readdirSync(roomsDir).filter((f) => f.endsWith('.json')).map((f) => f.replace(/\.json$/, ''));
+  // 部屋の指定が無ければ、作品の大きさ（長辺）に向いている部屋だけを使う（suits_cm: [min, max]）
+  const longSide = Math.max(...work.size_cm);
+  const names = work.rooms || readdirSync(roomsDir).filter((f) => f.endsWith('.json')).map((f) => f.replace(/\.json$/, '')).filter((n) => {
+    const d = JSON.parse(readFileSync(join(roomsDir, `${n}.json`), 'utf8'));
+    return !d.suits_cm || (longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1]);
+  });
   const painting = await sharp(paintingPath).resize({ width: 800 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const results = [];
   for (const name of names) {

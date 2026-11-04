@@ -26,6 +26,20 @@ A blank, empty wall with clear space for one framed painting about 65 cm tall an
 | 9 | hallway | `A long quiet hallway in an apartment. A plain wall along the left, a wooden floor, a door at the end, soft light.` + 共通 |
 | 10 | gallery | `A white-cube gallery. One empty white wall, concrete floor, a bench, even gallery lighting, nobody.` + 共通 |
 
+## 小さな作品向け（一人暮らしの部屋。F0〜F6、長辺 18〜41 cm）
+
+小さな絵は広い壁だと消える。**壁に近いカメラ**で、机・棚・ベッド脇など、絵が自然に掛かる「小さな壁」を撮る。共通条件の絵の寸法を `about 30 cm tall and 24 cm wide` に、壁の幅は 1.5 m くらいに。
+
+| # | name | プロンプト（英語） |
+| --- | --- | --- |
+| 11 | studio-desk | `A small one-room apartment in Tokyo. A compact wooden desk against a plain white wall, a laptop closed, a mug, a small lamp, a chair. Camera close to the wall (about 2 m), eye level, straight-on. Space on the wall above the desk for a small painting about 30 cm tall. Soft daylight from a window at the side.` + 共通（寸法を小さく） |
+| 12 | studio-bedside | `A one-room apartment at night. A single bed with linen sheets seen from the side, a small bedside table with a warm lamp, a plain wall above the bedside table. Camera close, eye level. Space for a small painting about 30 cm tall.` + 共通 |
+| 13 | studio-shelf | `A compact living space. A low wooden shelf with a few books and a plant, a plain wall above it, a floor cushion. Camera close to the wall, straight-on. Space for a small painting about 30 cm tall above the shelf.` + 共通 |
+| 14 | studio-kitchen | `A small kitchen counter in a one-room apartment. A kettle, a cup, a plain tiled or plaster wall above the counter, morning light. Camera close, straight-on. Space for a small painting about 30 cm tall.` + 共通 |
+| 15 | studio-entrance | `The tiny entrance of a one-room apartment. A pair of shoes, a plain wall beside the door, a small mirror-less wall, a hook with a bag. Camera close, straight-on. Space for a small painting about 30 cm tall.` + 共通 |
+
+`rooms/<name>.json` の `suits_cm` を `[15, 45]` にしておくと、小さな作品のときだけ自動で使われる。
+
 ## 受け取ったあとの手順
 
 1. `rooms/<name>.jpg` として保存（横 1600px 以上）

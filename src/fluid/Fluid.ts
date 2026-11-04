@@ -201,8 +201,8 @@ export class Fluid {
     const dyeTexel = new THREE.Vector2(1 / sz.dye[0], 1 / sz.dye[1]);
     // 速度の単位：領域の高さに対する割合/秒 → texel/秒 は sim の高さ倍
     const speed = this.params.speed * this.strength;
-    const velDt = dt * speed * sz.sim[1] * 0.35;     // 0.35 は手触りの係数
-    const dyeDt = dt * speed * sz.dye[1] * 0.35;
+    const velDt = dt * speed * sz.sim[1] * 0.22;     // 0.22 は手触りの係数（速すぎる、との感想で 0.35 から下げた）
+    const dyeDt = dt * speed * sz.dye[1] * 0.22;
     const P = this.passes;
 
     // 常時の駆動（流れ続ける）。強さは strength に比例。texel/秒 の単位に合わせる
@@ -210,7 +210,7 @@ export class Fluid {
     if (drive > 0 && this.strength > 0.001) {
       P.drive.mat.uniforms.uVelocity.value = this.vel.read.texture;
       P.drive.mat.uniforms.uRate.value = Math.min(1, drive * dt * 1.5);          // 1 秒で目標の約 45%（drive=0.3）
-      P.drive.mat.uniforms.uTarget.value = sz.sim[1] * 0.04 * this.strength;     // 目標の速さ（sim の高さの 4%/秒）
+      P.drive.mat.uniforms.uTarget.value = sz.sim[1] * 0.03 * this.strength;     // 目標の速さ（sim の高さの 3%/秒）
       P.drive.mat.uniforms.uTime.value = this.time;
       this.run(P.drive, this.vel.write); this.vel.swap();
     }

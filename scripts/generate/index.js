@@ -85,7 +85,7 @@ async function generateWork(id) {
     source_px: [meta.width, meta.height],
     palette: paletteHex, text_color: ov.text_color || textColor(palette), back_color: ov.back_color || backColor(palette),
     flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density },
-    fluid: { vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.005, drive: ov.drive ?? 0.3 },
+    fluid: { vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.008, drive: ov.drive ?? 0.3 },
     space: { radius_m: ov.radius_m ?? 2.5, melt_distance_m: ov.melt_distance_m ?? 1.0 },
     audio: { voice: work.audio?.voice && existsSync(join(dir, work.audio.voice)) ? work.audio.voice : null, ambient: work.audio?.ambient || 'calm' },
     messages: messages.map((m, i) => ({ at: at[i], ...tr(m.ja), ja: m.ja, ...(m.en ? { en: m.en } : {}) })),

@@ -37,12 +37,16 @@ const MORPH_FRAG = /* glsl */ `
 uniform sampler2D uDye;
 uniform float uMorph;
 uniform float uFade;
+uniform float uVivid;
 varying vec2 vUv;
 varying float vInside;
 void main() {
   float a = vInside > 0.5 ? 1.0 : smoothstep(0.0, 0.35, uMorph);
   if (a < 0.01) discard;
-  gl_FragColor = vec4(texture2D(uDye, vUv).rgb * uFade, a);
+  vec3 c = texture2D(uDye, vUv).rgb;
+  float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  c = mix(vec3(luma), c, 1.0 + 0.35 * uVivid) * (1.0 + 0.08 * uVivid);
+  gl_FragColor = vec4(max(c, 0.0) * uFade, a);
   #include <colorspace_fragment>
 }
 `;
@@ -95,7 +99,7 @@ export class SpaceMode {
         uMorph: { value: 0 }, uRect: { value: new THREE.Vector4(fluid.placement.x, fluid.placement.y, fluid.placement.w, fluid.placement.h) },
         uHead: { value: new THREE.Vector3(0, this.eyeY, 0) }, uRadius: { value: space.space.radius_m },
         uPlaneCenter: { value: this.paintingCenter.clone() }, uPlaneRight: { value: new THREE.Vector3(this.paintingW, 0, 0) }, uPlaneUp: { value: new THREE.Vector3(0, this.paintingH, 0) },
-        uDye: { value: fluid.texture }, uFade: { value: 1 },
+        uDye: { value: fluid.texture }, uFade: { value: 1 }, uVivid: { value: 0 },
       },
     });
     this.morphMesh = new THREE.Mesh(geo, this.morphMat);
@@ -174,6 +178,7 @@ export class SpaceMode {
     fluid.step(dt);
     this.morphMat.uniforms.uDye.value = fluid.texture;
     this.morphMat.uniforms.uMorph.value = this.morph;
+    this.morphMat.uniforms.uVivid.value = Math.min(1, strength);
     // B / Y 長押しで戻る
     const { bHeld } = this.pollButtons();
     if (bHeld) { if (!this.bHoldStart) this.bHoldStart = now; else if (now - this.bHoldStart > 800 && this.stage !== 'S5') this.resolveEnd?.('exit'); } else this.bHoldStart = 0;

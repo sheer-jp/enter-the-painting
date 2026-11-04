@@ -44,7 +44,7 @@
     "vorticity": 0.61,
     "speed": 0.56,
     "quality": "high",
-    "restore": 0.005,
+    "restore": 0.008,
     "drive": 0.3
   },
   "space": {
@@ -118,35 +118,159 @@
       "name": "living-apartment",
       "image": "room_living-apartment.jpg",
       "label": {
-        "ja": "マンションのリビング（仮）",
-        "en": "Apartment living room (placeholder)"
+        "ja": "マンションのリビング",
+        "en": "Apartment living room"
       },
-      "wall_width_cm": 420,
+      "wall_width_cm": 320,
       "image_px": [
-        1600,
-        1000
+        1586,
+        992
       ],
       "quad_px": [
         [
-          891,
-          161
+          703,
+          185
         ],
         [
-          1093,
-          161
+          897,
+          185
         ],
         [
-          1093,
-          410
+          897,
+          423
         ],
         [
-          891,
-          410
+          703,
+          423
+        ]
+      ]
+    },
+    {
+      "name": "entrance-house",
+      "image": "room_entrance-house.jpg",
+      "label": {
+        "ja": "一軒家の玄関",
+        "en": "Entrance hall of a house"
+      },
+      "wall_width_cm": 245,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          641,
+          172
+        ],
+        [
+          809,
+          172
+        ],
+        [
+          809,
+          379
+        ],
+        [
+          641,
+          379
+        ]
+      ]
+    },
+    {
+      "name": "living-window",
+      "image": "room_living-window.jpg",
+      "label": {
+        "ja": "窓辺のリビング",
+        "en": "Living room by the window"
+      },
+      "wall_width_cm": 325,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          733,
+          169
+        ],
+        [
+          932,
+          169
+        ],
+        [
+          932,
+          413
+        ],
+        [
+          733,
+          413
+        ]
+      ]
+    },
+    {
+      "name": "living-chair",
+      "image": "room_living-chair.jpg",
+      "label": {
+        "ja": "椅子のあるリビング",
+        "en": "Living room with an armchair"
+      },
+      "wall_width_cm": 290,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          642,
+          170
+        ],
+        [
+          848,
+          170
+        ],
+        [
+          848,
+          425
+        ],
+        [
+          642,
+          425
+        ]
+      ]
+    },
+    {
+      "name": "living-sofa",
+      "image": "room_living-sofa.jpg",
+      "label": {
+        "ja": "ソファのあるリビング",
+        "en": "Living room with a sofa"
+      },
+      "wall_width_cm": 330,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          647,
+          237
+        ],
+        [
+          833,
+          237
+        ],
+        [
+          833,
+          467
+        ],
+        [
+          647,
+          467
         ]
       ]
     }
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T09:14:59.559Z"
+  "generated_at": "2026-11-04T11:04:24.146Z"
 }

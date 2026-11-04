@@ -1,11 +1,38 @@
 {
   "name": "living-apartment",
-  "label": { "ja": "マンションのリビング（仮）", "en": "Apartment living room (placeholder)" },
-  "scene": "マンションのリビング。ソファの向かいの白い壁。朝の光。（開発用の仮画像）",
-  "image_width_px": 1600,
+  "label": {
+    "ja": "マンションのリビング",
+    "en": "Apartment living room"
+  },
+  "scene": "マンションのリビング。ソファと椅子の間の白い壁。窓からの光。",
   "wall": {
-    "corners_px": [[0, 0], [1600, 0], [1600, 680], [0, 680]],
-    "width_cm": 420,
-    "hang_center_ratio": [0.62, 0.42]
-  }
+    "corners_px": [
+      [
+        215,
+        0
+      ],
+      [
+        1385,
+        0
+      ],
+      [
+        1385,
+        845
+      ],
+      [
+        215,
+        845
+      ]
+    ],
+    "width_cm": 320,
+    "hang_center_ratio": [
+      0.5,
+      0.36
+    ]
+  },
+  "suits_cm": [
+    30,
+    120
+  ],
+  "image_width_px": 1586
 }

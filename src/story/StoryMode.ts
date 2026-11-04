@@ -13,10 +13,15 @@ export interface StoryCtx {
 }
 
 const DISPLAY_FRAG = /* glsl */ `
-varying vec2 vUv; uniform sampler2D uDye; uniform vec4 uView; uniform float uFade;
+varying vec2 vUv; uniform sampler2D uDye; uniform vec4 uView; uniform float uFade; uniform float uVivid;
 void main() {
   vec2 uv = uView.xy + vUv * uView.zw;
-  gl_FragColor = vec4(texture2D(uDye, uv).rgb * uFade, 1.0);
+  vec3 c = texture2D(uDye, uv).rgb;
+  // 流れている間（uVivid 0〜1）は彩度とコントラストをわずかに上げ、混ざって鈍った色を戻す
+  float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  c = mix(vec3(luma), c, 1.0 + 0.35 * uVivid);
+  c = (c - 0.5 * luma * uVivid * 0.1) * (1.0 + 0.08 * uVivid);
+  gl_FragColor = vec4(max(c, 0.0) * uFade, 1.0);
   #include <colorspace_fragment>
 }`;
 const VERT = /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
@@ -72,7 +77,7 @@ export class StoryMode {
     const { fluid, renderer, space, canvas } = this.ctx;
     this.layout();
     if (fluid && renderer) {
-      this.mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: DISPLAY_FRAG, uniforms: { uDye: { value: fluid.texture }, uView: { value: new THREE.Vector4(fluid.placement.x, fluid.placement.y, fluid.placement.w, fluid.placement.h) }, uFade: { value: 0 } }, depthTest: false });
+      this.mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: DISPLAY_FRAG, uniforms: { uDye: { value: fluid.texture }, uView: { value: new THREE.Vector4(fluid.placement.x, fluid.placement.y, fluid.placement.w, fluid.placement.h) }, uFade: { value: 0 }, uVivid: { value: 0 } }, depthTest: false });
       this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.mat);
       this.scene.add(this.mesh);
       renderer.setClearColor(0x000000, 1);
@@ -126,6 +131,7 @@ export class StoryMode {
       this.mesh.scale.set(this.scaleNow.x, this.scaleNow.y, 1);
       this.mesh.position.set(this.posNow.x, this.posNow.y, 0);
       this.mat.uniforms.uFade.value = this.fade;
+      this.mat.uniforms.uVivid.value = Math.min(1, this.strength);
       this.mat.uniforms.uDye.value = fluid.texture;
       renderer.setRenderTarget(null);
       renderer.render(this.scene, this.camera);
