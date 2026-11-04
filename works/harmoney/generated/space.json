@@ -13,8 +13,8 @@
     "pt": "Harmoney"
   },
   "size_cm": [
-    41,
-    51
+    53,
+    65.2
   ],
   "aspect": 0.808,
   "year": 2025,
@@ -119,5 +119,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-03T04:23:38.674Z"
+  "generated_at": "2026-11-04T07:17:00.153Z"
 }

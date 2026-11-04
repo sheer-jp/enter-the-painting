@@ -1,9 +1,18 @@
 {
   "id": "harmoney",
-  "title": { "ja": "Harmoney", "en": "Harmoney" },
+  "title": {
+    "ja": "Harmoney",
+    "en": "Harmoney"
+  },
   "year": 2025,
-  "size_cm": [41, 51],
-  "medium": { "ja": "キャンバスにアクリル", "en": "Acrylic on canvas" },
+  "size_cm": [
+    53,
+    65.2
+  ],
+  "medium": {
+    "ja": "キャンバスにアクリル",
+    "en": "Acrylic on canvas"
+  },
   "messages": [
     "（下書き。作家が書き直す）色と色がぶつかって、ほどけて、また重なる。",
     "そのたびに、小さな調和が生まれては消えていった。",
@@ -15,5 +24,6 @@
     "ambient": "calm"
   },
   "availability": "available",
-  "overrides": {}
+  "overrides": {},
+  "note": "F15 号（65.2 × 53.0 cm）、縦位置"
 }

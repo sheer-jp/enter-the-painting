@@ -15,7 +15,9 @@ export interface RunOptions {
 const loadTexture = (url: string) => new Promise<THREE.Texture>((res, rej) => new THREE.TextureLoader().load(url, res, undefined, rej));
 
 export async function run(o: RunOptions): Promise<void> {
-  const base = `../../works/${o.workId}/`;
+  // 作品ページは /w/<id>/ にあるので既定は ../../。別の場所に置くとき（アーティファクトなど）は meta で差し替える
+  const assetBase = document.querySelector<HTMLMetaElement>('meta[name="asset-base"]')?.content ?? '../../';
+  const base = `${assetBase}works/${o.workId}/`;
   const space: Space = await fetch(base + 'generated/space.json').then((r) => { if (!r.ok) throw new Error('space.json ' + r.status); return r.json(); });
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const stage = document.getElementById('stage')!;
