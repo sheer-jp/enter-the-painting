@@ -43,6 +43,26 @@ async function vrAvailable(): Promise<boolean> {
   } catch { return false; }
 }
 
+// 気分から絵をすすめる（ギャラリー）：入口に触れたとき（選択肢を押す / 入力欄にフォーカス）に import() で読む
+const rec = document.getElementById('recommend');
+if (rec) {
+  const api = document.querySelector<HTMLMetaElement>('meta[name="recommend-api"]')?.content.trim() || null;
+  let loading: Promise<void> | null = null;
+  const mount = () => (loading ||= import('./recommend/index').then((m) => {
+    off();
+    m.mountRecommend(rec, { lang, api, catalogUrl: 'catalog.json' });
+  }).catch((e) => { loading = null; console.warn('おすすめを読めない', e); }));
+  // 読み込み前の操作は止めておき、読めたらもう一度起こす
+  const later = (e: Event, again: () => void) => { e.preventDefault(); e.stopImmediatePropagation(); mount().then(() => { if (!loading) return; again(); }); };
+  const onClick = (e: Event) => { const b = (e.target as Element).closest('button'); if (b && rec.contains(b)) later(e, () => b.click()); };
+  const onSubmit = (e: Event) => later(e, () => (e.target as HTMLFormElement).requestSubmit());
+  const onFocus = () => { mount(); };
+  const off = () => { rec.removeEventListener('click', onClick, true); rec.removeEventListener('submit', onSubmit, true); rec.removeEventListener('focusin', onFocus); };
+  rec.addEventListener('click', onClick, true);
+  rec.addEventListener('submit', onSubmit, true);
+  rec.addEventListener('focusin', onFocus);
+}
+
 if (workId) {
   const enter = document.getElementById('enter') as HTMLButtonElement;
   const enterVr = document.getElementById('enter-vr') as HTMLButtonElement;

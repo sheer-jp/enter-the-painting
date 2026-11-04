@@ -3,7 +3,7 @@
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');   // 事前インストール済みの Playwright を使う
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, existsSync, copyFileSync, rmSync } from 'node:fs';
 
 const args = process.argv.slice(2);
 const shotsDir = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : null;
@@ -71,8 +71,51 @@ async function runCase(name, { webgl = true, lang = 'ja', query = '' } = {}) {
   await browser.close();
 }
 
+// 気分から絵をすすめる（docs/RECOMMEND.md 8.8）：選択肢を押す → API が無いのでルールだけの版 → 3 問に答える → おすすめ
+// dist/catalog.json がまだ無いとき（catalog.js が未実装のビルド）は、試験用のカタログを一時的に置いて、終わったら消す
+async function recommendCase() {
+  const catPath = 'dist/catalog.json';
+  const borrowed = !existsSync(catPath);
+  if (borrowed) { copyFileSync('tests/fixtures/catalog.json', catPath); console.log('  （dist/catalog.json が無いので tests/fixtures/catalog.json を一時的に使う）'); }
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage({ locale: 'ja', viewport: { width: 420, height: 800 } });
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'load' });
+    const openers = await page.locator('#recommend .rec-openers button[data-opener-index]').count();
+    check(openers === 3, `recommend: JS の前から選択肢 ${openers} 個`);
+    await page.click('#recommend .rec-openers button[data-opener-index="0"]');
+    for (let i = 0; i < 3; i++) {
+      const choice = page.locator('#recommend .rec-choices button').first();
+      await choice.waitFor({ timeout: 15000 });
+      if (i === 0) check(true, 'recommend: ルールだけの版の問いが出る');
+      await choice.click();
+    }
+    const card = page.locator('#recommend .rec-card');
+    await card.waitFor({ timeout: 5000 });
+    const imgOk = await card.locator('.rec-fig img').evaluate((img) => new Promise((res) => {
+      if (img.complete) return res(img.naturalWidth > 0);
+      img.onload = () => res(img.naturalWidth > 0); img.onerror = () => res(false);
+    }));
+    check(imgOk, 'recommend: おすすめの絵の画像が出る');
+    const enter = card.locator('.rec-enter');
+    const enterText = (await enter.textContent())?.trim();
+    const href = await enter.getAttribute('href');
+    check(enterText === 'この絵の中に入る' && /\?via=recommend$/.test(href || ''), `recommend: 「${enterText}」→ ${href}`);
+    if (shotsDir) await page.screenshot({ path: `${shotsDir}/recommend.png`, fullPage: true });
+    await page.click('#recommend .rec-again');
+    const back = await page.locator('#recommend .rec-openers').isVisible();
+    check(back, 'recommend: 「もう一度」で最初に戻る');
+    check(errors.length === 0, `recommend: エラー ${errors.length}${errors.length ? '\n    ' + errors.join('\n    ') : ''}`);
+  } finally {
+    await browser.close();
+    if (borrowed) rmSync(catPath, { force: true });
+  }
+}
+
 try {
-  await runCase('story', { webgl: true, lang: 'ja', query: '?from=qr' });
+  await runCase('story',{ webgl: true, lang: 'ja', query: '?from=qr' });
   await runCase('story-en', { webgl: true, lang: 'en-US' });
   await runCase('static-fallback', { webgl: false, lang: 'ja' });
   // ギャラリー
@@ -87,6 +130,7 @@ try {
   check(footText?.includes('cookies'), `gallery: フランス語設定でフランス語（${footText}）`);
   check(errors.length === 0, `gallery: エラー ${errors.length}`);
   await browser.close();
+  await recommendCase();
 } catch (e) {
   console.error(e); failed++;
 } finally {

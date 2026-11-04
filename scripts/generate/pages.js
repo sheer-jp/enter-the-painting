@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { LANGS } from './translate.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -104,6 +105,13 @@ export function galleryPage({ works, baseUrl }) {
       <span class="cap"><b>${esc(t(w.title, 'ja'))}</b>${w.size_cm[0]} × ${w.size_cm[1]} cm</span>
     </a>`;
   }).join('');
+  // 気分から絵をすすめる（docs/RECOMMEND.md 8.7）：入口は JS の前に出す。選択肢は recommend/config.json（ja・en）。他の言語は mountRecommend が catalog.json で差し替える
+  let rec = { openers: { ja: ['朝、静かに始めたい', '夜、ひとりで息をつきたい', '人を迎える部屋に彩りを'] } };
+  try { rec = JSON.parse(readFileSync(new URL('../../recommend/config.json', import.meta.url), 'utf8')); } catch {}
+  const openers = (rec.openers?.ja || []).slice(0, 3).map((ja, i) => {
+    const en = rec.openers?.en?.[i];
+    return `<button type="button" class="rec-opt" data-opener-index="${i}"><span lang="ja" data-lang="ja">${esc(ja)}</span>${en ? `<span lang="en" data-lang="en" hidden>${esc(en)}</span>` : ''}</button>`;
+  }).join('\n      ');
   return `<!doctype html>
 <html lang="ja">
 <head>
@@ -115,6 +123,7 @@ export function galleryPage({ works, baseUrl }) {
 <meta property="og:image" content="${baseUrl}/works/${works[0]?.id}/generated/painting_1024.jpg">
 <meta property="og:url" content="${baseUrl}/">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="recommend-api" content="${esc(process.env.RECOMMEND_API ?? '/api/recommend')}">
 ${FONTS}
 <link rel="stylesheet" href="src/ui/page.css">
 </head>
@@ -122,6 +131,14 @@ ${FONTS}
 <main class="gallery">
   <div class="top">${brand('./')}${langSel()}</div>
   <section class="statement"><h1>${UI_JA.statement}</h1><p>${UI_JA.statement_en}</p></section>
+  <section class="recommend" id="recommend" aria-labelledby="rec-title">
+    <h2 id="rec-title" data-i18n="rec_title">どんな気分のときに、絵を見たいですか</h2>
+    <div class="rec-openers">
+      ${openers}
+    </div>
+    <div class="rec-thread" aria-live="polite"></div>
+    <form class="rec-form" action="#recommend"><input name="q" type="text" maxlength="600" autocomplete="off" enterkeyhint="send" placeholder="いまの気分を、ひとことで" aria-label="いまの気分を、ひとことで"><button type="submit" data-i18n="rec_send">送る</button></form>
+  </section>
   <div class="wall">${items}</div>
   <footer><span data-i18n="privacy">${UI_JA.privacy}</span><span>© sheerarts</span></footer>
 </main>

@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "artist": {
+    "intro": {
+      "ja": "sheer は、色がぶつかってほどける瞬間を描く抽象画の作家です。",
+      "en": "sheer is an abstract painter who paints the moment colors collide and come undone."
+    }
+  },
+  "openers": {
+    "ja": ["朝、静かに始めたい", "夜、ひとりで息をつきたい", "人を迎える部屋に彩りを"],
+    "en": ["To start the morning quietly", "To breathe alone at night", "To color a room where I welcome people"]
+  },
+  "turns": [2, 4],
+  "works": [
+    {
+      "id": "harmoney",
+      "title": { "ja": "Harmoney", "en": "Harmoney" },
+      "size_cm": [53, 65.2],
+      "size_label": "F15",
+      "year": 2025,
+      "availability": "available",
+      "palette": ["#a47a62", "#d9a441", "#c4553a", "#2f4f6b"],
+      "axes": { "warmth": 0.72, "brightness": 0.58, "energy": 0.81 },
+      "moods": { "ja": ["朝の光", "ぶつかって、ほどける", "にぎやかな静けさ"], "en": ["Morning light", "Colliding, coming undone", "A lively stillness"] },
+      "messages": { "ja": ["色と色がぶつかって、ほどけて、また重なる。"], "en": ["Colors collide, come undone, and overlap again."] },
+      "story": { "ja": "（試験用の物語）", "en": "(A story for tests)" },
+      "image": "works/harmoney/generated/painting_1024.jpg",
+      "url": "w/harmoney/"
+    },
+    {
+      "id": "sample-blue",
+      "title": { "ja": "青い底", "en": "Blue Depth" },
+      "size_cm": [22.7, 15.8],
+      "size_label": "SM",
+      "year": 2025,
+      "availability": "available",
+      "palette": ["#1d2b3a", "#2f4f6b", "#5d7a8c"],
+      "axes": { "warmth": 0.15, "brightness": 0.3, "energy": 0.2 },
+      "moods": { "ja": ["夜の水", "しずかな呼吸"], "en": ["Night water", "A quiet breath"] },
+      "messages": { "ja": ["（試験用）深いところで、音が止まる。"], "en": ["(For tests) Deep down, the sound stops."] },
+      "story": { "ja": "（試験用の物語）", "en": "(A story for tests)" },
+      "image": "works/harmoney/generated/painting_1024.jpg",
+      "url": "w/harmoney/"
+    }
+  ]
+}
