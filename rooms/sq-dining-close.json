@@ -40,9 +40,10 @@
     ]
   },
   "hang": {
-    "x_px": 470,
+    "x_px": 440,
     "floor_y_px": 985,
-    "center_from_floor_cm": 138
+    "center_from_floor_cm": 138,
+    "note": "座って見る高さ。ペンダントの左、壁の空きの中央寄り"
   },
   "occlusion": {
     "mode": "wall-key",

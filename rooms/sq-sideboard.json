@@ -42,7 +42,9 @@
   "hang": {
     "x_px": 512,
     "floor_y_px": 775,
-    "center_from_floor_cm": 140
+    "furniture_top_y_px": 600,
+    "gap_cm": 20,
+    "note": "ローボードの天板の上端から 20cm 上に下端（前は中心 140cm で、62cm も浮いていた）"
   },
   "suits_cm": [
     20,

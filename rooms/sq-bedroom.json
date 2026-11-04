@@ -42,8 +42,9 @@
   "hang": {
     "x_px": 512,
     "floor_y_px": 917,
-    "bottom_from_floor_cm": 110,
-    "note": "ヘッドボード（90cm）の上端 + 20cm"
+    "furniture_top_y_px": 540,
+    "gap_cm": 20,
+    "note": "ヘッドボードの上端から 20cm 上に下端"
   },
   "occlusion": {
     "mode": "wall-key",

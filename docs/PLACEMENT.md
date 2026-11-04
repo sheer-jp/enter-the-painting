@@ -55,5 +55,5 @@
 
 ## 5. 縮尺と高さに反映すること
 
-- `hang.center_from_floor_cm`：立って見る壁 145、座って見る場所 138、家具の上は「家具の上端 + 20 cm = 絵の下端」から中心を計算（`hang.above_furniture_top_cm` を足し、`generate` が中心を計算）
+- `hang.center_from_floor_cm`：立って見る壁 145、座って見る場所 138。家具の上に掛けるときは **`hang.furniture_top_y_px`（家具の上端の画素）+ `gap_cm`（既定 20）** で下端を決める（11-04 変更：床の線から cm で決めると、家具が壁より手前のときや床の線の読み違いで浮いて見えた。ローボードの部屋で 62 cm 浮いていた）。`bottom_from_floor_cm` も残す
 - `rooms/REFERENCES.json`：`door_interior` 200（枠 202）、`door_interior_old` 185、`ceiling` 240、`ceiling_old` 230、`sofa_2seat` 高さ 80 / 幅 160、`shoe_cabinet` 高さ 90、`sideboard` 高さ 80、`dining_table` 高さ 72、`bed_single` 幅 100 / マットレス上端 50、`headboard` 高さ 90

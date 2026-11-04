@@ -81,11 +81,25 @@ export function paintingRectFromScale(def, sizeCm, imageWidthPx) {
   const pxPerCm = def.scale.px_per_cm * k;
   const w = sizeCm[0] * pxPerCm, h = sizeCm[1] * pxPerCm;
   const cx = def.hang.x_px * k;
-  // 掛ける高さ：中心（立って見る壁 145cm など）か、下端（家具の上端 + 20cm）のどちらかで指定
-  const centerCm = def.hang.center_from_floor_cm ?? (def.hang.bottom_from_floor_cm + sizeCm[1] / 2);
-  const cy = def.hang.floor_y_px * k - centerCm * pxPerCm;
+  // 掛ける高さ：3 通り。(a) 家具の上端の画素 furniture_top_y_px から gap_cm（既定 20）上に下端（家具が壁より手前でも、床の線の読み違いでもずれない。家具の上に掛けるときはこれ）
+  // (b) 下端 bottom_from_floor_cm（床の線から）、(c) 中心 center_from_floor_cm（立って見る壁 145cm など）
+  let cy;
+  if (def.hang.furniture_top_y_px != null) cy = def.hang.furniture_top_y_px * k - (def.hang.gap_cm ?? 20) * pxPerCm - h / 2;
+  else {
+    const centerCm = def.hang.center_from_floor_cm ?? (def.hang.bottom_from_floor_cm + sizeCm[1] / 2);
+    cy = def.hang.floor_y_px * k - centerCm * pxPerCm;
+  }
   const x0 = cx - w / 2, x1 = cx + w / 2, y0 = cy - h / 2, y1 = cy + h / 2;
   return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+}
+
+// 絵の中心の床からの高さ（cm）。文章用。家具の上端で決めたときは、置いた位置と床の線から逆算する
+// quad と pxPerCm は実際に使う画像幅（k 倍）で揃っていること。k は def.image_width_px に対する比率
+export function hangCenterCm(def, sizeCm, quad, pxPerCm, k = 1) {
+  if (def.hang.center_from_floor_cm != null) return def.hang.center_from_floor_cm;
+  if (def.hang.bottom_from_floor_cm != null) return Math.round(def.hang.bottom_from_floor_cm + sizeCm[1] / 2);
+  const cy = (quad[0][1] + quad[2][1]) / 2;
+  return Math.round((def.hang.floor_y_px * k - cy) / pxPerCm);
 }
 
 // ---- 手前の物と絵の前後（docs/SIZE_UX.md 11 節）----
@@ -482,7 +496,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
 
     // 顧客向けの文章（ja / en。他の言語は index.js で翻訳キャッシュから）
     const texts = def.references?.length
-      ? roomTexts({ references: def.references, table, sizeCm: work.size_cm, confidence: sc.confidence, wallWidthCm, centerFromFloorCm: def.hang.center_from_floor_cm ?? Math.round(def.hang.bottom_from_floor_cm + work.size_cm[1] / 2), aboveFurniture: def.hang.bottom_from_floor_cm != null })
+      ? roomTexts({ references: def.references, table, sizeCm: work.size_cm, confidence: sc.confidence, wallWidthCm, centerFromFloorCm: hangCenterCm(def, work.size_cm, quad, pxPerCm, scale), aboveFurniture: def.hang.bottom_from_floor_cm != null || def.hang.furniture_top_y_px != null })
       : { compare: null, compare2: null, about: null, note: null, primary_ref: null };
 
     results.push({

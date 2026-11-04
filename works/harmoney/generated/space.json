@@ -53,6 +53,7 @@
     "quality": "high",
     "restore": 0.014,
     "drive": 0.3,
+    "tempo": 0.6,
     "look": {
       "relief": 0.5,
       "gloss": 0.18,
@@ -149,19 +150,19 @@
       "quad_px": [
         [
           423,
-          241
+          263
         ],
         [
           637,
-          241
+          263
         ],
         [
           637,
-          505
+          527
         ],
         [
           423,
-          505
+          527
         ]
       ],
       "px_per_cm": 4.045,
@@ -173,8 +174,8 @@
       },
       "compare2": null,
       "about": {
-        "ja": "壁の幅は約 2.5 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 140 cm）。",
-        "en": "The wall is about 2.5 m wide. The painting hangs about 20 cm above the furniture (center about 140 cm from the floor)."
+        "ja": "壁の幅は約 2.5 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 130 cm）。",
+        "en": "The wall is about 2.5 m wide. The painting hangs about 20 cm above the furniture (center about 130 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
@@ -198,19 +199,19 @@
       "quad_px": [
         [
           406,
-          85
+          259
         ],
         [
           618,
-          85
+          259
         ],
         [
           618,
-          345
+          520
         ],
         [
           406,
-          345
+          520
         ]
       ],
       "px_per_cm": 4,
@@ -225,8 +226,8 @@
         "en": "About 1.6 times the height of the low board (about 42 cm)."
       },
       "about": {
-        "ja": "壁の幅は約 2.6 m。目の高さ（床から約 140 cm）に掛けています。",
-        "en": "The wall is about 2.6 m wide. The painting hangs at eye level (about 140 cm from the floor)."
+        "ja": "壁の幅は約 2.6 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 95 cm）。",
+        "en": "The wall is about 2.6 m wide. The painting hangs about 20 cm above the furniture (center about 95 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
@@ -249,19 +250,19 @@
       ],
       "quad_px": [
         [
-          358,
+          328,
           262
         ],
         [
-          582,
+          552,
           262
         ],
         [
-          582,
+          552,
           539
         ],
         [
-          358,
+          328,
           539
         ]
       ],
@@ -302,19 +303,19 @@
       "quad_px": [
         [
           399,
-          172
+          178
         ],
         [
           625,
-          172
+          178
         ],
         [
           625,
-          450
+          455
         ],
         [
           399,
-          450
+          455
         ]
       ],
       "px_per_cm": 4.25,
@@ -329,8 +330,8 @@
         "en": "About two thirds the height of the headboard (about 90 cm)."
       },
       "about": {
-        "ja": "壁の幅は約 2.4 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 145 cm）。",
-        "en": "The wall is about 2.4 m wide. The painting hangs about 20 cm above the furniture (center about 145 cm from the floor)."
+        "ja": "壁の幅は約 2.4 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 140 cm）。",
+        "en": "The wall is about 2.4 m wide. The painting hangs about 20 cm above the furniture (center about 140 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
@@ -445,5 +446,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T14:56:56.628Z"
+  "generated_at": "2026-11-04T15:03:02.317Z"
 }

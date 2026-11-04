@@ -42,8 +42,9 @@
   "hang": {
     "x_px": 530,
     "floor_y_px": 930,
-    "bottom_from_floor_cm": 105,
-    "note": "ソファの背（85cm）の上端 + 20cm"
+    "furniture_top_y_px": 608,
+    "gap_cm": 20,
+    "note": "ソファの背の上端（画素）から 20cm 上に下端。ソファは壁より手前なので床の線からは決めない"
   },
   "suits_cm": [
     30,
