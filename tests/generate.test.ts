@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { kmeans, toHex, textColor, backColor } from '../scripts/generate/color.js';
 import { structureTensorFlow, motionFromFlow } from '../scripts/generate/flow.js';
-import { homographyFromUnitSquare, invert3, paintingQuadOnWall } from '../scripts/generate/rooms.js';
+import { homographyFromUnitSquare, invert3, paintingQuadOnWall, paintingRectFromScale } from '../scripts/generate/rooms.js';
 import { key } from '../scripts/generate/translate.js';
 import { normalizeLang, pickLang } from '../src/i18n/normalize';
 
@@ -54,6 +54,15 @@ describe('部屋の射影', () => {
     const q = paintingQuadOnWall(wall, [30, 18]);
     expect(q[1][0] - q[0][0]).toBeCloseTo(100);
     expect(q[3][1] - q[0][1]).toBeCloseTo(60);
+  });
+  it('px/cm=4 で 50×60cm の絵は 200×240px、中心は床から 150cm 上', () => {
+    const def = { scale: { px_per_cm: 4 }, hang: { x_px: 500, floor_y_px: 800, center_from_floor_cm: 150 } };
+    const q = paintingRectFromScale(def, [50, 60]);
+    expect(q[1][0] - q[0][0]).toBeCloseTo(200);
+    expect(q[3][1] - q[0][1]).toBeCloseTo(240);
+    expect((q[0][0] + q[2][0]) / 2).toBeCloseTo(500);
+    expect((q[0][1] + q[2][1]) / 2).toBeCloseTo(200);
+    expect(q[2][0]).toBeGreaterThan(q[3][0]); // 左上から時計回り
   });
 });
 

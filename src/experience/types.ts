@@ -10,6 +10,6 @@ export interface Space {
   audio: { voice: string | null; ambient: 'calm' | 'wind' | 'water' | 'drone' | 'none' };
   messages: ({ at: number } & Multi)[];
   story: Multi | null;
-  rooms: { name: string; image: string; label: Multi; wall_width_cm: number; image_px?: [number, number]; quad_px?: [number, number][] }[];
+  rooms: { name: string; image: string; label: Multi; wall_width_cm: number; image_px?: [number, number]; quad_px?: [number, number][]; close?: string; px_per_cm?: number; confidence?: string | null }[];
   availability: string | null; contact: string | null;
 }

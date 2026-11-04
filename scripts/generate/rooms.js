@@ -1,7 +1,7 @@
 // 部屋のイメージ（AI 生成、rooms/ に共用）に、絵の写真を壁の 4 隅へ射影して貼る。
 // sharp.affine() はアフィンのみなので、ホモグラフィの逆写像を自前で行う（バイリニア補間）
 import sharp from 'sharp';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 // 単位正方形 (0,0)-(1,1) → 4 点 への射影行列 H（3×3、行優先）
@@ -74,6 +74,51 @@ export function warpOnto(room, painting, quad, { shadow = 0.35 } = {}) {
   return out;
 }
 
+// 基準物から出した px/cm で、正面の壁に絵を置く 4 隅を求める（左上から時計回り、長方形）
+// imageWidthPx：実際に使う画像の幅。def.image_width_px と違えば、その比率を px/cm と座標に掛ける
+export function paintingRectFromScale(def, sizeCm, imageWidthPx) {
+  const k = imageWidthPx && def.image_width_px ? imageWidthPx / def.image_width_px : 1;
+  const pxPerCm = def.scale.px_per_cm * k;
+  const w = sizeCm[0] * pxPerCm, h = sizeCm[1] * pxPerCm;
+  const cx = def.hang.x_px * k;
+  const cy = def.hang.floor_y_px * k - def.hang.center_from_floor_cm * pxPerCm;
+  const x0 = cx - w / 2, x1 = cx + w / 2, y0 = cy - h / 2, y1 = cy + h / 2;
+  return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+}
+
+const bbox = (pts) => {
+  const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+  return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
+};
+const xmlEsc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const fmt = (v) => String(+v.toFixed(2));
+
+// 寄りの切り出し範囲：絵の中心を中心に、高さ = 絵の高さ × 3、16:10。画像の端を超えるなら端に寄せる
+export function closeCropRect(quad, imgW, imgH) {
+  const b = bbox(quad);
+  const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
+  let h = (b.y1 - b.y0) * 3, w = h * 1.6;
+  if (w > imgW) { w = imgW; h = w / 1.6; }
+  if (h > imgH) { h = imgH; w = h * 1.6; }
+  w = Math.round(w); h = Math.round(h);
+  const left = Math.round(Math.min(Math.max(0, cx - w / 2), imgW - w));
+  const top = Math.round(Math.min(Math.max(0, cy - h / 2), imgH - h));
+  return { left, top, width: w, height: h };
+}
+
+// 確認用の重ね描き（SVG）：絵の枠（赤）、床の線（青、画像内のときだけ）、左上に縮尺の文字
+function checkOverlaySvg({ width, height, quad, floorY, lines }) {
+  const pts = quad.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const floor = floorY >= 0 && floorY < height ? `<line x1="0" y1="${floorY.toFixed(1)}" x2="${width}" y2="${floorY.toFixed(1)}" stroke="#2060ff" stroke-width="3"/>` : '';
+  const text = lines.map((l, i) => `<text x="16" y="${34 + i * 28}">${xmlEsc(l)}</text>`).join('');
+  return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+  <polygon points="${pts}" fill="none" stroke="#ff2020" stroke-width="3"/>
+  ${floor}
+  <rect x="6" y="6" width="${Math.min(width - 12, 1100)}" height="${lines.length * 28 + 16}" fill="rgba(255,255,255,0.8)"/>
+  <g font-family="Noto Sans CJK JP, WenQuanYi Zen Hei, sans-serif" font-size="20" fill="#111">${text}</g>
+</svg>`);
+}
+
 export async function compositeRooms({ root, work, paintingPath, outDir, aspect }) {
   const roomsDir = join(root, 'rooms');
   if (!existsSync(roomsDir)) return [];
@@ -84,6 +129,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir, aspect 
     return !d.suits_cm || (longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1]);
   });
   const painting = await sharp(paintingPath).resize({ width: 800 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const checkDir = join(roomsDir, 'check');
   const results = [];
   for (const name of names) {
     const jsonPath = join(roomsDir, `${name}.json`);
@@ -91,13 +137,54 @@ export async function compositeRooms({ root, work, paintingPath, outDir, aspect 
     if (!existsSync(jsonPath) || !imgPath) { console.warn(`  部屋 ${name} の json か画像が無い。スキップ`); continue; }
     const def = JSON.parse(readFileSync(jsonPath, 'utf8'));
     const room = await sharp(imgPath).resize({ width: 1600, withoutEnlargement: true }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-    const scale = room.info.width / (def.image_width_px || room.info.width);
+    const W = room.info.width, H = room.info.height;
+    const scale = W / (def.image_width_px || W);
     const wall = { ...def.wall, corners_px: def.wall.corners_px.map(([x, y]) => [x * scale, y * scale]) };
-    const quad = paintingQuadOnWall(wall, work.size_cm);
-    const buf = warpOnto({ data: room.data, width: room.info.width, height: room.info.height }, { data: painting.data, width: painting.info.width, height: painting.info.height }, quad);
+    let quad, pxPerCm = null, wallWidthCm = def.wall.width_cm;
+    if (def.scale) {
+      // 新方式：基準物から出した px/cm
+      pxPerCm = def.scale.px_per_cm * scale;
+      quad = paintingRectFromScale(def, work.size_cm, W);
+      const wb = bbox(wall.corners_px), pb = bbox(quad);
+      wallWidthCm = Math.round((wb.x1 - wb.x0) / pxPerCm);
+      const eps = 0.5;
+      if (pb.x0 < wb.x0 - eps || pb.y0 < wb.y0 - eps || pb.x1 > wb.x1 + eps || pb.y1 > wb.y1 + eps) {
+        console.warn(`  部屋 ${name}：絵（${work.size_cm[0]}×${work.size_cm[1]}cm = ${Math.round(pb.x1 - pb.x0)}×${Math.round(pb.y1 - pb.y0)}px）が壁の範囲（${Math.round(wb.x0)},${Math.round(wb.y0)}〜${Math.round(wb.x1)},${Math.round(wb.y1)}px）からはみ出す。スキップ`);
+        continue;
+      }
+    } else {
+      // 従来の方式（後方互換）：壁幅 cm から縮尺を出す
+      quad = paintingQuadOnWall(wall, work.size_cm);
+    }
+    const buf = warpOnto({ data: room.data, width: W, height: H }, { data: painting.data, width: painting.info.width, height: painting.info.height }, quad);
+    const raw = { raw: { width: W, height: H, channels: 3 } };
     const outName = `room_${name}.jpg`;
-    await sharp(buf, { raw: { width: room.info.width, height: room.info.height, channels: 3 } }).jpeg({ quality: 85 }).toFile(join(outDir, outName));
-    results.push({ name, image: outName, label: def.label || { ja: name }, wall_width_cm: def.wall.width_cm, image_px: [room.info.width, room.info.height], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]) });
+    await sharp(buf, raw).jpeg({ quality: 85 }).toFile(join(outDir, outName));
+
+    // 寄りの画像：幅 1200px
+    const closeName = `room_${name}_close.jpg`;
+    await sharp(buf, raw).extract(closeCropRect(quad, W, H)).resize({ width: 1200 }).jpeg({ quality: 85 }).toFile(join(outDir, closeName));
+
+    // 確認用画像：rooms/check/<name>_<workId>.jpg
+    if (def.scale) {
+      mkdirSync(checkDir, { recursive: true });
+      const pb = bbox(quad);
+      const wPx = Math.round(pb.x1 - pb.x0), hPx = Math.round(pb.y1 - pb.y0);
+      const basis = def.scale.basis?.ja || def.scale.basis?.en || '';
+      const lines = [
+        `px/cm=${fmt(pxPerCm)}  絵 ${work.size_cm[0]}×${work.size_cm[1]}cm = ${wPx}×${hPx}px  confidence=${def.scale.confidence || '?'}`,
+        `basis=${basis}`,
+        ...(def.scale.cross_check?.ja ? [`cross_check=${def.scale.cross_check.ja}`] : []),
+      ];
+      const svg = checkOverlaySvg({ width: W, height: H, quad, floorY: def.hang.floor_y_px * scale, lines });
+      await sharp(buf, raw).composite([{ input: svg, top: 0, left: 0 }]).jpeg({ quality: 85 }).toFile(join(checkDir, `${name}_${work.id}.jpg`));
+    }
+
+    results.push({
+      name, image: outName, close: closeName, label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
+      image_px: [W, H], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]),
+      ...(def.scale ? { px_per_cm: +pxPerCm.toFixed(3), confidence: def.scale.confidence || null } : {}),
+    });
   }
   return results;
 }

@@ -6,7 +6,7 @@ const t = (obj, lang) => (obj && (obj[lang] || obj.ja || obj.en)) || '';
 const UI_JA = {
   enter: '入る', enter_vr: 'VR で入る', rooms: '部屋で見る', contact: '作家に連絡', share: '共有', others: '他の作品',
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
-  rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語',
+  rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', close_view: '寄り',
   gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '計測は Cookie なし、IP は保存しません',
   statement: '小さな絵の、奥へ。', statement_en: 'Into the depth of a small painting.',
 };
@@ -33,7 +33,11 @@ export function workPage({ work, space, baseUrl, allWorks }) {
       <figure class="room">
         <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(title)} を部屋に置いたイメージ（AI 生成の部屋）" loading="lazy">
         <figcaption><span data-i18n="rooms_note">${UI_JA.rooms_note}</span>${r.wall_width_cm ? `（<span data-i18n="wall_note" data-i18n-w="${(r.wall_width_cm / 100).toFixed(1)}">壁幅 約 ${(r.wall_width_cm / 100).toFixed(1)} m として合成</span>）` : ''}</figcaption>
-      </figure>`).join('');
+      </figure>${r.close ? `
+      <figure class="room room-close">
+        <img src="../../works/${id}/generated/${esc(r.close)}" alt="${esc(title)} を部屋に置いたイメージ（AI 生成の部屋）（寄り）" loading="lazy">
+        <figcaption><span data-i18n="close_view">${UI_JA.close_view}</span></figcaption>
+      </figure>` : ''}`).join('');
   const story = space.story ? `
     <section class="story">
       <h2 class="eyebrow"><span>Story</span><span data-i18n="story_note">${UI_JA.story_note}</span></h2>

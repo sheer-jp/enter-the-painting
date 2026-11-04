@@ -117,104 +117,114 @@
     {
       "name": "living-apartment",
       "image": "room_living-apartment.jpg",
+      "close": "room_living-apartment_close.jpg",
       "label": {
         "ja": "マンションのリビング",
         "en": "Apartment living room"
       },
-      "wall_width_cm": 320,
+      "wall_width_cm": 322,
       "image_px": [
         1586,
         992
       ],
       "quad_px": [
         [
-          703,
-          185
+          704,
+          182
         ],
         [
-          897,
-          185
+          896,
+          182
         ],
         [
-          897,
-          423
+          896,
+          419
         ],
         [
-          703,
-          423
+          704,
+          419
         ]
-      ]
+      ],
+      "px_per_cm": 3.63,
+      "confidence": "high"
     },
     {
       "name": "entrance-house",
       "image": "room_entrance-house.jpg",
+      "close": "room_entrance-house_close.jpg",
       "label": {
         "ja": "一軒家の玄関",
         "en": "Entrance hall of a house"
       },
-      "wall_width_cm": 245,
+      "wall_width_cm": 229,
       "image_px": [
         1586,
         992
       ],
       "quad_px": [
         [
-          641,
-          172
+          635,
+          144
         ],
         [
-          809,
-          172
+          815,
+          144
         ],
         [
-          809,
-          379
+          815,
+          366
         ],
         [
-          641,
-          379
+          635,
+          366
         ]
-      ]
+      ],
+      "px_per_cm": 3.4,
+      "confidence": "mid"
     },
     {
       "name": "living-window",
       "image": "room_living-window.jpg",
+      "close": "room_living-window_close.jpg",
       "label": {
         "ja": "窓辺のリビング",
         "en": "Living room by the window"
       },
-      "wall_width_cm": 325,
+      "wall_width_cm": 324,
       "image_px": [
         1586,
         992
       ],
       "quad_px": [
         [
-          733,
-          169
+          731,
+          170
         ],
         [
-          932,
-          169
+          929,
+          170
         ],
         [
-          932,
-          413
+          929,
+          415
         ],
         [
-          733,
-          413
+          731,
+          415
         ]
-      ]
+      ],
+      "px_per_cm": 3.75,
+      "confidence": "high"
     },
     {
       "name": "living-chair",
       "image": "room_living-chair.jpg",
+      "close": "room_living-chair_close.jpg",
       "label": {
         "ja": "椅子のあるリビング",
         "en": "Living room with an armchair"
       },
-      "wall_width_cm": 290,
+      "wall_width_cm": 291,
       "image_px": [
         1586,
         992
@@ -222,55 +232,60 @@
       "quad_px": [
         [
           642,
-          170
+          167
         ],
         [
           848,
-          170
+          167
         ],
         [
           848,
-          425
+          419
         ],
         [
           642,
-          425
+          419
         ]
-      ]
+      ],
+      "px_per_cm": 3.88,
+      "confidence": "high"
     },
     {
       "name": "living-sofa",
       "image": "room_living-sofa.jpg",
+      "close": "room_living-sofa_close.jpg",
       "label": {
         "ja": "ソファのあるリビング",
         "en": "Living room with a sofa"
       },
-      "wall_width_cm": 330,
+      "wall_width_cm": 329,
       "image_px": [
         1586,
         992
       ],
       "quad_px": [
         [
-          647,
-          237
+          686,
+          235
         ],
         [
-          833,
-          237
+          874,
+          235
         ],
         [
-          833,
-          467
+          874,
+          466
         ],
         [
-          647,
-          467
+          686,
+          466
         ]
-      ]
+      ],
+      "px_per_cm": 3.53,
+      "confidence": "high"
     }
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T11:14:17.502Z"
+  "generated_at": "2026-11-04T11:32:32.931Z"
 }
