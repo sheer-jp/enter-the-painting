@@ -1,6 +1,6 @@
 // 物語モード（PC・スマホ）：T0 絵 → T1〜T2 近づきながら溶けて渦に吸い込まれる → T3 流れと語り → T4 余韻 → T5 終わり
 import * as THREE from 'three';
-import type { Fluid } from '../fluid/Fluid';
+import { touchStroke, touchVortex, tapStrength, TOUCH_TAP_MAX, type Fluid } from '../fluid/Fluid';
 import { SHADING, LIGHT_DIR, lookOf, shadingUniforms, updateShading } from '../fluid/shading';
 import type { Soundscape } from '../audio/Soundscape';
 import type { Hud } from '../experience/hud';
@@ -73,6 +73,8 @@ export class StoryMode {
   private fpsSamples: number[] = [];
   private resolveEnd: ((v: 'again' | 'exit') => void) | null = null;
   private restoreBase: number;
+  // 押している指・マウス（docs/EXPERIENCE.md 8.2）。渦は frame で毎フレーム育てる
+  private touch: { x: number; y: number; uv: [number, number] | null; p: number; startTime: number; moved: number; lastMoveTime: number } | null = null;
 
   constructor(private ctx: StoryCtx) {
     this.text = new ScreenText(ctx.hud.textLayer, ctx.space.text_color);
@@ -134,32 +136,41 @@ export class StoryMode {
       else if (a === 'contact') { if (this.ctx.space.contact) window.open(this.ctx.space.contact, '_blank', 'noopener'); }
     });
     // 触れる：なぞるとそこに流れができ、タップすると波紋のように広がる（T2〜T4）。一時停止はボタン
+    // 強さ p：マウスや非対応端末は 0.5 で来るので ×2 で 1.0 に。長く押すほど筆が沈み、止めたまま押すと渦が育つ（8.2）
     const stageEl = document.getElementById('stage')!;
-    let last: { x: number; y: number; t: number } | null = null;
-    let moved = 0;
+    const pressureOf = (e: PointerEvent) => Math.min(1, (e.pressure || 0.5) * 2);
     stageEl.addEventListener('pointerdown', (e) => {
       if ((e.target as HTMLElement).closest('button')) return;
-      last = { x: e.clientX, y: e.clientY, t: performance.now() }; moved = 0;
+      const now = performance.now();
+      this.touch = { x: e.clientX, y: e.clientY, uv: this.screenToUv(e.clientX, e.clientY), p: pressureOf(e), startTime: now, moved: 0, lastMoveTime: now };
       try { stageEl.setPointerCapture(e.pointerId); } catch {}
     });
     stageEl.addEventListener('pointermove', (e) => {
-      if (!last || !this.touchable()) return;
-      const uv = this.screenToUv(e.clientX, e.clientY);
-      const dx = e.clientX - last.x, dy = e.clientY - last.y;
-      moved += Math.hypot(dx, dy);
-      if (uv && (dx || dy)) {
+      const t = this.touch;
+      if (!t) return;
+      const now = performance.now();
+      const dx = e.clientX - t.x, dy = e.clientY - t.y;
+      t.moved += Math.hypot(dx, dy);
+      t.p = pressureOf(e);
+      t.x = e.clientX; t.y = e.clientY; t.uv = this.screenToUv(e.clientX, e.clientY);
+      if (dx || dy) t.lastMoveTime = now;
+      if (!this.touchable()) return;
+      if (t.uv && (dx || dy)) {
         // 指の速さに比例した力（texel/秒）。方向は指の動き。y は画面とテクスチャで上下が逆
         const k = 9;
-        this.ctx.fluid?.splat(uv, [dx * k, -dy * k], 0.0035);
+        const m = touchStroke(t.p, (now - t.startTime) / 1000);
+        this.ctx.fluid?.splat(t.uv, [dx * k * m.force, -dy * k * m.force], 0.0035 * m.radius);
       }
-      last = { x: e.clientX, y: e.clientY, t: performance.now() };
     });
     const up = (e: PointerEvent) => {
-      if (!last) return;
-      if (moved < 8 && this.touchable()) { const uv = this.screenToUv(e.clientX, e.clientY); if (uv) this.ctx.fluid?.burst(uv, 70); }
-      last = null;
+      const t = this.touch;
+      if (!t) return;
+      const hold = (performance.now() - t.startTime) / 1000;
+      // タップ：短く、ほとんど動かない。押していた時間で波紋が強くなる（長押しは渦になっているので波紋は出さない）
+      if (hold < TOUCH_TAP_MAX && t.moved < 8 && this.touchable()) { const uv = this.screenToUv(e.clientX, e.clientY); if (uv) this.ctx.fluid?.burst(uv, tapStrength(hold)); }
+      this.touch = null;
     };
-    stageEl.addEventListener('pointerup', up); stageEl.addEventListener('pointercancel', () => { last = null; });
+    stageEl.addEventListener('pointerup', up); stageEl.addEventListener('pointercancel', () => { this.touch = null; });
     this.ctx.hud.pause.addEventListener('click', () => { if (this.stage === 'T3') this.setPaused(!this.paused); });
     window.addEventListener('keydown', this.onKey);
   }
@@ -195,6 +206,13 @@ export class StoryMode {
     this.fpsSamples.push(1 / Math.max(1e-3, dt)); if (this.fpsSamples.length > 90) this.fpsSamples.shift();
     const { fluid, renderer } = this.ctx;
     if (fluid && renderer && this.mesh && this.mat) {
+      // 止めたまま押し続けると、その点に渦が育つ（4px 未満、0.4 秒を超えてから）。動かせばなぞりに戻る
+      const t = this.touch;
+      if (t && t.moved < 4 && this.touchable()) {
+        const v = touchVortex(t.p, (now - t.startTime) / 1000);
+        t.uv = this.screenToUv(t.x, t.y);   // 拡大・移動の途中でも指の下の点に
+        if (v && t.uv) fluid.vortex(t.uv, v.strength, v.radius);
+      }
       if (!this.paused) { fluid.setStrength(this.strength); fluid.step(dt); }
       this.mesh.scale.set(this.scaleNow.x, this.scaleNow.y, 1);
       this.mesh.position.set(this.posNow.x, this.posNow.y, 0);

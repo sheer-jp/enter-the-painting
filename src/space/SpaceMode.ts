@@ -1,7 +1,7 @@
 // VR 空間モード（Quest のブラウザ、WebXR）：S1 接近 → S2 溶ける → S3 包まれる → S4 漂う → S5 戻る
 import * as THREE from 'three';
 import type { StoryCtx } from '../story/StoryMode';
-import type { Fluid } from '../fluid/Fluid';
+import { touchStroke, touchVortex, tapStrength, TOUCH_TAP_MAX, type Fluid } from '../fluid/Fluid';
 import { SHADING, LIGHT_DIR, lookOf, shadingUniforms, updateShading } from '../fluid/shading';
 import { SpaceText } from '../text/FloatingText';
 import { pick } from '../i18n';
@@ -88,6 +88,10 @@ export class SpaceMode {
   private selectPressed = false;
   private holding: boolean[] = [false, false];
   private lastPointUv: (THREE.Vector2 | null)[] = [null, null];
+  // 触れる強さと長さ（docs/EXPERIENCE.md 8.2）。コントローラごと
+  private sources: (XRInputSource | null)[] = [null, null];
+  private trigger = [0, 0];                       // トリガーのアナログ値 0〜1（毎フレーム）
+  private touches: ({ start: number; startUv: THREE.Vector2 | null; hold: number; stillHold: number; maxMove: number; lastPulse: number } | null)[] = [null, null];
   private bHoldStart = 0;
   private lastGaze = new THREE.Vector2(0.5, 0.5);
   private hasGaze = false;
@@ -140,8 +144,22 @@ export class SpaceMode {
     // コントローラ
     for (let i = 0; i < 2; i++) {
       const ctrl = renderer.xr.getController(i);
-      ctrl.addEventListener('selectstart', () => { this.selectPressed = true; this.holding[i] = true; });
-      ctrl.addEventListener('selectend', () => { this.holding[i] = false; this.lastPointUv[i] = null; });
+      // connected の data が、このコントローラの入力元（トリガーと振動はここの gamepad から）
+      ctrl.addEventListener('connected', (e) => { this.sources[i] = (e as unknown as { data: XRInputSource }).data ?? null; });
+      ctrl.addEventListener('disconnected', () => { this.sources[i] = null; this.trigger[i] = 0; });
+      ctrl.addEventListener('selectstart', () => {
+        this.selectPressed = true; this.holding[i] = true;
+        this.touches[i] = { start: performance.now(), startUv: null, hold: 0, stillHold: 0, maxMove: 0, lastPulse: 0 };
+      });
+      ctrl.addEventListener('selectend', () => {
+        this.holding[i] = false; this.lastPointUv[i] = null;
+        // タップ：短く引いて、ほとんど動かさない。引いていた時間で波紋が強くなる
+        const t = this.touches[i]; this.touches[i] = null;
+        if (t && t.startUv && this.vrTouchable()) {
+          const sec = (performance.now() - t.start) / 1000;
+          if (sec < TOUCH_TAP_MAX && t.maxMove < 0.01) this.ctx.fluid.burst([t.startUv.x, t.startUv.y], tapStrength(sec), 0.003);
+        }
+      });
       this.rig.add(ctrl);
     }
     renderer.xr.enabled = true;
@@ -175,6 +193,25 @@ export class SpaceMode {
     return { bHeld };
   }
 
+  // トリガーのアナログ値（コントローラの番号ごと、毎フレーム）。値が来ない端末は押している間 1
+  private pollTrigger() {
+    for (let i = 0; i < 2; i++) {
+      const gp = this.sources[i]?.gamepad;
+      this.trigger[i] = gp?.buttons[0]?.value ?? (this.holding[i] ? 1 : 0);
+    }
+  }
+
+  // 触れられる場面：S3 の後半（球面になってから）と S4。S5 は不可
+  private vrTouchable() { return this.stage === 'S4' || (this.stage === 'S3' && this.morph >= 0.5); }
+
+  // 手応え：触れている間 50ms ごと。強さ = 0.1 + 0.5p、渦が育っている間 +0.2。振動が無い端末では何もしない
+  private pulse(i: number, p: number, growing: boolean, now: number) {
+    const t = this.touches[i]; if (!t || now - t.lastPulse < 50) return;
+    t.lastPulse = now;
+    const gp = this.sources[i]?.gamepad as (Gamepad & { hapticActuators?: { pulse(v: number, ms: number): Promise<boolean> }[] }) | undefined;
+    try { gp?.hapticActuators?.[0]?.pulse(Math.min(1, 0.1 + 0.5 * p + (growing ? 0.2 : 0)), 30)?.catch?.(() => {}); } catch { /* 無ければ何もしない */ }
+  }
+
   private onFrame = () => {
     if (!this.running) return;
     const now = performance.now(); const dt = Math.min(0.05, (now - (this.lastT || now)) / 1000); this.lastT = now;
@@ -184,19 +221,40 @@ export class SpaceMode {
     let strength = this.strength;
     if (this.stage === 'S1' && this.gazeOnPainting()) strength = Math.max(strength, 0.15);
     fluid.setStrength(strength);
-    // S4：トリガーを引きながら指すと、そこの流れが手についてくる（触れる）
-    if (this.stage === 'S4') {
+    // S3 の後半と S4：トリガーを引きながら指すと、そこの流れが手についてくる（触れる）。
+    // 強く握るほど太く強く、長く握るほど筆が沈み、止めたまま握ると渦が育つ（8.2）。カメラは動かさない。力は手元の局所だけ
+    this.pollTrigger();
+    if (this.vrTouchable()) {
       for (let i = 0; i < 2; i++) {
-        if (!this.holding[i]) continue;
+        const t = this.touches[i];
+        if (!this.holding[i] || !t) continue;
+        const p = Math.max(0.3, this.trigger[i]);       // 軽く引いても少しは効く
+        t.hold += dt * p;                                // 強く握るほど速く沈む・育つ
         const ctrl = renderer.xr.getController(i);
         ctrl.getWorldDirection(this.tmpV); this.tmpV.multiplyScalar(-1);   // コントローラは -Z が前
         const d = this.tmpV;
         const lon = Math.atan2(d.x, -d.z), lat = Math.asin(THREE.MathUtils.clamp(d.y, -1, 1));
         const uv = new THREE.Vector2(lon / (2 * Math.PI) + 0.5, lat / Math.PI + 0.5);
+        if (!t.startUv) t.startUv = uv.clone();
+        else { let mx = Math.abs(uv.x - t.startUv.x); mx = Math.min(mx, 1 - mx); t.maxMove = Math.max(t.maxMove, Math.hypot(mx, uv.y - t.startUv.y)); }
         const prev = this.lastPointUv[i];
-        if (prev) { const dx = uv.x - prev.x, dy = uv.y - prev.y; const dd = Math.hypot(dx, dy); if (dd > 0.0003 && dd < 0.2) fluid.splat([uv.x, uv.y], [dx * 900, dy * 900], 0.003); else if (dd <= 0.0003) fluid.splat([uv.x, uv.y], [0, 0], 0.003); }
-        else fluid.burst([uv.x, uv.y], 50, 0.003);
+        let growing = false;
+        if (prev) {
+          let dx = uv.x - prev.x; if (dx > 0.5) dx -= 1; else if (dx < -0.5) dx += 1;   // 経度の継ぎ目
+          const dy = uv.y - prev.y; const dd = Math.hypot(dx, dy);
+          if (dd >= 0.0005) {
+            // なぞる：渦はやめる
+            t.stillHold = 0;
+            if (dd < 0.2) { const m = touchStroke(p, t.hold); fluid.splat([uv.x, uv.y], [dx * 900 * m.force, dy * 900 * m.force], 0.003 * m.radius); }
+          } else {
+            // 止めている：その点に渦が育つ（0.4 を超えてから）
+            t.stillHold += dt * p;
+            const v = touchVortex(p, t.stillHold);
+            if (v) { fluid.vortex([uv.x, uv.y], v.strength, v.radius); growing = true; }
+          }
+        }
         this.lastPointUv[i] = uv;
+        this.pulse(i, p, growing, now);
       }
     }
     // S4：視線の動きに流れが引き寄せられる

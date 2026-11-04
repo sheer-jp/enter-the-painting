@@ -48,7 +48,7 @@ export async function run(o: RunOptions): Promise<void> {
       const forced = o.debug ? new URLSearchParams(location.search).get('q') : null;
       const quality: Quality = forced === 'high' || forced === 'medium' || forced === 'low' ? forced : o.vr ? 'high' : (/Mobi|Android/i.test(navigator.userAgent) ? 'medium' : space.fluid.quality || 'high');
       fluid = new Fluid(renderer, { ...space.fluid, quality });
-      fluid.init(painting, flow, { ...space.fluid, quality, speed: reduced ? space.fluid.speed * 0.3 : space.fluid.speed }, placementFor(space.aspect), space.back_color, lighten(space.back_color), o.vr ? 'equirect' : 'painting', space.aspect, relief);
+      fluid.init(painting, flow, { ...space.fluid, quality, speed: reduced ? space.fluid.speed * 0.3 : space.fluid.speed, tempo: reduced ? (space.fluid.tempo ?? 0.6) * 0.5 : space.fluid.tempo }, placementFor(space.aspect), space.back_color, lighten(space.back_color), o.vr ? 'equirect' : 'painting', space.aspect, relief);
       // コンテキスト喪失（iOS のバックグラウンド復帰など）→ 静止画モードに落とす
       canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); console.warn('WebGL context lost'); }, { once: true });
     }

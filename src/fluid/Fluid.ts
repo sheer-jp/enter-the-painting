@@ -6,7 +6,7 @@ import * as S from './shaders';
 export type Quality = 'high' | 'medium' | 'low';
 // equirect：2:1 の等距離円筒（VR。横は繰り返し）。painting：絵だけの領域（物語モード。解像度を絵に全部使う）
 export type Domain = 'equirect' | 'painting';
-export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number; drive?: number }
+export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number; drive?: number; tempo?: number }
 export interface PaintingRect { x: number; y: number; w: number; h: number }
 
 const EQUIRECT: Record<Quality, { dye: [number, number]; sim: [number, number]; iters: number }> = {
@@ -37,6 +37,29 @@ export function placementFor(aspect: number): PaintingRect {
 
 // 渦の強さ：strength 1 を 1 秒続けると、最大の所の速さが「領域の高さ × これ / 秒」増える（解像度と作品の speed によらない）
 const VORTEX_RATE = 0.2;   // 0.5 だと渦で色が混ざりすぎて彩度が落ちた（Fable 調整 11-04）
+
+// 全体の速さの呼吸：周期の揃わない 2 つの正弦（37 秒と 23 秒）。tempo 0.6 で約 0.7〜1.3 倍、tempo 0 で 1
+export function breathing(t: number, tempo: number): number {
+  return 1 + 0.5 * tempo * (0.6 * Math.sin((2 * Math.PI * t) / 37) + 0.4 * Math.sin((2 * Math.PI * t) / 23 + 1));
+}
+
+// 触れる強さと長さ（docs/EXPERIENCE.md 8.2）。p は強さ 0〜1、hold は押し始めからの秒（VR は p をかけて進めた秒）
+export const TOUCH_TAP_MAX = 0.4;        // これ未満で離せばタップ。これを超えて止めたままなら渦が育ち始める
+// なぞる力と半径の倍率：強いほど太く強く、長いほど沈む（0 → 2 秒で半径 ×1 → ×2、力 ×1 → ×1.4）
+export function touchStroke(p: number, hold: number): { force: number; radius: number } {
+  const sink = Math.min(1, Math.max(0, hold) / 2);
+  return { force: (1 + 0.4 * sink) * (0.6 + 0.8 * p), radius: (1 + sink) * (0.7 + 0.6 * p) };
+}
+// 止めたまま押し続けたときの渦。0.4 秒までは null。radius は領域の高さに対する割合
+export function touchVortex(p: number, hold: number): { strength: number; radius: number } | null {
+  if (hold <= TOUCH_TAP_MAX) return null;
+  const g = Math.min(1, (hold - TOUCH_TAP_MAX) / 2.5);
+  return { strength: g * 0.35 * (0.5 + 0.5 * p), radius: 0.04 + 0.08 * g };
+}
+// タップの波紋の強さ：押していた時間で 50 → 90（0.1 秒 → 0.4 秒）
+export function tapStrength(hold: number): number {
+  return 50 + 40 * Math.min(1, Math.max(0, (hold - 0.1) / 0.3));
+}
 
 class Pass {
   mat: THREE.ShaderMaterial;
@@ -182,7 +205,7 @@ export class Fluid {
       gradient: new Pass(S.GRADIENT_SUBTRACT, u({ uPressure: null, uVelocity: null, uTexel: new THREE.Vector2() })),
       splat: new Pass(S.SPLAT, u({ uTarget: null, uPoint: new THREE.Vector2(), uValue: new THREE.Vector3(), uRadius: 0.001, uAspect: this.sizes.dye[0] / this.sizes.dye[1] })),
       fizz: new Pass(S.FIZZ, u({ uVelocity: null, uRect: rect, uProgress: 0, uAmount: 0, uTime: 0 })),
-      drive: new Pass(S.DRIVE, u({ uVelocity: null, uFlow: this.flow, uRect: rect, uRate: 0, uTarget: 0, uTime: 0 })),
+      drive: new Pass(S.DRIVE, u({ uVelocity: null, uFlow: this.flow, uRect: rect, uRate: 0, uTarget: 0, uTime: 0, uTempo: 0, uAspect: this.sizes.sim[0] / this.sizes.sim[1], uWrapX: wrapX })),
       copy: new Pass(S.DISPLAY, u({ uDye: null, uView: new THREE.Vector4(0, 0, 1, 1) })),
       initThick: new Pass(S.INIT_THICK, u({ uRelief: this.relief, uRect: rect, uHas: this.relief ? 1 : 0 })),
       thick: new Pass(S.THICK_UPDATE, u({
@@ -280,8 +303,12 @@ export class Fluid {
     if (drive > 0 && this.strength > 0.001) {
       P.drive.mat.uniforms.uVelocity.value = this.vel.read.texture;
       P.drive.mat.uniforms.uRate.value = Math.min(1, drive * dt * 1.5);          // 1 秒で目標の約 45%（drive=0.3）
-      P.drive.mat.uniforms.uTarget.value = sz.sim[1] * 0.03 * this.strength;     // 目標の速さ（sim の高さの 3%/秒）
+      // 速さのむら（docs/EXPERIENCE.md 8.1）。tempo 0 で均一（b = 1、場所の係数も 1）
+      const tempo = Math.max(0, Math.min(1, this.params.tempo ?? 0.6));
+      const b = breathing(this.time, tempo);
+      P.drive.mat.uniforms.uTarget.value = sz.sim[1] * 0.03 * this.strength * b;     // 目標の速さ（sim の高さの 3%/秒）× 呼吸
       P.drive.mat.uniforms.uTime.value = this.time;
+      P.drive.mat.uniforms.uTempo.value = tempo;
       this.run(P.drive, this.vel.write); this.vel.swap();
     }
     // 外力

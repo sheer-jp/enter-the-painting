@@ -240,9 +240,30 @@ uniform vec4 uRect;
 uniform float uRate;      // 寄せる割合（0〜1 / フレーム）
 uniform float uTarget;    // 目標の速さ（texel/秒）
 uniform float uTime;
+uniform float uTempo;     // 速さのむらの振幅 0〜1（0 で均一。docs/EXPERIENCE.md 8.1）
+uniform float uAspect;    // sim の幅 / 高さ
+uniform float uWrapX;     // 1：横に繰り返す（等距離円筒）
 ${HASH}
+// 横に per 格子で繰り返す値ノイズ（等距離円筒の継ぎ目で途切れないように）。per <= 0 なら繰り返さない
+float pnoise(vec2 p, float per) {
+  vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  float x0 = i.x, x1 = i.x + 1.0;
+  if (per > 0.0) { x0 = mod(x0, per); x1 = mod(x1, per); }
+  return mix(mix(hash12(vec2(x0, i.y)), hash12(vec2(x1, i.y)), f.x), mix(hash12(vec2(x0, i.y + 1.0)), hash12(vec2(x1, i.y + 1.0)), f.x), f.y);
+}
 void main() {
   vec2 vel = texture2D(uVelocity, vUv).xy;
+  // 場所のむら：波長は領域の高さの約 0.6。約 60 秒で 1 波長、斜めにゆっくり動く
+  float m = 1.0;
+  if (uTempo > 0.0) {
+    float per = uWrapX > 0.5 ? max(1.0, floor(uAspect / 0.6 + 0.5)) : 0.0;
+    vec2 np = per > 0.0 ? vec2(vUv.x * per, vUv.y / 0.6) : vec2(vUv.x * uAspect, vUv.y) / 0.6;
+    np += vec2(0.8, 0.6) * (uTime / 60.0);
+    float n = pnoise(np, per);
+    // 値ノイズは 0.5 付近に集まるので、少し広げて 0〜1 を使い切る
+    n = smoothstep(0.15, 0.85, n);
+    m = 1.0 + uTempo * 1.25 * (n * 2.0 - 1.0);
+  }
   vec2 p = (vUv - uRect.xy) / uRect.zw;
   vec2 target = vec2(0.0);
   if (p.x >= 0.0 && p.x <= 1.0 && p.y >= 0.0 && p.y <= 1.0) {
@@ -259,7 +280,7 @@ void main() {
   float ny = vnoise(q + vec2(0.0, e)) - vnoise(q - vec2(0.0, e));
   vec2 curlDir = vec2(-ny, nx) / (length(vec2(nx, ny)) + 1e-5);
   target += curlDir * 0.18;
-  vel = mix(vel, target * uTarget, uRate);
+  vel = mix(vel, target * uTarget * m, uRate);
   gl_FragColor = vec4(vel, 0.0, 1.0);
 }
 `;
