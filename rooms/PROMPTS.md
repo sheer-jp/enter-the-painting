@@ -6,10 +6,10 @@
 ## 共通の条件（すべてのプロンプトの末尾に付ける）
 
 ```
-A blank, empty wall with clear space for one framed painting about 65 cm tall and 53 cm wide, hung at eye level (center about 150 cm from the floor). No artwork, no frames, no posters, no mirrors, no shelves on that wall. Natural, soft light. Photorealistic interior photograph, 35mm lens, eye-level camera, straight-on view of the wall (front-facing, minimal perspective distortion). Include a sofa, chair, door or person for scale. Muted, calm color palette. Aspect ratio 16:10, high resolution.
+A blank, empty wall with clear space for one framed painting about 65 cm tall and 53 cm wide, hung at eye level (center about 145 cm from the floor). No artwork, no frames, no posters, no mirrors, no shelves on that wall. Even, diffuse, overcast daylight. No direct sunlight, no sunbeams, no light patches and no hard shadows on the wall; the wall is evenly lit. Photorealistic interior photograph, 35mm lens, eye-level camera, straight-on view of the wall (front-facing, minimal perspective distortion). Include a sofa, chair, door or person for scale. Muted, calm color palette. Aspect ratio 16:10, high resolution.
 ```
 
-絵を描かれてしまったら作り直す。壁は正面から（台形に歪まない）が合成しやすい。
+絵を描かれてしまったら作り直す。壁は正面から（台形に歪まない）が合成しやすい。**壁に日差しの模様や影が落ちていると、重ねた絵だけ光が合わず浮く**ので、壁は均一な柔らかい光にする（11-04、作家の指摘）。
 
 ## 場面ごと（MVP は 1〜3 の 3〜4 枚、余裕があれば 10 枚）
 
