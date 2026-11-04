@@ -60,3 +60,17 @@ export async function draftStory({ title, messages, note }, apiKey) {
   if (typeof json.ja !== 'string') throw new Error('物語の下書きが返らない');
   return json.ja.trim() + '\n（下書き。作家が自分の言葉に直す）';
 }
+
+// 気分の言葉の下書き（1 作品 3〜5 語、日本語）。「気分から絵をすすめる」のカタログに載る。作家が work.json の moods に移して直す
+export async function draftMoods({ title, messages, palette }, apiKey) {
+  const system = `あなたは抽象画の作家の代わりに、作品に添える「気分の言葉」の下書きを書きます。その絵をどんな気分のときに見たくなるか、どんな時間に合うかを、短い言葉で 3〜5 個、日本語で書きます。
+- 1 つは 12 文字以内の名詞句か短い句。説明や宣伝ではなく、情景や心の動き（例：「朝の光」「ぶつかって、ほどける」「にぎやかな静けさ」）。
+- 作家のメッセージの言葉やイメージ、絵の色を手がかりにする。
+- 実在の人物・場所・出来事と誤認される固有名詞は使わない。
+- 出力は JSON オブジェクトだけ：{"ja":["言葉1","言葉2","言葉3"]}`;
+  const user = `作品：${title}\n主要色：${palette.join(' ')}\n作家のメッセージ：\n${messages.join('\n')}\n`;
+  const json = parseJson(await ask(apiKey, system, user));
+  const ja = Array.isArray(json.ja) ? json.ja.filter((s) => typeof s === 'string' && s.trim()).map((s) => s.trim()).slice(0, 5) : [];
+  if (ja.length < 3) throw new Error('気分の言葉の下書きが 3 つに満たない');
+  return { ja };
+}

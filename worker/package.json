@@ -1,0 +1,14 @@
+{
+  "name": "enter-the-painting-recommend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "気分から絵をすすめる：Claude API の中継（Cloudflare Worker）",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

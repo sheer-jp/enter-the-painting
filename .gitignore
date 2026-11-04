@@ -12,3 +12,7 @@ works/*/generated/*.tmp
 .vite/
 w/*/index.html
 index.html
+# Cloudflare Worker（気分から絵をすすめる）
+worker/node_modules
+worker/.wrangler
+worker/.dev.vars

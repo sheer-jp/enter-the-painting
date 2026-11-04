@@ -43,6 +43,11 @@ works/<id>/
   "contact": "https://forms.example/...", // 作家への連絡（フォームの URL を推奨。mailto は public に書かない）。無ければ site.json の既定値
   "rooms": ["living-apartment", "hotel-lobby", "cafe"],  // 部屋で見るに使う部屋。省略時は rooms/ の全部
 
+  // 気分の言葉（気分から絵をすすめる、docs/RECOMMEND.md 8.3）。任意。3〜5 語、1 語 12 文字程度
+  // ja が正。en は任意（作家の訳）。他の言語は自動で訳して generated/translations.json に残す
+  // 無ければ、ANTHROPIC_API_KEY があるときだけ Claude が generated/moods.json に下書きする（作家がここに移して直す）
+  "moods": { "ja": ["朝の光", "ぶつかって、ほどける", "にぎやかな静けさ"], "en": ["Morning light", "Collide, then come undone", "A lively quiet"] },
+
   // 音
   "audio": {
     "voice": "voice.mp3",                 // 無ければ文字のみ
@@ -55,6 +60,7 @@ works/<id>/
     "flow_strength": 0.6,                 // 0〜1。筆致に沿う初期の流れの強さ
     "vorticity": 0.5,                     // 0〜1。渦の強さ
     "speed": 0.4,                         // 0〜1。流体全体の速さ
+    "tempo": 0.6,                         // 0〜1。速さのむら（場所と時間）の振幅。0 で均一。既定 0.6（docs/EXPERIENCE.md 8.1）
     "radius_m": 2.5,                      // 包まれる球面の半径
     "melt_distance_m": 1.0,               // 溶け始める距離
     "text_color": "#e8f0ff",              // 文字色。省略時は主要色の最も明るい色
@@ -71,6 +77,7 @@ works/<id>/
 | `painting_1024.jpg` | 作品ページの表示と流体の色場の絵の部分（1 サイズ） |
 | `flow.png` | 筆致の流れ場（R=cos θ、G=sin θ、B=強さ） |
 | `rooms/<name>.jpg` | 部屋のイメージに絵を寸法の目安で合成したもの（部屋ごと） |
+| `moods.json` | 気分の言葉の下書き（`work.json` に `moods` が無く、`ANTHROPIC_API_KEY` があるときだけ。作家が `work.json` の `moods` に移す。再生成で上書きしない） |
 | `stories.json` | 小さな物語（1 作品 1 本。日本語の下書き。作家が直す。再生成で上書きしない） |
 | `translations.json` | メッセージ・物語・タイトルの 10 言語分。鍵は原文（ja）のハッシュ。原文を直せば再翻訳、直さなければ手直しを保持。英語は `messages_en` があればそれが正で、ここには生成しない |
 | `space.json` | 実行時に読む唯一の定義 |
@@ -106,6 +113,8 @@ works/<id>/
   ]
 }
 ```
+
+全作品の `space.json` と `work.json` の `moods`、`recommend/config.json` から、`npm run generate` が `public/catalog.json`（気分から絵をすすめるのカタログ。主要色から計算した軸 `warmth` `brightness` `energy` を含む）を作る。形は `docs/RECOMMEND.md` 8.3。
 
 言語コードは `ja, en, zh-Hans, zh-Hant, ko, fr, de, es, it, pt` の 10 個。無い言語は `en` に落ちる。
 

@@ -101,7 +101,7 @@ async function generateWork(id) {
     flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density },
     relief: { texture: 'relief.png' },
     fluid: {
-      vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.014, drive: ov.drive ?? 0.3,
+      vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.014, drive: ov.drive ?? 0.3, tempo: ov.tempo ?? 0.6,
       // 質感（docs/FLUID_LOOK.md 2 節のパラメータ）。作品ごとに overrides.look で上書き
       look: { ...LOOK_DEFAULT, ...(ov.look || {}) },
     },
@@ -146,6 +146,7 @@ async function main() {
   }
   writeFileSync(join(ROOT, 'index.html'), galleryPage({ works: allWorks, baseUrl: BASE_URL }));
   writeFileSync(join(ROOT, 'public', 'works.json'), JSON.stringify(allWorks.map((s) => ({ id: s.id, title: s.title, size_cm: s.size_cm })), null, 2) + '\n');
+  await (await import('./catalog.js')).writeCatalog(ROOT);   // 気分から絵をすすめる（docs/RECOMMEND.md 8.3）
   console.log(`ページ生成：${every.length} 作品、BASE_URL=${BASE_URL}`);
 }
 
