@@ -81,7 +81,9 @@ export function paintingRectFromScale(def, sizeCm, imageWidthPx) {
   const pxPerCm = def.scale.px_per_cm * k;
   const w = sizeCm[0] * pxPerCm, h = sizeCm[1] * pxPerCm;
   const cx = def.hang.x_px * k;
-  const cy = def.hang.floor_y_px * k - def.hang.center_from_floor_cm * pxPerCm;
+  // 掛ける高さ：中心（立って見る壁 145cm など）か、下端（家具の上端 + 20cm）のどちらかで指定
+  const centerCm = def.hang.center_from_floor_cm ?? (def.hang.bottom_from_floor_cm + sizeCm[1] / 2);
+  const cy = def.hang.floor_y_px * k - centerCm * pxPerCm;
   const x0 = cx - w / 2, x1 = cx + w / 2, y0 = cy - h / 2, y1 = cy + h / 2;
   return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
 }
@@ -173,7 +175,7 @@ export function compareSentence({ item, dim, ratio, cm }, { withCm = false, appr
 }
 
 // 部屋の文章：比較の一文、2 つ目の比較、部屋の説明、注記（ja / en）
-export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, centerFromFloorCm }) {
+export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, centerFromFloorCm, aboveFurniture = false }) {
   const seen = new Set();
   const cands = [];
   for (const r of [...references].sort((a, b) => rankOf(a.ref.split('.')[0]) - rankOf(b.ref.split('.')[0]))) {
@@ -190,8 +192,12 @@ export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, 
   const hc = Math.round(centerFromFloorCm / 5) * 5;
   const seated = centerFromFloorCm < 140;
   const about = {
-    ja: `壁の幅は約 ${m} m。${seated ? '座ったときの目の高さ' : '目の高さ'}（床から約 ${hc} cm）に掛けています。`,
-    en: `The wall is about ${m} m wide. The painting hangs at ${seated ? 'seated eye level' : 'eye level'} (about ${hc} cm from the floor).`,
+    ja: aboveFurniture
+      ? `壁の幅は約 ${m} m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 ${hc} cm）。`
+      : `壁の幅は約 ${m} m。${seated ? '座ったときの目の高さ' : '目の高さ'}（床から約 ${hc} cm）に掛けています。`,
+    en: aboveFurniture
+      ? `The wall is about ${m} m wide. The painting hangs about 20 cm above the furniture (center about ${hc} cm from the floor).`
+      : `The wall is about ${m} m wide. The painting hangs at ${seated ? 'seated eye level' : 'eye level'} (about ${hc} cm from the floor).`,
   };
   const note = {
     ja: '部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。' + (low ? 'この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。' : ''),
@@ -283,7 +289,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
 
     // 顧客向けの文章（ja / en。他の言語は index.js で翻訳キャッシュから）
     const texts = def.references?.length
-      ? roomTexts({ references: def.references, table, sizeCm: work.size_cm, confidence: sc.confidence, wallWidthCm, centerFromFloorCm: def.hang.center_from_floor_cm })
+      ? roomTexts({ references: def.references, table, sizeCm: work.size_cm, confidence: sc.confidence, wallWidthCm, centerFromFloorCm: def.hang.center_from_floor_cm ?? Math.round(def.hang.bottom_from_floor_cm + work.size_cm[1] / 2), aboveFurniture: def.hang.bottom_from_floor_cm != null })
       : { compare: null, compare2: null, about: null, note: null, primary_ref: null };
 
     results.push({

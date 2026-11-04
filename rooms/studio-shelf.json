@@ -42,7 +42,8 @@
   "hang": {
     "x_px": 885,
     "floor_y_px": 880,
-    "center_from_floor_cm": 130
+    "bottom_from_floor_cm": 62,
+    "note": "家具の上端 + 20cm を絵の下端に（docs/PLACEMENT.md 2 節）"
   },
   "suits_cm": [
     15,

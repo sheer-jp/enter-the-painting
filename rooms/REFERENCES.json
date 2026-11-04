@@ -5,7 +5,8 @@
     "label": {
       "ja": "ドア",
       "en": "the door"
-    }
+    },
+    "note": "LIXIL の標準ドアは枠 2,023mm、扉 1,983mm。2000 年代以降の住宅の標準"
   },
   "door_entrance": {
     "height_cm": 205,
@@ -125,6 +126,58 @@
     "label": {
       "ja": "デスクランプ",
       "en": "the desk lamp"
+    }
+  },
+  "door_interior_old": {
+    "height_cm": 185,
+    "width_cm": 75,
+    "label": {
+      "ja": "室内のドア（古い住宅）",
+      "en": "the door (older home)"
+    }
+  },
+  "ceiling_old": {
+    "height_cm": 230,
+    "label": {
+      "ja": "天井の高さ（古い住宅）",
+      "en": "the ceiling (older home)"
+    }
+  },
+  "shoe_cabinet": {
+    "height_cm": 90,
+    "label": {
+      "ja": "靴箱",
+      "en": "the shoe cabinet"
+    }
+  },
+  "sideboard": {
+    "height_cm": 80,
+    "width_cm": 160,
+    "label": {
+      "ja": "サイドボード",
+      "en": "the sideboard"
+    }
+  },
+  "dining_table": {
+    "height_cm": 72,
+    "label": {
+      "ja": "ダイニングテーブル",
+      "en": "the dining table"
+    }
+  },
+  "headboard": {
+    "height_cm": 90,
+    "label": {
+      "ja": "ヘッドボード",
+      "en": "the headboard"
+    }
+  },
+  "bed_single": {
+    "width_cm": 100,
+    "height_cm": 50,
+    "label": {
+      "ja": "シングルベッド",
+      "en": "the bed"
     }
   }
 }

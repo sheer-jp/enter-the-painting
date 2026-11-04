@@ -40,6 +40,22 @@ A blank, empty wall with clear space for one framed painting about 65 cm tall an
 
 `rooms/<name>.json` の `suits_cm` を `[15, 45]` にしておくと、小さな作品のときだけ自動で使われる。
 
+## 飾る場所の実例（日本の住宅で実際に絵が掛かる場所。`docs/PLACEMENT.md` 3 節）
+
+これまでの画像は「空いた壁」。次は「絵が実際に掛かる場所」を撮る。家具が壁に接していて、その上に絵を置ける構図。カメラは正面、目の高さ。
+
+| # | name | 場所 | 向く作品 | プロンプト（英語） |
+| --- | --- | --- | --- | --- |
+| 16 | entrance-shoe-cabinet | 玄関の靴箱の上 | F0〜F8 | `The entrance of a Japanese apartment. A low white shoe cabinet (about 90 cm tall) against a plain wall, a small plant and a tray of keys on top, tiled floor, the front door at the side. Camera straight-on, eye level. Empty wall above the cabinet for a small painting.` + 共通 |
+| 17 | living-sofa-wall | ソファの上の壁 | F8〜F30 | `A living room with a grey three-seat sofa (about 180 cm wide) against a plain white wall, a floor lamp, a wooden coffee table. Camera straight-on from across the room, eye level. Empty wall above the sofa for a painting.` + 共通 |
+| 18 | living-sideboard | サイドボードの上 | F3〜F10 | `A living room wall with a low wooden sideboard (about 80 cm tall, 160 cm wide), a vase and a few books on top, plain wall above. Camera straight-on, eye level. Empty wall above the sideboard for a painting.` + 共通 |
+| 19 | hallway-end | 廊下の突き当たり | F0〜F6 | `A narrow hallway in a Japanese apartment, wooden floor, doors on the left, a plain wall at the end lit by a small ceiling light. Camera straight down the hallway, eye level. Empty wall at the end for a small painting.` + 共通 |
+| 20 | bedroom-headboard | 寝室のヘッドボードの上 | F3〜F10 | `A bedroom with a double bed, a wooden headboard (about 90 cm tall) against a plain wall, linen sheets, two bedside lamps. Camera straight-on from the foot of the bed, eye level. Empty wall above the headboard for a painting.` + 共通 |
+| 21 | dining-wall | ダイニングの壁 | F4〜F15 | `A dining area with a wooden table (72 cm tall) and four chairs against a plain wall, a pendant lamp, daylight from the side. Camera straight-on, eye level. Empty wall above the table for a painting.` + 共通 |
+| 22 | tokonoma | 床の間 | F0〜F6 | `A Japanese tatami room with a tokonoma alcove, plain plaster wall inside the alcove, a small ikebana arrangement on the alcove floor, soft light from shoji screens. Camera straight-on, eye level. Empty alcove wall for a small painting.` + 共通 |
+
+JSON には、家具の上端（`hang.furniture_top_y_px`）と家具の実寸（`references`）を書く。絵は家具の上端から 20 cm 空けて掛かる。
+
 ## 受け取ったあとの手順
 
 1. `rooms/<name>.jpg` として保存（横 1600px 以上）

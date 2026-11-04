@@ -134,19 +134,19 @@
       "quad_px": [
         [
           704,
-          183
+          227
         ],
         [
           896,
-          183
+          227
         ],
         [
           896,
-          419
+          463
         ],
         [
           704,
-          419
+          463
         ]
       ],
       "px_per_cm": 3.625,
@@ -160,8 +160,8 @@
         "en": "About a quarter the height of the ceiling (about 240 cm)."
       },
       "about": {
-        "ja": "壁の幅は約 3.2 m。目の高さ（床から約 150 cm）に掛けています。",
-        "en": "The wall is about 3.2 m wide. The painting hangs at eye level (about 150 cm from the floor)."
+        "ja": "壁の幅は約 3.2 m。座ったときの目の高さ（床から約 140 cm）に掛けています。",
+        "en": "The wall is about 3.2 m wide. The painting hangs at seated eye level (about 140 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
@@ -185,19 +185,19 @@
       "quad_px": [
         [
           687,
-          236
+          279
         ],
         [
           873,
-          236
+          279
         ],
         [
           873,
-          466
+          508
         ],
         [
           687,
-          466
+          508
         ]
       ],
       "px_per_cm": 3.525,
@@ -211,8 +211,8 @@
         "en": "About a quarter the height of the ceiling (about 240 cm)."
       },
       "about": {
-        "ja": "壁の幅は約 3.3 m。目の高さ（床から約 150 cm）に掛けています。",
-        "en": "The wall is about 3.3 m wide. The painting hangs at eye level (about 150 cm from the floor)."
+        "ja": "壁の幅は約 3.3 m。座ったときの目の高さ（床から約 140 cm）に掛けています。",
+        "en": "The wall is about 3.3 m wide. The painting hangs at seated eye level (about 140 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
@@ -236,19 +236,19 @@
       "quad_px": [
         [
           614,
-          121
+          155
         ],
         [
           946,
-          121
+          155
         ],
         [
           946,
-          530
+          564
         ],
         [
           614,
-          530
+          564
         ]
       ],
       "px_per_cm": 6.273,
@@ -262,8 +262,8 @@
         "en": "About 1.6 times the height of the desk lamp (about 40 cm)."
       },
       "about": {
-        "ja": "壁の幅は約 1.7 m。座ったときの目の高さ（床から約 130 cm）に掛けています。",
-        "en": "The wall is about 1.7 m wide. The painting hangs at seated eye level (about 130 cm from the floor)."
+        "ja": "壁の幅は約 1.7 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 125 cm）。",
+        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 125 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
@@ -325,5 +325,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T12:08:11.209Z"
+  "generated_at": "2026-11-04T12:36:44.585Z"
 }

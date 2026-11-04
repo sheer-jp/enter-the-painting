@@ -42,7 +42,7 @@
   "hang": {
     "x_px": 745,
     "floor_y_px": 875,
-    "center_from_floor_cm": 150
+    "center_from_floor_cm": 138
   },
   "suits_cm": [
     30,
