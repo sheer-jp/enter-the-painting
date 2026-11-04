@@ -1,10 +1,22 @@
 {
   "name": "studio-kitchen",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "キッチンカウンター",
     "en": "Kitchen counter"
   },
   "scene": "小さなキッチン。ケトルとカップ。朝の光が壁に落ちる。",
+  "scale": {
+    "px_per_cm": 8.0,
+    "basis": {
+      "ja": "電気ケトルの高さ 200px = 24cm → 8.3、マグ 70px = 9cm → 7.8 の平均"
+    },
+    "cross_check": {
+      "ja": "カウンターの高さ 85cm → 床は 790 + 680 = 1470（画面外）"
+    },
+    "confidence": "mid"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,17 +35,15 @@
         230,
         780
       ]
-    ],
-    "width_cm": 140,
-    "hang_center_ratio": [
-      0.43,
-      0.42
     ]
+  },
+  "hang": {
+    "x_px": 650,
+    "floor_y_px": 1470,
+    "center_from_floor_cm": 140
   },
   "suits_cm": [
     15,
     45
-  ],
-  "image_width_px": 1586,
-  "note": "画像が届いたら rooms/<name>.jpg に置き、4 隅を確認する"
+  ]
 }

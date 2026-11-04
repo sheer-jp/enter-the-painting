@@ -1,10 +1,22 @@
 {
   "name": "entrance-house",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "一軒家の玄関",
     "en": "Entrance hall of a house"
   },
   "scene": "木の框のある静かな玄関。靴を脱ぐところから見える白い壁。朝の光。",
+  "scale": {
+    "px_per_cm": 3.4,
+    "basis": {
+      "ja": "室内ドアの高さ 680px = 200cm"
+    },
+    "cross_check": {
+      "ja": "天井〜床 765px = 230cm → 3.33"
+    },
+    "confidence": "mid"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,16 +35,15 @@
         335,
         765
       ]
-    ],
-    "width_cm": 245,
-    "hang_center_ratio": [
-      0.5,
-      0.36
     ]
+  },
+  "hang": {
+    "x_px": 725,
+    "floor_y_px": 765,
+    "center_from_floor_cm": 150
   },
   "suits_cm": [
     20,
     70
-  ],
-  "image_width_px": 1586
+  ]
 }

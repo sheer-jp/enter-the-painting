@@ -1,10 +1,22 @@
 {
   "name": "living-chair",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "椅子のあるリビング",
     "en": "Living room with an armchair"
   },
   "scene": "ひとり掛けの椅子とサイドテーブル。白い壁に夕方の光。",
+  "scale": {
+    "px_per_cm": 3.88,
+    "basis": {
+      "ja": "室内ドアの高さ 775px = 200cm"
+    },
+    "cross_check": {
+      "ja": "天井〜床 875px = 240cm → 3.65"
+    },
+    "confidence": "high"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,16 +35,15 @@
         180,
         875
       ]
-    ],
-    "width_cm": 290,
-    "hang_center_ratio": [
-      0.5,
-      0.34
     ]
+  },
+  "hang": {
+    "x_px": 745,
+    "floor_y_px": 875,
+    "center_from_floor_cm": 150
   },
   "suits_cm": [
     30,
     120
-  ],
-  "image_width_px": 1586
+  ]
 }

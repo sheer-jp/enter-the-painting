@@ -1,10 +1,22 @@
 {
   "name": "studio-shelf",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "低い棚の上",
     "en": "Above a low shelf"
   },
   "scene": "低い木の棚に本と植物。床のクッション。窓からの光。",
+  "scale": {
+    "px_per_cm": 5.0,
+    "basis": {
+      "ja": "棚の幅 500px = 100cm"
+    },
+    "cross_check": {
+      "ja": "棚の高さ 190px = 42cm → 4.52"
+    },
+    "confidence": "mid"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,17 +35,15 @@
         350,
         880
       ]
-    ],
-    "width_cm": 185,
-    "hang_center_ratio": [
-      0.58,
-      0.45
     ]
+  },
+  "hang": {
+    "x_px": 885,
+    "floor_y_px": 880,
+    "center_from_floor_cm": 130
   },
   "suits_cm": [
     15,
     45
-  ],
-  "image_width_px": 1586,
-  "note": "画像が届いたら rooms/<name>.jpg に置き、4 隅を確認する"
+  ]
 }

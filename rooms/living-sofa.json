@@ -1,10 +1,22 @@
 {
   "name": "living-sofa",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "ソファのあるリビング",
     "en": "Living room with a sofa"
   },
   "scene": "グレーのソファの向かいの白い壁。観葉植物と丸いテーブル。",
+  "scale": {
+    "px_per_cm": 3.53,
+    "basis": {
+      "ja": "室内ドアの高さ 705px = 200cm"
+    },
+    "cross_check": {
+      "ja": "天井〜床 880px = 240cm → 3.67"
+    },
+    "confidence": "high"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,16 +35,15 @@
         160,
         880
       ]
-    ],
-    "width_cm": 330,
-    "hang_center_ratio": [
-      0.5,
-      0.4
     ]
+  },
+  "hang": {
+    "x_px": 780,
+    "floor_y_px": 880,
+    "center_from_floor_cm": 150
   },
   "suits_cm": [
     30,
     120
-  ],
-  "image_width_px": 1586
+  ]
 }

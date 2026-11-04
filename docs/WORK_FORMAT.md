@@ -121,15 +121,22 @@ rooms/
 ```jsonc
 {
   "name": "living-apartment",
+  "image_width_px": 1586, "image_height_px": 992,
   "label": { "ja": "マンションのリビング", "en": "Apartment living room" },
   "scene": "東京のマンションのリビング。朝の光。ソファの向かいの白い壁。",   // 物語の下書きに使う
-  "wall": {
-    "corners_px": [[612, 180], [1410, 196], [1402, 980], [618, 964]],  // 壁の 4 隅（左上から時計回り）
-    "width_cm": 320,                                                   // その壁の幅の目安（作家が決める。AI の部屋なので正確ではない）
-    "hang_center_ratio": [0.5, 0.42]                                   // 絵の中心を壁のどこに置くか（0〜1）
-  }
+  "scale": {                                     // 縮尺。計算式と仮説は docs/SCALE.md
+    "px_per_cm": 3.63,                           // 基準物の px ÷ 実寸 cm
+    "basis": { "ja": "室内ドアの高さ 725px = 200cm" },
+    "cross_check": { "ja": "天井〜床 845px = 240cm → 3.52" },   // 別の基準物で 15% 以内に一致するか
+    "confidence": "high"                         // high | mid | low
+  },
+  "wall": { "corners_px": [[215, 0], [1385, 0], [1385, 845], [215, 845]] },   // 正面の壁の範囲（絵が収まるかの確認用）
+  "hang": { "x_px": 800, "floor_y_px": 845, "center_from_floor_cm": 150 },     // 絵の中心 x、床の y（画面外でもよい）、掛ける高さ
+  "suits_cm": [30, 120]                          // 向いている作品の長辺（cm）
 }
 ```
+
+生成すると `rooms/check/<name>_<id>.jpg`（基準線と計算値を描き込んだ確認画像）と `room_<name>_close.jpg`（絵のまわりに寄った画像）も出る。
 
 絵の画像は AI に入れない。合成は `generate` がホモグラフィの逆写像で行い、「部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安（壁幅 約 3m として合成）」と作品ページに出る。`rooms/README.md` に生成ツールと商用利用の可否を書く。
 

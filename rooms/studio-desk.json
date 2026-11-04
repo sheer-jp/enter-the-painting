@@ -1,10 +1,22 @@
 {
   "name": "studio-desk",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "一人暮らしの机の上",
     "en": "Desk in a studio apartment"
   },
   "scene": "ワンルームの木の机。閉じたノート PC、マグ、小さなランプ。昼の光。",
+  "scale": {
+    "px_per_cm": 6.27,
+    "basis": {
+      "ja": "机の幅 690px = 110cm"
+    },
+    "cross_check": {
+      "ja": "ノート PC 230px = 31cm → 7.4（手前なので大きめ）"
+    },
+    "confidence": "mid"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,17 +35,15 @@
         250,
         990
       ]
-    ],
-    "width_cm": 170,
-    "hang_center_ratio": [
-      0.5,
-      0.33
     ]
+  },
+  "hang": {
+    "x_px": 780,
+    "floor_y_px": 1141,
+    "center_from_floor_cm": 130
   },
   "suits_cm": [
     15,
     45
-  ],
-  "image_width_px": 1586,
-  "note": "画像が届いたら rooms/<name>.jpg に置き、4 隅を確認する"
+  ]
 }

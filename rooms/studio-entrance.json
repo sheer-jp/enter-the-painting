@@ -1,10 +1,22 @@
 {
   "name": "studio-entrance",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "小さな玄関",
     "en": "Tiny entrance"
   },
   "scene": "ワンルームの玄関。靴と、フックに掛けたバッグ。",
+  "scale": {
+    "px_per_cm": 4.6,
+    "basis": {
+      "ja": "玄関ドアの高さ（上が切れている）からの推定"
+    },
+    "cross_check": {
+      "ja": "バッグの高さ 290px = 40cm → 7.3（手前。不採用）"
+    },
+    "confidence": "low"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,17 +35,15 @@
         220,
         920
       ]
-    ],
-    "width_cm": 200,
-    "hang_center_ratio": [
-      0.55,
-      0.4
     ]
+  },
+  "hang": {
+    "x_px": 800,
+    "floor_y_px": 920,
+    "center_from_floor_cm": 140
   },
   "suits_cm": [
     15,
     45
-  ],
-  "image_width_px": 1586,
-  "note": "画像が届いたら rooms/<name>.jpg に置き、4 隅を確認する"
+  ]
 }

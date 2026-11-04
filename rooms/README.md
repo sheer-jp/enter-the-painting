@@ -10,11 +10,12 @@
 | living-window | 窓辺のリビング | 30〜120 | 同上 | 可 |
 | living-chair | 椅子のあるリビング | 30〜120 | 同上 | 可 |
 | living-sofa | ソファのあるリビング | 30〜120 | 同上 | 可 |
-| studio-desk | 一人暮らしの机の上 | 15〜45 | ChatGPT | 可 |（画像待ち）
-| studio-bedside | ベッド脇の夜 | 15〜45 | ChatGPT | 可 |（画像待ち）
-| studio-shelf | 低い棚の上 | 15〜45 | ChatGPT | 可 |（画像待ち）
-| studio-kitchen | キッチンカウンター | 15〜45 | ChatGPT | 可 |（画像待ち）
-| studio-entrance | 小さな玄関 | 15〜45 | ChatGPT | 可 |（画像待ち）
+| studio-desk | 一人暮らしの机の上 | 15〜45 | ChatGPT | 可 
+| studio-bedside | ベッド脇の夜 | 15〜45 | ChatGPT | 可 
+| studio-shelf | 低い棚の上 | 15〜45 | ChatGPT | 可 
+| studio-kitchen | キッチンカウンター | 15〜45 | ChatGPT | 可 
+| studio-entrance | 小さな玄関 | 15〜45 | ChatGPT | 可 
 
-`rooms/<name>.json`：`image_width_px`、`wall.corners_px`（壁の 4 隅、左上から時計回り）、`wall.width_cm`（壁幅の目安。ドアの幅 80cm・高さ 200cm から逆算）、`wall.hang_center_ratio`（絵の中心を壁のどこに置くか。目の高さ 150cm）、`suits_cm`（向いている作品の長辺の範囲）。
+`rooms/<name>.json`：`scale.px_per_cm`（壁と同じ平面にある基準物から。ドアの高さ 200cm、机の幅など。計算式と各部屋の計測は `docs/SCALE.md`）、`hang`（絵の中心 x、床の y、掛ける高さ。立って見る壁は 150cm、机やベッド脇は 125〜135cm）、`wall.corners_px`（正面の壁の範囲）、`suits_cm`（向いている作品の長辺の範囲）。
+縮尺の確認は `rooms/check/<name>_<作品id>.jpg`（生成時に出る。基準線と計算値入り）で行う。
 作品側で `work.json` の `rooms` に名前を並べると、その順で使う（最初の部屋が体験の終わりに出る）。指定が無ければ `suits_cm` に合う部屋が全部使われる。

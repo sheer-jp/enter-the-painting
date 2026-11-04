@@ -1,10 +1,22 @@
 {
   "name": "living-window",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "窓辺のリビング",
     "en": "Living room by the window"
   },
   "scene": "大きな窓のあるリビング。観葉植物と椅子の間の白い壁。午後の光。",
+  "scale": {
+    "px_per_cm": 3.75,
+    "basis": {
+      "ja": "室内ドアの高さ 750px = 200cm"
+    },
+    "cross_check": {
+      "ja": "天井〜床 855px = 240cm → 3.56"
+    },
+    "confidence": "high"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,16 +35,15 @@
         225,
         855
       ]
-    ],
-    "width_cm": 325,
-    "hang_center_ratio": [
-      0.5,
-      0.34
     ]
+  },
+  "hang": {
+    "x_px": 830,
+    "floor_y_px": 855,
+    "center_from_floor_cm": 150
   },
   "suits_cm": [
     30,
     120
-  ],
-  "image_width_px": 1586
+  ]
 }

@@ -1,10 +1,22 @@
 {
   "name": "studio-bedside",
+  "image_width_px": 1586,
+  "image_height_px": 992,
   "label": {
     "ja": "ベッド脇の夜",
     "en": "Bedside at night"
   },
   "scene": "ワンルームの夜。シングルベッドの脇の小さなテーブルと暖かいランプ。",
+  "scale": {
+    "px_per_cm": 5.33,
+    "basis": {
+      "ja": "ナイトテーブルの幅 240px = 45cm"
+    },
+    "cross_check": {
+      "ja": "ランプの高さ 245px = 45cm → 5.44"
+    },
+    "confidence": "mid"
+  },
   "wall": {
     "corners_px": [
       [
@@ -23,17 +35,15 @@
         450,
         990
       ]
-    ],
-    "width_cm": 190,
-    "hang_center_ratio": [
-      0.42,
-      0.35
     ]
+  },
+  "hang": {
+    "x_px": 1060,
+    "floor_y_px": 1113,
+    "center_from_floor_cm": 125
   },
   "suits_cm": [
     15,
     45
-  ],
-  "image_width_px": 1586,
-  "note": "画像が届いたら rooms/<name>.jpg に置き、4 隅を確認する"
+  ]
 }
