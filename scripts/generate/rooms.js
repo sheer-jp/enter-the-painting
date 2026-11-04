@@ -93,17 +93,111 @@ const bbox = (pts) => {
 const xmlEsc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const fmt = (v) => String(+v.toFixed(2));
 
-// 寄りの切り出し範囲：絵の中心を中心に、高さ = 絵の高さ × 3、16:10。画像の端を超えるなら端に寄せる
-export function closeCropRect(quad, imgW, imgH) {
-  const b = bbox(quad);
-  const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
-  let h = (b.y1 - b.y0) * 3, w = h * 1.6;
-  if (w > imgW) { w = imgW; h = w / 1.6; }
-  if (h > imgH) { h = imgH; w = h * 1.6; }
-  w = Math.round(w); h = Math.round(h);
-  const left = Math.round(Math.min(Math.max(0, cx - w / 2), imgW - w));
-  const top = Math.round(Math.min(Math.max(0, cy - h / 2), imgH - h));
-  return { left, top, width: w, height: h };
+// ---- 縮尺：基準物（rooms/REFERENCES.json の実寸 cm と、部屋 JSON の px）から ----
+
+export function loadReferenceTable(roomsDir) {
+  const p = join(roomsDir, 'REFERENCES.json');
+  return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : {};
+}
+
+// "door_interior.height" → { key, dim: 'height', item, cm }
+export function resolveRef(ref, table) {
+  const [key, dim] = String(ref).split('.');
+  const item = table[key];
+  const cm = item?.[`${dim}_cm`];
+  if (!item || !cm) throw new Error(`寸法表に ${ref} が無い（rooms/REFERENCES.json）`);
+  return { key, dim, item, cm };
+}
+
+// ずれ（割合）と基準の数から信頼度：8% 以内 high、15% 以内 mid、それ以上か基準が 1 つ → low
+export function confidenceFrom(deviation, count) {
+  if (count < 2) return 'low';
+  if (deviation <= 0.08) return 'high';
+  if (deviation <= 0.15) return 'mid';
+  return 'low';
+}
+
+// references: [{ ref, px, primary }] → { px_per_cm, deviation, confidence, primary: [...], all: [...] }
+// primary が複数あれば、その平均を px/cm にする。ずれは、全基準物の px/cm と採用値の最大のずれ
+export function scaleFromReferences(references, table) {
+  const all = references.map((r) => { const x = resolveRef(r.ref, table); return { ...x, ref: r.ref, px: r.px, primary: !!r.primary, pxPerCm: r.px / x.cm }; });
+  if (!all.length) throw new Error('references が空');
+  const prim = all.filter((r) => r.primary).length ? all.filter((r) => r.primary) : [all[0]];
+  const pxPerCm = prim.reduce((a, r) => a + r.pxPerCm, 0) / prim.length;
+  const deviation = Math.max(0, ...all.map((r) => Math.abs(r.pxPerCm - pxPerCm) / pxPerCm));
+  return { px_per_cm: pxPerCm, deviation, confidence: confidenceFrom(deviation, all.length), primary: prim, all };
+}
+
+// ---- 比較の一文 ----
+
+// 比率を身近な言い方に丸める（docs/SIZE_UX.md 3 節）
+export function fractionOf(r) {
+  if (r >= 0.9 && r <= 1.1) return { kind: 'same', ja: 'ほぼ同じ', en: 'about the same' };
+  if (r >= 0.6 && r <= 0.75) return { kind: 'frac', ja: '約 3 分の 2', en: 'about two thirds' };
+  if (r >= 0.45 && r <= 0.55) return { kind: 'frac', ja: '約半分', en: 'about half' };
+  if (r >= 0.28 && r <= 0.38) return { kind: 'frac', ja: '約 3 分の 1', en: 'about one third' };
+  if (r >= 0.2 && r < 0.28) return { kind: 'frac', ja: '約 4 分の 1', en: 'about a quarter' };
+  const v = Math.max(0.1, Math.round(r * 10) / 10).toFixed(1);
+  return { kind: 'times', ja: `約 ${v} 倍`, en: `about ${v} times` };
+}
+
+// 顧客に馴染みがある順（ドア > ソファ > 机 > 棚 > カウンター > ナイトテーブル > 天井 > その他）
+export const FAMILIAR = ['door_interior', 'door_entrance', 'sofa_2seat', 'armchair', 'bench', 'desk', 'low_shelf', 'kitchen_counter', 'nightstand', 'ceiling', 'ceiling_entrance', 'window', 'kettle', 'table_lamp', 'laptop', 'mug'];
+// 幅で比べてよい物（横長の絵と、横に長い家具）
+const WIDE = new Set(['sofa_2seat', 'bench', 'desk', 'low_shelf', 'window']);
+const rankOf = (k) => { const i = FAMILIAR.indexOf(k); return i < 0 ? FAMILIAR.length : i; };
+
+// 1 つの基準物との比べ方：基本は高さ。横長の絵と横に長い物で、幅の方が 1 に近ければ幅。高さの無い物は幅
+export function compareWith(sizeCm, item, key) {
+  const [w, h] = sizeCm;
+  const opts = [];
+  if (item.height_cm) opts.push({ dim: 'height', ratio: h / item.height_cm, cm: item.height_cm });
+  if (item.width_cm && (!item.height_cm || (w > h && WIDE.has(key)))) opts.push({ dim: 'width', ratio: w / item.width_cm, cm: item.width_cm });
+  opts.sort((a, b) => Math.abs(Math.log(a.ratio)) - Math.abs(Math.log(b.ratio)));
+  return opts[0] || null;
+}
+
+const DIM = { height: { ja: '高さ', en: 'height' }, width: { ja: '幅', en: 'width' } };
+
+// 比較の文（ja / en）。withCm なら基準物の実寸を括弧で添える（数字を出す場所だけ）
+export function compareSentence({ item, dim, ratio, cm }, { withCm = false, approx = false } = {}) {
+  const f = fractionOf(ratio);
+  const cmJa = withCm ? `（約 ${Math.round(cm)} cm）` : '', cmEn = withCm ? ` (about ${Math.round(cm)} cm)` : '';
+  const d = DIM[dim];
+  const sp = /\d$/.test(f.ja) ? ' ' : '';   // 「約 3 分の 1 の高さ」：数字のあとは半角スペース
+  let ja = f.kind === 'same' ? `この${item.label.ja}${cmJa}と${f.ja}${d.ja}。` : `この${item.label.ja}${cmJa}の${f.ja}${sp}の${d.ja}。`;
+  const cap = (s) => s[0].toUpperCase() + s.slice(1);
+  let en = f.kind === 'same' ? `${cap(f.en)} ${d.en} as ${item.label.en}${cmEn}.` : `${cap(f.en)} the ${d.en} of ${item.label.en}${cmEn}.`;
+  if (approx) { ja = ja.replace(/。$/, '（寸法は目安）。'); en = en.replace(/\.$/, ' (size is approximate).'); }
+  return { ja, en };
+}
+
+// 部屋の文章：比較の一文、2 つ目の比較、部屋の説明、注記（ja / en）
+export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, centerFromFloorCm }) {
+  const seen = new Set();
+  const cands = [];
+  for (const r of [...references].sort((a, b) => rankOf(a.ref.split('.')[0]) - rankOf(b.ref.split('.')[0]))) {
+    const key = r.ref.split('.')[0];
+    if (seen.has(key) || !table[key]) continue;
+    seen.add(key);
+    const c = compareWith(sizeCm, table[key], key);
+    if (c) cands.push({ ...c, item: table[key], key });
+  }
+  const low = confidence === 'low';
+  const compare = cands[0] ? compareSentence(cands[0], { approx: low }) : null;
+  const compare2 = cands[1] ? compareSentence(cands[1], { withCm: true }) : null;
+  const m = (wallWidthCm / 100).toFixed(1);
+  const hc = Math.round(centerFromFloorCm / 5) * 5;
+  const seated = centerFromFloorCm < 140;
+  const about = {
+    ja: `壁の幅は約 ${m} m。${seated ? '座ったときの目の高さ' : '目の高さ'}（床から約 ${hc} cm）に掛けています。`,
+    en: `The wall is about ${m} m wide. The painting hangs at ${seated ? 'seated eye level' : 'eye level'} (about ${hc} cm from the floor).`,
+  };
+  const note = {
+    ja: '部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。' + (low ? 'この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。' : ''),
+    en: 'The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.' + (low ? ' The scale cues in this room are uncertain, so treat it as an especially rough guide.' : ''),
+  };
+  return { compare, compare2, about, note, primary_ref: cands[0]?.key || null };
 }
 
 // 確認用の重ね描き（SVG）：絵の枠（赤）、床の線（青、画像内のときだけ）、左上に縮尺の文字
@@ -119,12 +213,13 @@ function checkOverlaySvg({ width, height, quad, floorY, lines }) {
 </svg>`);
 }
 
-export async function compositeRooms({ root, work, paintingPath, outDir, aspect }) {
+export async function compositeRooms({ root, work, paintingPath, outDir }) {
   const roomsDir = join(root, 'rooms');
   if (!existsSync(roomsDir)) return [];
+  const table = loadReferenceTable(roomsDir);
   // 部屋の指定が無ければ、作品の大きさ（長辺）に向いている部屋だけを使う（suits_cm: [min, max]）
   const longSide = Math.max(...work.size_cm);
-  const names = work.rooms || readdirSync(roomsDir).filter((f) => f.endsWith('.json')).map((f) => f.replace(/\.json$/, '')).filter((n) => {
+  const names = work.rooms || readdirSync(roomsDir).filter((f) => f.endsWith('.json') && f !== 'REFERENCES.json').map((f) => f.replace(/\.json$/, '')).filter((n) => {
     const d = JSON.parse(readFileSync(join(roomsDir, `${n}.json`), 'utf8'));
     return !d.suits_cm || (longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1]);
   });
@@ -140,11 +235,14 @@ export async function compositeRooms({ root, work, paintingPath, outDir, aspect 
     const W = room.info.width, H = room.info.height;
     const scale = W / (def.image_width_px || W);
     const wall = { ...def.wall, corners_px: def.wall.corners_px.map(([x, y]) => [x * scale, y * scale]) };
+    // 縮尺：references（基準物）から。無ければ従来の scale.px_per_cm 直書き（後方互換）
+    let sc = null;
+    if (def.references?.length) sc = scaleFromReferences(def.references, table);
+    else if (def.scale?.px_per_cm) sc = { px_per_cm: def.scale.px_per_cm, deviation: null, confidence: def.scale.confidence || null, all: [] };
     let quad, pxPerCm = null, wallWidthCm = def.wall.width_cm;
-    if (def.scale) {
-      // 新方式：基準物から出した px/cm
-      pxPerCm = def.scale.px_per_cm * scale;
-      quad = paintingRectFromScale(def, work.size_cm, W);
+    if (sc) {
+      pxPerCm = sc.px_per_cm * scale;
+      quad = paintingRectFromScale({ ...def, scale: { px_per_cm: sc.px_per_cm } }, work.size_cm, W);
       const wb = bbox(wall.corners_px), pb = bbox(quad);
       wallWidthCm = Math.round((wb.x1 - wb.x0) / pxPerCm);
       const eps = 0.5;
@@ -161,29 +259,30 @@ export async function compositeRooms({ root, work, paintingPath, outDir, aspect 
     const outName = `room_${name}.jpg`;
     await sharp(buf, raw).jpeg({ quality: 85 }).toFile(join(outDir, outName));
 
-    // 寄りの画像：幅 1200px
-    const closeName = `room_${name}_close.jpg`;
-    await sharp(buf, raw).extract(closeCropRect(quad, W, H)).resize({ width: 1200 }).jpeg({ quality: 85 }).toFile(join(outDir, closeName));
-
     // 確認用画像：rooms/check/<name>_<workId>.jpg
-    if (def.scale) {
+    if (sc) {
       mkdirSync(checkDir, { recursive: true });
       const pb = bbox(quad);
       const wPx = Math.round(pb.x1 - pb.x0), hPx = Math.round(pb.y1 - pb.y0);
-      const basis = def.scale.basis?.ja || def.scale.basis?.en || '';
       const lines = [
-        `px/cm=${fmt(pxPerCm)}  絵 ${work.size_cm[0]}×${work.size_cm[1]}cm = ${wPx}×${hPx}px  confidence=${def.scale.confidence || '?'}`,
-        `basis=${basis}`,
-        ...(def.scale.cross_check?.ja ? [`cross_check=${def.scale.cross_check.ja}`] : []),
+        `px/cm=${fmt(pxPerCm)}  絵 ${work.size_cm[0]}×${work.size_cm[1]}cm = ${wPx}×${hPx}px  confidence=${sc.confidence || '?'}${sc.deviation != null ? `（ずれ ${(sc.deviation * 100).toFixed(1)}%）` : ''}`,
+        ...sc.all.map((r) => `${r.primary ? '主 ' : '　 '}${r.ref} ${r.px}px = ${r.cm}cm → ${fmt(r.pxPerCm)}`),
+        ...(!sc.all.length && def.scale?.basis?.ja ? [`basis=${def.scale.basis.ja}`] : []),
       ];
       const svg = checkOverlaySvg({ width: W, height: H, quad, floorY: def.hang.floor_y_px * scale, lines });
       await sharp(buf, raw).composite([{ input: svg, top: 0, left: 0 }]).jpeg({ quality: 85 }).toFile(join(checkDir, `${name}_${work.id}.jpg`));
     }
 
+    // 顧客向けの文章（ja / en。他の言語は index.js で翻訳キャッシュから）
+    const texts = def.references?.length
+      ? roomTexts({ references: def.references, table, sizeCm: work.size_cm, confidence: sc.confidence, wallWidthCm, centerFromFloorCm: def.hang.center_from_floor_cm })
+      : { compare: null, compare2: null, about: null, note: null, primary_ref: null };
+
     results.push({
-      name, image: outName, close: closeName, label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
+      name, image: outName, label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
       image_px: [W, H], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]),
-      ...(def.scale ? { px_per_cm: +pxPerCm.toFixed(3), confidence: def.scale.confidence || null } : {}),
+      ...(sc ? { px_per_cm: +pxPerCm.toFixed(3), confidence: sc.confidence || null } : {}),
+      ...texts,
     });
   }
   return results;

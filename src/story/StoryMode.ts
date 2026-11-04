@@ -192,9 +192,12 @@ export class StoryMode {
     });
   }
 
+  // 終わりの演出に使う部屋（合成の座標があるもののうち最初）
+  private room() { return this.ctx.space.rooms?.find((r) => r.quad_px && r.image_px); }
+
   // 部屋のイメージ（終わりの演出用）。T3 の間に読んでおく
   private loadRoom(): Promise<void> {
-    const room = this.ctx.space.rooms?.find((r) => r.quad_px && r.image_px);
+    const room = this.room();
     if (!room || !this.ctx.renderer) return Promise.resolve();
     return new Promise((res) => {
       new THREE.TextureLoader().load(this.ctx.base + 'generated/' + room.image, (tex) => {
@@ -211,7 +214,7 @@ export class StoryMode {
 
   // 部屋のイメージを画面に収めたときの、画像座標 → 画面の矩形（NDC のスケールと位置）
   private roomLayout() {
-    const room = this.ctx.space.rooms?.find((r) => r.quad_px && r.image_px)!;
+    const room = this.room()!;
     const [iw, ih] = room.image_px!;
     const vw = innerWidth, vh = innerHeight;
     const s = Math.max(vw / iw, vh / ih) * 1.0;   // cover（縦画面でも部屋が画面を満たす）
@@ -234,7 +237,7 @@ export class StoryMode {
         const timeline = this.timeline();
         result = await Promise.race([ended, timeline.then(() => ended)]);
         this.text.clear();
-        if (result === 'again') { this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; }
+        if (result === 'again') { this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; this.ctx.hud.caption.style.opacity = '0'; }
       } while (result === 'again' && this.running);
     } finally {
       this.running = false;
@@ -312,6 +315,7 @@ export class StoryMode {
     await this.tween(2.2, () => { /* 静止した絵を見せる。回帰で元の絵に戻りきる */ });
     // T5 終わり：その絵が、誰かの部屋に掛かる
     this.stage = 'T5';
+    let landed = false;
     await roomReady;
     if (this.roomMesh && this.roomMat && fluid) {
       const L = this.roomLayout();
@@ -324,10 +328,20 @@ export class StoryMode {
       });
       // 流体の絵を消して、合成済みの部屋だけにする（同じ場所に同じ絵がある）
       await this.tween(1.0, (t) => (this.fade = 1 - t));
+      landed = true;
     }
     fluid?.setRestore(this.restoreBase);
     hud.ending.style.opacity = '1'; hud.ending.style.pointerEvents = 'auto';
     if (this.ctx.fromQr) hud.once.style.opacity = '1';
+    // 着地の 1 秒後に、比較の一文を 1 行だけ（数字は出さない）。終わりのボタンの上に置く
+    const compare = pick(this.room()?.compare, lang);
+    if (landed && compare) {
+      await wait(1000);
+      if (!this.running || this.stage !== 'T5') return;
+      hud.caption.textContent = compare;
+      hud.caption.style.bottom = `calc(${Math.round(hud.ending.getBoundingClientRect().height) + 28 + 18}px + env(safe-area-inset-bottom))`;
+      hud.caption.style.opacity = '1';
+    }
   }
 }
 

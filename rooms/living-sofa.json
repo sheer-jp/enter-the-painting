@@ -7,16 +7,17 @@
     "en": "Living room with a sofa"
   },
   "scene": "グレーのソファの向かいの白い壁。観葉植物と丸いテーブル。",
-  "scale": {
-    "px_per_cm": 3.53,
-    "basis": {
-      "ja": "室内ドアの高さ 705px = 200cm"
+  "references": [
+    {
+      "ref": "door_interior.height",
+      "px": 705,
+      "primary": true
     },
-    "cross_check": {
-      "ja": "天井〜床 880px = 240cm → 3.67"
-    },
-    "confidence": "high"
-  },
+    {
+      "ref": "ceiling.height",
+      "px": 880
+    }
+  ],
   "wall": {
     "corners_px": [
       [

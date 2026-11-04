@@ -7,16 +7,17 @@
     "en": "Apartment living room"
   },
   "scene": "マンションのリビング。ソファと椅子の間の白い壁。窓からの光。",
-  "scale": {
-    "px_per_cm": 3.63,
-    "basis": {
-      "ja": "室内ドアの高さ 725px = 200cm"
+  "references": [
+    {
+      "ref": "door_interior.height",
+      "px": 725,
+      "primary": true
     },
-    "cross_check": {
-      "ja": "天井〜床 845px = 240cm → 3.52"
-    },
-    "confidence": "high"
-  },
+    {
+      "ref": "ceiling.height",
+      "px": 845
+    }
+  ],
   "wall": {
     "corners_px": [
       [

@@ -10,6 +10,18 @@ export interface Space {
   audio: { voice: string | null; ambient: 'calm' | 'wind' | 'water' | 'drone' | 'none' };
   messages: ({ at: number } & Multi)[];
   story: Multi | null;
-  rooms: { name: string; image: string; label: Multi; wall_width_cm: number; image_px?: [number, number]; quad_px?: [number, number][]; close?: string; px_per_cm?: number; confidence?: string | null }[];
+  size_label?: Multi | null;
+  rooms: Room[];
   availability: string | null; contact: string | null;
+}
+
+// 部屋で見る（space.json の rooms[]）。文章は docs/SIZE_UX.md 3・5 節
+export interface Room {
+  name: string; image: string; label: Multi; wall_width_cm: number;
+  image_px?: [number, number]; quad_px?: [number, number][];
+  px_per_cm?: number; confidence?: 'high' | 'mid' | 'low' | null; primary_ref?: string | null;
+  compare?: Multi | null;    // 比較の一文（数字なし）
+  compare2?: Multi | null;   // 2 つ目の比較（基準物の実寸つき）
+  about?: Multi | null;      // 部屋の説明（壁の幅、掛ける高さ）
+  note?: Multi | null;       // 注記（AI のイメージ、目安）
 }

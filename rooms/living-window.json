@@ -7,16 +7,17 @@
     "en": "Living room by the window"
   },
   "scene": "大きな窓のあるリビング。観葉植物と椅子の間の白い壁。午後の光。",
-  "scale": {
-    "px_per_cm": 3.75,
-    "basis": {
-      "ja": "室内ドアの高さ 750px = 200cm"
+  "references": [
+    {
+      "ref": "door_interior.height",
+      "px": 750,
+      "primary": true
     },
-    "cross_check": {
-      "ja": "天井〜床 855px = 240cm → 3.56"
-    },
-    "confidence": "high"
-  },
+    {
+      "ref": "ceiling.height",
+      "px": 855
+    }
+  ],
   "wall": {
     "corners_px": [
       [

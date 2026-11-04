@@ -7,16 +7,17 @@
     "en": "Bedside at night"
   },
   "scene": "ワンルームの夜。シングルベッドの脇の小さなテーブルと暖かいランプ。",
-  "scale": {
-    "px_per_cm": 5.33,
-    "basis": {
-      "ja": "ナイトテーブルの幅 240px = 45cm"
+  "references": [
+    {
+      "ref": "nightstand.width",
+      "px": 240,
+      "primary": true
     },
-    "cross_check": {
-      "ja": "ランプの高さ 245px = 45cm → 5.44"
-    },
-    "confidence": "mid"
-  },
+    {
+      "ref": "table_lamp.height",
+      "px": 245
+    }
+  ],
   "wall": {
     "corners_px": [
       [

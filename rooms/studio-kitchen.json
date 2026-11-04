@@ -7,16 +7,18 @@
     "en": "Kitchen counter"
   },
   "scene": "小さなキッチン。ケトルとカップ。朝の光が壁に落ちる。",
-  "scale": {
-    "px_per_cm": 8.0,
-    "basis": {
-      "ja": "電気ケトルの高さ 200px = 24cm → 8.3、マグ 70px = 9cm → 7.8 の平均"
+  "references": [
+    {
+      "ref": "kettle.height",
+      "px": 200,
+      "primary": true
     },
-    "cross_check": {
-      "ja": "カウンターの高さ 85cm → 床は 790 + 680 = 1470（画面外）"
-    },
-    "confidence": "mid"
-  },
+    {
+      "ref": "mug.height",
+      "px": 70,
+      "primary": true
+    }
+  ],
   "wall": {
     "corners_px": [
       [

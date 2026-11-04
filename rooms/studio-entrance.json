@@ -7,16 +7,13 @@
     "en": "Tiny entrance"
   },
   "scene": "ワンルームの玄関。靴と、フックに掛けたバッグ。",
-  "scale": {
-    "px_per_cm": 4.6,
-    "basis": {
-      "ja": "玄関ドアの高さ（上が切れている）からの推定"
-    },
-    "cross_check": {
-      "ja": "バッグの高さ 290px = 40cm → 7.3（手前。不採用）"
-    },
-    "confidence": "low"
-  },
+  "references": [
+    {
+      "ref": "door_entrance.height",
+      "px": 943,
+      "primary": true
+    }
+  ],
   "wall": {
     "corners_px": [
       [

@@ -72,6 +72,29 @@ if (workId) {
   };
   enter.addEventListener('click', () => start(false));
   enterVr.addEventListener('click', () => start(true));
+  // 部屋で見る：帯の画像をタップすると拡大表示（寸法線と詳しい説明）。コードと space.json は初めて開くときに読む
+  const figs = [...document.querySelectorAll<HTMLElement>('.room[data-room-index]')];
+  if (figs.length) {
+    const assetBase = document.querySelector<HTMLMetaElement>('meta[name="asset-base"]')?.content ?? '../../';
+    let loading: Promise<[unknown, typeof import('./ui/lightbox')]> | null = null;
+    const load = () => (loading ||= Promise.all([
+      fetch(`${assetBase}works/${workId}/generated/space.json`).then((r) => { if (!r.ok) throw new Error('space.json ' + r.status); return r.json(); }),
+      import('./ui/lightbox'),
+    ]).catch((e) => { loading = null; throw e; }));
+    const imgs = figs.map((f) => f.querySelector('img')!);
+    const open = async (i: number) => {
+      try {
+        const [space, mod] = await load();
+        mod.openLightbox({ space: space as import('./ui/lightbox').LightboxSpace, srcs: imgs.map((im) => im.currentSrc || im.src), index: i, lang, returnFocus: imgs[i] });
+      } catch (e) { console.warn('拡大表示を開けない', e); }
+    };
+    imgs.forEach((im, i) => {
+      im.setAttribute('role', 'button'); im.tabIndex = 0;
+      im.addEventListener('click', () => open(+figs[i].dataset.roomIndex! || i));
+      im.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(i); } });
+      im.addEventListener('pointerenter', () => { load().catch(() => {}); }, { once: true });   // ホバーで先に読む
+    });
+  }
   // 絵をタップ / クリックしても入れる
   const paintingImg = document.querySelector<HTMLImageElement>('.painting img');
   if (paintingImg) {

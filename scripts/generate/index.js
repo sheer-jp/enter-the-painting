@@ -1,7 +1,7 @@
 // npm run generate [-- <id>]：works/<id>/ から流れ場・主要色・翻訳・QR・作品ページを生成する
 import sharp from 'sharp';
 import QRCode from 'qrcode';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync, unlinkSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { kmeans, toHex, textColor, backColor } from './color.js';
 import { structureTensorFlow, flowToRGB, motionFromFlow } from './flow.js';
@@ -49,7 +49,15 @@ async function generateWork(id) {
   await sharp(Buffer.from(flowToRGB(flow)), { raw: { width: FLOW_W, height: flowH, channels: 3 } }).png().toFile(join(gen, 'flow.png'));
   const motion = motionFromFlow(flow);
 
-  // 4. 翻訳（タイトル、メッセージ、物語）
+  // 4. 部屋の合成（文章は次の翻訳にまとめて通す）
+  const rooms = await compositeRooms({ root: ROOT, work, paintingPath: join(gen, 'painting_1024.jpg'), outDir: gen });
+  // 古い寄りの画像（room_<name>_close.jpg）は使わなくなったので消す
+  for (const f of readdirSync(gen)) if (/^room_.+_close\.jpg$/.test(f)) unlinkSync(join(gen, f));
+  // 部屋の文章（比較の一文など）を翻訳キャッシュに通す。en はコードで組み立てたもの
+  const ROOM_TEXTS = ['compare', 'compare2', 'about', 'note'];
+  const roomTexts = [...new Map(rooms.flatMap((r) => ROOM_TEXTS.map((k) => r[k]).filter(Boolean)).map((x) => [x.ja, x])).values()];   // 同じ文は 1 回だけ
+
+  // 5. 翻訳（タイトル、メッセージ、物語、部屋の文章）
   const messages = (work.messages || []).map((ja, i) => ({ ja, en: work.messages_en?.[i] }));
   const texts = [...messages];
   if (work.title?.ja) texts.push({ ja: work.title.ja, en: work.title.en });
@@ -63,7 +71,9 @@ async function generateWork(id) {
     console.log('  小さな物語を下書きした → generated/stories.json（作家が直す）');
   }
   if (stories.ja) texts.push({ ja: stories.ja, en: stories.en });
+  texts.push(...roomTexts);
   const tr = await translateAll(texts, join(gen, 'translations.json'));
+  for (const r of rooms) for (const k of ROOM_TEXTS) if (r[k]) r[k] = { ...tr(r[k].ja), ja: r[k].ja, en: r[k].en };
 
   // 声の各文の開始秒。無ければ等間隔（文字数に比例）
   const at = [];
@@ -72,9 +82,6 @@ async function generateWork(id) {
     let s = 0;
     for (const m of messages) { at.push(+s.toFixed(1)); s += Math.max(4, m.ja.length * 0.25) + 3; }
   }
-
-  // 5. 部屋の合成
-  const rooms = await compositeRooms({ root: ROOT, work, paintingPath: join(gen, 'painting_1024.jpg'), outDir: gen, aspect });
 
   // 6. space.json
   const ov = work.overrides || {};
@@ -90,6 +97,7 @@ async function generateWork(id) {
     audio: { voice: work.audio?.voice && existsSync(join(dir, work.audio.voice)) ? work.audio.voice : null, ambient: work.audio?.ambient || 'calm' },
     messages: messages.map((m, i) => ({ at: at[i], ...tr(m.ja), ja: m.ja, ...(m.en ? { en: m.en } : {}) })),
     story: stories.ja ? { ...tr(stories.ja), ja: stories.ja } : null,
+    size_label: work.size_label || null,
     rooms, availability: work.availability || null, contact: work.contact || null,
     generated_at: new Date().toISOString(),
   };

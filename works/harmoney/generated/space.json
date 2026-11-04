@@ -113,16 +113,19 @@
     "ja": "朝、カーテンを開けると、この絵の赤がいちばん先に目を覚ます。\n忙しい日は通り過ぎるだけで、それでも帰ってくると、青がまだそこにいる。\nぶつかった色が、夜にはほどけて、ひとつの調和になっている。\n（下書き。作家が自分の言葉に直す）",
     "en": "In the morning, when the curtains open, the reds in this painting wake up first.\nOn busy days you only pass by, and still, when you come home, the blue is waiting there.\nBy night, the colors that collided have come undone into a single harmony.\n(Draft, to be rewritten by the artist in her own words)"
   },
+  "size_label": {
+    "ja": "F15 号",
+    "en": "F15"
+  },
   "rooms": [
     {
       "name": "living-apartment",
       "image": "room_living-apartment.jpg",
-      "close": "room_living-apartment_close.jpg",
       "label": {
         "ja": "マンションのリビング",
         "en": "Apartment living room"
       },
-      "wall_width_cm": 322,
+      "wall_width_cm": 323,
       "image_px": [
         1586,
         992
@@ -130,11 +133,11 @@
       "quad_px": [
         [
           704,
-          182
+          183
         ],
         [
           896,
-          182
+          183
         ],
         [
           896,
@@ -145,13 +148,29 @@
           419
         ]
       ],
-      "px_per_cm": 3.63,
-      "confidence": "high"
+      "px_per_cm": 3.625,
+      "confidence": "high",
+      "compare": {
+        "ja": "このドアの約 3 分の 1 の高さ。",
+        "en": "About one third the height of the door."
+      },
+      "compare2": {
+        "ja": "この部屋の天井（約 240 cm）の約 4 分の 1 の高さ。",
+        "en": "About a quarter the height of the ceiling (about 240 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 3.2 m。目の高さ（床から約 150 cm）に掛けています。",
+        "en": "The wall is about 3.2 m wide. The painting hangs at eye level (about 150 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "door_interior"
     },
     {
       "name": "entrance-house",
       "image": "room_entrance-house.jpg",
-      "close": "room_entrance-house_close.jpg",
       "label": {
         "ja": "一軒家の玄関",
         "en": "Entrance hall of a house"
@@ -180,12 +199,28 @@
         ]
       ],
       "px_per_cm": 3.4,
-      "confidence": "mid"
+      "confidence": "high",
+      "compare": {
+        "ja": "このドアの約 3 分の 1 の高さ。",
+        "en": "About one third the height of the door."
+      },
+      "compare2": {
+        "ja": "この玄関の天井（約 230 cm）の約 3 分の 1 の高さ。",
+        "en": "About one third the height of the ceiling (about 230 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 2.3 m。目の高さ（床から約 150 cm）に掛けています。",
+        "en": "The wall is about 2.3 m wide. The painting hangs at eye level (about 150 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "door_interior"
     },
     {
       "name": "living-window",
       "image": "room_living-window.jpg",
-      "close": "room_living-window_close.jpg",
       "label": {
         "ja": "窓辺のリビング",
         "en": "Living room by the window"
@@ -214,17 +249,33 @@
         ]
       ],
       "px_per_cm": 3.75,
-      "confidence": "high"
+      "confidence": "high",
+      "compare": {
+        "ja": "このドアの約 3 分の 1 の高さ。",
+        "en": "About one third the height of the door."
+      },
+      "compare2": {
+        "ja": "この部屋の天井（約 240 cm）の約 4 分の 1 の高さ。",
+        "en": "About a quarter the height of the ceiling (about 240 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 3.2 m。目の高さ（床から約 150 cm）に掛けています。",
+        "en": "The wall is about 3.2 m wide. The painting hangs at eye level (about 150 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "door_interior"
     },
     {
       "name": "living-chair",
       "image": "room_living-chair.jpg",
-      "close": "room_living-chair_close.jpg",
       "label": {
         "ja": "椅子のあるリビング",
         "en": "Living room with an armchair"
       },
-      "wall_width_cm": 291,
+      "wall_width_cm": 292,
       "image_px": [
         1586,
         992
@@ -240,20 +291,36 @@
         ],
         [
           848,
-          419
+          420
         ],
         [
           642,
-          419
+          420
         ]
       ],
-      "px_per_cm": 3.88,
-      "confidence": "high"
+      "px_per_cm": 3.875,
+      "confidence": "high",
+      "compare": {
+        "ja": "このドアの約 3 分の 1 の高さ。",
+        "en": "About one third the height of the door."
+      },
+      "compare2": {
+        "ja": "この部屋の天井（約 240 cm）の約 4 分の 1 の高さ。",
+        "en": "About a quarter the height of the ceiling (about 240 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 2.9 m。目の高さ（床から約 150 cm）に掛けています。",
+        "en": "The wall is about 2.9 m wide. The painting hangs at eye level (about 150 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "door_interior"
     },
     {
       "name": "living-sofa",
       "image": "room_living-sofa.jpg",
-      "close": "room_living-sofa_close.jpg",
       "label": {
         "ja": "ソファのあるリビング",
         "en": "Living room with a sofa"
@@ -265,27 +332,44 @@
       ],
       "quad_px": [
         [
-          686,
-          235
+          687,
+          236
         ],
         [
-          874,
-          235
+          873,
+          236
         ],
         [
-          874,
+          873,
           466
         ],
         [
-          686,
+          687,
           466
         ]
       ],
-      "px_per_cm": 3.53,
-      "confidence": "high"
+      "px_per_cm": 3.525,
+      "confidence": "high",
+      "compare": {
+        "ja": "このドアの約 3 分の 1 の高さ。",
+        "en": "About one third the height of the door."
+      },
+      "compare2": {
+        "ja": "この部屋の天井（約 240 cm）の約 4 分の 1 の高さ。",
+        "en": "About a quarter the height of the ceiling (about 240 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 3.3 m。目の高さ（床から約 150 cm）に掛けています。",
+        "en": "The wall is about 3.3 m wide. The painting hangs at eye level (about 150 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "door_interior"
     }
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T11:32:32.931Z"
+  "generated_at": "2026-11-04T11:52:12.200Z"
 }

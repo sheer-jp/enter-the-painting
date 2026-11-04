@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { kmeans, toHex, textColor, backColor } from '../scripts/generate/color.js';
 import { structureTensorFlow, motionFromFlow } from '../scripts/generate/flow.js';
-import { homographyFromUnitSquare, invert3, paintingQuadOnWall, paintingRectFromScale } from '../scripts/generate/rooms.js';
+import { homographyFromUnitSquare, invert3, paintingQuadOnWall, paintingRectFromScale, fractionOf, confidenceFrom, scaleFromReferences, roomTexts } from '../scripts/generate/rooms.js';
 import { key } from '../scripts/generate/translate.js';
 import { normalizeLang, pickLang } from '../src/i18n/normalize';
 
@@ -63,6 +63,51 @@ describe('部屋の射影', () => {
     expect((q[0][0] + q[2][0]) / 2).toBeCloseTo(500);
     expect((q[0][1] + q[2][1]) / 2).toBeCloseTo(200);
     expect(q[2][0]).toBeGreaterThan(q[3][0]); // 左上から時計回り
+  });
+});
+
+describe('大きさの伝え方（比較の一文と信頼度）', () => {
+  const table = {
+    door_interior: { height_cm: 200, width_cm: 78, label: { ja: 'ドア', en: 'the door' } },
+    ceiling: { height_cm: 240, label: { ja: '部屋の天井', en: 'the ceiling' } },
+    kettle: { height_cm: 24, label: { ja: 'ケトル', en: 'the kettle' } },
+  };
+  it('比率を身近な分数に丸める', () => {
+    expect(fractionOf(0.33).ja).toBe('約 3 分の 1');
+    expect(fractionOf(0.5).ja).toBe('約半分');
+    expect(fractionOf(1.0).ja).toBe('ほぼ同じ');
+    expect(fractionOf(1.4).ja).toBe('約 1.4 倍');
+    expect(fractionOf(0.7).ja).toBe('約 3 分の 2');
+    expect(fractionOf(0.25).ja).toBe('約 4 分の 1');
+    expect(fractionOf(0.42).ja).toBe('約 0.4 倍');
+    expect(fractionOf(0.33).en).toBe('about one third');
+  });
+  it('信頼度：ずれ 8% 以内 high、15% 以内 mid、それ以上か基準が 1 つなら low', () => {
+    expect(confidenceFrom(0.03, 2)).toBe('high');
+    expect(confidenceFrom(0.08, 2)).toBe('high');
+    expect(confidenceFrom(0.12, 2)).toBe('mid');
+    expect(confidenceFrom(0.2, 2)).toBe('low');
+    expect(confidenceFrom(0, 1)).toBe('low');
+  });
+  it('主の基準物で px/cm を決め、他とのずれから信頼度を出す', () => {
+    const s = scaleFromReferences([{ ref: 'door_interior.height', px: 725, primary: true }, { ref: 'ceiling.height', px: 845 }], table);
+    expect(s.px_per_cm).toBeCloseTo(3.625);
+    expect(s.deviation).toBeCloseTo(0.029, 2);
+    expect(s.confidence).toBe('high');
+    expect(() => scaleFromReferences([{ ref: 'piano.height', px: 100 }], table)).toThrow();
+  });
+  it('比較の一文：馴染みのある物（ドア）を選び、数字を出さない。2 つ目は実寸つき', () => {
+    const t = roomTexts({ references: [{ ref: 'ceiling.height', px: 845 }, { ref: 'door_interior.height', px: 725, primary: true }], table, sizeCm: [53, 65.2], confidence: 'high', wallWidthCm: 323, centerFromFloorCm: 150 });
+    expect(t.compare!.ja).toBe('このドアの約 3 分の 1 の高さ。');
+    expect(t.compare!.en).toBe('About one third the height of the door.');
+    expect(t.compare2!.ja).toBe('この部屋の天井（約 240 cm）の約 4 分の 1 の高さ。');
+    expect(t.about.ja).toBe('壁の幅は約 3.2 m。目の高さ（床から約 150 cm）に掛けています。');
+    expect(t.primary_ref).toBe('door_interior');
+  });
+  it('信頼度 low は比較の一文に「寸法は目安」を添える', () => {
+    const t = roomTexts({ references: [{ ref: 'kettle.height', px: 200, primary: true }], table, sizeCm: [24.2, 33.3], confidence: 'low', wallWidthCm: 137, centerFromFloorCm: 140 });
+    expect(t.compare!.ja).toBe('このケトルの約 1.4 倍の高さ（寸法は目安）。');
+    expect(t.compare2).toBeNull();
   });
 });
 

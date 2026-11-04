@@ -6,7 +6,7 @@ const t = (obj, lang) => (obj && (obj[lang] || obj.ja || obj.en)) || '';
 const UI_JA = {
   enter: '入る', enter_vr: 'VR で入る', rooms: '部屋で見る', contact: '作家に連絡', share: '共有', others: '他の作品',
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
-  rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', close_view: '寄り',
+  rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明が見られます',
   gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '計測は Cookie なし、IP は保存しません',
   statement: '小さな絵の、奥へ。', statement_en: 'Into the depth of a small painting.',
 };
@@ -29,15 +29,13 @@ export function workPage({ work, space, baseUrl, allWorks }) {
   const ogImg = `${baseUrl}/works/${id}/generated/painting_1024.jpg`;
   const [w, h] = work.size_cm;
   const avail = work.availability ? `<span class="avail" data-i18n="${esc(work.availability)}">${esc(UI_JA[work.availability] || '')}</span>` : '';
-  const rooms = (space.rooms || []).map((r) => `
-      <figure class="room">
-        <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(title)} を部屋に置いたイメージ（AI 生成の部屋）" loading="lazy">
-        <figcaption><span data-i18n="rooms_note">${UI_JA.rooms_note}</span>${r.wall_width_cm ? `（<span data-i18n="wall_note" data-i18n-w="${(r.wall_width_cm / 100).toFixed(1)}">壁幅 約 ${(r.wall_width_cm / 100).toFixed(1)} m として合成</span>）` : ''}</figcaption>
-      </figure>${r.close ? `
-      <figure class="room room-close">
-        <img src="../../works/${id}/generated/${esc(r.close)}" alt="${esc(title)} を部屋に置いたイメージ（AI 生成の部屋）（寄り）" loading="lazy">
-        <figcaption><span data-i18n="close_view">${UI_JA.close_view}</span></figcaption>
-      </figure>` : ''}`).join('');
+  // 部屋で見る：帯は全景だけ。キャプションは比較の一文だけ（母語。無ければ en → ja）。寸法と詳しい説明は拡大表示（page.ts）
+  const caption = (m) => m ? LANGS.filter((l) => m[l]).map((l) => `<span lang="${l}" data-lang="${l}"${l === 'ja' ? '' : ' hidden'}>${esc(m[l])}</span>`).join('') : '';
+  const rooms = (space.rooms || []).map((r, i) => `
+      <figure class="room" data-room-index="${i}">
+        <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(title)} を${esc(t(r.label, 'ja'))}に置いたイメージ（AI 生成の部屋）" loading="lazy">
+        ${r.compare ? `<figcaption>${caption(r.compare)}</figcaption>` : ''}
+      </figure>`).join('');
   const story = space.story ? `
     <section class="story">
       <h2 class="eyebrow"><span>Story</span><span data-i18n="story_note">${UI_JA.story_note}</span></h2>
@@ -81,7 +79,7 @@ ${FONTS}
     <button class="btn ghost" id="share" data-i18n="share">${UI_JA.share}</button>
     ${contact}
   </div>
-  ${rooms ? `<section class="rooms"><h2 class="eyebrow"><span>Rooms</span><span data-i18n="rooms">${UI_JA.rooms}</span></h2><div class="strip">${rooms}</div></section>` : ''}
+  ${rooms ? `<section class="rooms"><h2 class="eyebrow"><span>Rooms</span><span data-i18n="rooms">${UI_JA.rooms}</span></h2><div class="strip">${rooms}</div><p class="rooms-hint"><span data-i18n="tap_for_size">${UI_JA.tap_for_size}</span><span data-i18n="rooms_note">${UI_JA.rooms_note}</span></p></section>` : ''}
   ${story}
   ${others ? `<section class="others"><h2 class="eyebrow"><span>Works</span><span data-i18n="others">${UI_JA.others}</span></h2><div class="strip">${others}</div></section>` : ''}
   <footer><span data-i18n="privacy">${UI_JA.privacy}</span><span>© sheerarts</span></footer>

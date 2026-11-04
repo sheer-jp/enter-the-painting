@@ -7,16 +7,17 @@
     "en": "Above a low shelf"
   },
   "scene": "低い木の棚に本と植物。床のクッション。窓からの光。",
-  "scale": {
-    "px_per_cm": 5.0,
-    "basis": {
-      "ja": "棚の幅 500px = 100cm"
+  "references": [
+    {
+      "ref": "low_shelf.width",
+      "px": 500,
+      "primary": true
     },
-    "cross_check": {
-      "ja": "棚の高さ 190px = 42cm → 4.52"
-    },
-    "confidence": "mid"
-  },
+    {
+      "ref": "low_shelf.height",
+      "px": 190
+    }
+  ],
   "wall": {
     "corners_px": [
       [

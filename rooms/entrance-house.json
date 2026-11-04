@@ -7,16 +7,17 @@
     "en": "Entrance hall of a house"
   },
   "scene": "木の框のある静かな玄関。靴を脱ぐところから見える白い壁。朝の光。",
-  "scale": {
-    "px_per_cm": 3.4,
-    "basis": {
-      "ja": "室内ドアの高さ 680px = 200cm"
+  "references": [
+    {
+      "ref": "door_interior.height",
+      "px": 680,
+      "primary": true
     },
-    "cross_check": {
-      "ja": "天井〜床 765px = 230cm → 3.33"
-    },
-    "confidence": "mid"
-  },
+    {
+      "ref": "ceiling_entrance.height",
+      "px": 765
+    }
+  ],
   "wall": {
     "corners_px": [
       [
