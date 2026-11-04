@@ -38,7 +38,7 @@
 ## 作業ルール
 
 - **作家の絵を変えない**。流体にして流しはするが、画像生成 AI で描き足さない。絵の画像を生成モデルに入れない（部屋の画像の生成は可。絵は実物の写真を射影で合成）。拡散 0、色の減衰 0（濁らせない）
-- 実行時は `works/<id>/generated/space.json` だけを読む。解析と翻訳はすべて `npm run generate` に寄せ、実行時に外部 API を呼ばない
+- 実行時は `works/<id>/generated/space.json` だけを読む。解析と翻訳はすべて `npm run generate` に寄せ、実行時に外部 API を呼ばない。**唯一の例外**は「気分から絵をすすめる」（`src/recommend/` → `worker/` の Cloudflare Worker → Claude API。`docs/RECOMMEND.md`）。会話は保存しない。個人情報は聞かない。API が無ければルールだけの版で成立させる
 - モードは 2 つ。VR は空間（`space/`）、PC・スマホは物語（`story/`）。流体（`fluid/`）・文字（`text/`）・音（`audio/`）は両モードから同じ API で使い、モードで分岐させない
 - 場面の遷移（S0〜S5、T0〜T5）はそれぞれの状態機械だけが決める。数値は `docs/EXPERIENCE.md` から取り、変えたら docs も変える
 - 部屋のイメージと小さな物語には「AI 生成のイメージ」「物語」と明記し、実在の部屋・出来事と誤認させない
@@ -75,6 +75,7 @@ ANTHROPIC_API_KEY=... npm run generate  # 翻訳と小さな物語の下書き�
 - `scripts/generate/`：生成パイプライン（JS）。`color.js` 主要色、`flow.js` 流れ場、`rooms.js` 射影合成、`translate.js` 翻訳キャッシュ、`claude.js` Claude API、`pages.js` HTML
 - `src/page.ts`：作品ページの小さなスクリプト（言語、入る、共有）。`src/experience/main.ts`：「入る」後に読む体験の入口
 - `src/fluid/`：GPU 流体。`src/story/`：物語モード。`src/space/`：VR 空間モード。`src/text/`：文字の浮上。`src/audio/`：音。`src/i18n/`：言語
+- `src/recommend/`：気分から絵をすすめる（ギャラリーの入口、ルールだけの版）。`worker/`：Cloudflare Worker（Claude API の中継。`worker/README.md` に配備手順）。`scripts/generate/catalog.js` → `public/catalog.json`
 - `tests/`：`generate.test.ts`（単体）、`smoke.mjs`（Playwright）、`longrun.mjs`
 
 ## 状態

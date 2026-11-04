@@ -201,3 +201,30 @@ type Lang = 'ja' | 'en' | 'zh-Hans' | 'zh-Hant' | 'ko' | 'fr' | 'de' | 'es' | 'i
 ```
 
 守ること：`fluid/`・`text/`・`audio/` は `space/`・`story/` を import しない。逆だけ。`ui/` は両方の状態機械を起動するだけで、描画を持たない。
+
+追記（11-04）：`FluidParams` に `drive?: number`（常時の駆動、既定 0.3）と `tempo?: number`（速さのむら、既定 0.6。`docs/EXPERIENCE.md` 8.1）。`vortex(uv, strength, radius)` は両モードの「渦が育つ」にも使う（8.2）。
+
+## 12. 気分から絵をすすめる（`recommend/`、`worker/`。11-04 追加）
+
+設計は `docs/RECOMMEND.md`。実行時に外部 API を呼ばない規則の**唯一の例外**。
+
+| 用途 | 選定 | 理由 |
+| --- | --- | --- |
+| API キーの置き場 | Cloudflare Workers（`worker/`、wrangler） | 作家のドメインが Cloudflare にある。キーは Worker の Secret。静的ホスティングのままでよい |
+| Claude API の呼び出し | Worker から `fetch` で直接 | SDK を Worker に入れない（依存最小）。ストリーミングは SSE をそのまま中継 |
+| カタログ | `public/catalog.json`（`npm run generate` が作る） | ブラウザ（ルールだけの版）と Worker（system prompt）が同じものを読む |
+| 落ちどころ | `src/recommend/rules.ts` | API 無し・オフライン・拒否で、3 問の選択肢から 3 軸の距離で選ぶ。会場でも動く |
+
+```ts
+// recommend/ : ギャラリーの入口。page.ts からは import() で読む
+export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: string | null; catalogUrl: string }): void;
+// rules.ts
+export function recommendByRules(catalog: Catalog, answers: { time: 'morning'|'day'|'night'; color: 'warm'|'cool'|'vivid'|'soft'; mood: 'quiet'|'lively' }): { id: string; alt: string | null };
+// parse.ts
+export function splitRecommendation(text: string): { prose: string; json: { recommend: string; alt: string | null } | null };
+// worker/src/prompt.js（純関数）
+export function buildSystem(catalog, lang): Array<{ type: 'text'; text: string; cache_control?: { type: 'ephemeral' } }>;
+export function buildBody(catalog, lang, messages, model): object;   // Messages API の本文（stream: true）
+```
+
+守ること：`recommend/` は `fluid/`・`story/`・`space/` を import しない。会話をどこにも保存しない。個人情報を聞かない（system で禁止）。
