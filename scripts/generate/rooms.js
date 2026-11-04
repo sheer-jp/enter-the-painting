@@ -88,6 +88,162 @@ export function paintingRectFromScale(def, sizeCm, imageWidthPx) {
   return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
 }
 
+// ---- 手前の物と絵の前後（docs/SIZE_UX.md 11 節）----
+
+const smoothstep = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+
+// 壁色キーで「手前の物」の alpha（0〜1、画像全体の Float32Array）を作る
+// room: {data,width,height} RGB raw。quad：絵の 4 隅
+// 壁の色は、絵の外接矩形を 20px 広げた帯の画素から取る。帯の中央値を出発点に、
+// 位置の 2 次式（1, u, v, uv, u², v²）を外れ値を除きながら当てはめる（AI 生成の部屋は壁に上下の明暗があり、
+// 1 色の中央値だと絵の上端が「手前」と誤判定されるため）
+export function wallKeyAlpha(room, quad, { tolerance = 0.10, band = 20, margin = 14, minArea = 16 } = {}) {
+  const { data, width: W, height: H } = room;
+  const b = bbox(quad);
+  const rx0 = Math.max(0, Math.floor(b.x0)), ry0 = Math.max(0, Math.floor(b.y0));
+  const rx1 = Math.min(W - 1, Math.ceil(b.x1)), ry1 = Math.min(H - 1, Math.ceil(b.y1));
+  const bx0 = Math.max(0, rx0 - band), by0 = Math.max(0, ry0 - band), bx1 = Math.min(W - 1, rx1 + band), by1 = Math.min(H - 1, ry1 + band);
+  const bandIdx = [];
+  for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) {
+    if (x >= rx0 && x <= rx1 && y >= ry0 && y <= ry1) continue;
+    bandIdx.push(y * W + x);
+  }
+  const median = (a) => { if (!a.length) return 0; const s = Float64Array.from(a).sort(); return s[s.length >> 1]; };
+  const wallMedian = [0, 1, 2].map((c) => median(bandIdx.map((i) => data[i * 3 + c])) / 255);
+  // 位置の正規化（数値の安定のため）
+  const cx = (rx0 + rx1) / 2, cy = (ry0 + ry1) / 2, sc = Math.max(1, (bx1 - bx0) / 2, (by1 - by0) / 2);
+  const basis = (x, y) => { const u = (x - cx) / sc, v = (y - cy) / sc; return [1, u, v, u * v, u * u, v * v]; };
+  let coef = wallMedian.map((m) => [m, 0, 0, 0, 0, 0]);
+  const wallAt = (x, y) => { const f = basis(x, y); return coef.map((k) => k.reduce((a, kk, j) => a + kk * f[j], 0)); };
+  const distTo = (i, w) => Math.hypot(data[i * 3] / 255 - w[0], data[i * 3 + 1] / 255 - w[1], data[i * 3 + 2] / 255 - w[2]);
+  // 外れ値（紐、葉、家具の端）を除いて当てはめ直す。1 回目は中央値から 0.25 以内、以後は当てはめから tolerance 以内
+  for (let it = 0; it < 3; it++) {
+    const thr = it === 0 ? 0.25 : tolerance;
+    const inl = bandIdx.filter((i) => { const x = i % W, y = (i - x) / W; return distTo(i, wallAt(x, y)) < thr; });
+    if (inl.length < 24) break;
+    const next = fitQuadratic(inl, W, data, basis);
+    if (!next) break;
+    coef = next;
+  }
+  const wallRgb = wallAt(cx, cy);
+  // 対象の領域：矩形 + 影の余白（影を手前の物に落とさないため）
+  const x0 = Math.max(0, rx0 - margin), y0 = Math.max(0, ry0 - margin), x1 = Math.min(W - 1, rx1 + margin), y1 = Math.min(H - 1, ry1 + margin);
+  const alpha = new Float32Array(W * H);
+  const hi = tolerance * 1.6;
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    alpha[y * W + x] = smoothstep(tolerance, hi, distTo(y * W + x, wallAt(x, y)));
+  }
+  // 小さな孤立点を消す（alpha > 0 の塊で面積 minArea 未満 → 0）。収縮→膨張は細い紐を消すので、面積で判定する
+  // 逆に、手前の物の中の小さな穴（葉のハイライトが壁色に近い所。alpha < 0.5 の塊で、領域の縁に触れず 64px 未満）は埋める
+  const region = { x0, y0, x1, y1 };
+  for (const c of components(alpha, W, region, (a) => a > 0)) if (c.idx.length < minArea) for (const i of c.idx) alpha[i] = 0;
+  for (const c of components(alpha, W, region, (a) => a < 0.5)) if (!c.touchesEdge && c.idx.length < 64) for (const i of c.idx) alpha[i] = 1;
+  return { alpha: featherAlpha(alpha, W, H, region), wall_rgb: wallRgb.map((v) => Math.round(v * 255)) };
+}
+
+// 最小二乗で、チャンネルごとに 壁色 = Σ coef_j × basis_j(x, y) を当てはめる（6×6 の正規方程式をガウスの消去で解く）
+function fitQuadratic(idx, W, data, basis) {
+  const n = 6;
+  const A = Array.from({ length: n }, () => new Float64Array(n));
+  const B = [0, 1, 2].map(() => new Float64Array(n));
+  for (const i of idx) {
+    const x = i % W, y = (i - x) / W, f = basis(x, y);
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) A[r][c] += f[r] * f[c];
+      for (let ch = 0; ch < 3; ch++) B[ch][r] += f[r] * data[i * 3 + ch] / 255;
+    }
+  }
+  // 帯の形によっては決まらない項があるので、少しだけ正則化する
+  for (let r = 1; r < n; r++) A[r][r] += 1e-6 * idx.length;
+  const out = [];
+  for (let ch = 0; ch < 3; ch++) {
+    const M = A.map((row, r) => [...row, B[ch][r]]);
+    for (let col = 0; col < n; col++) {
+      let piv = col;
+      for (let r = col + 1; r < n; r++) if (Math.abs(M[r][col]) > Math.abs(M[piv][col])) piv = r;
+      if (Math.abs(M[piv][col]) < 1e-12) return null;
+      [M[col], M[piv]] = [M[piv], M[col]];
+      for (let r = 0; r < n; r++) if (r !== col) { const k = M[r][col] / M[col][col]; for (let c = col; c <= n; c++) M[r][c] -= k * M[col][c]; }
+    }
+    out.push(M.map((row, r) => row[n] / row[r]));
+  }
+  return out;
+}
+
+// 領域内で pred を満たす画素の 8 近傍の塊を列挙する
+function components(alpha, W, r, pred) {
+  const seen = new Uint8Array(alpha.length), out = [], stack = [];
+  for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) {
+    const i0 = y * W + x;
+    if (seen[i0] || !pred(alpha[i0])) continue;
+    const idx = [];
+    let touchesEdge = false;
+    stack.push(i0); seen[i0] = 1;
+    while (stack.length) {
+      const i = stack.pop(); idx.push(i);
+      const cx = i % W, cy = (i - cx) / W;
+      if (cx === r.x0 || cx === r.x1 || cy === r.y0 || cy === r.y1) touchesEdge = true;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const nx = cx + dx, ny = cy + dy;
+        if (nx < r.x0 || nx > r.x1 || ny < r.y0 || ny > r.y1) continue;
+        const j = ny * W + nx;
+        if (!seen[j] && pred(alpha[j])) { seen[j] = 1; stack.push(j); }
+      }
+    }
+    out.push({ idx, touchesEdge });
+  }
+  return out;
+}
+
+// 境界を半径 1.5px でぼかす（ガウス σ=0.75、5 タップの分離フィルタ）
+// 細い紐が薄くならないよう、ぼかした値と元の値の大きい方を取る（外側にだけ柔らかくする）
+function featherAlpha(alpha, W, H, r = { x0: 0, y0: 0, x1: W - 1, y1: H - 1 }) {
+  const k = [-2, -1, 0, 1, 2].map((t) => Math.exp(-(t * t) / (2 * 0.75 * 0.75)));
+  const ks = k.reduce((a, v) => a + v, 0);
+  const kn = k.map((v) => v / ks);
+  const tmp = new Float32Array(W * H), out = new Float32Array(alpha);
+  for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) {
+    let s = 0;
+    for (let t = -2; t <= 2; t++) s += kn[t + 2] * alpha[y * W + Math.min(W - 1, Math.max(0, x + t))];
+    tmp[y * W + x] = s;
+  }
+  for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) {
+    let s = 0;
+    for (let t = -2; t <= 2; t++) { const yy = Math.min(r.y1, Math.max(r.y0, y + t)); s += kn[t + 2] * tmp[yy * W + x]; }
+    const i = y * W + x;
+    out[i] = Math.max(alpha[i], s);
+  }
+  return out;
+}
+
+// 手描きのマスク（白 = 手前）を alpha にする。部屋の画像の大きさに合わせる
+export async function maskPngAlpha(path, W, H) {
+  const m = await sharp(path).resize(W, H, { fit: 'fill' }).greyscale().raw().toBuffer();
+  const ch = m.length / (W * H);
+  const alpha = new Float32Array(W * H);
+  for (let i = 0; i < W * H; i++) alpha[i] = m[i * ch] / 255;
+  return alpha;
+}
+
+// 絵を貼ったあと、手前の物の画素を元に戻す：out = mix(painted, original, alpha)
+// 絵の外（影の範囲）では alpha 0.5 以上の画素に影を掛けない（影は壁にだけ）
+export function restoreForeground(painted, original, alpha, quad, W, H) {
+  const out = Buffer.from(painted);
+  const Hi = invert3(homographyFromUnitSquare(quad));
+  for (let i = 0; i < W * H; i++) {
+    const a = alpha[i];
+    if (a <= 0) continue;
+    const x = i % W, y = (i - x) / W;
+    const w = Hi[6] * x + Hi[7] * y + Hi[8];
+    const u = (Hi[0] * x + Hi[1] * y + Hi[2]) / w, v = (Hi[3] * x + Hi[4] * y + Hi[5]) / w;
+    const inside = u >= 0 && u < 1 && v >= 0 && v < 1;
+    const aa = !inside && a >= 0.5 ? 1 : a;
+    const o = i * 3;
+    for (let c = 0; c < 3; c++) out[o + c] = Math.round(painted[o + c] * (1 - aa) + original[o + c] * aa);
+  }
+  return out;
+}
+
 const bbox = (pts) => {
   const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
   return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
@@ -121,8 +277,16 @@ export function confidenceFrom(deviation, count) {
 
 // references: [{ ref, px, primary }] → { px_per_cm, deviation, confidence, primary: [...], all: [...] }
 // primary が複数あれば、その平均を px/cm にする。ずれは、全基準物の px/cm と採用値の最大のずれ
-export function scaleFromReferences(references, table) {
-  const all = references.map((r) => { const x = resolveRef(r.ref, table); return { ...x, ref: r.ref, px: r.px, primary: !!r.primary, pxPerCm: r.px / x.cm }; });
+// 奥行きの補正（H5）：基準物が壁より手前に立っているとき、部屋の horizon_y_px（目の高さの線）と基準物の接地線 floor_y_px から、
+// 壁の奥行きでの px/cm に換算する。factor = (壁の床線 − 地平線) / (基準物の接地線 − 地平線)。どちらかが無ければ補正しない
+/** @param {{ wallFloorY?: number | null, horizonY?: number | null }} [opts] */
+export function scaleFromReferences(references, table, { wallFloorY = null, horizonY = null } = /** @type {{ wallFloorY?: number | null, horizonY?: number | null }} */ ({})) {
+  const all = references.map((r) => {
+    const x = resolveRef(r.ref, table);
+    let depth = 1;
+    if (horizonY != null && wallFloorY != null && r.floor_y_px != null && r.floor_y_px > horizonY && wallFloorY > horizonY) depth = (wallFloorY - horizonY) / (r.floor_y_px - horizonY);
+    return { ...x, ref: r.ref, px: r.px, primary: !!r.primary, depth, pxPerCm: (r.px / x.cm) * depth };
+  });
   if (!all.length) throw new Error('references が空');
   const prim = all.filter((r) => r.primary).length ? all.filter((r) => r.primary) : [all[0]];
   const pxPerCm = prim.reduce((a, r) => a + r.pxPerCm, 0) / prim.length;
@@ -251,7 +415,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
     const wall = { ...def.wall, corners_px: def.wall.corners_px.map(([x, y]) => [x * scale, y * scale]) };
     // 縮尺：references（基準物）から。無ければ従来の scale.px_per_cm 直書き（後方互換）
     let sc = null;
-    if (def.references?.length) sc = scaleFromReferences(def.references, table);
+    if (def.references?.length) sc = scaleFromReferences(def.references, table, { wallFloorY: def.hang?.floor_y_px, horizonY: def.horizon_y_px });
     else if (def.scale?.px_per_cm) sc = { px_per_cm: def.scale.px_per_cm, deviation: null, confidence: def.scale.confidence || null, all: [] };
     let quad, pxPerCm = null, wallWidthCm = def.wall.width_cm;
     if (sc) {
@@ -268,7 +432,24 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       // 従来の方式（後方互換）：壁幅 cm から縮尺を出す
       quad = paintingQuadOnWall(wall, work.size_cm);
     }
-    const buf = warpOnto({ data: room.data, width: W, height: H }, { data: painting.data, width: painting.info.width, height: painting.info.height }, quad);
+    let buf = warpOnto({ data: room.data, width: W, height: H }, { data: painting.data, width: painting.info.width, height: painting.info.height }, quad);
+    // 手前の物（紐、傘、花瓶）を絵の上に戻す。mask_png（白 = 手前）があればキーの代わりにそれを使う
+    let fgAlpha = null, fgSource = '';
+    const occ = def.occlusion;
+    if (occ?.mask_png) {
+      const mp = join(roomsDir, typeof occ.mask_png === 'string' ? occ.mask_png : `${name}_mask.png`);
+      if (existsSync(mp)) { fgAlpha = await maskPngAlpha(mp, W, H); fgSource = 'mask_png'; }
+      else console.warn(`  部屋 ${name}：mask_png（${mp}）が無い。壁色キーに戻す`);
+    }
+    if (!fgAlpha && occ?.mode === 'wall-key') fgAlpha = wallKeyAlpha({ data: room.data, width: W, height: H }, quad, { tolerance: occ.tolerance ?? 0.10 }).alpha;
+    if (fgAlpha && !fgSource) fgSource = `wall-key tol=${occ.tolerance ?? 0.10}`;
+    // 絵の矩形の中で手前の物が占める画素数（space.json の occlusion：絵の前に何かあるか）
+    let frontPx = 0;
+    if (fgAlpha) {
+      buf = restoreForeground(buf, room.data, fgAlpha, quad, W, H);
+      const qb = bbox(quad);
+      for (let y = Math.max(0, Math.floor(qb.y0)); y < Math.min(H, Math.ceil(qb.y1)); y++) for (let x = Math.max(0, Math.floor(qb.x0)); x < Math.min(W, Math.ceil(qb.x1)); x++) if (fgAlpha[y * W + x] >= 0.5) frontPx++;
+    }
     const raw = { raw: { width: W, height: H, channels: 3 } };
     const outName = `room_${name}.jpg`;
     await sharp(buf, raw).jpeg({ quality: 85 }).toFile(join(outDir, outName));
@@ -280,11 +461,23 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       const wPx = Math.round(pb.x1 - pb.x0), hPx = Math.round(pb.y1 - pb.y0);
       const lines = [
         `px/cm=${fmt(pxPerCm)}  絵 ${work.size_cm[0]}×${work.size_cm[1]}cm = ${wPx}×${hPx}px  confidence=${sc.confidence || '?'}${sc.deviation != null ? `（ずれ ${(sc.deviation * 100).toFixed(1)}%）` : ''}`,
-        ...sc.all.map((r) => `${r.primary ? '主 ' : '　 '}${r.ref} ${r.px}px = ${r.cm}cm → ${fmt(r.pxPerCm)}`),
+        ...sc.all.map((r) => `${r.primary ? '主 ' : '　 '}${r.ref} ${r.px}px = ${r.cm}cm${r.depth !== 1 ? ` × 奥行き ${r.depth.toFixed(2)}` : ''} → ${fmt(r.pxPerCm)}`),
         ...(!sc.all.length && def.scale?.basis?.ja ? [`basis=${def.scale.basis.ja}`] : []),
       ];
+      if (fgAlpha) lines.push(`手前の物（緑）：${fgSource}  絵の前 ${frontPx}px`);
       const svg = checkOverlaySvg({ width: W, height: H, quad, floorY: def.hang.floor_y_px * scale, lines });
-      await sharp(buf, raw).composite([{ input: svg, top: 0, left: 0 }]).jpeg({ quality: 85 }).toFile(join(checkDir, `${name}_${work.id}.jpg`));
+      // 手前の物のマスクを緑（50%）で重ねる
+      let checkBuf = buf;
+      if (fgAlpha) {
+        checkBuf = Buffer.from(buf);
+        const green = [0, 220, 60];
+        for (let i = 0; i < W * H; i++) {
+          const a = fgAlpha[i] * 0.5;
+          if (a <= 0) continue;
+          for (let c = 0; c < 3; c++) checkBuf[i * 3 + c] = Math.round(checkBuf[i * 3 + c] * (1 - a) + green[c] * a);
+        }
+      }
+      await sharp(checkBuf, raw).composite([{ input: svg, top: 0, left: 0 }]).jpeg({ quality: 85 }).toFile(join(checkDir, `${name}_${work.id}.jpg`));
     }
 
     // 顧客向けの文章（ja / en。他の言語は index.js で翻訳キャッシュから）
@@ -296,6 +489,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       name, image: outName, ...(def.category ? { category: def.category } : {}), label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
       image_px: [W, H], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]),
       ...(sc ? { px_per_cm: +pxPerCm.toFixed(3), confidence: sc.confidence || null } : {}),
+      occlusion: frontPx > 0,
       ...texts,
     });
   }

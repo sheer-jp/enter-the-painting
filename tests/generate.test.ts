@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { kmeans, toHex, textColor, backColor, brightCenter } from '../scripts/generate/color.js';
 import { structureTensorFlow, motionFromFlow, reliefFromGray } from '../scripts/generate/flow.js';
-import { homographyFromUnitSquare, invert3, paintingQuadOnWall, paintingRectFromScale, fractionOf, confidenceFrom, scaleFromReferences, roomTexts } from '../scripts/generate/rooms.js';
+import { homographyFromUnitSquare, invert3, paintingQuadOnWall, paintingRectFromScale, wallKeyAlpha, restoreForeground, warpOnto, fractionOf, confidenceFrom, scaleFromReferences, roomTexts } from '../scripts/generate/rooms.js';
 import { key } from '../scripts/generate/translate.js';
 import { normalizeLang, pickLang } from '../src/i18n/normalize';
 
@@ -82,6 +82,33 @@ describe('部屋の射影', () => {
     expect((q[0][1] + q[2][1]) / 2).toBeCloseTo(200);
     expect(q[2][0]).toBeGreaterThan(q[3][0]); // 左上から時計回り
   });
+  it('正方形の画像（image_width_px と同じ幅）では k=1 で、高さは使わない', () => {
+    const def = { image_width_px: 1024, image_height_px: 1024, scale: { px_per_cm: 2 }, hang: { x_px: 512, floor_y_px: 900, center_from_floor_cm: 140 } };
+    const a = paintingRectFromScale(def, [53, 65.2], 1024);
+    const b = paintingRectFromScale(def, [53, 65.2]);
+    expect(a).toEqual(b);
+    expect(a[1][0] - a[0][0]).toBeCloseTo(106);
+  });
+  it('壁色キー：絵の前を通る黒い線は絵の上に残り、壁には影が落ちる', () => {
+    // 単色の壁（200,190,180）に、縦の黒い線（幅 2px）。絵は単色の赤
+    const W = 120, H = 100;
+    const room = Buffer.alloc(W * H * 3);
+    for (let i = 0; i < W * H; i++) { room[i * 3] = 200; room[i * 3 + 1] = 190; room[i * 3 + 2] = 180; }
+    for (let y = 0; y < H; y++) for (const x of [59, 60]) room.fill(0, (y * W + x) * 3, (y * W + x) * 3 + 3);
+    const painting = { data: Buffer.alloc(10 * 10 * 3).fill(Buffer.from([255, 0, 0])), width: 10, height: 10 };
+    const quad = [[30, 30], [90, 30], [90, 70], [30, 70]];
+    const painted = warpOnto({ data: room, width: W, height: H }, painting, quad);
+    const { alpha, wall_rgb } = wallKeyAlpha({ data: room, width: W, height: H }, quad, { tolerance: 0.1 });
+    expect(wall_rgb).toEqual([200, 190, 180]);
+    const out = restoreForeground(painted, room, alpha, quad, W, H);
+    const px = (x: number, y: number) => [...out.subarray((y * W + x) * 3, (y * W + x) * 3 + 3)];
+    expect(px(59, 50)).toEqual([0, 0, 0]);       // 線は絵の前に残る
+    expect(px(60, 50)).toEqual([0, 0, 0]);
+    expect(px(40, 50)).toEqual([255, 0, 0]);     // 線から離れた所は絵
+    expect(px(56, 50)).toEqual([255, 0, 0]);     // 線の脇も絵（壁が手前扱いされない。ぼかしは 2px まで）
+    expect(px(59, 70)).toEqual([0, 0, 0]);       // 絵の下の影は線には落ちない
+    expect(px(40, 70)[0]).toBeLessThan(200);     // 壁には影が落ちる
+  });
 });
 
 describe('大きさの伝え方（比較の一文と信頼度）', () => {
@@ -89,6 +116,8 @@ describe('大きさの伝え方（比較の一文と信頼度）', () => {
     door_interior: { height_cm: 200, width_cm: 78, label: { ja: 'ドア', en: 'the door' } },
     ceiling: { height_cm: 240, label: { ja: '部屋の天井', en: 'the ceiling' } },
     kettle: { height_cm: 24, label: { ja: 'ケトル', en: 'the kettle' } },
+    dining_chair: { height_cm: 80, label: { ja: 'ダイニングチェア', en: 'the dining chair' } },
+    dining_table: { height_cm: 72, label: { ja: 'ダイニングテーブル', en: 'the dining table' } },
   };
   it('比率を身近な分数に丸める', () => {
     expect(fractionOf(0.33).ja).toBe('約 3 分の 1');
@@ -113,6 +142,17 @@ describe('大きさの伝え方（比較の一文と信頼度）', () => {
     expect(s.deviation).toBeCloseTo(0.029, 2);
     expect(s.confidence).toBe('high');
     expect(() => scaleFromReferences([{ ref: 'piano.height', px: 100 }], table)).toThrow();
+  });
+  it('H5：手前の基準物は地平線と接地線で壁の奥行きに換算する（sq-dining-wide の実測）', () => {
+    const refs = [{ ref: 'dining_chair.height', px: 310, floor_y_px: 900, primary: true }, { ref: 'dining_table.height', px: 350, floor_y_px: 960 }];
+    const raw = scaleFromReferences(refs, table);
+    expect(raw.deviation).toBeGreaterThan(0.2);                  // 補正なしでは 25% ずれる
+    const s = scaleFromReferences(refs, table, { wallFloorY: 770, horizonY: 680 });
+    expect(s.px_per_cm).toBeCloseTo((310 / 80) * (90 / 220), 3);  // 3.875 × 0.409
+    expect(s.deviation).toBeLessThan(0.03);                      // 補正後は 2% に収まる
+    expect(s.all[1].depth).toBeCloseTo(90 / 280, 3);
+    // 地平線が無ければ補正しない
+    expect(scaleFromReferences(refs, table, { wallFloorY: 770 }).px_per_cm).toBeCloseTo(raw.px_per_cm);
   });
   it('比較の一文：馴染みのある物（ドア）を選び、数字を出さない。2 つ目は実寸つき', () => {
     const t = roomTexts({ references: [{ ref: 'ceiling.height', px: 845 }, { ref: 'door_interior.height', px: 725, primary: true }], table, sizeCm: [53, 65.2], confidence: 'high', wallWidthCm: 323, centerFromFloorCm: 150 });

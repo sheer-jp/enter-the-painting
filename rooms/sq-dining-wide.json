@@ -4,19 +4,23 @@
   "image_height_px": 1024,
   "category": "house",
   "label": {
-    "ja": "ダイニングの壁（引き）",
-    "en": "The dining wall"
+    "ja": "ダイニングの壁（遠い壁）",
+    "en": "The dining wall, far"
   },
-  "scene": "丸いテーブルと椅子 2 脚。小さなペンダントライトが壁の前に下がっている。",
+  "scene": "丸いテーブルと椅子 2 脚。小さなペンダントライトが壁の前に下がっている。家具は壁からかなり離れていて、壁の奥行きでは 53 cm の絵は幅 80px ほどにしかならない（遠い壁）。",
   "references": [
     {
       "ref": "dining_chair.height",
       "px": 310,
-      "primary": true
+      "floor_y_px": 900,
+      "primary": true,
+      "note": "左の椅子。壁よりかなり手前（H5 で補正）"
     },
     {
       "ref": "dining_table.height",
-      "px": 350
+      "px": 350,
+      "floor_y_px": 960,
+      "note": "テーブル。壁よりさらに手前（H5 で補正）"
     }
   ],
   "wall": {
@@ -50,7 +54,8 @@
     "note": "ペンダントの紐と傘が絵の前にかかる"
   },
   "suits_cm": [
-    20,
-    100
-  ]
+    100,
+    200
+  ],
+  "horizon_y_px": 680
 }
