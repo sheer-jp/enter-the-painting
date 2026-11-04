@@ -1,0 +1,39 @@
+{
+  "name": "studio-desk",
+  "label": {
+    "ja": "一人暮らしの机の上",
+    "en": "Desk in a studio apartment"
+  },
+  "scene": "ワンルームの木の机。閉じたノート PC、マグ、小さなランプ。昼の光。",
+  "wall": {
+    "corners_px": [
+      [
+        250,
+        0
+      ],
+      [
+        1300,
+        0
+      ],
+      [
+        1300,
+        990
+      ],
+      [
+        250,
+        990
+      ]
+    ],
+    "width_cm": 170,
+    "hang_center_ratio": [
+      0.5,
+      0.33
+    ]
+  },
+  "suits_cm": [
+    15,
+    45
+  ],
+  "image_width_px": 1586,
+  "note": "画像が届いたら rooms/<name>.jpg に置き、4 隅を確認する"
+}

@@ -103,17 +103,55 @@ export class StoryMode {
       else if (a === 'rooms') { this.end('exit'); setTimeout(() => document.querySelector('.rooms')?.scrollIntoView({ behavior: 'smooth' }), 50); }
       else if (a === 'contact') { if (this.ctx.space.contact) window.open(this.ctx.space.contact, '_blank', 'noopener'); }
     });
-    // タップ / クリックで一時停止と再開（T3 の間だけ）
+    // 触れる：なぞるとそこに流れができ、タップすると波紋のように広がる（T2〜T4）。一時停止はボタン
     const stageEl = document.getElementById('stage')!;
-    stageEl.addEventListener('pointerdown', (e) => { if ((e.target as HTMLElement).closest('button')) return; if (this.stage === 'T3') this.setPaused(!this.paused); });
+    let last: { x: number; y: number; t: number } | null = null;
+    let moved = 0;
+    stageEl.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('button')) return;
+      last = { x: e.clientX, y: e.clientY, t: performance.now() }; moved = 0;
+      try { stageEl.setPointerCapture(e.pointerId); } catch {}
+    });
+    stageEl.addEventListener('pointermove', (e) => {
+      if (!last || !this.touchable()) return;
+      const uv = this.screenToUv(e.clientX, e.clientY);
+      const dx = e.clientX - last.x, dy = e.clientY - last.y;
+      moved += Math.hypot(dx, dy);
+      if (uv && (dx || dy)) {
+        // 指の速さに比例した力（texel/秒）。方向は指の動き。y は画面とテクスチャで上下が逆
+        const k = 9;
+        this.ctx.fluid?.splat(uv, [dx * k, -dy * k], 0.0035);
+      }
+      last = { x: e.clientX, y: e.clientY, t: performance.now() };
+    });
+    const up = (e: PointerEvent) => {
+      if (!last) return;
+      if (moved < 8 && this.touchable()) { const uv = this.screenToUv(e.clientX, e.clientY); if (uv) this.ctx.fluid?.burst(uv, 70); }
+      last = null;
+    };
+    stageEl.addEventListener('pointerup', up); stageEl.addEventListener('pointercancel', () => { last = null; });
+    this.ctx.hud.pause.addEventListener('click', () => { if (this.stage === 'T3') this.setPaused(!this.paused); });
     window.addEventListener('keydown', this.onKey);
   }
 
   private onResize = () => { this.layout(); };
+
+  // 触れる場面か（溶け始めてから、絵に戻るまで）
+  private touchable() { return !!this.ctx.fluid && (this.stage === 'T2' || this.stage === 'T3' || this.stage === 'T4') && !this.paused; }
+
+  // 画面の座標 → 流体の色場の UV（絵の矩形の外なら null）
+  private screenToUv(x: number, y: number): [number, number] | null {
+    const fluid = this.ctx.fluid; if (!fluid) return null;
+    const nx = (x / innerWidth) * 2 - 1, ny = 1 - (y / innerHeight) * 2;
+    const lx = (nx - this.posNow.x) / this.scaleNow.x, ly = (ny - this.posNow.y) / this.scaleNow.y;
+    if (lx < -1 || lx > 1 || ly < -1 || ly > 1) return null;
+    return fluid.rectToUv((lx + 1) / 2, (ly + 1) / 2);
+  }
   private onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') this.end('exit'); else if (e.key === ' ' && this.stage === 'T3') { e.preventDefault(); this.setPaused(!this.paused); } else if (e.key === 'ArrowRight') this.text.skip(); };
 
   private setPaused(p: boolean) {
     this.paused = p; this.text.setPaused(p); this.ctx.hud.paused.style.opacity = p ? '1' : '0';
+    this.ctx.hud.pause.textContent = p ? '▶' : '❚❚';
     if (p) this.ctx.sound.pauseVoice(); else this.ctx.sound.resumeVoice();
   }
 

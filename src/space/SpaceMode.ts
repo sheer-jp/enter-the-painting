@@ -72,6 +72,8 @@ export class SpaceMode {
   private paintingCenter = new THREE.Vector3(0, 1.5, -3);
   private paintingW = 0.4; private paintingH = 0.5;
   private selectPressed = false;
+  private holding: boolean[] = [false, false];
+  private lastPointUv: (THREE.Vector2 | null)[] = [null, null];
   private bHoldStart = 0;
   private lastGaze = new THREE.Vector2(0.5, 0.5);
   private hasGaze = false;
@@ -121,7 +123,8 @@ export class SpaceMode {
     // コントローラ
     for (let i = 0; i < 2; i++) {
       const ctrl = renderer.xr.getController(i);
-      ctrl.addEventListener('selectstart', () => { this.selectPressed = true; });
+      ctrl.addEventListener('selectstart', () => { this.selectPressed = true; this.holding[i] = true; });
+      ctrl.addEventListener('selectend', () => { this.holding[i] = false; this.lastPointUv[i] = null; });
       this.rig.add(ctrl);
     }
     renderer.xr.enabled = true;
@@ -164,6 +167,21 @@ export class SpaceMode {
     let strength = this.strength;
     if (this.stage === 'S1' && this.gazeOnPainting()) strength = Math.max(strength, 0.15);
     fluid.setStrength(strength);
+    // S4：トリガーを引きながら指すと、そこの流れが手についてくる（触れる）
+    if (this.stage === 'S4') {
+      for (let i = 0; i < 2; i++) {
+        if (!this.holding[i]) continue;
+        const ctrl = renderer.xr.getController(i);
+        ctrl.getWorldDirection(this.tmpV); this.tmpV.multiplyScalar(-1);   // コントローラは -Z が前
+        const d = this.tmpV;
+        const lon = Math.atan2(d.x, -d.z), lat = Math.asin(THREE.MathUtils.clamp(d.y, -1, 1));
+        const uv = new THREE.Vector2(lon / (2 * Math.PI) + 0.5, lat / Math.PI + 0.5);
+        const prev = this.lastPointUv[i];
+        if (prev) { const dx = uv.x - prev.x, dy = uv.y - prev.y; const dd = Math.hypot(dx, dy); if (dd > 0.0003 && dd < 0.2) fluid.splat([uv.x, uv.y], [dx * 900, dy * 900], 0.003); else if (dd <= 0.0003) fluid.splat([uv.x, uv.y], [0, 0], 0.003); }
+        else fluid.burst([uv.x, uv.y], 50, 0.003);
+        this.lastPointUv[i] = uv;
+      }
+    }
     // S4：視線の動きに流れが引き寄せられる
     if (this.stage === 'S4') {
       const uv = this.gazeUv();

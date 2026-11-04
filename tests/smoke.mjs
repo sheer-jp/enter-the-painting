@@ -53,6 +53,11 @@ async function runCase(name, { webgl = true, lang = 'ja', query = '' } = {}) {
     floatText = await page.locator('.float-text').evaluate((el) => (getComputedStyle(el).opacity !== '0' ? el.textContent : '')).catch(() => '');
   }
   if (shotsDir) await page.screenshot({ path: `${shotsDir}/${name}-T3.png` });
+  // 触れる：なぞる（流れ）とタップ（波紋）。エラーが出ないこと
+  await page.mouse.move(120, 300); await page.mouse.down(); for (let i = 1; i <= 8; i++) { await page.mouse.move(120 + i * 25, 300 + i * 30); await page.waitForTimeout(30); } await page.mouse.up();
+  await page.mouse.click(300, 500);
+  await page.waitForTimeout(600);
+  if (shotsDir) await page.screenshot({ path: `${shotsDir}/${name}-touch.png` });
   check(!!floatText, `${name}: 文字が出ている（${floatText?.slice(0, 20)}）`);
   const hasCanvas = await page.locator('#stage canvas').count();
   check(webgl ? hasCanvas === 1 : true, `${name}: canvas ${hasCanvas}`);

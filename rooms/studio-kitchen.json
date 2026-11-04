@@ -1,0 +1,39 @@
+{
+  "name": "studio-kitchen",
+  "label": {
+    "ja": "キッチンカウンター",
+    "en": "Kitchen counter"
+  },
+  "scene": "小さなキッチン。ケトルとカップ。朝の光が壁に落ちる。",
+  "wall": {
+    "corners_px": [
+      [
+        230,
+        0
+      ],
+      [
+        1330,
+        0
+      ],
+      [
+        1330,
+        780
+      ],
+      [
+        230,
+        780
+      ]
+    ],
+    "width_cm": 140,
+    "hang_center_ratio": [
+      0.43,
+      0.42
+    ]
+  },
+  "suits_cm": [
+    15,
+    45
+  ],
+  "image_width_px": 1586,
+  "note": "画像が届いたら rooms/<name>.jpg に置き、4 隅を確認する"
+}

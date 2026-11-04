@@ -147,7 +147,7 @@ export class Fluid {
       divergence: new Pass(S.DIVERGENCE, u({ uVelocity: null, uTexel: new THREE.Vector2(), uWrapX: this.domain === 'equirect' ? 1 : 0 })),
       pressure: new Pass(S.PRESSURE, u({ uPressure: null, uDivergence: null, uTexel: new THREE.Vector2() })),
       gradient: new Pass(S.GRADIENT_SUBTRACT, u({ uPressure: null, uVelocity: null, uTexel: new THREE.Vector2() })),
-      splat: new Pass(S.SPLAT, u({ uTarget: null, uPoint: new THREE.Vector2(), uValue: new THREE.Vector3(), uRadius: 0.001, uAspect: 2 })),
+      splat: new Pass(S.SPLAT, u({ uTarget: null, uPoint: new THREE.Vector2(), uValue: new THREE.Vector3(), uRadius: 0.001, uAspect: this.sizes.dye[0] / this.sizes.dye[1] })),
       fizz: new Pass(S.FIZZ, u({ uVelocity: null, uRect: rect, uProgress: 0, uAmount: 0, uTime: 0 })),
       drive: new Pass(S.DRIVE, u({ uVelocity: null, uFlow: this.flow, uRect: rect, uRate: 0, uTarget: 0, uTime: 0 })),
       copy: new Pass(S.DISPLAY, u({ uDye: null, uView: new THREE.Vector4(0, 0, 1, 1) })),
@@ -188,6 +188,15 @@ export class Fluid {
 
   // uv は色場の座標（0〜1）。force は texel/秒 相当、radius は正規化
   splat(uv: [number, number], force: [number, number], radius = 0.002) { this.pendingSplats.push({ uv, force, radius }); }
+  // タップ：その点から外へ広がる力（8 方向）。strength は texel/秒 相当
+  burst(uv: [number, number], strength = 60, radius = 0.003) {
+    const aspect = this.sizes.dye[0] / this.sizes.dye[1];
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      const off = 0.012;
+      this.pendingSplats.push({ uv: [uv[0] + Math.cos(a) * off / aspect, uv[1] + Math.sin(a) * off], force: [Math.cos(a) * strength, Math.sin(a) * strength], radius });
+    }
+  }
 
   // 絵の矩形内の座標（0〜1）→ 色場の UV
   rectToUv(px: number, py: number): [number, number] { return [this.placement.x + px * this.placement.w, this.placement.y + py * this.placement.h]; }
