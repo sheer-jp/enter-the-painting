@@ -15,6 +15,7 @@
 - 体験や機能を決めるとき：`docs/USERS.md`（誰のどの悩み）、`docs/JOURNEY.md`（離脱点と交差点）、`docs/DECISIONS.md`（決定と未決定）
 - 全体を見直すとき：`docs/PLAN.md`、`docs/SCHEDULE.md`、`docs/CHANGELOG.md`
 - 作家向け：`docs/CONTENT.md`（撮影、メッセージ、声、部屋のイメージ）、`docs/PITCH.md`（提出）
+- ページの見た目を触るとき：`docs/DESIGN.md`（トーン＆マナー。色、書体、レイアウト）
 - 作業の型：`docs/ROUTINE.md`
 
 ## ルーチン（毎回）
