@@ -78,8 +78,8 @@ try {
   await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'load' });
   const items = await page.locator('.item').count();
   check(items >= 1, `gallery: 作品 ${items} 点`);
-  const h1 = await page.locator('h1').textContent();
-  check(h1?.includes('Entrer'), `gallery: フランス語設定でフランス語（${h1}）`);
+  const footText = await page.locator('footer [data-i18n="privacy"]').textContent();
+  check(footText?.includes('cookies'), `gallery: フランス語設定でフランス語（${footText}）`);
   check(errors.length === 0, `gallery: エラー ${errors.length}`);
   await browser.close();
 } catch (e) {

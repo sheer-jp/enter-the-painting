@@ -37,12 +37,13 @@ export async function run(o: RunOptions): Promise<void> {
     renderer.setSize(innerWidth, innerHeight, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     if (Fluid.supported(renderer)) {
-      const [painting, flow] = await Promise.all([loadTexture(base + 'generated/' + space.painting), loadTexture(base + 'generated/' + space.flow.texture)]);
+      // 物語モードは絵だけの領域（解像度を絵に全部使う）、VR は等距離円筒。色場の初期値は写真のフル解像度
+      const [painting, flow] = await Promise.all([loadTexture(base + 'generated/' + (space.painting_full || space.painting)), loadTexture(base + 'generated/' + space.flow.texture)]);
       painting.minFilter = THREE.LinearFilter; painting.generateMipmaps = false;
       flow.minFilter = THREE.LinearFilter; flow.generateMipmaps = false;
       const quality: Quality = o.vr ? 'high' : (/Mobi|Android/i.test(navigator.userAgent) ? 'medium' : space.fluid.quality || 'high');
       fluid = new Fluid(renderer, { ...space.fluid, quality });
-      fluid.init(painting, flow, { ...space.fluid, quality, speed: reduced ? space.fluid.speed * 0.3 : space.fluid.speed }, placementFor(space.aspect), space.back_color, lighten(space.back_color));
+      fluid.init(painting, flow, { ...space.fluid, quality, speed: reduced ? space.fluid.speed * 0.3 : space.fluid.speed }, placementFor(space.aspect), space.back_color, lighten(space.back_color), o.vr ? 'equirect' : 'painting', space.aspect);
       // コンテキスト喪失（iOS のバックグラウンド復帰など）→ 静止画モードに落とす
       canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); console.warn('WebGL context lost'); }, { once: true });
     }

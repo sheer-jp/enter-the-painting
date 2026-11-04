@@ -27,6 +27,13 @@ async function generateWork(id) {
   const meta = await sharp(src).metadata();
   const aspect = meta.width / meta.height;
   await sharp(src).rotate().resize({ width: 1024 }).jpeg({ quality: 88, mozjpeg: true }).toFile(join(gen, 'painting_1024.jpg'));
+  // 流体の色場の初期値用：元の写真の解像度をそのまま（長辺 2048 まで。写真が小さければ拡大しない）
+  const longSide = Math.max(meta.width, meta.height);
+  const fullW = longSide > 2048 ? Math.round(meta.width * 2048 / longSide) : meta.width;
+  await sharp(src).rotate().resize({ width: fullW, withoutEnlargement: true }).jpeg({ quality: 90, mozjpeg: true }).toFile(join(gen, 'painting_full.jpg'));
+  if (longSide < 2000) console.warn(`  写真の長辺が ${longSide}px しかない。2000px 以上で撮り直すと流体の中の絵がきれいになる`);
+  // ページの背景用：強くぼかした小さな画像（CSS で拡大して使う）
+  await sharp(src).rotate().resize({ width: 96 }).blur(6).jpeg({ quality: 70 }).toFile(join(gen, 'painting_blur.jpg'));
 
   // 2. 主要色
   const small = await sharp(src).rotate().resize({ width: 96 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -74,10 +81,11 @@ async function generateWork(id) {
   const space = {
     id, title: work.title?.ja ? { ...tr(work.title.ja), ja: work.title.ja, ...(work.title.en ? { en: work.title.en } : {}) } : { ja: id },
     size_cm: work.size_cm, aspect: +aspect.toFixed(4), year: work.year ?? null,
-    painting: 'painting_1024.jpg',
+    painting: 'painting_1024.jpg', painting_full: 'painting_full.jpg', painting_blur: 'painting_blur.jpg',
+    source_px: [meta.width, meta.height],
     palette: paletteHex, text_color: ov.text_color || textColor(palette), back_color: ov.back_color || backColor(palette),
     flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density },
-    fluid: { vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.003 },
+    fluid: { vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.005, drive: ov.drive ?? 0.3 },
     space: { radius_m: ov.radius_m ?? 2.5, melt_distance_m: ov.melt_distance_m ?? 1.0 },
     audio: { voice: work.audio?.voice && existsSync(join(dir, work.audio.voice)) ? work.audio.voice : null, ambient: work.audio?.ambient || 'calm' },
     messages: messages.map((m, i) => ({ at: at[i], ...tr(m.ja), ja: m.ja, ...(m.en ? { en: m.en } : {}) })),

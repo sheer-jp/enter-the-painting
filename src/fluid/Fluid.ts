@@ -4,14 +4,28 @@ import * as THREE from 'three';
 import * as S from './shaders';
 
 export type Quality = 'high' | 'medium' | 'low';
-export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number }
+// equirect：2:1 の等距離円筒（VR。横は繰り返し）。painting：絵だけの領域（物語モード。解像度を絵に全部使う）
+export type Domain = 'equirect' | 'painting';
+export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number; drive?: number }
 export interface PaintingRect { x: number; y: number; w: number; h: number }
 
-const SIZES: Record<Quality, { dye: [number, number]; sim: [number, number]; iters: number }> = {
+const EQUIRECT: Record<Quality, { dye: [number, number]; sim: [number, number]; iters: number }> = {
   high: { dye: [2048, 1024], sim: [512, 256], iters: 20 },
   medium: { dye: [1024, 512], sim: [256, 128], iters: 14 },
   low: { dye: [512, 256], sim: [128, 64], iters: 8 },
 };
+const PAINTING_SPEC: Record<Quality, { long: number; simLong: number; iters: number }> = {
+  high: { long: 2048, simLong: 512, iters: 20 },
+  medium: { long: 1280, simLong: 320, iters: 14 },
+  low: { long: 640, simLong: 160, iters: 8 },
+};
+
+function sizesFor(domain: Domain, q: Quality, aspect: number) {
+  if (domain === 'equirect') return EQUIRECT[q];
+  const sp = PAINTING_SPEC[q];
+  const dims = (long: number): [number, number] => (aspect >= 1 ? [long, Math.max(16, Math.round(long / aspect))] : [Math.max(16, Math.round(long * aspect)), long]);
+  return { dye: dims(sp.long), sim: dims(sp.simLong), iters: sp.iters };
+}
 
 // 絵の矩形：高さは領域の 75%（緯度 ±67°）、幅は絵の比率から（等距離円筒は赤道で 1:1）
 export function placementFor(aspect: number): PaintingRect {
@@ -28,17 +42,17 @@ class Pass {
   }
 }
 
-function makeRT(w: number, h: number, type: THREE.TextureDataType) {
+function makeRT(w: number, h: number, type: THREE.TextureDataType, wrapS: THREE.Wrapping = THREE.RepeatWrapping) {
   const rt = new THREE.WebGLRenderTarget(w, h, {
     type, format: THREE.RGBAFormat, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
-    wrapS: THREE.RepeatWrapping, wrapT: THREE.ClampToEdgeWrapping, depthBuffer: false, stencilBuffer: false, generateMipmaps: false,
+    wrapS, wrapT: THREE.ClampToEdgeWrapping, depthBuffer: false, stencilBuffer: false, generateMipmaps: false,
   });
   return rt;
 }
 
 class Double {
   a: THREE.WebGLRenderTarget; b: THREE.WebGLRenderTarget;
-  constructor(w: number, h: number, type: THREE.TextureDataType) { this.a = makeRT(w, h, type); this.b = makeRT(w, h, type); }
+  constructor(w: number, h: number, type: THREE.TextureDataType, wrapS: THREE.Wrapping = THREE.RepeatWrapping) { this.a = makeRT(w, h, type, wrapS); this.b = makeRT(w, h, type, wrapS); }
   get read() { return this.a; }
   get write() { return this.b; }
   swap() { const t = this.a; this.a = this.b; this.b = t; }
@@ -57,6 +71,9 @@ export class Fluid {
   private passes!: Record<string, Pass>;
   private params: FluidParams;
   private quality: Quality;
+  private domain: Domain = 'equirect';
+  private aspect = 1;
+  private sizes = EQUIRECT.high;
   private iters = 20;
   private strength = 1;
   private time = 0;
@@ -82,11 +99,14 @@ export class Fluid {
   }
 
   get texture(): THREE.Texture { return this.dye.read.texture; }
-  get size(): [number, number] { return SIZES[this.quality].dye; }
+  get size(): [number, number] { return this.sizes.dye; }
 
-  init(painting: THREE.Texture, flow: THREE.Texture, p: FluidParams, placement: PaintingRect, back: string, back2?: string) {
+  // domain = painting のときは placement を無視して絵が領域全体になる。aspect は絵の幅/高さ
+  init(painting: THREE.Texture, flow: THREE.Texture, p: FluidParams, placement: PaintingRect, back: string, back2?: string, domain: Domain = 'equirect', aspect = 1) {
     this.params = { ...p };
-    this.painting = painting; this.flow = flow; this.placement = placement;
+    this.domain = domain; this.aspect = aspect;
+    this.painting = painting; this.flow = flow;
+    this.placement = domain === 'painting' ? { x: 0, y: 0, w: 1, h: 1 } : placement;
     this.back.set(back); this.back2.set(back2 || back);
     painting.colorSpace = THREE.SRGBColorSpace;
     flow.colorSpace = THREE.NoColorSpace;
@@ -97,19 +117,21 @@ export class Fluid {
 
   private allocate(q: Quality) {
     this.quality = q;
-    const sz = SIZES[q];
+    const sz = sizesFor(this.domain, q, this.aspect);
+    this.sizes = sz;
     this.iters = sz.iters;
     const type = THREE.HalfFloatType;
+    const wrap = this.domain === 'equirect' ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
     this.dye?.dispose(); this.vel?.dispose(); this.pressure?.dispose();
     this.curl?.dispose(); this.div?.dispose(); this.tmp1?.dispose(); this.tmp2?.dispose(); this.original?.dispose();
-    this.dye = new Double(sz.dye[0], sz.dye[1], type);
-    this.original = makeRT(sz.dye[0], sz.dye[1], type);
-    this.tmp1 = makeRT(sz.dye[0], sz.dye[1], type);
-    this.tmp2 = makeRT(sz.dye[0], sz.dye[1], type);
-    this.vel = new Double(sz.sim[0], sz.sim[1], type);
-    this.pressure = new Double(sz.sim[0], sz.sim[1], type);
-    this.curl = makeRT(sz.sim[0], sz.sim[1], type);
-    this.div = makeRT(sz.sim[0], sz.sim[1], type);
+    this.dye = new Double(sz.dye[0], sz.dye[1], type, wrap);
+    this.original = makeRT(sz.dye[0], sz.dye[1], type, wrap);
+    this.tmp1 = makeRT(sz.dye[0], sz.dye[1], type, wrap);
+    this.tmp2 = makeRT(sz.dye[0], sz.dye[1], type, wrap);
+    this.vel = new Double(sz.sim[0], sz.sim[1], type, wrap);
+    this.pressure = new Double(sz.sim[0], sz.sim[1], type, wrap);
+    this.curl = makeRT(sz.sim[0], sz.sim[1], type, wrap);
+    this.div = makeRT(sz.sim[0], sz.sim[1], type, wrap);
   }
 
   private buildPasses() {
@@ -122,11 +144,12 @@ export class Fluid {
       maccormack: new Pass(S.MACCORMACK, u({ uVelocity: null, uPhi0: null, uPhiHat1: null, uPhiHat0: null, uOriginal: null, uTexel: new THREE.Vector2(), uDt: 0, uRestore: 0 })),
       curl: new Pass(S.CURL, u({ uVelocity: null, uTexel: new THREE.Vector2() })),
       vorticity: new Pass(S.VORTICITY, u({ uVelocity: null, uCurl: null, uTexel: new THREE.Vector2(), uCurlStrength: 0, uDt: 0 })),
-      divergence: new Pass(S.DIVERGENCE, u({ uVelocity: null, uTexel: new THREE.Vector2() })),
+      divergence: new Pass(S.DIVERGENCE, u({ uVelocity: null, uTexel: new THREE.Vector2(), uWrapX: this.domain === 'equirect' ? 1 : 0 })),
       pressure: new Pass(S.PRESSURE, u({ uPressure: null, uDivergence: null, uTexel: new THREE.Vector2() })),
       gradient: new Pass(S.GRADIENT_SUBTRACT, u({ uPressure: null, uVelocity: null, uTexel: new THREE.Vector2() })),
       splat: new Pass(S.SPLAT, u({ uTarget: null, uPoint: new THREE.Vector2(), uValue: new THREE.Vector3(), uRadius: 0.001, uAspect: 2 })),
       fizz: new Pass(S.FIZZ, u({ uVelocity: null, uRect: rect, uProgress: 0, uAmount: 0, uTime: 0 })),
+      drive: new Pass(S.DRIVE, u({ uVelocity: null, uFlow: this.flow, uRect: rect, uRate: 0, uTarget: 0, uTime: 0 })),
       copy: new Pass(S.DISPLAY, u({ uDye: null, uView: new THREE.Vector4(0, 0, 1, 1) })),
     };
   }
@@ -173,7 +196,7 @@ export class Fluid {
     dt = Math.min(dt, 1 / 30);
     if (dt <= 0) return;
     this.time += dt;
-    const sz = SIZES[this.quality];
+    const sz = this.sizes;
     const simTexel = new THREE.Vector2(1 / sz.sim[0], 1 / sz.sim[1]);
     const dyeTexel = new THREE.Vector2(1 / sz.dye[0], 1 / sz.dye[1]);
     // 速度の単位：領域の高さに対する割合/秒 → texel/秒 は sim の高さ倍
@@ -182,6 +205,15 @@ export class Fluid {
     const dyeDt = dt * speed * sz.dye[1] * 0.35;
     const P = this.passes;
 
+    // 常時の駆動（流れ続ける）。強さは strength に比例。texel/秒 の単位に合わせる
+    const drive = this.params.drive ?? 0.3;
+    if (drive > 0 && this.strength > 0.001) {
+      P.drive.mat.uniforms.uVelocity.value = this.vel.read.texture;
+      P.drive.mat.uniforms.uRate.value = Math.min(1, drive * dt * 1.5);          // 1 秒で目標の約 45%（drive=0.3）
+      P.drive.mat.uniforms.uTarget.value = sz.sim[1] * 0.04 * this.strength;     // 目標の速さ（sim の高さの 4%/秒）
+      P.drive.mat.uniforms.uTime.value = this.time;
+      this.run(P.drive, this.vel.write); this.vel.swap();
+    }
     // 外力
     if (this.fizzProgress >= 0) {
       P.fizz.mat.uniforms.uVelocity.value = this.vel.read.texture;
@@ -220,7 +252,7 @@ export class Fluid {
 
     // 速度の移流（減衰はごく弱く：止まらないが暴れない）
     P.advect.mat.uniforms.uVelocity.value = this.vel.read.texture; P.advect.mat.uniforms.uSource.value = this.vel.read.texture;
-    P.advect.mat.uniforms.uTexel.value = simTexel; P.advect.mat.uniforms.uDt.value = velDt; P.advect.mat.uniforms.uDissipation.value = 0.15 * dt;
+    P.advect.mat.uniforms.uTexel.value = simTexel; P.advect.mat.uniforms.uDt.value = velDt; P.advect.mat.uniforms.uDissipation.value = 0.08 * dt;
     this.run(P.advect, this.vel.write); this.vel.swap();
 
     // 色の移流（MacCormack）：前進 → 後退 → 補正 + 原画への回帰

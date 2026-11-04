@@ -19,6 +19,12 @@
   "aspect": 0.808,
   "year": 2025,
   "painting": "painting_1024.jpg",
+  "painting_full": "painting_full.jpg",
+  "painting_blur": "painting_blur.jpg",
+  "source_px": [
+    1212,
+    1500
+  ],
   "palette": [
     "#a47a62",
     "#d99239",
@@ -38,7 +44,8 @@
     "vorticity": 0.61,
     "speed": 0.56,
     "quality": "high",
-    "restore": 0.003
+    "restore": 0.005,
+    "drive": 0.3
   },
   "space": {
     "radius_m": 2.5,
@@ -119,5 +126,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T07:17:00.153Z"
+  "generated_at": "2026-11-04T07:54:44.283Z"
 }

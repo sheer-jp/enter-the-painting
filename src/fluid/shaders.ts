@@ -140,6 +140,7 @@ export const DIVERGENCE = /* glsl */ `
 varying vec2 vUv;
 uniform sampler2D uVelocity;
 uniform vec2 uTexel;
+uniform float uWrapX;
 void main() {
   float L = texture2D(uVelocity, vUv - vec2(uTexel.x, 0.0)).x;
   float R = texture2D(uVelocity, vUv + vec2(uTexel.x, 0.0)).x;
@@ -147,6 +148,10 @@ void main() {
   float B = texture2D(uVelocity, vUv - vec2(0.0, uTexel.y)).y;
   if (vUv.y + uTexel.y > 1.0) T = -texture2D(uVelocity, vUv).y;
   if (vUv.y - uTexel.y < 0.0) B = -texture2D(uVelocity, vUv).y;
+  if (uWrapX < 0.5) {
+    if (vUv.x + uTexel.x > 1.0) R = -texture2D(uVelocity, vUv).x;
+    if (vUv.x - uTexel.x < 0.0) L = -texture2D(uVelocity, vUv).x;
+  }
   gl_FragColor = vec4(0.5 * (R - L + T - B), 0.0, 0.0, 1.0);
 }
 `;
@@ -221,6 +226,40 @@ void main() {
     vec2 r = hash22(cell + uTime) * 2.0 - 1.0;
     vel += r * m * (0.5 + 0.5 * hash12(cell * 1.7 + uTime));
   }
+  gl_FragColor = vec4(vel, 0.0, 1.0);
+}
+`;
+
+// 常時の駆動：速度を「目標の流れ」へゆっくり寄せる（足し続けないので溜まらない）。
+// 目標 = 筆致の流れ場に沿う向き（符号は時間でゆっくり変わる）+ 大きなうねり
+export const DRIVE = /* glsl */ `
+varying vec2 vUv;
+uniform sampler2D uVelocity;
+uniform sampler2D uFlow;
+uniform vec4 uRect;
+uniform float uRate;      // 寄せる割合（0〜1 / フレーム）
+uniform float uTarget;    // 目標の速さ（texel/秒）
+uniform float uTime;
+${HASH}
+void main() {
+  vec2 vel = texture2D(uVelocity, vUv).xy;
+  vec2 p = (vUv - uRect.xy) / uRect.zw;
+  vec2 target = vec2(0.0);
+  if (p.x >= 0.0 && p.x <= 1.0 && p.y >= 0.0 && p.y <= 1.0) {
+    vec3 fl = texture2D(uFlow, p).rgb;
+    vec2 dir = fl.rg * 2.0 - 1.0;
+    float s = (vnoise(p * 2.0 + uTime * 0.03) - 0.5) * 2.0;
+    s = sign(s) * smoothstep(0.0, 0.3, abs(s));
+    target += dir * fl.b * s;
+  }
+  // 大きなうねり：回転する低周波の向き（発散しにくいよう、ノイズの等高線に沿う向きにする）
+  vec2 q = vUv * 4.0 + vec2(uTime * 0.02, -uTime * 0.015);
+  float e = 0.02;
+  float nx = vnoise(q + vec2(e, 0.0)) - vnoise(q - vec2(e, 0.0));
+  float ny = vnoise(q + vec2(0.0, e)) - vnoise(q - vec2(0.0, e));
+  vec2 curlDir = vec2(-ny, nx) / (length(vec2(nx, ny)) + 1e-5);
+  target += curlDir * 0.18;
+  vel = mix(vel, target * uTarget, uRate);
   gl_FragColor = vec4(vel, 0.0, 1.0);
 }
 `;
