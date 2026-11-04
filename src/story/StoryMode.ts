@@ -14,10 +14,16 @@ export interface StoryCtx {
 
 const DISPLAY_FRAG = /* glsl */ `
 varying vec2 vUv; uniform sampler2D uDye; uniform vec4 uView; uniform float uFade;
-void main() { vec2 uv = uView.xy + vUv * uView.zw; gl_FragColor = vec4(texture2D(uDye, uv).rgb * uFade, 1.0); }`;
+void main() {
+  vec2 uv = uView.xy + vUv * uView.zw;
+  gl_FragColor = vec4(texture2D(uDye, uv).rgb * uFade, 1.0);
+  #include <colorspace_fragment>
+}`;
 const VERT = /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+// 「バーッ」「シューッ」用：急に加速して急に止まる
+const easeInOutExpo = (t: number) => (t === 0 ? 0 : t === 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2);
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 export class StoryMode {
@@ -25,6 +31,10 @@ export class StoryMode {
   private camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   private mesh: THREE.Mesh | null = null;
   private mat: THREE.ShaderMaterial | null = null;
+  private roomMesh: THREE.Mesh | null = null;
+  private roomMat: THREE.MeshBasicMaterial | null = null;
+  private roomTex: THREE.Texture | null = null;
+  private posNow = { x: 0, y: 0 };
   private img: HTMLImageElement | null = null;     // 静止画モード
   private text: ScreenText;
   private stage = 'T0';
@@ -114,6 +124,7 @@ export class StoryMode {
     if (fluid && renderer && this.mesh && this.mat) {
       if (!this.paused) { fluid.setStrength(this.strength); fluid.step(dt); }
       this.mesh.scale.set(this.scaleNow.x, this.scaleNow.y, 1);
+      this.mesh.position.set(this.posNow.x, this.posNow.y, 0);
       this.mat.uniforms.uFade.value = this.fade;
       this.mat.uniforms.uDye.value = fluid.texture;
       renderer.setRenderTarget(null);
@@ -125,16 +136,48 @@ export class StoryMode {
     }
   };
 
-  private async tween(sec: number, f: (t: number) => void): Promise<void> {
+  private async tween(sec: number, f: (t: number) => void, ease: (t: number) => number = easeInOut): Promise<void> {
     const t0 = performance.now();
     return new Promise((res) => {
       const tick = () => {
         if (!this.running) return res();
-        const t = Math.min(1, (performance.now() - t0) / (sec * 1000)); f(easeInOut(t));
+        const t = Math.min(1, (performance.now() - t0) / (sec * 1000)); f(ease(t));
         if (t < 1) requestAnimationFrame(tick); else res();
       };
       tick();
     });
+  }
+
+  // 部屋のイメージ（終わりの演出用）。T3 の間に読んでおく
+  private loadRoom(): Promise<void> {
+    const room = this.ctx.space.rooms?.find((r) => r.quad_px && r.image_px);
+    if (!room || !this.ctx.renderer) return Promise.resolve();
+    return new Promise((res) => {
+      new THREE.TextureLoader().load(this.ctx.base + 'generated/' + room.image, (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace; tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
+        this.roomTex = tex;
+        this.roomMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0, depthTest: false });
+        this.roomMesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.roomMat);
+        this.roomMesh.renderOrder = -1;
+        this.scene.add(this.roomMesh);
+        res();
+      }, undefined, () => res());
+    });
+  }
+
+  // 部屋のイメージを画面に収めたときの、画像座標 → 画面の矩形（NDC のスケールと位置）
+  private roomLayout() {
+    const room = this.ctx.space.rooms?.find((r) => r.quad_px && r.image_px)!;
+    const [iw, ih] = room.image_px!;
+    const vw = innerWidth, vh = innerHeight;
+    const s = Math.max(vw / iw, vh / ih) * 1.0;   // cover（縦画面でも部屋が画面を満たす）
+    const ox = (vw - iw * s) / 2, oy = (vh - ih * s) / 2;
+    const xs = room.quad_px!.map((p) => p[0]), ys = room.quad_px!.map((p) => p[1]);
+    const x0 = Math.min(...xs) * s + ox, x1 = Math.max(...xs) * s + ox, y0 = Math.min(...ys) * s + oy, y1 = Math.max(...ys) * s + oy;
+    const roomScale = { x: (iw * s) / vw, y: (ih * s) / vh };
+    const paintScale = { x: (x1 - x0) / vw, y: (y1 - y0) / vh };
+    const paintPos = { x: ((x0 + x1) / 2 / vw) * 2 - 1, y: 1 - ((y0 + y1) / 2 / vh) * 2 };
+    return { roomScale, paintScale, paintPos };
   }
 
   async start(): Promise<'again' | 'exit'> {
@@ -147,12 +190,12 @@ export class StoryMode {
         const timeline = this.timeline();
         result = await Promise.race([ended, timeline.then(() => ended)]);
         this.text.clear();
-        if (result === 'again') { this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; }
+        if (result === 'again') { this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; }
       } while (result === 'again' && this.running);
     } finally {
       this.running = false;
       window.removeEventListener('resize', this.onResize); window.removeEventListener('keydown', this.onKey);
-      this.text.dispose(); this.img?.remove();
+      this.text.dispose(); this.img?.remove(); this.roomTex?.dispose(); this.roomMat?.dispose();
     }
     return result;
   }
@@ -162,6 +205,7 @@ export class StoryMode {
     const msgs = space.messages;
     // T0 絵（3 秒）
     this.stage = 'T0';
+    hud.skip.hidden = false;
     this.scaleNow = { ...this.scaleContain }; this.strength = 0.05;
     sound.ambient(space.audio.ambient || 'calm', -24);
     hud.title.textContent = pick(space.title, lang); hud.title.style.opacity = '1';
@@ -180,7 +224,7 @@ export class StoryMode {
     const from = { ...this.scaleContain }, to = this.coverScale();
     sound.setAmbientDb(-16, 1);
     if (this.img) this.img.style.transform = 'translate(-50%,-50%) scale(1.9)';
-    await this.tween(reduced ? 0.6 : 1.2, (t) => { this.scaleNow = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t }; });
+    await this.tween(reduced ? 0.6 : 1.2, (t) => { this.scaleNow = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t }; }, reduced ? easeInOut : easeInOutExpo);
     // T2 溶ける（3 秒）：縁からシュワシュワ
     this.stage = 'T2';
     sound.fizz(!reduced, -18); sound.drone(-14, 2);
@@ -191,6 +235,7 @@ export class StoryMode {
     // T3 流れと語り
     this.stage = 'T3';
     setTimeout(() => sound.drone(-22, 3), 4000);
+    const roomReady = this.loadRoom();
     const voiceUrl = space.audio.voice ? this.ctx.base + space.audio.voice : null;
     let voiceEnded: Promise<boolean> = Promise.resolve(false);
     let voiceOk = false;
@@ -209,16 +254,33 @@ export class StoryMode {
       await this.text.show(pick(m, lang), { reduced });
     }
     if (voiceOk) await voiceEnded;
-    // T4 余韻（5 秒）：流れが止まり、元の絵へ戻る
+    // T4 余韻：最後の文字が終わると同時に、シューッと引きながら流れが止まり、元の絵へ戻る
     this.stage = 'T4';
+    hud.skip.hidden = true;
     sound.fadeOutAll(4);
-    fluid?.setRestore(0.06);
-    await this.tween(5, (t) => (this.strength = 1 - t));
-    if (this.img) { this.img.style.transform = 'translate(-50%,-50%) scale(1)'; }
-    // T5 終わり（2 秒）：T0 の大きさに戻る
-    this.stage = 'T5';
+    fluid?.setRestore(0.08);
     const back = { ...this.scaleNow }, target = { ...this.scaleContain };
-    await this.tween(2, (t) => { this.scaleNow = { x: back.x + (target.x - back.x) * t, y: back.y + (target.y - back.y) * t }; });
+    await this.tween(reduced ? 1.0 : 1.6, (t) => {
+      this.strength = 1 - t;
+      this.scaleNow = { x: back.x + (target.x - back.x) * t, y: back.y + (target.y - back.y) * t };
+    }, reduced ? easeInOut : easeInOutExpo);
+    if (this.img) { this.img.style.transform = 'translate(-50%,-50%) scale(1)'; }
+    await this.tween(2.2, () => { /* 静止した絵を見せる。回帰で元の絵に戻りきる */ });
+    // T5 終わり：その絵が、誰かの部屋に掛かる
+    this.stage = 'T5';
+    await roomReady;
+    if (this.roomMesh && this.roomMat && fluid) {
+      const L = this.roomLayout();
+      this.roomMesh.scale.set(L.roomScale.x, L.roomScale.y, 1);
+      const s0 = { ...this.scaleNow }, p0 = { ...this.posNow };
+      await this.tween(reduced ? 1.2 : 2.6, (t) => {
+        this.roomMat!.opacity = Math.min(1, t * 1.6);
+        this.scaleNow = { x: s0.x + (L.paintScale.x - s0.x) * t, y: s0.y + (L.paintScale.y - s0.y) * t };
+        this.posNow = { x: p0.x + (L.paintPos.x - p0.x) * t, y: p0.y + (L.paintPos.y - p0.y) * t };
+      });
+      // 流体の絵を消して、合成済みの部屋だけにする（同じ場所に同じ絵がある）
+      await this.tween(1.0, (t) => (this.fade = 1 - t));
+    }
     fluid?.setRestore(this.restoreBase);
     hud.ending.style.opacity = '1'; hud.ending.style.pointerEvents = 'auto';
     if (this.ctx.fromQr) hud.once.style.opacity = '1';

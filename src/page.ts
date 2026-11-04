@@ -72,4 +72,13 @@ if (workId) {
   };
   enter.addEventListener('click', () => start(false));
   enterVr.addEventListener('click', () => start(true));
+  // 絵をタップ / クリックしても入れる
+  const paintingImg = document.querySelector<HTMLImageElement>('.painting img');
+  if (paintingImg) {
+    paintingImg.style.cursor = 'pointer';
+    paintingImg.setAttribute('role', 'button'); paintingImg.tabIndex = 0;
+    paintingImg.setAttribute('aria-label', t('enter', lang));
+    paintingImg.addEventListener('click', () => { if (!enter.disabled) start(false); });
+    paintingImg.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && !enter.disabled) { e.preventDefault(); start(false); } });
+  }
 }

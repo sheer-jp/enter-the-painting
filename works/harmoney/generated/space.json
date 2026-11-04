@@ -121,10 +121,32 @@
         "ja": "マンションのリビング（仮）",
         "en": "Apartment living room (placeholder)"
       },
-      "wall_width_cm": 420
+      "wall_width_cm": 420,
+      "image_px": [
+        1600,
+        1000
+      ],
+      "quad_px": [
+        [
+          891,
+          161
+        ],
+        [
+          1093,
+          161
+        ],
+        [
+          1093,
+          410
+        ],
+        [
+          891,
+          410
+        ]
+      ]
     }
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T07:54:44.283Z"
+  "generated_at": "2026-11-04T09:14:59.559Z"
 }

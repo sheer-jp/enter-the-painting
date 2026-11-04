@@ -43,6 +43,7 @@ void main() {
   float a = vInside > 0.5 ? 1.0 : smoothstep(0.0, 0.35, uMorph);
   if (a < 0.01) discard;
   gl_FragColor = vec4(texture2D(uDye, vUv).rgb * uFade, a);
+  #include <colorspace_fragment>
 }
 `;
 

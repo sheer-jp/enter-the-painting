@@ -92,7 +92,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir, aspect 
     const buf = warpOnto({ data: room.data, width: room.info.width, height: room.info.height }, { data: painting.data, width: painting.info.width, height: painting.info.height }, quad);
     const outName = `room_${name}.jpg`;
     await sharp(buf, { raw: { width: room.info.width, height: room.info.height, channels: 3 } }).jpeg({ quality: 85 }).toFile(join(outDir, outName));
-    results.push({ name, image: outName, label: def.label || { ja: name }, wall_width_cm: def.wall.width_cm });
+    results.push({ name, image: outName, label: def.label || { ja: name }, wall_width_cm: def.wall.width_cm, image_px: [room.info.width, room.info.height], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]) });
   }
   return results;
 }

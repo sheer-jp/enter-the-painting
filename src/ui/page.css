@@ -37,7 +37,8 @@ button { font-family: inherit; }
 main.work { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 calc(48px + env(safe-area-inset-bottom)); }
 .painting { position: relative; margin: 48px auto 0; display: flex; justify-content: center; max-height: 72vh; }
 .painting::before { content: ""; position: absolute; inset: -12%; background: var(--blur-url) center / cover no-repeat; filter: blur(70px); opacity: .5; z-index: -1; }
-.painting img { max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.6); }
+.painting img { cursor: pointer; transition: transform .8s cubic-bezier(.2,.7,.3,1); max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.6); }
+.painting img:hover { transform: scale(1.01); }
 .titling { margin: 36px 0 0; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
 .titling h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 4vw, 38px); letter-spacing: .08em; margin: 0; line-height: 1.3; text-wrap: balance; }
 .titling h1 .latin { font-family: var(--latin); font-weight: 300; font-style: italic; font-size: .85em; letter-spacing: .06em; color: var(--ink-2); margin-left: .6em; }
