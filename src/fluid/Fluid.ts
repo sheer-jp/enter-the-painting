@@ -35,8 +35,8 @@ export function placementFor(aspect: number): PaintingRect {
   return { x: 0.5 - w / 2, y: 0.5 - h / 2, w, h };
 }
 
-// 渦の強さの係数（入りの見え方で調整）
-const VORTEX_GAIN = 4;
+// 渦の強さ：strength 1 を 1 秒続けると、最大の所の速さが「領域の高さ × これ / 秒」増える（解像度と作品の speed によらない）
+const VORTEX_RATE = 0.2;   // 0.5 だと渦で色が混ざりすぎて彩度が落ちた（Fable 調整 11-04）
 
 class Pass {
   mat: THREE.ShaderMaterial;
@@ -248,7 +248,7 @@ export class Fluid {
     this.stamp({ x: uv[0], y: uv[1], r: radius * 1.5, amount: Math.min(0.35, strength * 0.004), dx: 0, dy: 0, kind: 2, ring: Math.sqrt(radius) * 1.6 });
   }
 
-  // 渦：uv を中心に、中心へ向かう回転 + わずかな吸い込み。strength 1 で常時の駆動の目標の速さ程度を毎秒加える。
+  // 渦：uv を中心に、中心へ向かう回転 + わずかな吸い込み。strength は 0〜1 程度（VORTEX_RATE を参照）。
   // radius は領域の高さに対する割合（ガウシアンの幅）。毎フレーム呼ぶ前提。厚みは中心が凹む
   vortex(uv: [number, number], strength: number, radius: number) {
     if (strength <= 0 || radius <= 0) return;
@@ -305,7 +305,8 @@ export class Fluid {
       V.uVelocity.value = this.vel.read.texture;
       V.uPoint.value.set(v.uv[0], v.uv[1]);
       V.uRadius.value = v.radius;
-      V.uStrength.value = v.strength * sz.sim[1] * 0.03 * dt * VORTEX_GAIN;
+      // 速度の単位（texel 換算）→ 見た目の速さ：0.22 × speed × strength（上の velDt と同じ換算）
+      V.uStrength.value = (v.strength * VORTEX_RATE * dt) / (0.22 * Math.max(0.05, this.params.speed));
       this.run(P.vortex, this.vel.write); this.vel.swap();
       this.stamp({ x: v.uv[0], y: v.uv[1], r: (v.radius * 0.6) ** 2, amount: Math.min(0.05, v.strength * dt * 0.8), dx: 0, dy: 0, kind: 0, ring: 0 });
     }

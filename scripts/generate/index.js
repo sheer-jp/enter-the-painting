@@ -12,7 +12,7 @@ import { compositeRooms } from './rooms.js';
 const ROOT = resolve(new URL('../..', import.meta.url).pathname);
 const BASE_URL = (process.env.BASE_URL || 'https://sheer-jp.github.io/enter-the-painting').replace(/\/$/, '');
 const FLOW_W = 256;
-const LOOK_DEFAULT = { relief: 0.5, gloss: 0.18, sharpness: 96, bloom: 0.08, grain: 0.02, vivid: 0.35 };
+const LOOK_DEFAULT = { relief: 0.5, gloss: 0.18, sharpness: 96, bloom: 0.04, grain: 0.02, vivid: 0.45 };
 
 async function generateWork(id) {
   const dir = join(ROOT, 'works', id);
@@ -101,7 +101,7 @@ async function generateWork(id) {
     flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density },
     relief: { texture: 'relief.png' },
     fluid: {
-      vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.008, drive: ov.drive ?? 0.3,
+      vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.014, drive: ov.drive ?? 0.3,
       // 質感（docs/FLUID_LOOK.md 2 節のパラメータ）。作品ごとに overrides.look で上書き
       look: { ...LOOK_DEFAULT, ...(ov.look || {}) },
     },

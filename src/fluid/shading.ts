@@ -5,13 +5,13 @@ import * as THREE from 'three';
 import type { Fluid } from './Fluid';
 import type { Look } from '../experience/types';
 
-export const DEFAULT_LOOK: Look = { relief: 0.5, gloss: 0.18, sharpness: 96, bloom: 0.08, grain: 0.02, vivid: 0.35 };
+export const DEFAULT_LOOK: Look = { relief: 0.5, gloss: 0.18, sharpness: 96, bloom: 0.04, grain: 0.02, vivid: 0.45 };
 
 // 物語モードの光：画面の左上やや手前
 export const LIGHT_DIR = new THREE.Vector3(-0.4, 0.6, 0.7).normalize();
 
 // 勾配の係数：厚みの差（テクセル 1 つ分）× relief × 厚みの高さ（テクセル）× これ。解像度によらず同じ傾きになる
-const SLOPE_GAIN = 0.025;
+const SLOPE_GAIN = 0.05;   // 0.025 では筆のあとの傾きが小さすぎ、陰影がほぼ出なかった（11-04 のスクリーンショット）
 
 export const SHADING = /* glsl */ `
 uniform sampler2D uDye;
@@ -43,18 +43,11 @@ vec3 paintShade(vec2 uv, vec3 L, vec3 V) {
   float flatLit = 0.78 + 0.22 * max(L.z, 0.0);
   float dif = (0.78 + 0.22 * max(dot(n, L), 0.0)) / flatLit;
   vec3 c = mix(base, base * dif, edge);
-  // 鏡面：小さく鋭いサテンの光（白）
-  vec3 H = normalize(L + V);
-  c += vec3(pow(max(dot(n, H), 0.0), uSharpness) * uGloss);
+  float preMx = max(c.r, max(c.g, c.b)), preMn = min(c.r, min(c.g, c.b));
+  float preSat = (preMx - preMn) / (preMx + 1e-4);
   // 環境：白い窓の光をごく薄く（光の側を向いた斜面だけ）
   vec2 win = normalize(L.xy + vec2(1e-5));
-  c += vec3(0.08 * uRelief * clamp(dot(n.xy, win) * 2.0, 0.0, 1.0));
-  // 鮮やかさ最優先：陰影の分を戻す
-  c *= 1.0 + 0.05 * uRelief * edge;
-  // 彩度の補正（流れている間）：混ざって鈍った色を戻す
-  float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
-  c = mix(vec3(luma), c, 1.0 + uVividAmt * uVivid);
-  c = (c - 0.5 * luma * uVivid * 0.1) * (1.0 + 0.08 * uVivid);
+  c += vec3(0.04 * uRelief * clamp(dot(n.xy, win) * 2.0, 0.0, 1.0));   // 窓の光はごく薄く（白っぽく褪せるのを防ぐ）
   // にじみ：明るい所だけを 1 段ぼかして加える（4 点）
   if (uBloom > 0.0) {
     vec2 o = uDyeTexel * 6.0;
@@ -62,6 +55,23 @@ vec3 paintShade(vec2 uv, vec3 L, vec3 V) {
            + max(texture2D(uDye, uv + vec2(o.x, -o.y)).rgb - 0.6, 0.0) + max(texture2D(uDye, uv - o).rgb - 0.6, 0.0);
     c += s * 0.25 * uBloom * 2.5;
   }
+  // 鮮やかさ最優先：映り込みとにじみで薄まった彩度を、明るさ（最大のチャンネル）を保ったまま元に戻す
+  float mx = max(c.r, max(c.g, c.b)), mn = min(c.r, min(c.g, c.b));
+  float want = mx * (1.0 - preSat);
+  if (mn > want && mx - mn > 1e-4) c = mx - (mx - c) * ((mx - want) / (mx - mn));
+  // 陰影の分を戻す
+  c *= 1.0 + 0.05 * uRelief * edge;
+  // 1 を超えた分はチャンネルごとに切らず、全体を縮める（切ると色が白っぽくなる）
+  c /= max(1.0, max(c.r, max(c.g, c.b)));
+  // 鏡面：小さく鋭いサテンの光（白）
+  vec3 H = normalize(L + V);
+  // 白に、下の色を 35% だけ混ぜる（白い粒で色が薄まって見えないように）。稜線だけ（平らな所には足さない）
+  vec3 glint = mix(vec3(1.0), c / max(1e-4, max(c.r, max(c.g, c.b))), 0.35);
+  c += glint * (pow(max(dot(n, H), 0.0), uSharpness) * uGloss * edge);
+  // 彩度の補正（流れている間）：混ざって鈍った色を戻す
+  float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  c = mix(vec3(luma), c, 1.0 + uVividAmt * uVivid);
+  c = (c - 0.5 * luma * uVivid * 0.1) * (1.0 + 0.08 * uVivid);
   // 粒子
   c += (shadeHash(gl_FragCoord.xy + fract(uTime * 7.31) * 113.0) - 0.5) * uGrain;
   return max(c, 0.0);

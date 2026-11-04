@@ -51,15 +51,15 @@
     "vorticity": 0.61,
     "speed": 0.56,
     "quality": "high",
-    "restore": 0.008,
+    "restore": 0.014,
     "drive": 0.3,
     "look": {
       "relief": 0.5,
       "gloss": 0.18,
       "sharpness": 96,
-      "bloom": 0.08,
+      "bloom": 0.04,
       "grain": 0.02,
-      "vivid": 0.35
+      "vivid": 0.45
     }
   },
   "space": {
@@ -340,5 +340,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T13:04:14.781Z"
+  "generated_at": "2026-11-04T14:31:06.805Z"
 }

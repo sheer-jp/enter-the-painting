@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { kmeans, toHex, textColor, backColor } from '../scripts/generate/color.js';
-import { structureTensorFlow, motionFromFlow } from '../scripts/generate/flow.js';
+import { kmeans, toHex, textColor, backColor, brightCenter } from '../scripts/generate/color.js';
+import { structureTensorFlow, motionFromFlow, reliefFromGray } from '../scripts/generate/flow.js';
 import { homographyFromUnitSquare, invert3, paintingQuadOnWall, paintingRectFromScale, fractionOf, confidenceFrom, scaleFromReferences, roomTexts } from '../scripts/generate/rooms.js';
 import { key } from '../scripts/generate/translate.js';
 import { normalizeLang, pickLang } from '../src/i18n/normalize';
@@ -35,6 +35,24 @@ describe('筆致の流れ場', () => {
     const f = structureTensorFlow(g, w, h, 2);
     expect(Math.max(...f.str)).toBe(0);
     expect(motionFromFlow(f).speed).toBe(0.25);
+  });
+});
+
+describe('絵の具の厚みと渦の中心', () => {
+  it('厚みは 0〜1。平坦な所は 0、筆のあと（細かい縞）は盛り上がる', () => {
+    const w = 64, h = 32; const g = new Float32Array(w * h).fill(120);
+    for (let y = 0; y < h; y++) for (let x = 32; x < w; x++) g[y * w + x] = (x % 4 < 2) ? 40 : 200;
+    const r = reliefFromGray(g, w, h, null);
+    expect(Math.min(...r)).toBeGreaterThanOrEqual(0); expect(Math.max(...r)).toBeLessThanOrEqual(1);
+    expect(r[16 * w + 8]).toBeLessThan(0.05);
+    expect(r[16 * w + 48]).toBeGreaterThan(0.3);
+  });
+  it('最も明るい主要色の重心を UV（v は下 → 上）で返す', () => {
+    const w = 10, h = 10; const px = new Uint8Array(w * h * 3).fill(30);
+    for (let y = 0; y < 2; y++) for (let x = 8; x < 10; x++) px.set([250, 250, 240], (y * w + x) * 3);   // 右上に白
+    const c = brightCenter(px, w, h, [{ rgb: [30, 30, 30], area: 0.96 }, { rgb: [250, 250, 240], area: 0.04 }]);
+    expect(c[0]).toBeCloseTo(0.9, 2); expect(c[1]).toBeCloseTo(0.9, 2);
+    expect(brightCenter(px, w, h, [])).toEqual([0.5, 0.5]);
   });
 });
 

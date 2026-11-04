@@ -44,7 +44,9 @@ export async function run(o: RunOptions): Promise<void> {
       // 絵の具の厚みの初期値（無い・読めない作品は平ら）
       const relief = space.relief ? await loadTexture(base + 'generated/' + space.relief.texture).catch(() => null) : null;
       if (relief) { relief.minFilter = THREE.LinearFilter; relief.generateMipmaps = false; }
-      const quality: Quality = o.vr ? 'high' : (/Mobi|Android/i.test(navigator.userAgent) ? 'medium' : space.fluid.quality || 'high');
+      // ?debug=1&q=medium などで品質を固定できる（スクリーンショットの確認用）
+      const forced = o.debug ? new URLSearchParams(location.search).get('q') : null;
+      const quality: Quality = forced === 'high' || forced === 'medium' || forced === 'low' ? forced : o.vr ? 'high' : (/Mobi|Android/i.test(navigator.userAgent) ? 'medium' : space.fluid.quality || 'high');
       fluid = new Fluid(renderer, { ...space.fluid, quality });
       fluid.init(painting, flow, { ...space.fluid, quality, speed: reduced ? space.fluid.speed * 0.3 : space.fluid.speed }, placementFor(space.aspect), space.back_color, lighten(space.back_color), o.vr ? 'equirect' : 'painting', space.aspect, relief);
       // コンテキスト喪失（iOS のバックグラウンド復帰など）→ 静止画モードに落とす
