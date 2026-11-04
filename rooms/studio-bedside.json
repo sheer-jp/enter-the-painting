@@ -3,9 +3,10 @@
   "image_width_px": 1586,
   "image_height_px": 992,
   "label": {
-    "ja": "ベッド脇の夜",
-    "en": "Bedside at night"
+    "ja": "ベッド脇",
+    "en": "Beside the bed"
   },
+  "category": "studio",
   "scene": "ワンルームの夜。シングルベッドの脇の小さなテーブルと暖かいランプ。",
   "references": [
     {
@@ -45,6 +46,6 @@
   },
   "suits_cm": [
     15,
-    45
+    80
   ]
 }

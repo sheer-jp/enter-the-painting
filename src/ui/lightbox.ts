@@ -58,7 +58,8 @@ export function openLightbox(o: LightboxOptions): () => void {
     const note: [string, string] = ['lb-note', pick(room.note, lang)];
     if (room.confidence === 'low') parts.unshift(note); else parts.push(note);
     body.replaceChildren(...parts.filter(([, s]) => s).map(([cls, s]) => { const p = document.createElement('p'); p.textContent = s; if (cls) p.className = cls; return p; }));
-    head.textContent = `${pick(room.label, lang)}${rooms.length > 1 ? `　${index + 1} / ${rooms.length}` : ''}`;
+    const where = pick(room.label, lang);
+    head.textContent = `${room.category ? `${t(`room_cat_${room.category}`, lang)} ─ ${where}` : where}${rooms.length > 1 ? `　${index + 1} / ${rooms.length}` : ''}`;
     root.setAttribute('aria-label', pick(room.label, lang));
     toggle.textContent = t(showDims ? 'dims_hide' : 'dims_show', lang);
     toggle.setAttribute('aria-pressed', String(showDims));

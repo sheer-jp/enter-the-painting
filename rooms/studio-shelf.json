@@ -4,8 +4,9 @@
   "image_height_px": 992,
   "label": {
     "ja": "低い棚の上",
-    "en": "Above a low shelf"
+    "en": "Above the low shelf"
   },
+  "category": "studio",
   "scene": "低い木の棚に本と植物。床のクッション。窓からの光。",
   "references": [
     {
@@ -45,6 +46,6 @@
   },
   "suits_cm": [
     15,
-    45
+    80
   ]
 }

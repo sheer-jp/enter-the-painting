@@ -3,9 +3,10 @@
   "image_width_px": 1586,
   "image_height_px": 992,
   "label": {
-    "ja": "一軒家の玄関",
-    "en": "Entrance hall of a house"
+    "ja": "玄関",
+    "en": "Entrance hall"
   },
+  "category": "house",
   "scene": "木の框のある静かな玄関。靴を脱ぐところから見える白い壁。朝の光。",
   "references": [
     {

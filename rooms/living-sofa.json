@@ -3,9 +3,10 @@
   "image_width_px": 1586,
   "image_height_px": 992,
   "label": {
-    "ja": "ソファのあるリビング",
-    "en": "Living room with a sofa"
+    "ja": "ソファの後ろの壁",
+    "en": "The wall behind the sofa"
   },
+  "category": "house",
   "scene": "グレーのソファの向かいの白い壁。観葉植物と丸いテーブル。",
   "references": [
     {

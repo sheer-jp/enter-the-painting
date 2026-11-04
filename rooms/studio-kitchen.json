@@ -6,6 +6,7 @@
     "ja": "キッチンカウンター",
     "en": "Kitchen counter"
   },
+  "category": "studio",
   "scene": "小さなキッチン。ケトルとカップ。朝の光が壁に落ちる。",
   "references": [
     {
@@ -46,6 +47,6 @@
   },
   "suits_cm": [
     15,
-    45
+    80
   ]
 }

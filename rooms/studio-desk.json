@@ -3,9 +3,10 @@
   "image_width_px": 1586,
   "image_height_px": 992,
   "label": {
-    "ja": "一人暮らしの机の上",
-    "en": "Desk in a studio apartment"
+    "ja": "机の上",
+    "en": "Above the desk"
   },
+  "category": "studio",
   "scene": "ワンルームの木の机。閉じたノート PC、マグ、小さなランプ。昼の光。",
   "references": [
     {
@@ -14,8 +15,8 @@
       "primary": true
     },
     {
-      "ref": "laptop.width",
-      "px": 230
+      "ref": "desk_lamp.height",
+      "px": 220
     }
   ],
   "wall": {
@@ -45,6 +46,6 @@
   },
   "suits_cm": [
     15,
-    45
+    80
   ]
 }

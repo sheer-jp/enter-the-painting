@@ -17,7 +17,7 @@ export interface Space {
 
 // 部屋で見る（space.json の rooms[]）。文章は docs/SIZE_UX.md 3・5 節
 export interface Room {
-  name: string; image: string; label: Multi; wall_width_cm: number;
+  name: string; image: string; label: Multi; category?: 'studio' | 'house'; wall_width_cm: number;
   image_px?: [number, number]; quad_px?: [number, number][];
   px_per_cm?: number; confidence?: 'high' | 'mid' | 'low' | null; primary_ref?: string | null;
   compare?: Multi | null;    // 比較の一文（数字なし）

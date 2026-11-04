@@ -4,8 +4,9 @@
   "image_height_px": 992,
   "label": {
     "ja": "小さな玄関",
-    "en": "Tiny entrance"
+    "en": "Entrance"
   },
+  "category": "studio",
   "scene": "ワンルームの玄関。靴と、フックに掛けたバッグ。",
   "references": [
     {
@@ -41,6 +42,6 @@
   },
   "suits_cm": [
     15,
-    45
+    80
   ]
 }

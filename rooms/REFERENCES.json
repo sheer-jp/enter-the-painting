@@ -1,18 +1,130 @@
 {
-  "door_interior":    { "height_cm": 200, "width_cm": 78,  "label": { "ja": "ドア", "en": "the door" } },
-  "door_entrance":    { "height_cm": 205, "width_cm": 85,  "label": { "ja": "玄関のドア", "en": "the front door" } },
-  "ceiling":          { "height_cm": 240,                   "label": { "ja": "部屋の天井", "en": "the ceiling" } },
-  "ceiling_entrance": { "height_cm": 230,                   "label": { "ja": "玄関の天井", "en": "the ceiling" } },
-  "sofa_2seat":       { "height_cm": 80,  "width_cm": 160, "label": { "ja": "ソファ", "en": "the sofa" } },
-  "armchair":         { "height_cm": 80,  "width_cm": 70,  "label": { "ja": "椅子", "en": "the armchair" } },
-  "bench":            { "height_cm": 45,  "width_cm": 120, "label": { "ja": "ベンチ", "en": "the bench" } },
-  "desk":             { "height_cm": 72,  "width_cm": 110, "label": { "ja": "机", "en": "the desk" } },
-  "low_shelf":        { "height_cm": 42,  "width_cm": 100, "label": { "ja": "低い棚", "en": "the low shelf" } },
-  "kitchen_counter":  { "height_cm": 85,                   "label": { "ja": "キッチンのカウンター", "en": "the kitchen counter" } },
-  "nightstand":       { "height_cm": 55,  "width_cm": 45,  "label": { "ja": "ナイトテーブル", "en": "the nightstand" } },
-  "window":           { "height_cm": 180, "width_cm": 165, "label": { "ja": "窓", "en": "the window" } },
-  "kettle":           { "height_cm": 24,                    "label": { "ja": "ケトル", "en": "the kettle" } },
-  "table_lamp":       { "height_cm": 45,                    "label": { "ja": "ランプ", "en": "the lamp" } },
-  "laptop":           {                    "width_cm": 31,  "label": { "ja": "ノート PC", "en": "the laptop" } },
-  "mug":              { "height_cm": 9,                     "label": { "ja": "マグカップ", "en": "the mug" } }
+  "door_interior": {
+    "height_cm": 200,
+    "width_cm": 78,
+    "label": {
+      "ja": "ドア",
+      "en": "the door"
+    }
+  },
+  "door_entrance": {
+    "height_cm": 205,
+    "width_cm": 85,
+    "label": {
+      "ja": "玄関のドア",
+      "en": "the front door"
+    }
+  },
+  "ceiling": {
+    "height_cm": 240,
+    "label": {
+      "ja": "部屋の天井",
+      "en": "the ceiling"
+    }
+  },
+  "ceiling_entrance": {
+    "height_cm": 230,
+    "label": {
+      "ja": "玄関の天井",
+      "en": "the ceiling"
+    }
+  },
+  "sofa_2seat": {
+    "height_cm": 80,
+    "width_cm": 160,
+    "label": {
+      "ja": "ソファ",
+      "en": "the sofa"
+    }
+  },
+  "armchair": {
+    "height_cm": 80,
+    "width_cm": 70,
+    "label": {
+      "ja": "椅子",
+      "en": "the armchair"
+    }
+  },
+  "bench": {
+    "height_cm": 45,
+    "width_cm": 120,
+    "label": {
+      "ja": "ベンチ",
+      "en": "the bench"
+    }
+  },
+  "desk": {
+    "height_cm": 72,
+    "width_cm": 110,
+    "label": {
+      "ja": "机",
+      "en": "the desk"
+    }
+  },
+  "low_shelf": {
+    "height_cm": 42,
+    "width_cm": 100,
+    "label": {
+      "ja": "低い棚",
+      "en": "the low shelf"
+    }
+  },
+  "kitchen_counter": {
+    "height_cm": 85,
+    "label": {
+      "ja": "キッチンのカウンター",
+      "en": "the kitchen counter"
+    }
+  },
+  "nightstand": {
+    "height_cm": 55,
+    "width_cm": 45,
+    "label": {
+      "ja": "ナイトテーブル",
+      "en": "the nightstand"
+    }
+  },
+  "window": {
+    "height_cm": 180,
+    "width_cm": 165,
+    "label": {
+      "ja": "窓",
+      "en": "the window"
+    }
+  },
+  "kettle": {
+    "height_cm": 24,
+    "label": {
+      "ja": "ケトル",
+      "en": "the kettle"
+    }
+  },
+  "table_lamp": {
+    "height_cm": 45,
+    "label": {
+      "ja": "ランプ",
+      "en": "the lamp"
+    }
+  },
+  "laptop": {
+    "width_cm": 31,
+    "label": {
+      "ja": "ノート PC",
+      "en": "the laptop"
+    }
+  },
+  "mug": {
+    "height_cm": 9,
+    "label": {
+      "ja": "マグカップ",
+      "en": "the mug"
+    }
+  },
+  "desk_lamp": {
+    "height_cm": 40,
+    "label": {
+      "ja": "デスクランプ",
+      "en": "the desk lamp"
+    }
+  }
 }

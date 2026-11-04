@@ -3,9 +3,10 @@
   "image_width_px": 1586,
   "image_height_px": 992,
   "label": {
-    "ja": "椅子のあるリビング",
-    "en": "Living room with an armchair"
+    "ja": "椅子の横の壁",
+    "en": "The wall beside the armchair"
   },
+  "category": "house",
   "scene": "ひとり掛けの椅子とサイドテーブル。白い壁に夕方の光。",
   "references": [
     {

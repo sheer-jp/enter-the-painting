@@ -217,12 +217,20 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
   const roomsDir = join(root, 'rooms');
   if (!existsSync(roomsDir)) return [];
   const table = loadReferenceTable(roomsDir);
-  // 部屋の指定が無ければ、作品の大きさ（長辺）に向いている部屋だけを使う（suits_cm: [min, max]）
+  // 部屋の指定が無ければ、作品の大きさ（長辺）に向いている部屋を、種類（category）ごとに 2 枚まで（ファイル名順）使う（suits_cm: [min, max]）
   const longSide = Math.max(...work.size_cm);
-  const names = work.rooms || readdirSync(roomsDir).filter((f) => f.endsWith('.json') && f !== 'REFERENCES.json').map((f) => f.replace(/\.json$/, '')).filter((n) => {
-    const d = JSON.parse(readFileSync(join(roomsDir, `${n}.json`), 'utf8'));
-    return !d.suits_cm || (longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1]);
-  });
+  const readDef = (n) => { const p = join(roomsDir, `${n}.json`); return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : {}; };
+  let names = work.rooms;
+  if (!names) {
+    const perCat = {};
+    names = readdirSync(roomsDir).filter((f) => f.endsWith('.json') && f !== 'REFERENCES.json').map((f) => f.replace(/\.json$/, '')).sort().filter((n) => {
+      const d = readDef(n);
+      if (d.suits_cm && !(longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1])) return false;
+      const c = d.category || '';
+      perCat[c] = (perCat[c] || 0) + 1;
+      return perCat[c] <= 2;
+    });
+  }
   const painting = await sharp(paintingPath).resize({ width: 800 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const checkDir = join(roomsDir, 'check');
   const results = [];
@@ -279,7 +287,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       : { compare: null, compare2: null, about: null, note: null, primary_ref: null };
 
     results.push({
-      name, image: outName, label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
+      name, image: outName, ...(def.category ? { category: def.category } : {}), label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
       image_px: [W, H], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]),
       ...(sc ? { px_per_cm: +pxPerCm.toFixed(3), confidence: sc.confidence || null } : {}),
       ...texts,

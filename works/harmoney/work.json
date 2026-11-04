@@ -32,9 +32,8 @@
   "note": "F15 号（65.2 × 53.0 cm）、縦位置",
   "rooms": [
     "living-apartment",
-    "entrance-house",
-    "living-window",
-    "living-chair",
-    "living-sofa"
+    "living-sofa",
+    "studio-desk",
+    "studio-bedside"
   ]
 }

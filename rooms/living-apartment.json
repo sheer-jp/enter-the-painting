@@ -3,9 +3,10 @@
   "image_width_px": 1586,
   "image_height_px": 992,
   "label": {
-    "ja": "マンションのリビング",
-    "en": "Apartment living room"
+    "ja": "ソファの向かいの壁",
+    "en": "The wall facing the sofa"
   },
+  "category": "house",
   "scene": "マンションのリビング。ソファと椅子の間の白い壁。窓からの光。",
   "references": [
     {

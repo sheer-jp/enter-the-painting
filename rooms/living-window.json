@@ -3,9 +3,10 @@
   "image_width_px": 1586,
   "image_height_px": 992,
   "label": {
-    "ja": "窓辺のリビング",
-    "en": "Living room by the window"
+    "ja": "窓辺の壁",
+    "en": "The wall by the window"
   },
+  "category": "house",
   "scene": "大きな窓のあるリビング。観葉植物と椅子の間の白い壁。午後の光。",
   "references": [
     {

@@ -106,5 +106,41 @@
   "5442f88fd24c": {
     "ja": "この玄関の天井（約 230 cm）の約 3 分の 1 の高さ。",
     "en": "About one third the height of the ceiling (about 230 cm)."
+  },
+  "0ee6f833426a": {
+    "ja": "この机とほぼ同じ高さ（寸法は目安）。",
+    "en": "About the same height as the desk (size is approximate)."
+  },
+  "3d8cbf2170e8": {
+    "ja": "このノート PC（約 31 cm）の約 1.7 倍の幅。",
+    "en": "About 1.7 times the width of the laptop (about 31 cm)."
+  },
+  "10b3325bbbf1": {
+    "ja": "壁の幅は約 1.7 m。座ったときの目の高さ（床から約 130 cm）に掛けています。",
+    "en": "The wall is about 1.7 m wide. The painting hangs at seated eye level (about 130 cm from the floor)."
+  },
+  "a9356c6d6f1f": {
+    "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
+    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide."
+  },
+  "ac149893dd8c": {
+    "ja": "このナイトテーブルの約 1.2 倍の高さ。",
+    "en": "About 1.2 times the height of the nightstand."
+  },
+  "6abd10ee8927": {
+    "ja": "このランプ（約 45 cm）の約 1.4 倍の高さ。",
+    "en": "About 1.4 times the height of the lamp (about 45 cm)."
+  },
+  "9144b743a714": {
+    "ja": "壁の幅は約 1.9 m。座ったときの目の高さ（床から約 125 cm）に掛けています。",
+    "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor)."
+  },
+  "93b2e3ad848c": {
+    "ja": "この机とほぼ同じ高さ。",
+    "en": "About the same height as the desk."
+  },
+  "b18eff459ef1": {
+    "ja": "このデスクランプ（約 40 cm）の約 1.6 倍の高さ。",
+    "en": "About 1.6 times the height of the desk lamp (about 40 cm)."
   }
 }
