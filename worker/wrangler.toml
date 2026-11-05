@@ -13,8 +13,8 @@ routes = [
 SITE_ORIGIN = "https://enter.sheerarts.com"
 # CORS で許す origin（カンマ区切り）。SITE_ORIGIN は自動で許す
 ALLOWED_ORIGINS = "https://enter.sheerarts.com,https://sheer-jp.github.io,http://localhost:5173,https://localhost:5173"
-# 応答が遅ければ claude-sonnet-5-5
-CLAUDE_MODEL = "claude-opus-5-5"
+# 開発中はリーズナブルに Sonnet 5.5（1 会話 4 往復で 3 円ほど）。接客の質を上げたければ claude-opus-5-5（約 2 倍）
+CLAUDE_MODEL = "claude-sonnet-5-5"
 # 受け付けるパス
 API_PATH = "/api/recommend"
 

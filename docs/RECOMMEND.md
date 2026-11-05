@@ -29,7 +29,7 @@
 
 - **Cloudflare Workers**（作家のドメインが Cloudflare にあるので同じ場所に）。`https://enter.sheerarts.com/api/recommend` にルーティング。キーは Worker の Secret
 - Worker は Claude API の Messages をストリーミングで中継し、会話の履歴はブラウザ側が持つ（サーバーに保存しない）
-- モデル：`claude-opus-5-5`（既定。応答の質が接客そのものなので上位を使う。費用は 1 会話 4 往復で数円）。遅ければ `claude-sonnet-5-5`
+- モデル：`claude-sonnet-5-5`（既定。11-05 作家の方針「開発中はリーズナブルなモデルから」。1 会話 4 往復で 3 円ほど）。接客の質を上げたければ `claude-opus-5-5`（約 2 倍）。`CLAUDE_MODEL` で切り替え
 - 拒否（安全分類）や失敗時は、ルールだけのおすすめ（後述）に落ちる
 
 ### 作品カタログ（生成時に作る）
@@ -149,7 +149,7 @@ src/recommend/                 画面（index.ts：入口・会話・おすす�
 - レート制限：IP ごと 1 分 10 回（Worker の isolate 内の Map。厳密でなくてよい）
 - CORS：`ALLOWED_ORIGINS`（カンマ区切り。`http://localhost:5173`, `https://localhost:5173` を含めてよい）
 - カタログ：Worker が `${SITE_ORIGIN}/catalog.json` を取り、`caches.default` に 10 分
-- Claude API：`fetch` で直接（SDK を入れない）。`POST https://api.anthropic.com/v1/messages`、`anthropic-version: 2023-06-01`、`stream: true`、モデルは `CLAUDE_MODEL`（既定 `claude-opus-5-5`）、`max_tokens: 600`。system は配列で、カタログのブロックに `cache_control: {type: "ephemeral"}`。`stop_reason` が `refusal` なら 422
+- Claude API：`fetch` で直接（SDK を入れない）。`POST https://api.anthropic.com/v1/messages`、`anthropic-version: 2023-06-01`、`stream: true`、モデルは `CLAUDE_MODEL`（既定 `claude-sonnet-5-5`）、`max_tokens: 1500`（思考が数えられる）。system は配列で、カタログのブロックに `cache_control: {type: "ephemeral"}`。`stop_reason` が `refusal` なら 422
 - 秘密：`ANTHROPIC_API_KEY` は `wrangler secret put`。ログに会話を残さない
 
 ### 8.5 プロンプトの契約（`worker/src/prompt.js`、純関数でテストできるように）

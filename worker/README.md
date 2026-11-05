@@ -45,7 +45,7 @@ npx wrangler deploy
 | --- | --- | --- |
 | `SITE_ORIGIN` | `https://enter.sheerarts.com` | カタログ（`${SITE_ORIGIN}/catalog.json`）を読むサイト。CORS でも自動で許す |
 | `ALLOWED_ORIGINS` | 本番、GitHub Pages、`http(s)://localhost:5173` | CORS で許す origin（カンマ区切り） |
-| `CLAUDE_MODEL` | `claude-opus-5-5` | 応答が遅ければ `claude-sonnet-5-5` |
+| `CLAUDE_MODEL` | `claude-sonnet-5-5` | 開発中はリーズナブルに。接客の質を上げたければ `claude-opus-5-5`（約 2 倍） |
 | `API_PATH` | `/api/recommend` | 受け付けるパス |
 
 ルートは `enter.sheerarts.com/api/*`（`wrangler.toml` の `routes`）。`enter.sheerarts.com` のサイト本体（静的ホスティング）は今のまま。サイトが別の origin（GitHub Pages など）にあるときは、生成時に `RECOMMEND_API=https://enter.sheerarts.com/api/recommend npm run generate` とすると、ページの `<meta name="recommend-api">` にその URL が入る。

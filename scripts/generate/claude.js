@@ -1,7 +1,8 @@
 // 生成時だけ Claude API を使う：不足している訳を埋める、小さな物語を下書きする。実行時には呼ばない
 import Anthropic from '@anthropic-ai/sdk';
 
-const MODEL = process.env.CLAUDE_MODEL || 'claude-opus-5-5';
+// 既定は Sonnet 5.5（作家の方針：開発中はリーズナブルなモデルから。翻訳 1 作品で数円）。質を上げたければ CLAUDE_MODEL=claude-opus-5-5
+const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5-5';
 const LANG_NAMES = { ja: '日本語', en: 'English', 'zh-Hans': '简体中文', 'zh-Hant': '繁體中文', ko: '한국어', fr: 'Français', de: 'Deutsch', es: 'Español', it: 'Italiano', pt: 'Português' };
 
 function client(apiKey) { return new Anthropic({ apiKey }); }

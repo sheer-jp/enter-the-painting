@@ -81,7 +81,7 @@ async function handle(req, env, ctx) {
   const turns = Array.isArray(catalog.turns) && catalog.turns.length === 2 ? catalog.turns : [2, 4];
   if (validateRequest(body, turns)) return json(400, { error: 'bad_request' }, cors);
 
-  const model = env.CLAUDE_MODEL || 'claude-opus-5-5';
+  const model = env.CLAUDE_MODEL || 'claude-sonnet-5-5';
   const headers = { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' };
   if (supportsFallbacks(model)) headers['anthropic-beta'] = FALLBACK_BETA;
   let up;
