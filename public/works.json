@@ -1,5 +1,16 @@
 [
   {
+    "id": "golden-path",
+    "title": {
+      "ja": "Golden Path",
+      "en": "Golden Path"
+    },
+    "size_cm": [
+      18,
+      14
+    ]
+  },
+  {
     "id": "harmoney",
     "title": {
       "ja": "Harmoney",
@@ -16,6 +27,50 @@
     "size_cm": [
       53,
       65.2
+    ]
+  },
+  {
+    "id": "instinct",
+    "title": {
+      "ja": "本能",
+      "en": "Instinct"
+    },
+    "size_cm": [
+      33.3,
+      24.2
+    ]
+  },
+  {
+    "id": "itadaki",
+    "title": {
+      "ja": "頂",
+      "en": "itadaki"
+    },
+    "size_cm": [
+      53,
+      45.5
+    ]
+  },
+  {
+    "id": "new-chapter",
+    "title": {
+      "ja": "New Chapter",
+      "en": "New Chapter"
+    },
+    "size_cm": [
+      18,
+      14
+    ]
+  },
+  {
+    "id": "the-flower-within",
+    "title": {
+      "ja": "内なる心に咲く花よ",
+      "en": "The Flower Within"
+    },
+    "size_cm": [
+      18,
+      14
     ]
   }
 ]

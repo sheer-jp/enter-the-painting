@@ -72,6 +72,45 @@
   ],
   "works": [
     {
+      "id": "golden-path",
+      "title": {
+        "ja": "Golden Path",
+        "en": "Golden Path"
+      },
+      "size_cm": [
+        18,
+        14
+      ],
+      "size_label": {
+        "ja": "F0号",
+        "en": "F0"
+      },
+      "year": 2026,
+      "availability": null,
+      "palette": [
+        "#df4f09",
+        "#db8f54",
+        "#e26c2e",
+        "#bd3709",
+        "#b56c33",
+        "#e7b78a"
+      ],
+      "axes": {
+        "warmth": 0.98,
+        "brightness": 0.71,
+        "energy": 0.54
+      },
+      "moods": {
+        "ja": []
+      },
+      "messages": {
+        "ja": []
+      },
+      "story": null,
+      "image": "works/golden-path/generated/painting_1024.jpg",
+      "url": "w/golden-path/"
+    },
+    {
       "id": "harmoney",
       "title": {
         "ja": "Harmoney",
@@ -238,6 +277,162 @@
       },
       "image": "works/harmoney/generated/painting_1024.jpg",
       "url": "w/harmoney/"
+    },
+    {
+      "id": "instinct",
+      "title": {
+        "ja": "本能",
+        "en": "Instinct"
+      },
+      "size_cm": [
+        33.3,
+        24.2
+      ],
+      "size_label": {
+        "ja": "F4号",
+        "en": "F4"
+      },
+      "year": 2026,
+      "availability": null,
+      "palette": [
+        "#575732",
+        "#276654",
+        "#894f3a",
+        "#7e8465",
+        "#bec88d",
+        "#a3b11c"
+      ],
+      "axes": {
+        "warmth": 0.76,
+        "brightness": 0.7,
+        "energy": 0.52
+      },
+      "moods": {
+        "ja": []
+      },
+      "messages": {
+        "ja": []
+      },
+      "story": null,
+      "image": "works/instinct/generated/painting_1024.jpg",
+      "url": "w/instinct/"
+    },
+    {
+      "id": "itadaki",
+      "title": {
+        "ja": "頂",
+        "en": "itadaki"
+      },
+      "size_cm": [
+        53,
+        45.5
+      ],
+      "size_label": {
+        "ja": "F10号",
+        "en": "F10"
+      },
+      "year": 2026,
+      "availability": null,
+      "palette": [
+        "#943a23",
+        "#9a5e46",
+        "#ad866c",
+        "#59433d",
+        "#b78b2a",
+        "#cdb6a1"
+      ],
+      "axes": {
+        "warmth": 0.97,
+        "brightness": 0.69,
+        "energy": 0.42
+      },
+      "moods": {
+        "ja": []
+      },
+      "messages": {
+        "ja": []
+      },
+      "story": null,
+      "image": "works/itadaki/generated/painting_1024.jpg",
+      "url": "w/itadaki/"
+    },
+    {
+      "id": "new-chapter",
+      "title": {
+        "ja": "New Chapter",
+        "en": "New Chapter"
+      },
+      "size_cm": [
+        18,
+        14
+      ],
+      "size_label": {
+        "ja": "F0号",
+        "en": "F0"
+      },
+      "year": 2026,
+      "availability": null,
+      "palette": [
+        "#b59440",
+        "#a57e0c",
+        "#c6ae72",
+        "#d0a509",
+        "#d7d0b6",
+        "#d5b642"
+      ],
+      "axes": {
+        "warmth": 1,
+        "brightness": 0.81,
+        "energy": 0.53
+      },
+      "moods": {
+        "ja": []
+      },
+      "messages": {
+        "ja": []
+      },
+      "story": null,
+      "image": "works/new-chapter/generated/painting_1024.jpg",
+      "url": "w/new-chapter/"
+    },
+    {
+      "id": "the-flower-within",
+      "title": {
+        "ja": "内なる心に咲く花よ",
+        "en": "The Flower Within"
+      },
+      "size_cm": [
+        18,
+        14
+      ],
+      "size_label": {
+        "ja": "F0号",
+        "en": "F0"
+      },
+      "year": 2026,
+      "availability": null,
+      "palette": [
+        "#36221e",
+        "#8c523d",
+        "#c59c5d",
+        "#563e79",
+        "#947795",
+        "#e2cb9b"
+      ],
+      "axes": {
+        "warmth": 0.76,
+        "brightness": 0.67,
+        "energy": 0.51
+      },
+      "moods": {
+        "ja": []
+      },
+      "messages": {
+        "ja": []
+      },
+      "story": null,
+      "image": "works/the-flower-within/generated/painting_1024.jpg",
+      "url": "w/the-flower-within/"
     }
   ]
 }

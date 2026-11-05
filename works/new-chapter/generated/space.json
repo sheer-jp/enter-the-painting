@@ -1,0 +1,181 @@
+{
+  "id": "new-chapter",
+  "title": {
+    "ja": "New Chapter",
+    "en": "New Chapter"
+  },
+  "size_cm": [
+    18,
+    14
+  ],
+  "aspect": 1.2731,
+  "year": 2026,
+  "painting": "painting_1024.jpg",
+  "painting_full": "painting_full.jpg",
+  "painting_blur": "painting_blur.jpg",
+  "source_px": [
+    1683,
+    1322
+  ],
+  "palette": [
+    "#b59440",
+    "#a57e0c",
+    "#c6ae72",
+    "#d0a509",
+    "#d7d0b6",
+    "#d5b642"
+  ],
+  "text_color": "#efece2",
+  "back_color": "#3f3416",
+  "bright_center": [
+    0.5016,
+    0.5587
+  ],
+  "flow": {
+    "texture": "flow.png",
+    "strength": 0.6,
+    "edge_density": 0.388
+  },
+  "relief": {
+    "texture": "relief.png"
+  },
+  "fluid": {
+    "vorticity": 0.7,
+    "speed": 0.65,
+    "quality": "high",
+    "restore": 0.014,
+    "drive": 0.3,
+    "tempo": 0.6,
+    "look": {
+      "relief": 0.5,
+      "gloss": 0.18,
+      "sharpness": 96,
+      "bloom": 0.04,
+      "grain": 0.02,
+      "vivid": 0.45
+    }
+  },
+  "space": {
+    "radius_m": 2.5,
+    "melt_distance_m": 1
+  },
+  "audio": {
+    "voice": null,
+    "ambient": "calm"
+  },
+  "messages": [],
+  "story": null,
+  "size_label": {
+    "ja": "F0号",
+    "en": "F0"
+  },
+  "rooms": [
+    {
+      "name": "studio-bedside",
+      "image": "room_studio-bedside.jpg",
+      "category": "studio",
+      "label": {
+        "ja": "ベッド脇",
+        "en": "Beside the bed"
+      },
+      "wall_width_cm": 188,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          1012,
+          409
+        ],
+        [
+          1108,
+          409
+        ],
+        [
+          1108,
+          484
+        ],
+        [
+          1012,
+          484
+        ]
+      ],
+      "px_per_cm": 5.333,
+      "confidence": "high",
+      "occlusion": false,
+      "compare": {
+        "ja": "このナイトテーブルの約 4 分の 1 の高さ。",
+        "en": "About a quarter the height of the nightstand."
+      },
+      "compare2": {
+        "ja": "このランプ（約 45 cm）の約 3 分の 1 の高さ。",
+        "en": "About one third the height of the lamp (about 45 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 1.9 m。座ったときの目の高さ（床から約 125 cm）に掛けています。",
+        "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "nightstand"
+    },
+    {
+      "name": "studio-desk",
+      "image": "room_studio-desk.jpg",
+      "category": "studio",
+      "label": {
+        "ja": "机の上",
+        "en": "Above the desk"
+      },
+      "wall_width_cm": 167,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          724,
+          476
+        ],
+        [
+          836,
+          476
+        ],
+        [
+          836,
+          564
+        ],
+        [
+          724,
+          564
+        ]
+      ],
+      "px_per_cm": 6.273,
+      "confidence": "mid",
+      "occlusion": false,
+      "compare": {
+        "ja": "この机の約 0.2 倍の高さ。",
+        "en": "About 0.2 times the height of the desk."
+      },
+      "compare2": {
+        "ja": "このデスクランプ（約 40 cm）の約 3 分の 1 の高さ。",
+        "en": "About one third the height of the desk lamp (about 40 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 1.7 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 100 cm）。",
+        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 100 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "desk"
+    }
+  ],
+  "availability": null,
+  "contact": null,
+  "generated_at": "2026-11-05T16:36:05.224Z"
+}

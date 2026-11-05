@@ -1,0 +1,23 @@
+{
+  "id": "new-chapter",
+  "title": {
+    "ja": "New Chapter",
+    "en": "New Chapter"
+  },
+  "year": 2026,
+  "size_cm": [
+    18,
+    14
+  ],
+  "size_label": {
+    "ja": "F0号",
+    "en": "F0"
+  },
+  "medium": {
+    "ja": "シナベニヤにミクストメディア",
+    "en": "Mixed media on shina plywood"
+  },
+  "messages": [],
+  "messages_en": [],
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。作家のメッセージと音声は未登録。"
+}

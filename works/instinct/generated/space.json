@@ -1,0 +1,285 @@
+{
+  "id": "instinct",
+  "title": {
+    "ja": "本能",
+    "en": "Instinct"
+  },
+  "size_cm": [
+    33.3,
+    24.2
+  ],
+  "aspect": 1.3774,
+  "year": 2026,
+  "painting": "painting_1024.jpg",
+  "painting_full": "painting_full.jpg",
+  "painting_blur": "painting_blur.jpg",
+  "source_px": [
+    5033,
+    3654
+  ],
+  "palette": [
+    "#575732",
+    "#276654",
+    "#894f3a",
+    "#7e8465",
+    "#bec88d",
+    "#a3b11c"
+  ],
+  "text_color": "#e5e9d1",
+  "back_color": "#1e1e12",
+  "bright_center": [
+    0.5356,
+    0.6791
+  ],
+  "flow": {
+    "texture": "flow.png",
+    "strength": 0.6,
+    "edge_density": 0.365
+  },
+  "relief": {
+    "texture": "relief.png"
+  },
+  "fluid": {
+    "vorticity": 0.68,
+    "speed": 0.63,
+    "quality": "high",
+    "restore": 0.014,
+    "drive": 0.3,
+    "tempo": 0.6,
+    "look": {
+      "relief": 0.5,
+      "gloss": 0.18,
+      "sharpness": 96,
+      "bloom": 0.04,
+      "grain": 0.02,
+      "vivid": 0.45
+    }
+  },
+  "space": {
+    "radius_m": 2.5,
+    "melt_distance_m": 1
+  },
+  "audio": {
+    "voice": null,
+    "ambient": "calm"
+  },
+  "messages": [],
+  "story": null,
+  "size_label": {
+    "ja": "F4号",
+    "en": "F4"
+  },
+  "rooms": [
+    {
+      "name": "entrance-house",
+      "image": "room_entrance-house.jpg",
+      "category": "house",
+      "label": {
+        "ja": "玄関",
+        "en": "Entrance hall"
+      },
+      "wall_width_cm": 229,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          668,
+          231
+        ],
+        [
+          782,
+          231
+        ],
+        [
+          782,
+          313
+        ],
+        [
+          668,
+          313
+        ]
+      ],
+      "px_per_cm": 3.4,
+      "confidence": "high",
+      "occlusion": false,
+      "compare": {
+        "ja": "このドアの約 0.1 倍の高さ。",
+        "en": "About 0.1 times the height of the door."
+      },
+      "compare2": {
+        "ja": "この玄関の天井（約 230 cm）の約 0.1 倍の高さ。",
+        "en": "About 0.1 times the height of the ceiling (about 230 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 2.3 m。目の高さ（床から約 145 cm）に掛けています。",
+        "en": "The wall is about 2.3 m wide. The painting hangs at eye level (about 145 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "door_interior"
+    },
+    {
+      "name": "living-apartment",
+      "image": "room_living-apartment.jpg",
+      "category": "house",
+      "label": {
+        "ja": "ソファの向かいの壁",
+        "en": "The wall facing the sofa"
+      },
+      "wall_width_cm": 323,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          740,
+          301
+        ],
+        [
+          860,
+          301
+        ],
+        [
+          860,
+          389
+        ],
+        [
+          740,
+          389
+        ]
+      ],
+      "px_per_cm": 3.625,
+      "confidence": "high",
+      "occlusion": false,
+      "compare": {
+        "ja": "このドアの約 0.1 倍の高さ。",
+        "en": "About 0.1 times the height of the door."
+      },
+      "compare2": {
+        "ja": "この部屋の天井（約 240 cm）の約 0.1 倍の高さ。",
+        "en": "About 0.1 times the height of the ceiling (about 240 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 3.2 m。座ったときの目の高さ（床から約 140 cm）に掛けています。",
+        "en": "The wall is about 3.2 m wide. The painting hangs at seated eye level (about 140 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "door_interior"
+    },
+    {
+      "name": "studio-bedside",
+      "image": "room_studio-bedside.jpg",
+      "category": "studio",
+      "label": {
+        "ja": "ベッド脇",
+        "en": "Beside the bed"
+      },
+      "wall_width_cm": 188,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          971,
+          382
+        ],
+        [
+          1149,
+          382
+        ],
+        [
+          1149,
+          511
+        ],
+        [
+          971,
+          511
+        ]
+      ],
+      "px_per_cm": 5.333,
+      "confidence": "high",
+      "occlusion": false,
+      "compare": {
+        "ja": "このナイトテーブルの約 0.4 倍の高さ。",
+        "en": "About 0.4 times the height of the nightstand."
+      },
+      "compare2": {
+        "ja": "このランプ（約 45 cm）の約半分の高さ。",
+        "en": "About half the height of the lamp (about 45 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 1.9 m。座ったときの目の高さ（床から約 125 cm）に掛けています。",
+        "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "nightstand"
+    },
+    {
+      "name": "studio-desk",
+      "image": "room_studio-desk.jpg",
+      "category": "studio",
+      "label": {
+        "ja": "机の上",
+        "en": "Above the desk"
+      },
+      "wall_width_cm": 167,
+      "image_px": [
+        1586,
+        992
+      ],
+      "quad_px": [
+        [
+          676,
+          412
+        ],
+        [
+          884,
+          412
+        ],
+        [
+          884,
+          564
+        ],
+        [
+          676,
+          564
+        ]
+      ],
+      "px_per_cm": 6.273,
+      "confidence": "mid",
+      "occlusion": false,
+      "compare": {
+        "ja": "この机の約 3 分の 1 の高さ。",
+        "en": "About one third the height of the desk."
+      },
+      "compare2": {
+        "ja": "このデスクランプ（約 40 cm）の約 3 分の 2 の高さ。",
+        "en": "About two thirds the height of the desk lamp (about 40 cm)."
+      },
+      "about": {
+        "ja": "壁の幅は約 1.7 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 105 cm）。",
+        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 105 cm from the floor)."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+      },
+      "primary_ref": "desk"
+    }
+  ],
+  "availability": null,
+  "contact": null,
+  "generated_at": "2026-11-05T16:36:01.921Z"
+}
