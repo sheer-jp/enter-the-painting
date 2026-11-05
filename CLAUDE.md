@@ -65,7 +65,7 @@ npm run smoke                # ビルド済みの dist を Playwright で確認�
 npm run typecheck            # tsc
 node tests/longrun.mjs <dir> # 流体の長時間の構図の残り方をスクリーンショットで見る
 BASE_URL=https://... npm run generate   # QR と OGP の URL（Actions では vars.BASE_URL）
-ANTHROPIC_API_KEY=... npm run generate  # 翻訳と小さな物語の下書きも生成（既定モデルは claude-sonnet-5-5。CLAUDE_MODEL で変更）
+ANTHROPIC_API_KEY=... npm run generate  # 翻訳と小さな物語の下書きも生成（既定モデルは claude-sonnet-5-5。CLAUDE_MODEL で変更）。クラウドのセッションでは ANTHROPIC_API_KEY が空にされるので、環境変数 ENTER_CLAUDE_API_KEY に入れる（同じ扱い）
 ```
 
 生成物は `works/<id>/generated/`（コミットする）、ページは `w/<id>/index.html` と `index.html`（生成物。コミットしない。Actions が作る）。

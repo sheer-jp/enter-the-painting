@@ -9,6 +9,9 @@ import { translateAll } from './translate.js';
 import { workPage, galleryPage, cardSvg } from './pages.js';
 import { compositeRooms } from './rooms.js';
 
+// Claude API の鍵：ANTHROPIC_API_KEY か、別名 ENTER_CLAUDE_API_KEY（クラウドのセッションでは ANTHROPIC_API_KEY がセッション側に取られて空になることがある）
+if (!process.env.ANTHROPIC_API_KEY && process.env.ENTER_CLAUDE_API_KEY) process.env.ANTHROPIC_API_KEY = process.env.ENTER_CLAUDE_API_KEY;
+
 const ROOT = resolve(new URL('../..', import.meta.url).pathname);
 const BASE_URL = (process.env.BASE_URL || 'https://sheer-jp.github.io/enter-the-painting').replace(/\/$/, '');
 const FLOW_W = 256;

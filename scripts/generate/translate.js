@@ -31,7 +31,7 @@ export async function translateAll(texts, cachePath, { apiKey = process.env.ANTH
     for (const r of results) cache[r.k][r.lang] = r.text;
   } else if (missing.length) {
     const langs = [...new Set(missing.map((m) => m.lang))];
-    console.warn(`  翻訳をスキップ（ANTHROPIC_API_KEY なし）：${missing.length} 件 [${langs.join(', ')}]。generated/translations.json を手で埋めてもよい`);
+    console.warn(`  翻訳をスキップ（ANTHROPIC_API_KEY も ENTER_CLAUDE_API_KEY も無い）：${missing.length} 件 [${langs.join(', ')}]。generated/translations.json を手で埋めてもよい`);
   }
   saveCache(cachePath, cache);
   return (ja) => {
