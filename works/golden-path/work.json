@@ -18,18 +18,18 @@
     "en": "Mixed media on shina plywood"
   },
   "messages": [
-    "デジタルっぽい感じを、アナログで描く。",
-    "そこに、面白さがある。",
-    "自分の中の、迷路のようなところから、",
-    "「この道を行く」と、自分で決める。"
+    "迷っているとき、道はひとつじゃないように見える。",
+    "でも、自分で「この道を行く」と決めた瞬間に、光る道になる。",
+    "決めるのは、いつも自分。",
+    "その一歩を、この絵と。"
   ],
   "messages_en": [
-    "A digital feel, painted by hand.",
-    "That's where the fun is.",
-    "From the maze-like place inside me,",
-    "I decide for myself: \"This is my path.\""
+    "When you're lost, the paths all look alike.",
+    "But the moment you decide, this is the way, it begins to shine.",
+    "You are always the one who decides.",
+    "Take that first step with this painting."
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める 11-06 深夜：絵の説明より「込めた思い」を中心に書き直した（作家「絵自体より、絵に込められた思いを重視」）。作家が直す。",
   "moods": {
     "ja": [
       "自分で決める道",

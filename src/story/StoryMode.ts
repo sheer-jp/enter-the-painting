@@ -121,7 +121,7 @@ export class StoryMode {
         this.dots = Particles.flat(this.ctx.relief, space.palette, this.look.dots, hashSeed(space.id));
         if (this.dots) this.scene.add(this.dots.mesh);
       }
-      renderer.setClearColor(0x000000, 1);
+      renderer.setClearColor(0xf6f4ef, 1);   // 紙白（白の中に絵が浮く。11-06 作家）
     } else {
       canvas.remove();
       const img = document.createElement('img');

@@ -70,23 +70,23 @@
   "messages": [
     {
       "at": 0,
-      "ja": "デジタルっぽい感じを、アナログで描く。",
-      "en": "A digital feel, painted by hand."
+      "ja": "迷っているとき、道はひとつじゃないように見える。",
+      "en": "When you're lost, the paths all look alike."
     },
     {
-      "at": 7.8,
-      "ja": "そこに、面白さがある。",
-      "en": "That's where the fun is."
+      "at": 9,
+      "ja": "でも、自分で「この道を行く」と決めた瞬間に、光る道になる。",
+      "en": "But the moment you decide, this is the way, it begins to shine."
     },
     {
-      "at": 14.8,
-      "ja": "自分の中の、迷路のようなところから、",
-      "en": "From the maze-like place inside me,"
+      "at": 19.3,
+      "ja": "決めるのは、いつも自分。",
+      "en": "You are always the one who decides."
     },
     {
-      "at": 22.3,
-      "ja": "「この道を行く」と、自分で決める。",
-      "en": "I decide for myself: \"This is my path.\""
+      "at": 26.3,
+      "ja": "その一歩を、この絵と。",
+      "en": "Take that first step with this painting."
     }
   ],
   "story": null,
@@ -202,5 +202,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T12:22:24.775Z"
+  "generated_at": "2026-11-06T13:13:56.375Z"
 }

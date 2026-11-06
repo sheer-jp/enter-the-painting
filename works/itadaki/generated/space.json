@@ -78,28 +78,23 @@
   "messages": [
     {
       "at": 0,
-      "ja": "とても強気な一枚。",
-      "en": "A very bold piece."
+      "ja": "もっと上へ、もっと高く。",
+      "en": "Higher, and higher still."
     },
     {
       "at": 7,
-      "ja": "火を思わせる赤と、右上には太陽のような赤。",
-      "en": "A red like fire, and in the upper right, a red like the sun."
+      "ja": "頂に行くぞ、という気持ちを、火のような赤に込めた。",
+      "en": "I put the feeling of heading for the summit into a fiery red."
     },
     {
-      "at": 15.3,
-      "ja": "20 色以上を、重ね重ねて描いた。",
-      "en": "I layered over twenty colors, again and again."
+      "at": 16.3,
+      "ja": "うまくいかない日も、エネルギーは消えていない。",
+      "en": "Even on the days it doesn't go well, the energy hasn't gone anywhere."
     },
     {
-      "at": 22.5,
-      "ja": "エネルギーが渦巻いて、もっともっと上へ。",
-      "en": "Energy swirls, rising higher and higher."
-    },
-    {
-      "at": 30.5,
-      "ja": "頂に行くぞ。見るだけで、パワーが湧いてくる。",
-      "en": "I'm going to the summit. Just looking gives you power."
+      "at": 25,
+      "ja": "見るだけで、パワーが湧いてきますように。",
+      "en": "May it give you power just by looking."
     }
   ],
   "story": null,
@@ -319,5 +314,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T12:40:34.970Z"
+  "generated_at": "2026-11-06T13:13:58.939Z"
 }

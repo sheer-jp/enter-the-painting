@@ -660,6 +660,11 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     card.append(h('h2', 'cg-card-head', t('cg_card_head', lang)));
     // キャンバス：表は絵、裏は紙白の面。回転は CSS（.cg-canvas の animation）
     const stageEl = h('div', 'cg-stage');
+    // 絵をタップしても入れる（11-06 作家）。主ボタンと同じ流れ。ホバーで手の形に
+    stageEl.setAttribute('role', 'button'); stageEl.setAttribute('tabindex', '0'); stageEl.setAttribute('aria-label', '絵の世界をのぞく');
+    stageEl.style.cursor = 'pointer';
+    stageEl.addEventListener('click', () => { void enterHere(w, false); });
+    stageEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); void enterHere(w, false); } });
     const glow = h('i', 'cg-glow');
     glow.setAttribute('aria-hidden', 'true');
     const canvas = h('div', 'cg-canvas');

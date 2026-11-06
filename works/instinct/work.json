@@ -18,18 +18,18 @@
     "en": "Mixed media on shina plywood"
   },
   "messages": [
-    "何かをモチーフにしたのではない。",
-    "本能的に、生み出された一枚。",
-    "ただただ、いろいろな感情が揺らめいている。",
-    "私自身も、好きな色合い。"
+    "何かを描こうとしたわけじゃない。",
+    "いろんな感情が揺らめくまま、本能で生まれた絵。",
+    "言葉にならない気持ちがあってもいい。",
+    "そのまま、ここにいていい。"
   ],
   "messages_en": [
-    "It is not based on any motif.",
-    "It was born from instinct.",
-    "All sorts of feelings, simply flickering.",
-    "These are colors I love, too."
+    "I wasn't trying to paint anything in particular.",
+    "It was born by instinct, with feelings flickering as they were.",
+    "It's all right to have feelings you can't put into words.",
+    "You can stay here, just as you are."
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める 11-06 深夜：絵の説明より「込めた思い」を中心に書き直した（作家「絵自体より、絵に込められた思いを重視」）。作家が直す。",
   "moods": {
     "ja": [
       "本能的に生まれた",

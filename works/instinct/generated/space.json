@@ -70,23 +70,23 @@
   "messages": [
     {
       "at": 0,
-      "ja": "何かをモチーフにしたのではない。",
-      "en": "It is not based on any motif."
+      "ja": "何かを描こうとしたわけじゃない。",
+      "en": "I wasn't trying to paint anything in particular."
     },
     {
       "at": 7,
-      "ja": "本能的に、生み出された一枚。",
-      "en": "It was born from instinct."
+      "ja": "いろんな感情が揺らめくまま、本能で生まれた絵。",
+      "en": "It was born by instinct, with feelings flickering as they were."
     },
     {
-      "at": 14,
-      "ja": "ただただ、いろいろな感情が揺らめいている。",
-      "en": "All sorts of feelings, simply flickering."
+      "at": 15.8,
+      "ja": "言葉にならない気持ちがあってもいい。",
+      "en": "It's all right to have feelings you can't put into words."
     },
     {
-      "at": 22.3,
-      "ja": "私自身も、好きな色合い。",
-      "en": "These are colors I love, too."
+      "at": 23.3,
+      "ja": "そのまま、ここにいていい。",
+      "en": "You can stay here, just as you are."
     }
   ],
   "story": null,
@@ -306,5 +306,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T12:22:26.376Z"
+  "generated_at": "2026-11-06T13:13:57.979Z"
 }

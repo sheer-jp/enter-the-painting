@@ -70,28 +70,23 @@
   "messages": [
     {
       "at": 0,
-      "ja": "小さいけれど、重さのある一枚。",
-      "en": "Small, but it carries weight."
+      "ja": "花は、美しいだけじゃない。",
+      "en": "A flower isn't only beautiful."
     },
     {
       "at": 7,
-      "ja": "滲み出てくる色と、和風の気配。",
-      "en": "Colors seeping through, with a Japanese feel."
+      "ja": "厳しい場所でも、咲ききる強さを持っている。",
+      "en": "It has the strength to bloom fully, even in harsh places."
     },
     {
-      "at": 14,
-      "ja": "花は、美しいだけではない。",
-      "en": "A flower is not only beautiful."
+      "at": 15.3,
+      "ja": "あなたの中にも、そういう花がある。",
+      "en": "There is a flower like that inside you too."
     },
     {
-      "at": 21,
-      "ja": "過酷な環境の中でも、咲き誇る強さがある。",
-      "en": "It has the strength to bloom even in harsh conditions."
-    },
-    {
-      "at": 29,
-      "ja": "私自身も、とても好きな作品。",
-      "en": "It is one of my own favorites."
+      "at": 22.5,
+      "ja": "静かな夜に、そのことを思い出してほしい。",
+      "en": "On a quiet night, I hope this reminds you of it."
     }
   ],
   "story": null,
@@ -207,5 +202,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T12:22:28.470Z"
+  "generated_at": "2026-11-06T13:13:59.878Z"
 }

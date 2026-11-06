@@ -18,18 +18,18 @@
     "en": "Mixed media on shina plywood"
   },
   "messages": [
-    "新しい表現に、挑戦した一枚。",
-    "ポコポコした、半立体のようなドット。",
-    "やっぱり可愛くて、とっても元気が出る黄色。",
-    "新しい扉、新しい章を、楽しんでいこう。"
+    "新しいことに踏み出すとき、ちょっと怖くて、でもわくわくする。",
+    "その気持ちを、元気の出る黄色にした。",
+    "新しい扉を開けるあなたの背中を、そっと押せたらいい。",
+    "新しい章を、いっしょに楽しもう。"
   ],
   "messages_en": [
-    "A piece where I tried a new way of painting.",
-    "Bubbly dots that rise up, almost three-dimensional.",
-    "It is cute, and this yellow really lifts you up.",
-    "A new door, a new chapter. Let's enjoy it."
+    "Stepping into something new is a little scary, and exciting.",
+    "I turned that feeling into a yellow that gives you energy.",
+    "I hope it gently pushes you as you open a new door.",
+    "Let's enjoy the new chapter together."
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める 11-06 夜：180 秒で構図が溶けるため speed/drive を {'speed': 0.7, 'drive': 0.4} → {'speed': 0.55, 'drive': 0.3} に下げた（Fable）。",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める 11-06 夜：180 秒で構図が溶けるため speed/drive を {'speed': 0.7, 'drive': 0.4} → {'speed': 0.55, 'drive': 0.3} に下げた（Fable）。 11-06 深夜：絵の説明より「込めた思い」を中心に書き直した（作家「絵自体より、絵に込められた思いを重視」）。作家が直す。",
   "moods": {
     "ja": [
       "新しい章",
