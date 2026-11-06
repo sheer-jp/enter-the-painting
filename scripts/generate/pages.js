@@ -97,9 +97,10 @@ ${FONTS}
 function readConfig() {
   const fallback = {
     title: { ja: 'SHEER ギャラリー', en: 'SHEER Gallery' },
-    greeting: { ja: ['いらっしゃいませ。', '今日は、どんな絵をお探しですか？'], en: ['Welcome.', 'What kind of painting are you looking for today?'] },
+    greeting: { ja: ['ようこそ、SHEER のギャラリーへ。', '今日は、どんな絵を探してる？'], en: ["Welcome to SHEER's gallery.", 'What kind of painting are you looking for today?'] },
     openers: { ja: ['頑張る活力がほしい', '寂しい夜によりそってほしい', '明るい気持ちになれる絵を'] },
     persona: { name: { ja: '', en: '' }, intro_line: { ja: '', en: '' } },
+    present_line: { ja: 'これ、どうかな。', en: 'How about this one?' },
   };
   try { return { ...fallback, ...JSON.parse(readFileSync(new URL('../../recommend/config.json', import.meta.url), 'utf8')) }; } catch { return fallback; }
 }
@@ -109,11 +110,11 @@ const jaEn = (ja, en) => `<span lang="ja" data-lang="ja">${esc(ja)}</span>${en ?
 
 // キャラクターの表情 1 枚（<picture>）。ファイル名は固定：作家が差し替える（scripts/concierge-assets.mjs が <表情>-full / -bust を作る）
 // 横向き（スマホの横、PC の幅 900px 以上）は全身（full）を縦いっぱいに、それ以外は上半身（bust）。選ぶのは media query（JS ではない）
-// WebP を先に、PNG を fallback に。画像は 2 組（public/concierge/artist/ と cat/）。HTML は既定の artist を書き、?chara=cat のときは page.ts が差し替える
+// WebP を先に、PNG を fallback に。画像は public/concierge/artist/（女の子に確定。11-06 作家）
 // src/concierge/index.ts の faceEl() と同じ形にする
 export const FULL_MQ = '(orientation: landscape) and (max-height: 500px), (orientation: landscape) and (min-width: 900px)';
-export function facePicture(face, prefix, { on = false, priority = false, chara = 'artist' } = {}) {
-  const b = `${prefix}concierge/${chara}/${face}`;
+export function facePicture(face, prefix, { on = false, priority = false } = {}) {
+  const b = `${prefix}concierge/artist/${face}`;
   const set = (v, ext) => `${b}-${v}.${ext} 1x, ${b}-${v}@2x.${ext} 2x`;
   return `<picture class="cg-face${on ? ' is-on' : ''}" data-face="${face}"><source media="${FULL_MQ}" type="image/webp" srcset="${set('full', 'webp')}"><source media="${FULL_MQ}" srcset="${set('full', 'png')}"><source type="image/webp" srcset="${set('bust', 'webp')}"><img src="${b}-bust.png" srcset="${set('bust', 'png')}" width="512" height="412" alt=""${priority ? ' fetchpriority="high"' : ' loading="lazy"'}></picture>`;
 }
@@ -131,8 +132,12 @@ export function galleryPage({ works, baseUrl }) {
   // 最初の文は 0.4 秒ずつ間を置いて現れる（CSS の animation-delay）
   const greeting = lines.map(([ja, en], i) => `<p class="cg-line cg-ai cg-greet" style="--d:${(0.3 + i * 0.4).toFixed(1)}s">${jaEn(ja, en)}</p>`).join('\n        ');
   const openers = (cfg.openers?.ja || []).slice(0, 3).map((ja, i) =>
-    `<button type="button" class="cg-opt" data-opener-index="${i}">${jaEn(ja, cfg.openers?.en?.[i])}</button>`).join('\n          ');
+    `<button type="button" class="cg-opt" data-opener-index="${i}">${jaEn(ja, cfg.openers?.en?.[i])}</button>`).join('\n          ')
+    // 4 つ目：自分のことばで書く（押すと入力欄が出る。11-06 作家「最初の画面はボタンだけ」）。data-opener-index="write" は、
+    // JS を読み込む前に押されたとき page.ts が預かって読み込み後に押し直すため（選択肢と同じ扱い）
+    + `\n          <button type="button" class="cg-opt cg-write" data-opener-index="write">${jaEn('自分のことばで書く', 'Write in my own words')}</button>`;
   const host = name.ja ? `<figcaption class="cg-name">${jaEn(name.ja, name.en)}</figcaption>` : '';
+  const present = cfg.present_line?.ja ? cfg.present_line : { ja: 'これ、どうかな。', en: 'How about this one?' };
   return `<!doctype html>
 <html lang="ja">
 <head>
@@ -168,7 +173,13 @@ ${FONTS}
         </div>
     </div>
   </section>
-  <form class="cg-form" action="#concierge"><input name="q" type="text" maxlength="600" autocomplete="off" enterkeyhint="send" placeholder="こんな気分のときに、こうしたい" aria-label="こんな気分のときに、こうしたい" data-i18n-ph="cg_placeholder"><button type="submit" data-i18n="rec_send">送る</button></form>
+  <form class="cg-form" action="#concierge" hidden><input name="q" type="text" maxlength="600" autocomplete="off" enterkeyhint="send" placeholder="こんな気分のときに、こうしたい" aria-label="こんな気分のときに、こうしたい" data-i18n-ph="cg_placeholder"><button type="submit" data-i18n="rec_send">送る</button></form>
+  <section class="cg2" tabindex="-1" aria-label="今日のあなたへの 1 点" hidden>
+    <div class="cg2-in">
+      <div class="cg2-host" aria-hidden="true"></div>
+      <p class="cg2-line">${jaEn(present.ja, present.en)}</p>
+    </div>
+  </section>
 </main>
 <script type="module" src="src/page.ts"></script>
 </body>

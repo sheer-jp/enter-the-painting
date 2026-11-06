@@ -3,6 +3,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { checkPassphrase, retryableStatus, fetchUpstream, onRequestPost } from '../functions/api/recommend.js';
 import { onRequestGet } from '../functions/api/recommend/config.js';
 import { glowColor } from '../src/concierge/index';
+import { galleryPage } from '../scripts/generate/pages.js';
+import { nextStage, stageMs, presentSchedule, STAGE_MS, FAST_MS, type Stage } from '../src/concierge/stages';
 
 afterEach(() => { vi.restoreAllMocks(); });
 
@@ -96,5 +98,64 @@ describe('glowColor（ピカーンの光の色）', () => {
     expect(glowColor('#1d2b3a')).toMatch(/80%\)$/);
     expect(glowColor(undefined)).toMatch(/^hsl\(/);
     expect(glowColor('#ffffff')).toBe('hsl(0 0% 100%)');
+  });
+});
+
+describe('3 段の状態機械（docs/ENTRANCE.md 3.5：読ませる → 考えている → C2）', () => {
+  it('おすすめが決まると read → thinking → sink → present と進む', () => {
+    let s: Stage = 'talk';
+    const seen: Stage[] = [];
+    s = nextStage(s, 'recommend');
+    while (s !== 'present') { seen.push(s); s = nextStage(s, 'tick'); }
+    expect(seen).toEqual(['read', 'thinking', 'sink']);
+    expect(nextStage('present', 'tick')).toBe('present');   // C2 は時間では進まない
+  });
+  it('時間：読ませる 1.6 秒、考えている 1.4 秒（ルールだけの版は 1.0 秒）、沈む 0.5 秒', () => {
+    expect(STAGE_MS).toEqual({ read: 1600, thinking: 1400, thinkingRules: 1000, sink: 500 });
+    expect(stageMs('read', { rules: false })).toBe(1600);
+    expect(stageMs('thinking', { rules: false })).toBe(1400);
+    expect(stageMs('thinking', { rules: true })).toBe(1000);
+    expect(stageMs('sink', { rules: true })).toBe(500);
+    expect(stageMs('present', { rules: false })).toBe(0);
+    expect(stageMs('talk', { rules: false, fast: true })).toBe(0);
+  });
+  it('予定：AI の版は 3.5 秒、ルールだけの版は 3.1 秒で C2。テスト用の fast は各段 100ms', () => {
+    expect(presentSchedule({ rules: false })).toEqual([
+      { stage: 'read', at: 0 }, { stage: 'thinking', at: 1600 }, { stage: 'sink', at: 3000 }, { stage: 'present', at: 3500 },
+    ]);
+    expect(presentSchedule({ rules: true }).at(-1)).toEqual({ stage: 'present', at: 3100 });
+    expect(presentSchedule({ rules: false, fast: true }).map((x) => x.at)).toEqual([0, FAST_MS, 2 * FAST_MS, 3 * FAST_MS]);
+  });
+  it('会話に戻る → もう一度見る、もう一度話すはどこからでも最初へ', () => {
+    expect(nextStage('present', 'close')).toBe('back');
+    expect(nextStage('back', 'reopen')).toBe('present');
+    expect(nextStage('back', 'recommend')).toBe('read');   // 戻ったあと AI が新しく提案したら、また 3 段
+    for (const s of ['read', 'thinking', 'sink', 'present', 'back'] as Stage[]) expect(nextStage(s, 'again')).toBe('talk');
+  });
+  it('決まっていない組み合わせは動かない', () => {
+    expect(nextStage('talk', 'close')).toBe('talk');
+    expect(nextStage('talk', 'reopen')).toBe('talk');
+    expect(nextStage('read', 'close')).toBe('read');
+    expect(nextStage('present', 'recommend')).toBe('present');   // C2 の中の差し替えは 3 段を通らない
+    expect(nextStage('talk', 'tick')).toBe('talk');
+  });
+});
+
+describe('受付の最初の画面はボタンだけ（11-06 作家）', () => {
+  const html = galleryPage({ works: [{ id: 'harmoney' }], baseUrl: 'https://example.com' });
+  it('入力欄は最初は隠し、3 つの選択肢の下に 4 つ目「自分のことばで書く」', () => {
+    expect(html).toMatch(/<form class="cg-form"[^>]*\shidden>/);
+    const opts = [...html.matchAll(/<button type="button" class="cg-opt[^"]*" data-opener-index="([^"]+)"/g)].map((m) => m[1]);
+    expect(opts).toEqual(['0', '1', '2', 'write']);
+    expect(html).toContain('class="cg-opt cg-write"');
+    expect(html).toContain('自分のことばで書く');
+    expect(html).toContain('Write in my own words');
+    expect(html).toContain('近いものがあれば、選んでください');
+  });
+  it('おすすめの画面 C2 の枠とひとこと（present_line）が HTML にある', () => {
+    expect(html).toMatch(/<section class="cg2"[^>]*hidden>/);
+    expect(html).toContain('これ、どうかな。');
+    expect(html).toContain('今日は、どんな絵を探してる？');
+    expect(html).toContain('How about this one?');
   });
 });

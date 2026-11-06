@@ -132,9 +132,13 @@ body.paper {
 
 /* 受付（C）：上にキャラクター、下に会話、入力欄は下に固定。高さは 100dvh（キーボードが出たら visualViewport の高さ） */
 body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
+/* キャラクターの高さ（縦画面）。迎えの状態は大きく 44%、会話の状態（.is-talk）は 20%、キーボードが出たら 16%。0.4 秒で縮む */
+@property --cg-host { syntax: '<percentage>'; inherits: true; initial-value: 44%; }
 .cg {
+  --cg-host: 44%;
+  transition: --cg-host .4s ease;
   position: fixed; left: 0; right: 0; top: var(--cg-top, 0px); height: var(--cg-h, 100dvh);
-  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto var(--cg-host, 32%) minmax(0, 1fr) auto;
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto var(--cg-host, 44%) minmax(0, 1fr) auto;
   grid-template-areas: "top" "host" "talk" "form";
   max-width: 720px; margin: 0 auto;
   padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
@@ -156,17 +160,15 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-face img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; user-select: none; -webkit-user-drag: none; }
 @keyframes cg-breathe { 0%, 100% { transform: translateY(2px) scale(1); } 50% { transform: translateY(-2px) scale(1.012); } }
 .cg-name { font-size: 11px; letter-spacing: .2em; color: var(--ink-2); padding-top: 4px; }
-.cg-talk { grid-area: talk; min-height: 0; display: flex; flex-direction: column; }
+.cg-talk { grid-area: talk; min-height: 0; height: 100%; display: flex; flex-direction: column; }   /* 行いっぱいに（stretch だけでは下に隙間が残った） */
 .cg-thread { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding: 10px 2px 10px; scrollbar-width: thin; }
 .cg-thread > :first-child { margin-top: auto; }
-.cg-line { margin: 0; max-width: min(90%, 30em); padding: 8px 14px; border-radius: 16px; font-size: 15px; line-height: 1.7; letter-spacing: .03em; white-space: pre-line; overflow-wrap: anywhere; }
+.cg-line { margin: 0; max-width: min(92%, 30em); padding: 8px 14px; border-radius: 16px; font-size: 16px; line-height: 1.75; letter-spacing: .03em; white-space: pre-line; overflow-wrap: anywhere; }
 .cg-ai { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-top-left-radius: 4px; font-family: var(--serif); color: var(--ink); }
 .cg-me { align-self: flex-end; background: var(--bg-2); border-top-right-radius: 4px; font-family: var(--sans); font-weight: 400; color: var(--ink); }
 .cg-greet { animation: cg-in .6s ease both; animation-delay: var(--d, 0s); }
 /* 選択肢は吹き出しと見分けがつくボタンに（11-06 作家「チャットと勘違いする」）：左寄せ、白地、角は小さく、右端に › */
 .cg-openers, .cg-choices { display: flex; flex-direction: column; align-items: stretch; gap: 6px; margin: 2px 0 4px 8px; }
-/* 背の低い画面（iPhone SE など）はキャラクターを少し小さくして会話を広く */
-@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 27%; } .cg.is-kb { --cg-host: 22%; } }
 .cg-openers-cap { font: 400 11px/1.6 var(--sans); letter-spacing: .14em; color: var(--ink-2); margin-bottom: 2px; }
 .cg-opt { appearance: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 6px 12px 6px 14px; border: 1px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .06em; line-height: 1.5; text-align: left; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,.06); transition: background .2s, transform .15s; }
 .cg-opt::after { content: '›'; font-family: var(--sans); font-size: 18px; line-height: 1; color: var(--ink-2); flex: none; }
@@ -180,14 +182,17 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-form button:disabled { opacity: .4; cursor: default; }
 .cg [hidden] { display: none !important; }
 @keyframes cg-in { from { opacity: 0; transform: translateY(6px); } }
-/* キーボードが出ている間と、おすすめのカードが出たあとは、キャラクターを小さくして会話を広く */
-.cg.is-kb { --cg-host: 26%; }   /* キーボードが出ても縮みすぎない（11-06 作家） */
-.cg.has-card { --cg-host: 22%; }
+/* 会話が始まったら（最初の選択か「自分のことばで書く」）キャラクターを小さくして文字を読みやすく。キーボードが出たらさらに小さく（11-06 作家）
+   おすすめは別の画面 C2（concierge.css） */
+/* 背の低い縦画面（iPhone SE など、高さ 700px 以下）：迎えの状態は 36%（あいさつ 2 文と 4 つのボタンが入りきるように） */
+@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 36%; } }
+.cg.is-talk { --cg-host: 20%; }
+.cg.is-talk.is-kb, .cg.is-kb { --cg-host: 16%; }
 /* 横向き（スマホの横、PC）：キャラクターを左 36%、会話を右に */
 @media (orientation: landscape) and (min-width: 568px) {
   .cg { max-width: 1080px; grid-template-columns: 36% minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "host top" "host talk" "host form"; column-gap: 28px; }
   .cg-host { padding: 12px 0 calc(10px + env(safe-area-inset-bottom)); }
-  .cg.is-kb, .cg.has-card { --cg-host: 100%; }
+  .cg.is-kb, .cg.is-talk { --cg-host: 100%; }
 }
 /* 全身（*-full）を出す条件（pages.js の FULL_MQ と同じ）：縦いっぱいに。正方形の画像の左右の透明な余白は切れてよい */
 @media (orientation: landscape) and (max-height: 500px), (orientation: landscape) and (min-width: 900px) {
@@ -197,7 +202,7 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
   .cg-title { font-size: 18px; }
   .cg-line { font-size: 16px; }
 }
-@media (prefers-reduced-motion: reduce) { .cg-face { transition: none; } .cg-faces { animation: none; } .cg-greet { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .cg { transition: none; } .cg-face { transition: none; } .cg-faces { animation: none; } .cg-greet { animation: none; } }
 
 /* ギャラリー（G）：白い壁。PC は横に長い 1 枚の壁（スクロール）、スマホは縦に並べる */
 main.gw { min-height: 100dvh; display: flex; flex-direction: column; padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); }

@@ -1,11 +1,14 @@
-// 受付（docs/ENTRANCE.md 3 節）。上にキャラクター、下に会話。おすすめの 1 点は会話の中にカードで現れる
-// 見出し・キャラクター・最初の 2 文・選択肢・入力欄は HTML にあり（pages.js）、ここは会話を動かすだけ
+// 受付（docs/ENTRANCE.md 3 節）。上にキャラクター、下に会話。おすすめの 1 点は別の画面（C2）に 3 段で出す（3.5）
+// 見出し・キャラクター・最初の 2 文・選択肢・入力欄・C2 の枠は HTML にあり（pages.js）、ここは会話を動かすだけ
 // 会話はこのタブのメモリにだけ持ち、どこにも保存しない。保存するのは合言葉（通ったときだけ）と、直前のおすすめ（sessionStorage）
 import { t, pick, applyLang, type Lang } from '../i18n';
 import { recommendByRules, targetAxes, axisDistance, pickMoods, buildReason, type Answers, type Catalog, type CatalogWork } from '../recommend/rules';
 import { splitRecommendation, resolveRecommendation, parseRecommendEvent, reasonText, type RecJson } from '../recommend/parse';
 import { LAST_REC_KEY, type LastRec } from './last';
+import { nextStage, stageMs, type Stage } from './stages';
 import './concierge.css';
+
+declare global { interface Window { __ETP_FAST?: boolean } }   // テストで 3 段の待ち時間を縮める
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 export type Face = 'listening' | 'smile' | 'present';
@@ -55,7 +58,6 @@ export interface ConciergeOptions {
   api: string | null;          // POST /api/recommend。null ならルールだけの版
   configUrl: string;           // GET /api/recommend/config（{ passphrase: boolean }）
   catalogUrl: string;          // catalog.json（受付と同じ階層）
-  chara: string;               // 画像の組（public/concierge/<chara>/）
   retry: string | null;        // ?retry=<id>：作品ページの「別のにする」から戻ってきた
 }
 
@@ -72,6 +74,15 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   const send = form.querySelector<HTMLButtonElement>('button')!;
   const faces = root.querySelector<HTMLElement>('.cg-faces')!;
   const initialThread = thread.innerHTML;   // 「もう一度、話す」で最初の 2 文と選択肢に戻すため
+  // おすすめの画面 C2（3.5）。枠とひとこと（present_line）は HTML。キャラクターとカードはここで入れる
+  const c2 = root.querySelector<HTMLElement>('.cg2')!;
+  const c2Host = c2.querySelector<HTMLElement>('.cg2-host')!;
+  const c2Line = c2.querySelector<HTMLElement>('.cg2-line')!;
+  const c2LineInit = c2Line.innerHTML;
+  const behind = [...root.children].filter((el) => el !== c2) as HTMLElement[];   // C2 のあいだは操作できなくする
+  let stage: Stage = 'talk';
+  let c2Pushed = false;             // C2 を history に積んでいる
+  if (history.state?.cg2) history.replaceState(null, '');   // 読み直したときに古い C2 の履歴を残さない
 
   // API が無い・オフラインなら最初からルールだけの版。一度落ちたらこのページではそのまま
   const noApi = !opts.api || navigator.onLine === false;
@@ -105,7 +116,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     .catch((e) => { console.warn('カタログを読めない', e); return null; });
 
   // ───── 表情（listening / smile / present）。300ms のクロスフェードは CSS。reduced-motion では即時 ─────
-  const faceBase = abs(`concierge/${opts.chara}/`);
+  const faceBase = abs('concierge/artist/');   // キャラクターは女の子に確定（11-06 作家）
   function faceEl(face: Face): HTMLElement {
     let el = faces.querySelector<HTMLElement>(`.cg-face[data-face="${face}"]`);
     if (el) return el;
@@ -223,7 +234,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (lang === 'ja' || lang === 'en') return;
     const list = catalog?.openers?.[lang];
     if (!list) return;
-    thread.querySelectorAll<HTMLButtonElement>('button[data-opener-index]').forEach((b) => {
+    thread.querySelectorAll<HTMLButtonElement>('button[data-opener-index]:not(.cg-write)').forEach((b) => {
       const s = list[+b.dataset.openerIndex!];
       if (s) b.textContent = s;
     });
@@ -240,14 +251,29 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     scrollEnd();
     return p;
   }
-  function thinking(): HTMLParagraphElement {
-    const p = h('p', 'cg-line cg-ai cg-thinking cg-new');
+  const dotsEl = () => {
     const dots = h('span', 'cg-dots');
     dots.setAttribute('aria-hidden', 'true');
     dots.append(h('i'), h('i'), h('i'));
-    p.append(dots, h('span', 'cg-vh', t('rec_thinking', lang)));
+    return dots;
+  };
+  // 「…」の吹き出し。C2 が出ているとき（「別のにする」で AI にもう 1 往復）は C2 の上に「…考え中」を重ねる
+  function thinking(): HTMLParagraphElement {
+    if (stage === 'present') return ponder(c2);
+    const p = h('p', 'cg-line cg-ai cg-thinking cg-new');
+    p.append(dotsEl(), h('span', 'cg-vh', t('rec_thinking', lang)));
     thread.appendChild(p);
     scrollEnd();
+    setFace('listening');
+    return p;
+  }
+  // 「…考え中」の小さな行（3 段の 2 段目は会話の下、C2 の上では重ねて出す）
+  function ponder(into: HTMLElement): HTMLParagraphElement {
+    const p = h('p', into === c2 ? 'cg-ponder cg2-wait' : 'cg-ponder cg-new');
+    p.setAttribute('role', 'status');
+    p.append(dotsEl(), h('span', '', t('rec_thinking', lang)));
+    into.appendChild(p);
+    if (into === thread) scrollEnd();
     setFace('listening');
     return p;
   }
@@ -258,11 +284,17 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     sess++;
     messages = []; busy = false; pending = null; mode = 'talk';
     current = null; shown = new Set(); otherPresses = 0; extraUsed = false; rulesRank = null;
-    root.classList.remove('has-card');
+    if (c2Pushed && history.state?.cg2) history.back();   // C2 の履歴を下ろす（popstate は stage が talk なので何もしない）
+    c2Pushed = false;
+    stage = nextStage(stage, 'again');
+    hideC2();
+    root.classList.remove('is-talk');   // 迎えの状態（キャラクターは大きく）に戻す
+    c2.querySelector('.cg-card')?.remove();
+    c2Line.innerHTML = c2LineInit;
     thread.innerHTML = initialThread;
     applyLang(thread, lang);
     labelOpeners();
-    form.hidden = false;
+    form.hidden = true;   // 最初の画面はボタンだけ（4 つ目の「自分のことばで書く」で入力欄を出す）
     input.type = 'text';
     input.value = '';
     setInputEnabled(true);
@@ -279,6 +311,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     text = text.trim().slice(0, 600);
     if (!text) return;
     hideOpeners();
+    root.classList.add('is-talk');   // 会話の状態：キャラクターを小さくして会話を広く
     line('me', text);
     if (rulesMode) { startRules(); return; }
     await sendUser(text, false);
@@ -308,6 +341,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (my !== sess) return;
     busy = false;
     if (!ok || mode === 'done') return;
+    if (stage === 'present') closeC2();   // C2 の上で待っていたら、AI が問いを返した：会話に戻って答えてもらう
     setInputEnabled(true);
     setFace('listening');
     input.focus({ preventScroll: true });
@@ -409,7 +443,12 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
               continue;
             }
             if (typeof d.text === 'string') {
-              if (!out) { clearTimeout(timer); out = h('p', 'cg-line cg-ai cg-new'); wait.replaceWith(out); setFace('smile'); }
+              if (!out) {
+                clearTimeout(timer);
+                out = h('p', 'cg-line cg-ai cg-new');
+                // C2 の上の「…考え中」は、カードが来るまで出したまま。文は会話（後ろ）に積む
+                if (wait.parentElement === thread) { wait.replaceWith(out); setFace('smile'); } else thread.appendChild(out);
+              }
               acc += d.text;
               out.textContent = splitRecommendation(acc).prose;
               scrollEnd();
@@ -450,6 +489,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       return true;
     }
     // 最大の往復まで来てもおすすめが出なかった：次の送信は Function が 400 にするので、先にルールだけの版へ
+    wait.remove();
     const maxTurns = ((await catalogReady)?.turns?.[1] ?? 3) + (extra || extraUsed ? 1 : 0);
     if (my !== sess) return false;
     if (messages.filter((m) => m.role === 'user').length >= maxTurns) { toRules(false); return false; }
@@ -518,44 +558,121 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     setFace('smile');
   }
 
-  function againButton(): HTMLButtonElement {
-    const again = h('button', 'cg-again', t('cg_again', lang));
-    again.type = 'button';
-    again.addEventListener('click', reset);
-    return again;
+  const smallButton = (cls: string, key: string, fn: () => void) => {
+    const b = h('button', cls, t(key, lang));
+    b.type = 'button';
+    b.addEventListener('click', fn);
+    return b;
+  };
+  const againButton = () => smallButton('cg-again', 'cg_again', reset);
+  const sleep = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
+
+  // ───── おすすめの画面 C2（docs/ENTRANCE.md 3.5）：開く・閉じる。URL は変えず、history に 1 つ積む ─────
+  function setBehind(off: boolean) { behind.forEach((el) => { el.inert = off; }); }
+  function hideC2() {
+    c2.hidden = true;
+    c2.querySelector('.cg2-wait')?.remove();
+    root.classList.remove('is-sink');
+    setBehind(false);
+  }
+  function openC2(push: boolean) {
+    stage = 'present';
+    thread.querySelector('.cg-after')?.remove();
+    // キャラクター（上半身、小さめ、present）：present の画像を写し、全身の source は外す
+    const pic = faceEl('present').cloneNode(true) as HTMLElement;
+    pic.querySelectorAll('source[media]').forEach((s) => s.remove());
+    pic.className = 'cg-face is-on';
+    c2Host.replaceChildren(pic);
+    c2.hidden = false;
+    c2.scrollTop = 0;
+    setBehind(true);
+    setFace('present');
+    if (push && !c2Pushed) { history.pushState({ cg2: 1 }, ''); c2Pushed = true; }
+    c2.focus({ preventScroll: true });
+  }
+  // 会話に戻る（会話は残す。入力欄は出さず「もう一度、話す」と「おすすめをもう一度見る」だけ）
+  function closeC2() {
+    if (stage !== 'present') return;
+    stage = nextStage(stage, 'close');
+    hideC2();
+    setFace('smile');
+    if (mode === 'done' && current) {
+      const after = h('div', 'cg-after cg-new');
+      after.append(smallButton('cg-again cg-reopen', 'cg_reopen', () => { stage = nextStage(stage, 'reopen'); openC2(true); }), againButton());
+      thread.appendChild(after);
+    }
+    scrollEnd();
+    requestAnimationFrame(scrollEnd);
+  }
+  // 「会話に戻る」：積んだ履歴があれば戻るボタンと同じに（popstate で閉じる）
+  const backFromC2 = () => { if (c2Pushed && history.state?.cg2) history.back(); else closeC2(); };
+  window.addEventListener('popstate', (e) => {
+    const s = (e.state as { cg2?: number } | null)?.cg2;
+    if (!s && stage === 'present') { c2Pushed = false; closeC2(); }
+    else if (s && stage === 'back' && current && mode === 'done') { c2Pushed = true; stage = nextStage(stage, 'reopen'); openC2(false); }
+  });
+
+  // 3 段：読ませる（1.6 秒）→ 考えている（1.4 秒、ルールだけの版は 1.0 秒）→ 会話画面が沈む（0.5 秒）→ C2
+  async function presentFlow(my: number, img: string): Promise<boolean> {
+    const o = { rules: rulesMode, fast: window.__ETP_FAST === true };
+    stage = nextStage(stage, 'recommend');
+    form.hidden = true;
+    thread.querySelector('.cg-after')?.remove();
+    await sleep(stageMs(stage, o));
+    if (my !== sess) return false;
+    stage = nextStage(stage, 'tick');
+    const p = ponder(thread);
+    new Image().src = img;   // この間にカードの絵を先読み
+    await sleep(stageMs(stage, o));
+    if (my !== sess) return false;
+    stage = nextStage(stage, 'tick');
+    root.classList.add('is-sink');
+    await sleep(stageMs(stage, o));
+    p.remove();
+    if (my !== sess) return false;
+    return true;
   }
 
   // ───── おすすめのカード（docs/ENTRANCE.md 3.1、3.4）：見出し、絵（くるんくるん → ピカーン）、題名、寸法、理由、ことば、3 つの選択 ─────
-  function showCard(c: Catalog, r: { id: string; alt: string | null }, info: { reason: string; moods: string[]; json?: RecJson }, swap = false) {
+  // C2 が出ていなければ 3 段を経て C2 に、出ていれば C2 の中で差し替える（短い登場）
+  async function showCard(c: Catalog, r: { id: string; alt: string | null }, info: { reason: string; moods: string[]; json?: RecJson }, swap = false) {
     const w = c.works.find((x) => x.id === r.id)!;
     current = r;
     shown.add(w.id);
     // 直前のおすすめを sessionStorage に（作品ページの帯の「別のにする」から戻ったときに使う）
     const last: LastRec = { recommend: w.id, alt: r.alt, reason: info.json?.reason ?? null, matched_moods: info.moods };
     session.set(LAST_REC_KEY, JSON.stringify(last));
-    thread.querySelectorAll('.cg-card').forEach((el) => el.remove());   // 差し替え（会話の吹き出しは残す）
+    form.hidden = true;
+    mode = 'done';
+    busy = false;
+    const inC2 = stage === 'present';
+    if (!inC2) {
+      const my = sess;
+      if (!await presentFlow(my, abs(w.image))) return;
+    }
+    swap = swap || inC2;
 
     const card = h('div', `cg-card${swap ? ' is-swap' : ''}`);
     card.dataset.work = w.id;
     card.style.setProperty('--glow-c', glowColor(w.palette?.[0]));
-    card.append(h('p', 'cg-card-head', t('cg_card_head', lang)));
+    card.append(h('h2', 'cg-card-head', t('cg_card_head', lang)));
     // キャンバス：表は絵、裏は紙白の面。回転は CSS（.cg-canvas の animation）
-    const stage = h('div', 'cg-stage');
+    const stageEl = h('div', 'cg-stage');
     const glow = h('i', 'cg-glow');
     glow.setAttribute('aria-hidden', 'true');
     const canvas = h('div', 'cg-canvas');
     const front = h('div', 'cg-front');
     const img = h('img');
     img.src = abs(w.image); img.alt = pick(w.title, lang);
-    if (w.size_cm) { front.style.aspectRatio = `${w.size_cm[0]} / ${w.size_cm[1]}`; stage.style.setProperty('--ar', String(w.size_cm[0] / w.size_cm[1])); }
+    if (w.size_cm) { front.style.aspectRatio = `${w.size_cm[0]} / ${w.size_cm[1]}`; stageEl.style.setProperty('--ar', String(w.size_cm[0] / w.size_cm[1])); }
     const sheen = h('i', 'cg-sheen');
     sheen.setAttribute('aria-hidden', 'true');
     front.append(img, sheen);
     const back = h('div', 'cg-back');
     back.setAttribute('aria-hidden', 'true');
     canvas.append(front, back);
-    stage.append(glow, canvas);
-    card.appendChild(stage);
+    stageEl.append(glow, canvas);
+    card.appendChild(stageEl);
 
     // 回転が止まったあと 0.15 秒ずつ遅れて出るもの（--i が順番）
     let i = 0;
@@ -573,36 +690,28 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     const enter = h('a', 'cg-btn primary cg-enter', t('rec_enter', lang));
     enter.href = withQuery(w.url, 'via', 'concierge');
     rise(enter);
-    const another = h('button', 'cg-btn cg-other', t('cg_other', lang));
-    another.type = 'button';
-    another.addEventListener('click', () => other());
-    rise(another);
+    rise(smallButton('cg-btn cg-other', 'cg_other', () => other()));
     const all = h('a', 'cg-btn cg-all', t('cg_all', lang));
     all.href = withQuery('gallery/', 'from', w.id);
     rise(all);
     rise(h('p', 'cg-note', t('rec_note', lang)));
-    rise(againButton());
+    // 下に小さく「会話に戻る」と「もう一度、話す」
+    const foot = h('div', 'cg2-foot');
+    foot.append(smallButton('cg-again cg-back-talk', 'cg_back', backFromC2), againButton());
+    rise(foot);
 
-    thread.appendChild(card);
-    form.hidden = true;
-    mode = 'done';
-    busy = false;
-    setFace('present');
-    root.classList.add('has-card');
-    // カードの上端（見出し）から見せる。入りきらなければ「この絵の中に入る」まで見えるところまで
-    const reveal = () => {
-      const tr = thread.getBoundingClientRect();
-      const top = thread.scrollTop + card.getBoundingClientRect().top - tr.top - 8;
-      const enterBottom = thread.scrollTop + enter.getBoundingClientRect().bottom - tr.top + 12;
-      thread.scrollTop = Math.max(top, enterBottom - thread.clientHeight);
-    };
-    requestAnimationFrame(reveal);
-    img.addEventListener('load', reveal, { once: true });
-    setTimeout(reveal, 400);
+    c2.querySelector('.cg2-wait')?.remove();
+    const old = c2.querySelector('.cg-card');
+    if (old) old.replaceWith(card); else c2.querySelector('.cg2-in')!.appendChild(card);
+    // ひとこと：C2 が立ち上がるときは present_line（作家の 1 文）、C2 の中で差し替えたら「では、こちらはどうでしょう」
+    if (inC2) c2Line.textContent = t('cg_other_line', lang);
+    else { c2Line.innerHTML = c2LineInit; applyLang(c2Line, lang); }
+    if (inC2) c2.scrollTo({ top: 0, behavior: 'smooth' });
+    else openC2(true);
   }
 
   // 「別のにする」：alt → AI に「別の絵を」の 1 往復 → 近い作品の順（API は呼ばない）
-  // quiet：「では、こちらはどうでしょう」を言わない（?retry で「別の絵を考えますね」を先に言ったとき）
+  // quiet：「では、こちらはどうでしょう」を言わない（?retry で「別の絵、考えてみるね」を先に言ったとき）
   function other(quiet = false) {
     const c = catalog;
     if (!c || !current || busy) return;
@@ -611,7 +720,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (!rulesMode && !extraUsed && (otherPresses >= 2 || !altFree)) { aiOther(!quiet); return; }
     const next = rulesMode && rulesRank ? rulesRank.find((id) => !shown.has(id)) ?? nearest(c, current.id) : altFree ?? nearest(c, current.id);
     if (!next) return;
-    if (!quiet) line('ai', t('cg_other_line', lang));
+    if (!quiet) line('ai', t('cg_other_line', lang));   // 会話の記録にも残す（「会話に戻る」で読める）
     const w = c.works.find((x) => x.id === next)!;
     showCard(c, { id: next, alt: null }, { reason: defaultReason(w), moods: pickMoods(w, lang).slice(0, 2) }, true);
   }
@@ -625,13 +734,11 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     return pool.map((w, i) => ({ id: w.id, i, d: axisDistance(from.axes, w.axes) })).sort((a, b) => a.d - b.d || a.i - b.i)[0].id;
   }
 
-  // AI に「別の絵を」（いま出している絵の題名を添える）
+  // AI に「別の絵を」（いま出している絵の題名を添える）。C2 が出ていれば、C2 の上に「…考え中」を重ねて待つ
   function aiOther(showMe: boolean) {
     const c = catalog!;
     const cur = c.works.find((w) => w.id === current?.id);
     extraUsed = true;
-    thread.querySelectorAll('.cg-card').forEach((el) => el.remove());
-    root.classList.remove('has-card');
     const text = cur ? t('cg_other_req_not', lang, { title: pick(cur.title, lang) }) : t('cg_other_req', lang);
     if (showMe) line('me', t('cg_other_req', lang));
     mode = 'talk';
@@ -648,8 +755,22 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   // ───── 入口：選択肢と入力欄 ─────
   thread.addEventListener('click', (e) => {
     const b = (e.target as Element).closest<HTMLButtonElement>('button[data-opener-index]');
-    if (b) say(b.innerText || b.textContent || '');   // 隠れた訳（span[hidden]）は含めない
+    if (!b) return;
+    if (b.classList.contains('cg-write')) openWrite();
+    else say(b.innerText || b.textContent || '');   // 隠れた訳（span[hidden]）は含めない
   });
+  // 「自分のことばで書く」：選択肢を消し、入力欄を下にふわっと出してフォーカス（押した操作の中なので iOS でもキーボードが出る）
+  function openWrite() {
+    if (busy || mode !== 'talk') return;
+    hideOpeners();
+    root.classList.add('is-talk');
+    form.hidden = false;
+    form.classList.remove('cg-form-in');
+    void form.offsetWidth;
+    form.classList.add('cg-form-in');
+    input.focus();
+    setFace('listening');
+  }
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const v = input.value;
@@ -669,6 +790,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     let last: LastRec | null = null;
     try { last = JSON.parse(session.get(LAST_REC_KEY) || 'null'); } catch { /* 壊れていたら無視 */ }
     hideOpeners();
+    root.classList.add('is-talk');
     setTimeout(async () => {
       const my = sess;
       line('ai', t('cg_retry', lang));

@@ -47,18 +47,7 @@ async function vrAvailable(): Promise<boolean> {
 // 読み込み前の操作（選択肢 / 送る）は止めておき、読めたらもう一度起こす
 const cg = document.getElementById('concierge');
 if (cg) {
-  // キャラクターの画像の組：?chara=cat / ?chara=artist で切り替え、localStorage に覚える（見比べ用。UI は置かない）
-  const CHARAS = ['artist', 'cat'];
-  let chara = url.searchParams.get('chara');
-  try {
-    if (chara && CHARAS.includes(chara)) localStorage.setItem('etp.chara', chara);
-    else chara = localStorage.getItem('etp.chara');
-  } catch {}
-  if (!chara || !CHARAS.includes(chara)) chara = 'artist';
-  if (chara !== 'artist') cg.querySelectorAll<HTMLSourceElement | HTMLImageElement>('.cg-face source, .cg-face img').forEach((el) => {
-    el.srcset = el.srcset.replace(/concierge\/artist\//g, `concierge/${chara}/`);
-    if (el instanceof HTMLImageElement) el.src = el.src.replace('concierge/artist/', `concierge/${chara}/`);
-  });
+  // キャラクターは女の子（public/concierge/artist/）に確定（11-06 作家）。画像は HTML のまま
   const retry = url.searchParams.get('retry');
   if (retry) { url.searchParams.delete('retry'); history.replaceState(null, '', url.pathname + url.search + url.hash); }
   const api = document.querySelector<HTMLMetaElement>('meta[name="recommend-api"]')?.content.trim() || null;
@@ -74,7 +63,7 @@ if (cg) {
   cg.addEventListener('click', hold, true);
   cg.addEventListener('submit', hold, true);
   const loading = import('./concierge/index').then((m) => {
-    m.mountConcierge(cg, { lang, api, configUrl: api ? `${api.replace(/\/$/, '')}/config` : '', catalogUrl: 'catalog.json', chara: chara!, retry });
+    m.mountConcierge(cg, { lang, api, configUrl: api ? `${api.replace(/\/$/, '')}/config` : '', catalogUrl: 'catalog.json', retry });
     ready = true;
   }).catch((e) => { console.warn('受付を読めない', e); });
 }

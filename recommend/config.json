@@ -1,5 +1,5 @@
 {
-  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す。greeting は受付の最初の 2 文（API を待たずに出す）、title は受付の見出し。persona は受付のキャラクター：name（ja/en。空なら画面に出さない）、tone（AI の話し方の指示）、intro_line（ja/en。空でなければ最初の 2 文の前にキャラクターが言う 1 文）",
+  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す。greeting は受付の最初の 2 文（API を待たずに出す）、title は受付の見出し。persona は受付のキャラクター：name（ja/en。空なら画面に出さない）、tone（AI の話し方の指示）、intro_line（ja/en。空でなければ最初の 2 文の前にキャラクターが言う 1 文）。present_line（ja/en）はおすすめの画面（C2）でキャラクターが言うひとこと（docs/ENTRANCE.md 3.5）",
   "title": {
     "ja": "SHEER ギャラリー",
     "en": "SHEER Gallery"
@@ -7,7 +7,7 @@
   "greeting": {
     "ja": [
       "ようこそ、SHEER のギャラリーへ。",
-      "今日は、どんな絵をお探しですか？"
+      "今日は、どんな絵を探してる？"
     ],
     "en": [
       "Welcome to SHEER's gallery.",
@@ -19,7 +19,7 @@
       "ja": "",
       "en": ""
     },
-    "tone": "丁寧で短く。説明や売り込みをしない。情景で話す",
+    "tone": "カジュアル。友だちに話すように、やわらかく、ていねいすぎない。名乗らない",
     "intro_line": {
       "ja": "",
       "en": ""
@@ -44,5 +44,9 @@
   "turns": [
     2,
     3
-  ]
+  ],
+  "present_line": {
+    "ja": "これ、どうかな。",
+    "en": "How about this one?"
+  }
 }
