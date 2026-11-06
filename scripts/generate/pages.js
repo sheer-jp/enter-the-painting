@@ -17,7 +17,7 @@ const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@300;400;500&display=swap">`;
 
 // 二言語併記（美術館の作法）：言語設定に関わらず日本語と英語を並べる
-const brand = (prefix) => `<a class="brand" href="${prefix}"><b><span lang="ja" data-lang="ja">SHEER ギャラリー</span><span lang="en" data-lang="en" hidden>SHEER Gallery</span></b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
+const brand = (prefix) => `<a class="brand" href="${prefix}"><b>SHEER Gallery</b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
 const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}"></select></label>`;
 
 // 作品ページ /w/<id>/index.html。絵は JS を待たずに出る。JS は「入る」のためだけ
@@ -96,8 +96,8 @@ ${FONTS}
 // 受付の設定（recommend/config.json）。読めなければ最小の既定値
 function readConfig() {
   const fallback = {
-    title: { ja: 'SHEER ギャラリー', en: 'SHEER Gallery' },
-    greeting: { ja: ['ようこそ、SHEER のギャラリーへ。', '今日は、どんな絵を探してる？'], en: ["Welcome to SHEER's gallery.", 'What kind of painting are you looking for today?'] },
+    title: { ja: 'SHEER Gallery', en: 'SHEER Gallery' },
+    greeting: { ja: ['ようこそ、SHEER のギャラリーへ。', '彩り美しい抽象画の世界を届けます。', '今日は、どんな絵を探してる？'], en: ['Welcome to SHEER\'s gallery.', 'A world of vivid abstract paintings awaits.', 'What kind of painting are you looking for today?'] },
     openers: { ja: ['頑張る活力がほしい', '寂しい夜によりそってほしい', '明るい気持ちになれる絵を'] },
     persona: { name: { ja: '', en: '' }, intro_line: { ja: '', en: '' } },
     present_line: { ja: 'これ、どうかな。', en: 'How about this one?' },
@@ -128,7 +128,7 @@ export function galleryPage({ works, baseUrl }) {
   const intro = cfg.persona?.intro_line || {};
   const lines = [];
   if (intro.ja) lines.push([intro.ja, intro.en]);
-  (greet.ja || []).slice(0, 2).forEach((ja, i) => lines.push([ja, greet.en?.[i]]));
+  (greet.ja || []).slice(0, 3).forEach((ja, i) => lines.push([ja, greet.en?.[i]]));   // 3 文まで（11-06 深夜：ようこそ／彩り／どんな絵）
   // 最初の文は 0.4 秒ずつ間を置いて現れる（CSS の animation-delay）
   const greeting = lines.map(([ja, en], i) => `<p class="cg-line cg-ai cg-greet" style="--d:${(0.3 + i * 0.4).toFixed(1)}s">${jaEn(ja, en)}</p>`).join('\n        ');
   const openers = (cfg.openers?.ja || []).slice(0, 3).map((ja, i) =>

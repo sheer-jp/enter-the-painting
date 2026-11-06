@@ -1,8 +1,8 @@
 /* トーン＆マナーは docs/DESIGN.md。色は作品ごとに body の --back / --text（space.json）で上書きされる */
 :root {
   color-scheme: light;   /* 11-06 深夜：作品ページも紙白に（作家「そのページも白基準に」） */
-  --bg: #f6f4ef; --bg-2: #efece5; --ink: #1c1a17; --ink-2: #6f6a62; --line: rgba(28, 26, 23, .14);
-  --back: #f6f4ef; --text: #1c1a17; --glow: var(--text);
+  --bg: #ffffff; --bg-2: #f1efea; --ink: #141210; --ink-2: #625d56; --line: rgba(20, 18, 16, .22);   /* 11-06 深夜：白黒をはっきり（線を濃く、インクを黒に寄せる） */
+  --back: #ffffff; --text: #141210; --glow: var(--text);
   --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
   --latin: "Cormorant Garamond", "Shippori Mincho", Georgia, serif;
   --sans: "Noto Sans JP", "Hiragino Sans", system-ui, -apple-system, sans-serif;
@@ -16,8 +16,8 @@ button { font-family: inherit; }
 
 /* 絵の色が滲む背景（作品ページ） */
 .atmosphere { position: fixed; inset: 0; z-index: -1; background: var(--back); overflow: hidden; }
-.atmosphere::before { content: ""; position: absolute; inset: -40%; background: var(--blur-url) center / cover no-repeat; filter: blur(60px) saturate(1.1); opacity: .55; transform: scale(1.1); animation: drift 60s ease-in-out infinite alternate; }
-.atmosphere::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(246,244,239,.75) 100%); }
+.atmosphere::before { content: ""; display: none; position: absolute; inset: -40%; background: var(--blur-url) center / cover no-repeat; filter: blur(60px) saturate(1.1); opacity: .55; transform: scale(1.1); animation: drift 60s ease-in-out infinite alternate; }
+.atmosphere::after { content: ""; display: none; }
 @keyframes drift { from { transform: scale(1.1) translate(-2%, -1%); } to { transform: scale(1.18) translate(2%, 2%); } }
 @media (prefers-reduced-motion: reduce) { .atmosphere::before { animation: none; } }
 
@@ -67,7 +67,7 @@ section { margin: 0 0 56px; }
 footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 11px; letter-spacing: .1em; display: flex; flex-wrap: wrap; gap: 8px 24px; }
 
 /* 体験の舞台 */
-#stage { position: fixed; inset: 0; background: #f6f4ef; z-index: 50; }   /* 白の中に絵が浮く（11-06 作家。受付と同じ紙白） */
+#stage { position: fixed; inset: 0; background: #ffffff; z-index: 50; }   /* 白の中に絵が浮く（11-06 作家。受付と同じ紙白） */
 #stage[hidden] { display: none; }
 #stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .hud { position: fixed; inset: 0; pointer-events: none; z-index: 60; font-family: var(--sans); }
@@ -166,14 +166,16 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-talk { grid-area: talk; min-height: 0; height: 100%; display: flex; flex-direction: column; }   /* 行いっぱいに（stretch だけでは下に隙間が残った） */
 .cg-thread { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding: 10px 2px 10px; scrollbar-width: thin; }
 .cg-thread > :first-child { margin-top: auto; }
+/* 迎えの状態（会話が始まる前）は上に詰める：窓とあいさつの間に大きな空白を作らない（11-06 深夜、作家） */
+.cg:not(.is-talk) .cg-thread > :first-child { margin-top: 6px; }
 .cg-line { margin: 0; max-width: min(92%, 30em); padding: 8px 14px; border-radius: 16px; font-size: 16px; line-height: 1.75; letter-spacing: .03em; white-space: pre-line; overflow-wrap: anywhere; }
-.cg-ai { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-top-left-radius: 4px; font-family: var(--serif); color: var(--ink); }
+.cg-ai { align-self: flex-start; background: #fff; border: 1px solid rgba(20, 18, 16, .3); border-top-left-radius: 4px; font-family: var(--serif); color: var(--ink); }
 .cg-me { align-self: flex-end; background: var(--bg-2); border-top-right-radius: 4px; font-family: var(--sans); font-weight: 400; color: var(--ink); }
 .cg-greet { animation: cg-in .6s ease both; animation-delay: var(--d, 0s); }
 /* 選択肢は吹き出しと見分けがつくボタンに（11-06 作家「チャットと勘違いする」）：左寄せ、白地、角は小さく、右端に › */
 .cg-openers, .cg-choices { display: flex; flex-direction: column; align-items: stretch; gap: 6px; margin: 2px 0 4px 8px; }
 .cg-openers-cap { font: 400 11px/1.6 var(--sans); letter-spacing: .14em; color: var(--ink-2); margin-bottom: 2px; }
-.cg-opt { appearance: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 6px 12px 6px 14px; border: 1px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .06em; line-height: 1.5; text-align: left; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,.06); transition: background .2s, transform .15s; }
+.cg-opt { appearance: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 6px 12px 6px 14px; border: 1.5px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .06em; line-height: 1.5; text-align: left; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,.06); transition: background .2s, transform .15s; }
 .cg-opt::after { content: '›'; font-family: var(--sans); font-size: 18px; line-height: 1; color: var(--ink-2); flex: none; }
 .cg-opt:hover { background: var(--bg); }
 .cg-opt:active { transform: translateY(1px); }
@@ -194,13 +196,12 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg.is-talk.is-kb, .cg.is-kb { --cg-host: 12%; }
 /* PC・横向きも同じ「上に人、下に会話」（11-06 作家「パソコンでも同じ感じで」）。幅は 640px に抑えて中央に。人の高さは px で上限 */
 @media (min-width: 640px) {
-  .cg { max-width: 640px; }
-  .cg { --cg-host: 30%; }
-  .cg-host { max-height: 280px; }
-  .cg.is-talk { --cg-host: 15%; }
+  .cg { max-width: 640px; margin: 0 auto; }   /* 中央に（11-06 深夜、作家「右に寄っている」） */
+  .cg { grid-template-rows: auto 220px minmax(0, 1fr) auto; }   /* 人の高さは px で（画面が高くても大きくしない） */
+  .cg.is-talk { grid-template-rows: auto 150px minmax(0, 1fr) auto; }
+  .cg.is-kb { grid-template-rows: auto 120px minmax(0, 1fr) auto; }
+  .cg-host { max-height: 220px; }
   .cg.is-talk .cg-host { max-height: 150px; }
-  .cg-title { font-size: 18px; }
-  .cg-line { font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) { .cg { transition: none; } .cg-face { transition: none; } .cg-faces { animation: none; } .cg-greet { animation: none; } }
 
