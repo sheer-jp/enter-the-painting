@@ -1,5 +1,6 @@
 // 文字の浮上。screen：DOM で画面の奥から（物語モード）。space：Canvas のスプライトで空間内（VR）
 import * as THREE from 'three';
+import { splitPhrases, wrapPhrases } from './phrases';
 import { screenTextTiming } from './timing';
 
 export interface FloatOptions { rise?: number; hold?: number; dissolve?: number; reduced?: boolean }
@@ -35,11 +36,18 @@ export class ScreenText {
     const t = screenTextTiming(sentence);
     const rise = opt.rise ?? t.rise, hold = opt.hold ?? t.hold, dissolve = opt.dissolve ?? t.dissolve;
     // 墨文字（淡い絵）は、蛍光ペンのようにはっきりした白を文字の裏に敷く（11-07 作家「黒文字は裏にはっきりした白がないと読めない」）。白文字は従来どおりにじみだけ
+    // 改行は文節の間だけ（11-07 作家「踏み出すと／き のような改行はしない」）：文節ごとに inline-block の span
     this.el.textContent = '';
-    const span = document.createElement('span');
-    span.textContent = sentence;
-    if (this.dark) span.style.cssText = 'background:rgba(255,255,255,.9);padding:.06em .4em;-webkit-box-decoration-break:clone;box-decoration-break:clone;border-radius:.12em;';
-    this.el.appendChild(span);
+    const band = this.dark ? 'background:rgba(255,255,255,.9);padding:.06em .4em;-webkit-box-decoration-break:clone;box-decoration-break:clone;border-radius:.12em;' : '';
+    const wrap = document.createElement('span');
+    if (band) wrap.style.cssText = band;
+    for (const ph of splitPhrases(sentence, /[　-鿿가-힯]/.test(sentence) ? 'ja' : 'en')) {   // 文から言語を見る（呼び出し側を変えない）
+      const s = document.createElement('span');
+      s.textContent = ph;
+      s.style.display = 'inline-block';
+      wrap.appendChild(s);
+    }
+    this.el.appendChild(wrap);
     const anim = (frames: Keyframe[], ms: number) => new Promise<void>((res) => {
       const a = this.el.animate(frames, { duration: ms, fill: 'forwards', easing: 'cubic-bezier(.2,.7,.3,1)' });
       if (this.paused) a.pause();
@@ -95,10 +103,10 @@ export class SpaceText {
     c.clearRect(0, 0, this.canvas.width, this.canvas.height);
     c.font = `600 110px ${this.font}`;
     c.textAlign = 'center'; c.textBaseline = 'middle';
-    // 2 行まで（40 文字で折り返し）
-    const lines: string[] = [];
-    if (/[　-鿿가-힯]/.test(text)) { for (let i = 0; i < text.length; i += 20) lines.push(text.slice(i, i + 20)); }
-    else { let cur = ''; for (const w of text.split(' ')) { if ((cur + ' ' + w).trim().length > 34) { lines.push(cur.trim()); cur = w; } else cur += ' ' + w; } if (cur.trim()) lines.push(cur.trim()); }
+    // 2 行まで。日本語は文節の間だけで折り返す（11-07）。他の言語は語の間
+    const ja = /[　-鿿가-힯]/.test(text);
+    const phrases = ja ? splitPhrases(text, 'ja') : text.split(' ');
+    const lines = wrapPhrases(phrases, 1024 * 1.8, (s) => c.measureText(s).width);
     const ls = lines.slice(0, 2);
     // 背後のにじみ（柔らかい暗い影）
     c.shadowColor = 'rgba(0,0,0,0.95)'; c.shadowBlur = 40;
