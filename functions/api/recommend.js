@@ -146,7 +146,7 @@ async function handle(req, env) {
   }
 
   // 最初の出来事を待つ：文が来る前の拒否は 422、失敗は 502
-  const events = relayEvents(up.body);
+  const events = relayEvents(up.body, { lang: body.lang });
   const first = await events.next().catch(() => ({ value: { error: true }, done: false }));
   if (first.done) return json(502, { error: 'upstream' }, cors);
   if ('refusal' in first.value) { events.return(undefined); return json(422, { error: 'refusal' }, cors); }

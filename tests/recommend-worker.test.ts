@@ -197,6 +197,33 @@ describe('functions/_lib/relay.js', () => {
     ]);
     expect(sse(out[1])).toBe(`data: {"recommend":${input}}\n\n`);
   });
+  it('relayEvents：文なしでツールだけ来たら、reason を文として先に流す（11-07 CONV-1）', async () => {
+    const input = '{"recommend":"harmoney","alt":null,"reason":{"ja":"朝の光に合う。","en":"It suits morning light."},"matched_moods":[]}';
+    const mk = () => ev('message_start', { message: { id: 'm' } })
+      + ev('content_block_start', { index: 0, content_block: { type: 'tool_use', id: 'toolu_1', name: 'recommend_work', input: {} } })
+      + ev('content_block_delta', { index: 0, delta: { type: 'input_json_delta', partial_json: input } })
+      + ev('content_block_stop', { index: 0 })
+      + ev('message_delta', { delta: { stop_reason: 'tool_use' } })
+      + ev('message_stop', {});
+    const ja = []; for await (const e of relayEvents(upstream([mk()]), { lang: 'ja' })) ja.push(e);
+    expect(ja[0]).toEqual({ text: '朝の光に合う。' });
+    expect(ja[1]).toHaveProperty('recommend');
+    const ko = []; for await (const e of relayEvents(upstream([mk()]), { lang: 'ko' })) ko.push(e);
+    expect(ko[0]).toEqual({ text: 'It suits morning light.' });   // ja / en 以外は en
+  });
+  it('relayEvents：文があれば reason は足さない', async () => {
+    const input = '{"recommend":"harmoney","alt":null,"reason":{"ja":"朝の光に合う。","en":"x"},"matched_moods":[]}';
+    const s = ev('message_start', { message: { id: 'm' } })
+      + ev('content_block_start', { index: 0, content_block: { type: 'text', text: '' } })
+      + ev('content_block_delta', { index: 0, delta: { type: 'text_delta', text: 'これ、どう？' } })
+      + ev('content_block_stop', { index: 0 })
+      + ev('content_block_start', { index: 1, content_block: { type: 'tool_use', id: 'toolu_1', name: 'recommend_work', input: {} } })
+      + ev('content_block_delta', { index: 1, delta: { type: 'input_json_delta', partial_json: input } })
+      + ev('content_block_stop', { index: 1 })
+      + ev('message_stop', {});
+    const out = []; for await (const e of relayEvents(upstream([s]), { lang: 'ja' })) out.push(e);
+    expect(out.filter((e) => 'text' in e).map((e) => e.text)).toEqual(['これ、どう？']);
+  });
   it('createEventMapper：壊れた JSON や別のツールは捨てる。alt の null を保つ', () => {
     const map = createEventMapper();
     expect(map({ type: 'content_block_start', index: 0, content_block: { type: 'tool_use', name: 'recommend_work' } })).toBeNull();

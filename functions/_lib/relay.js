@@ -101,12 +101,13 @@ export function createEventMapper(toolName = 'recommend_work') {
  * 上流の本文（ReadableStream<Uint8Array>）を読み、createEventMapper の結果を順に返す
  * @param {ReadableStream<Uint8Array>} body
  */
-export async function* relayEvents(body) {
+export async function* relayEvents(body, { lang = 'ja' } = {}) {
   const reader = body.getReader();
   const dec = new TextDecoder();
   const parser = createSseParser();
   const map = createEventMapper();
   let finished = false;
+  let sawText = false;   // 文を 1 つでも流したか。文なしでツールだけ来たら、reason を文として先に流す（11-07 CONV-1：12 会話中 1 回残った）
   try {
     for (;;) {
       const { value, done } = await reader.read();
@@ -114,7 +115,14 @@ export async function* relayEvents(body) {
       const chunk = done ? dec.decode() + '\n\n' : dec.decode(value, { stream: true });
       for (const ev of parser.push(chunk)) {
         const m = map(ev);
-        if (m) yield m;
+        if (!m) continue;
+        if (typeof m.text === 'string' && m.text.trim()) sawText = true;
+        if (m.recommend && !sawText) {
+          const r = m.recommend.reason;
+          const fallback = r && (lang === 'ja' ? r.ja || r.en : r.en || r.ja);
+          if (fallback) { yield { text: fallback }; sawText = true; }
+        }
+        yield m;
       }
       if (done) return;
     }
