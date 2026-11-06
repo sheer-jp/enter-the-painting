@@ -1,8 +1,8 @@
 # サイト本体と「気分から絵をすすめる」API を同じ Cloudflare Pages プロジェクトに置く（docs/ENTRANCE.md 5.2）
-# 配備: npm run generate && npm run build && npx wrangler pages deploy
+# 配備: npm run generate && npm run build && CLOUDFLARE_ACCOUNT_ID=<Arisakagawa のアカウント ID> npx wrangler pages deploy
+#（Pages の設定ファイルは account_id を受け付けないので環境変数で渡す。wrangler whoami で確認できる）
 # Secret: npx wrangler pages secret put ANTHROPIC_API_KEY --project-name enter-the-painting（リポジトリには書かない）
 name = "enter-the-painting"
-account_id = "7ce8ea6379c752f8ae2acd24db1cd5a7"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-09-01"
 
