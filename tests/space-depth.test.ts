@@ -1,6 +1,6 @@
 // VR の立体感（docs/VR_DEPTH.md）の純関数：粒の配置、数と品質、場面ごとの見え方
 import { describe, it, expect } from 'vitest';
-import { placeParticles, particlePos, particleCount, particleVisibility, surroundVisibility, hideRoom, particlesInView, floorRadius, lightWorld, whiteRatio, SHELL_MIN, SHELL_MAX, PARTICLE_MAX } from '../src/space/depth';
+import { placeParticles, particlePos, particleCount, particleVisibility, surroundVisibility, hideRoom, particlesInView, floorRadius, lightWorld, whiteRatio, centerPeriphery, SHELL_MIN, SHELL_MAX, PARTICLE_MAX } from '../src/space/depth';
 
 const len = (p: number[]) => Math.hypot(p[0], p[1], p[2]);
 
@@ -84,5 +84,22 @@ describe('光・床・白飛び', () => {
   it('白飛び率：RGB すべて 250 以上の画素の割合', () => {
     const px = new Uint8Array([255, 255, 255, 255, 250, 251, 252, 255, 249, 255, 255, 255, 0, 0, 0, 255]);
     expect(whiteRatio(px)).toBe(0.5);
+  });
+
+  it('中心と周辺の明るさの比（V-6：トンネル＝中心が暗く周辺が明るいと小さくなる）', () => {
+    const w = 20, h = 20;
+    const img = (f: (dx: number, dy: number) => number) => {
+      const px = new Uint8Array(w * h * 4);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const v = f(Math.abs((x + 0.5) / w - 0.5) * 2, Math.abs((y + 0.5) / h - 0.5) * 2);
+        const i = (y * w + x) * 4; px[i] = px[i + 1] = px[i + 2] = v; px[i + 3] = 255;
+      }
+      return px;
+    };
+    expect(centerPeriphery(img(() => 128), w, h).ratio).toBeCloseTo(1);
+    const tunnel = centerPeriphery(img((dx, dy) => (Math.max(dx, dy) < 0.3 ? 20 : 200)), w, h);
+    expect(tunnel.ratio).toBeLessThan(0.6);
+    expect(tunnel.center).toBeCloseTo(20 / 255);
+    expect(centerPeriphery(img((dx, dy) => (Math.max(dx, dy) < 0.3 ? 200 : 100)), w, h).ratio).toBeGreaterThan(1);
   });
 });

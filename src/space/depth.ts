@@ -116,6 +116,23 @@ export function whiteRatio(px: ArrayLike<number>): number {
   return n ? w / n : 0;
 }
 
+// 中心と周辺の明るさ（V-6：S2 が「トンネル・穴」に見えないかの検査）。RGBA の並び、w×h。
+// 中心 = 画面中央の幅・高さ 20% の箱、周辺 = 中心からの距離（半幅・半高で割った最大値）が 0.7 より外。明るさは相対輝度 0〜1
+export function centerPeriphery(px: ArrayLike<number>, w: number, h: number): { center: number; periphery: number; ratio: number } {
+  let cs = 0, cn = 0, ps = 0, pn = 0;
+  for (let y = 0; y < h; y++) {
+    const dy = Math.abs((y + 0.5) / h - 0.5) * 2;
+    for (let x = 0; x < w; x++) {
+      const dx = Math.abs((x + 0.5) / w - 0.5) * 2;
+      const i = (y * w + x) * 4;
+      const l = (0.2126 * px[i] + 0.7152 * px[i + 1] + 0.0722 * px[i + 2]) / 255;
+      if (dx < 0.2 && dy < 0.2) { cs += l; cn++; } else if (Math.max(dx, dy) > 0.7) { ps += l; pn++; }
+    }
+  }
+  const center = cn ? cs / cn : 0, periphery = pn ? ps / pn : 0;
+  return { center, periphery, ratio: periphery > 1e-6 ? center / periphery : center > 0 ? Infinity : 1 };
+}
+
 function clamp01(x: number) { return x < 0 ? 0 : x > 1 ? 1 : x; }
 
 // ── 物語モードのドットの粒（docs/FLUID_PER_WORK.md 5 節、F-6）。VR の粒の層を平面で流用する ──
