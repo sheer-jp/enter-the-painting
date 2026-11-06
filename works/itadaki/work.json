@@ -17,7 +17,37 @@
     "ja": "シナベニヤにミクストメディア",
     "en": "Mixed media on shina plywood"
   },
-  "messages": [],
-  "messages_en": [],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。作家のメッセージと音声は未登録。"
+  "messages": [
+    "とても強気な一枚。",
+    "火を思わせる赤と、右上には太陽のような赤。",
+    "20 色以上を、重ね重ねて描いた。",
+    "エネルギーが渦巻いて、もっともっと上へ。",
+    "頂に行くぞ。見るだけで、パワーが湧いてくる。"
+  ],
+  "messages_en": [
+    "A very bold piece.",
+    "A red like fire, and in the upper right, a red like the sun.",
+    "I layered over twenty colors, again and again.",
+    "Energy swirls, rising higher and higher.",
+    "I'm going to the summit. Just looking gives you power."
+  ],
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "moods": {
+    "ja": [
+      "火を思わせる赤",
+      "頂に行くぞ",
+      "渦巻くエネルギー",
+      "パワーが湧く"
+    ],
+    "en": [
+      "A red like fire",
+      "Off to the summit",
+      "Swirling energy",
+      "Power welling up"
+    ],
+    "fit": {
+      "ja": "大きな挑戦を前にした人の仕事場に",
+      "en": "For the workspace of someone facing a big challenge"
+    }
+  }
 }

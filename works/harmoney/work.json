@@ -54,6 +54,10 @@
       "A room with music playing",
       "Melting, dancing",
       "Immersed, yet balanced"
-    ]
+    ],
+    "fit": {
+      "ja": "好きな音楽を流して、ひとりで没頭する時間に",
+      "en": "For time alone, lost in your favorite music"
+    }
   }
 }

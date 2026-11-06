@@ -42,8 +42,9 @@ export function catalogText(catalog) {
       `- 販売：${(w.availability && AVAIL[w.availability]) || w.availability || '不明'}`,
       `- 軸（0〜1）：あたたかさ ${ax.warmth ?? '?'}、明るさ ${ax.brightness ?? '?'}、にぎやかさ ${ax.energy ?? '?'}`,
       `- 気分の言葉：${(w.moods?.ja || []).join('、') || '（なし）'}${differs(w.moods?.en, w.moods?.ja) ? ` / ${w.moods.en.join(', ')}` : ''}`,
-      `- 作家のメッセージ（ja）：${(w.messages?.ja || []).join(' ')}`,
     );
+    if (w.fit?.ja) lines.push(`- 向く人・時間：${w.fit.ja}${w.fit.en && w.fit.en !== w.fit.ja ? ` / ${w.fit.en}` : ''}`);
+    lines.push(`- 作家のメッセージ（ja）：${(w.messages?.ja || []).join(' ')}`);
     if (differs(w.messages?.en, w.messages?.ja)) lines.push(`- 作家のメッセージ（en）：${w.messages.en.join(' ')}`);
     if (w.story?.en) lines.push(`- 小さな物語（en、作家の下書き）：${w.story.en.replace(/\n+/g, ' ')}`);
   }
@@ -84,6 +85,8 @@ ${intro}
 - おすすめを出すときは、文を書いたあとに必ずツール ${TOOL_NAME} を 1 回呼ぶ。文の中に JSON や id を書かない。
 - recommend と alt はカタログの id（${ids.join(', ') || 'なし'}）から選ぶ。作品が 2 点以上あるときは alt に 2 番目の候補、1 点だけのときは alt を null にして、文で正直に「いまはこの 1 点です」と伝える。
 - 文はその人に向けた言葉で、なぜこの絵なのかを情景でこめる。ツールの reason には、その理由を日本語（ja）と英語（en）で 1 文ずつ書く。
+- おすすめの理由（文と reason）は、その作品の「気分の言葉」か「作家のメッセージ」のことばを 1 つ以上そのまま使って書く。
+- ツールの matched_moods には、選んだ作品の「気分の言葉」から、この人に合う 1〜3 語をカタログの語のまま入れる。
 - おすすめを出さないときは、文だけを書く（ツールを呼ばない）。
 
 # 応答の言語
@@ -108,7 +111,7 @@ export function buildTool(catalog) {
   if (!ids.length) return null;
   return {
     name: TOOL_NAME,
-    description: '訪れた人に作品を 1 点すすめる。おすすめの文を書いたあとに 1 回だけ呼ぶ。recommend は最もすすめたい作品の id、alt は 2 番目の候補の id（作品が 1 点だけなら null）、reason はすすめる理由を日本語と英語で 1 文ずつ。',
+    description: '訪れた人に作品を 1 点すすめる。おすすめの文を書いたあとに 1 回だけ呼ぶ。recommend は最もすすめたい作品の id、alt は 2 番目の候補の id（作品が 1 点だけなら null）、reason はすすめる理由を日本語と英語で 1 文ずつ、matched_moods は選んだ作品のカタログの moods の語をそのまま 1〜3 語。',
     strict: true,
     input_schema: {
       type: 'object',
@@ -124,8 +127,15 @@ export function buildTool(catalog) {
           required: ['ja', 'en'],
           additionalProperties: false,
         },
+        matched_moods: {
+          type: 'array',
+          items: { type: 'string' },
+          minItems: 1,
+          maxItems: 3,
+          description: '選んだ作品の気分の言葉から、この人に合う 1〜3 語（カタログの moods の語をそのまま）',
+        },
       },
-      required: ['recommend', 'alt', 'reason'],
+      required: ['recommend', 'alt', 'reason', 'matched_moods'],
       additionalProperties: false,
     },
   };

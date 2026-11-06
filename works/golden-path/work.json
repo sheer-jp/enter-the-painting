@@ -17,7 +17,33 @@
     "ja": "シナベニヤにミクストメディア",
     "en": "Mixed media on shina plywood"
   },
-  "messages": [],
-  "messages_en": [],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。作家のメッセージと音声は未登録。"
+  "messages": [
+    "デジタルっぽい感じを、アナログで描く。",
+    "そこに、面白さがある。",
+    "自分の中の、迷路のようなところから、",
+    "「この道を行く」と、自分で決める。"
+  ],
+  "messages_en": [
+    "A digital feel, painted by hand.",
+    "That's where the fun is.",
+    "From the maze-like place inside me,",
+    "I decide for myself: \"This is my path.\""
+  ],
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "moods": {
+    "ja": [
+      "自分で決める道",
+      "迷路から抜ける",
+      "デジタルをアナログで"
+    ],
+    "en": [
+      "A path you choose yourself",
+      "Out of the maze",
+      "Digital, made by hand"
+    ],
+    "fit": {
+      "ja": "迷いの中で、進む道を決めたいときに",
+      "en": "For when you are lost and want to choose your way"
+    }
+  }
 }

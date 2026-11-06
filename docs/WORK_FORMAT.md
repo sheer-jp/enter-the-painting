@@ -46,7 +46,12 @@ works/<id>/
   // 気分の言葉（気分から絵をすすめる、docs/RECOMMEND.md 8.3）。任意。3〜5 語、1 語 12 文字程度
   // ja が正。en は任意（作家の訳）。他の言語は自動で訳して generated/translations.json に残す
   // 無ければ、ANTHROPIC_API_KEY があるときだけ Claude が generated/moods.json に下書きする（作家がここに移して直す）
-  "moods": { "ja": ["朝の光", "ぶつかって、ほどける", "にぎやかな静けさ"], "en": ["Morning light", "Collide, then come undone", "A lively quiet"] },
+  // fit：向く人・時間・場所を 1 行（ja / en）。任意。訳さない（ja / en のまま catalog.json の fit に出る）。受付の AI がおすすめの手がかりにする
+  "moods": {
+    "ja": ["朝の光", "ぶつかって、ほどける", "にぎやかな静けさ"],
+    "en": ["Morning light", "Collide, then come undone", "A lively quiet"],
+    "fit": { "ja": "新しいことを始める朝の机に", "en": "For your desk on a morning when you start something new" }
+  },
 
   // 音
   "audio": {
@@ -114,7 +119,7 @@ works/<id>/
 }
 ```
 
-全作品の `space.json` と `work.json` の `moods`、`recommend/config.json` から、`npm run generate` が `public/catalog.json`（気分から絵をすすめるのカタログ。主要色から計算した軸 `warmth` `brightness` `energy` を含む）を作る。形は `docs/RECOMMEND.md` 8.3。
+全作品の `space.json` と `work.json` の `moods`（`moods.fit` はカタログの各作品の `fit` になる）、`recommend/config.json` から、`npm run generate` が `public/catalog.json`（気分から絵をすすめるのカタログ。主要色から計算した軸 `warmth` `brightness` `energy` を含む）を作る。形は `docs/RECOMMEND.md` 8.3。
 
 言語コードは `ja, en, zh-Hans, zh-Hant, ko, fr, de, es, it, pt` の 10 個。無い言語は `en` に落ちる。
 

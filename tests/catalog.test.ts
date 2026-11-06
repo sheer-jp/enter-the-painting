@@ -63,7 +63,12 @@ describe('buildCatalog', () => {
     writeFileSync(join(root, 'recommend', 'config.json'), JSON.stringify({ intro: { ja: '紹介', en: 'Intro' }, openers: { ja: ['朝', '夜'], en: ['Morning', 'Night'] }, turns: [2, 4] }));
     const gen = join(root, 'works', 'w1', 'generated');
     mkdirSync(gen, { recursive: true });
-    writeFileSync(join(root, 'works', 'w1', 'work.json'), JSON.stringify({ id: 'w1', moods: { ja: ['朝の光'], en: ['Morning light'] } }));
+    writeFileSync(join(root, 'works', 'w1', 'work.json'), JSON.stringify({ id: 'w1', moods: { ja: ['朝の光'], en: ['Morning light'], fit: { ja: '朝の机に', en: 'For a morning desk' } } }));
+    // fit の無い作品
+    const gen2 = join(root, 'works', 'w2', 'generated');
+    mkdirSync(gen2, { recursive: true });
+    writeFileSync(join(root, 'works', 'w2', 'work.json'), JSON.stringify({ id: 'w2', moods: { ja: ['夜'] } }));
+    writeFileSync(join(gen2, 'space.json'), JSON.stringify({ id: 'w2', palette: ['#1f4fa0'], messages: [] }));
     writeFileSync(join(gen, 'space.json'), JSON.stringify({
       id: 'w1', title: { ja: '題', en: 'Title' }, size_cm: [10, 20], size_label: 'F0', year: 2025, availability: 'available',
       palette: ['#e0502a', '#1f4fa0'], fluid: { vorticity: 0.5 },
@@ -83,6 +88,10 @@ describe('buildCatalog', () => {
     expect(w.url).toBe('w/w1/');
     expect(w.moods.ja).toEqual(['朝の光']);
     expect(w.moods.it).toEqual(['Morning light']);
+    // fit は moods の外に、ja / en だけで出る。moods の語には混ざらない
+    expect(w.fit).toEqual({ ja: '朝の机に', en: 'For a morning desk' });
+    expect(w.moods.ja).not.toContain('朝の机に');
+    expect('fit' in c.works[1]).toBe(false);
     expect(w.messages.ja).toEqual(['一']);
     expect(w.messages.en).toEqual(['One']);
     expect(Object.keys(w.axes).sort()).toEqual(['brightness', 'energy', 'warmth']);

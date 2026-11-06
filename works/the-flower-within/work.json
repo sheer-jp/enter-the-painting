@@ -17,7 +17,37 @@
     "ja": "シナベニヤにミクストメディア",
     "en": "Mixed media on shina plywood"
   },
-  "messages": [],
-  "messages_en": [],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。作家のメッセージと音声は未登録。"
+  "messages": [
+    "小さいけれど、重さのある一枚。",
+    "滲み出てくる色と、和風の気配。",
+    "花は、美しいだけではない。",
+    "過酷な環境の中でも、咲き誇る強さがある。",
+    "私自身も、とても好きな作品。"
+  ],
+  "messages_en": [
+    "Small, but it carries weight.",
+    "Colors seeping through, with a Japanese feel.",
+    "A flower is not only beautiful.",
+    "It has the strength to bloom even in harsh conditions.",
+    "It is one of my own favorites."
+  ],
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "moods": {
+    "ja": [
+      "滲み出る色",
+      "和風",
+      "小さな重厚感",
+      "咲き誇る強さ"
+    ],
+    "en": [
+      "Colors seeping through",
+      "A Japanese feel",
+      "Small, yet weighty",
+      "The strength to bloom"
+    ],
+    "fit": {
+      "ja": "厳しい時期を越えようとしている人のそばに",
+      "en": "For someone making their way through a hard season"
+    }
+  }
 }

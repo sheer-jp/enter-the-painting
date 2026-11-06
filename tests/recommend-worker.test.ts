@@ -9,7 +9,7 @@ const catalog = {
   turns: [2, 4],
   works: [
     { id: 'harmoney', title: { ja: 'Harmoney', en: 'Harmoney' }, size_cm: [53, 65.2], size_label: { ja: 'F15 号', en: 'F15' }, year: 2025, availability: 'available',
-      axes: { warmth: 0.7, brightness: 0.6, energy: 0.8 }, moods: { ja: ['朝の光'], en: ['Morning light'] },
+      axes: { warmth: 0.7, brightness: 0.6, energy: 0.8 }, moods: { ja: ['朝の光'], en: ['Morning light'] }, fit: { ja: '音楽が鳴る夜に', en: 'For a night with music' },
       messages: { ja: ['色がぶつかる。'], en: ['Colors collide.'] }, story: { ja: '朝。', en: 'Morning.' } },
     { id: 'blue-tide', title: { ja: '青い潮', en: 'Blue Tide' }, size_cm: [18, 14], availability: 'sold',
       axes: { warmth: 0.2, brightness: 0.4, energy: 0.3 }, moods: { ja: [] }, messages: { ja: ['海。'] }, story: null },
@@ -71,11 +71,19 @@ describe('functions/_lib/prompt.js', () => {
     expect(body.output_config).toEqual({ effort: 'low' });
     const s = t.input_schema;
     expect(s.additionalProperties).toBe(false);
-    expect(s.required).toEqual(['recommend', 'alt', 'reason']);
+    expect(s.required).toEqual(['recommend', 'alt', 'reason', 'matched_moods']);
+    expect(s.properties.matched_moods).toMatchObject({ type: 'array', items: { type: 'string' }, minItems: 1, maxItems: 3 });
+    expect(s.properties.matched_moods.description).toContain('カタログの moods の語をそのまま');
     expect(s.properties.recommend.enum).toEqual(['harmoney', 'blue-tide']);
     expect(s.properties.alt.anyOf).toEqual([{ type: 'string', enum: ['harmoney', 'blue-tide'] }, { type: 'null' }]);
     expect(s.properties.reason.required).toEqual(['ja', 'en']);
     expect(s.properties.reason.additionalProperties).toBe(false);
+  });
+  it('カタログの文に「向く人・時間」の行が出る（fit が無い作品には出さない）。理由に気分の言葉を使う決まりが入る', () => {
+    const sys = buildSystem(catalog, 'ja');
+    expect(sys[1].text).toContain('- 向く人・時間：音楽が鳴る夜に / For a night with music');
+    expect(sys[1].text.match(/向く人・時間/g)).toHaveLength(1);
+    expect(sys[2].text).toContain('「気分の言葉」か「作家のメッセージ」のことばを 1 つ以上そのまま使って書く');
   });
   it('作品が無いカタログではツールを付けない（空の enum は不正なスキーマ）', () => {
     expect(buildTool({ works: [] })).toBeNull();
@@ -151,7 +159,7 @@ describe('functions/_lib/relay.js', () => {
     expect(out[0]).toEqual({ refusal: true });
   });
   it('relayEvents：ツール recommend_work の呼び出しを { recommend } 1 回に直す（文はいままで通り）', async () => {
-    const input = '{"recommend":"harmoney","alt":"blue-tide","reason":{"ja":"朝の光に合う。","en":"It suits morning light."}}';
+    const input = '{"recommend":"harmoney","alt":"blue-tide","reason":{"ja":"朝の光に合う。","en":"It suits morning light."},"matched_moods":["朝の光"]}';
     const s = ev('message_start', { message: { id: 'm' } })
       + ev('content_block_start', { index: 0, content_block: { type: 'thinking', thinking: '' } })
       + ev('content_block_stop', { index: 0 })
@@ -171,7 +179,7 @@ describe('functions/_lib/relay.js', () => {
     for await (const e of relayEvents(body)) out.push(e);
     expect(out).toEqual([
       { text: 'それなら、この絵を。' },
-      { recommend: { recommend: 'harmoney', alt: 'blue-tide', reason: { ja: '朝の光に合う。', en: 'It suits morning light.' } } },
+      { recommend: { recommend: 'harmoney', alt: 'blue-tide', reason: { ja: '朝の光に合う。', en: 'It suits morning light.' }, matched_moods: ['朝の光'] } },
       { done: true },
     ]);
     expect(sse(out[1])).toBe(`data: {"recommend":${input}}\n\n`);
@@ -185,12 +193,20 @@ describe('functions/_lib/relay.js', () => {
     map({ type: 'content_block_delta', index: 1, delta: { type: 'input_json_delta', partial_json: '{"recommend":"x","alt":null}' } });
     expect(map({ type: 'content_block_stop', index: 1 })).toBeNull();
     map({ type: 'content_block_start', index: 2, content_block: { type: 'tool_use', name: 'recommend_work' } });
-    map({ type: 'content_block_delta', index: 2, delta: { type: 'input_json_delta', partial_json: '{"recommend":"x","alt":null,"reason":{"ja":"a","en":"b"}}' } });
-    expect(map({ type: 'content_block_stop', index: 2 })).toEqual({ recommend: { recommend: 'x', alt: null, reason: { ja: 'a', en: 'b' } } });
+    map({ type: 'content_block_delta', index: 2, delta: { type: 'input_json_delta', partial_json: '{"recommend":"x","alt":null,"reason":{"ja":"a","en":"b"},"matched_moods":["朝の光"]}' } });
+    expect(map({ type: 'content_block_stop', index: 2 })).toEqual({ recommend: { recommend: 'x', alt: null, reason: { ja: 'a', en: 'b' }, matched_moods: ['朝の光'] } });
     expect(map({ type: 'message_delta', delta: { stop_reason: 'tool_use' } })).toBeNull();
     expect(map({ type: 'content_block_delta', index: 3, delta: { type: 'text_delta', text: 'a' } })).toEqual({ text: 'a' });
     expect(normalizeRecommend({ recommend: '' })).toBeNull();
-    expect(normalizeRecommend({ recommend: 'x', alt: 3 })).toEqual({ recommend: 'x', alt: null });
+    expect(normalizeRecommend({ recommend: 'x', alt: 3 })).toEqual({ recommend: 'x', alt: null, matched_moods: [] });
+  });
+  it('normalizeRecommend は matched_moods を文字列の配列として通す（文字列以外を捨てる、最大 3）', () => {
+    expect(normalizeRecommend({ recommend: 'x', alt: 'y', matched_moods: ['a', 1, null, 'b', '', { c: 1 }, 'c', 'd'] }))
+      .toEqual({ recommend: 'x', alt: 'y', matched_moods: ['a', 'b', 'c'] });
+    expect(normalizeRecommend({ recommend: 'x', matched_moods: 'a' })?.matched_moods).toEqual([]);
+    // ブラウザが受ける SSE の形（docs/RECOMMEND.md 8.4）
+    expect(sse({ recommend: normalizeRecommend({ recommend: 'x', alt: null, reason: { ja: 'あ', en: 'a' }, matched_moods: ['朝の光'] }) }))
+      .toBe('data: {"recommend":{"recommend":"x","alt":null,"reason":{"ja":"あ","en":"a"},"matched_moods":["朝の光"]}}\n\n');
   });
   it('relayEvents：ツール呼び出しのあとの拒否はいままで通り { refusal }', async () => {
     const out = [];

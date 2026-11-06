@@ -17,7 +17,33 @@
     "ja": "シナベニヤにミクストメディア",
     "en": "Mixed media on shina plywood"
   },
-  "messages": [],
-  "messages_en": [],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。作家のメッセージと音声は未登録。"
+  "messages": [
+    "何かをモチーフにしたのではない。",
+    "本能的に、生み出された一枚。",
+    "ただただ、いろいろな感情が揺らめいている。",
+    "私自身も、好きな色合い。"
+  ],
+  "messages_en": [
+    "It is not based on any motif.",
+    "It was born from instinct.",
+    "All sorts of feelings, simply flickering.",
+    "These are colors I love, too."
+  ],
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "moods": {
+    "ja": [
+      "本能的に生まれた",
+      "揺らめく感情",
+      "モチーフのない絵"
+    ],
+    "en": [
+      "Born of instinct",
+      "Flickering feelings",
+      "No motif, only feeling"
+    ],
+    "fit": {
+      "ja": "言葉にならない気持ちを抱えた人に",
+      "en": "For someone holding feelings that words cannot reach"
+    }
+  }
 }

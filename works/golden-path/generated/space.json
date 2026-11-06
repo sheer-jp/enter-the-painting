@@ -63,7 +63,28 @@
     "voice": null,
     "ambient": "calm"
   },
-  "messages": [],
+  "messages": [
+    {
+      "at": 0,
+      "ja": "デジタルっぽい感じを、アナログで描く。",
+      "en": "A digital feel, painted by hand."
+    },
+    {
+      "at": 7.8,
+      "ja": "そこに、面白さがある。",
+      "en": "That's where the fun is."
+    },
+    {
+      "at": 14.8,
+      "ja": "自分の中の、迷路のようなところから、",
+      "en": "From the maze-like place inside me,"
+    },
+    {
+      "at": 22.3,
+      "ja": "「この道を行く」と、自分で決める。",
+      "en": "I decide for myself: \"This is my path.\""
+    }
+  ],
   "story": null,
   "size_label": {
     "ja": "F0号",
@@ -177,5 +198,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-05T16:36:03.920Z"
+  "generated_at": "2026-11-06T10:23:54.744Z"
 }

@@ -63,7 +63,28 @@
     "voice": null,
     "ambient": "calm"
   },
-  "messages": [],
+  "messages": [
+    {
+      "at": 0,
+      "ja": "新しい表現に、挑戦した一枚。",
+      "en": "A piece where I tried a new way of painting."
+    },
+    {
+      "at": 7,
+      "ja": "ポコポコした、半立体のようなドット。",
+      "en": "Bubbly dots that rise up, almost three-dimensional."
+    },
+    {
+      "at": 14.5,
+      "ja": "やっぱり可愛くて、とっても元気が出る黄色。",
+      "en": "It is cute, and this yellow really lifts you up."
+    },
+    {
+      "at": 22.8,
+      "ja": "新しい扉、新しい章を、楽しんでいこう。",
+      "en": "A new door, a new chapter. Let's enjoy it."
+    }
+  ],
   "story": null,
   "size_label": {
     "ja": "F0号",
@@ -177,5 +198,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-05T16:36:05.224Z"
+  "generated_at": "2026-11-06T10:23:57.745Z"
 }

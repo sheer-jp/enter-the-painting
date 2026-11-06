@@ -63,7 +63,33 @@
     "voice": null,
     "ambient": "calm"
   },
-  "messages": [],
+  "messages": [
+    {
+      "at": 0,
+      "ja": "小さいけれど、重さのある一枚。",
+      "en": "Small, but it carries weight."
+    },
+    {
+      "at": 7,
+      "ja": "滲み出てくる色と、和風の気配。",
+      "en": "Colors seeping through, with a Japanese feel."
+    },
+    {
+      "at": 14,
+      "ja": "花は、美しいだけではない。",
+      "en": "A flower is not only beautiful."
+    },
+    {
+      "at": 21,
+      "ja": "過酷な環境の中でも、咲き誇る強さがある。",
+      "en": "It has the strength to bloom even in harsh conditions."
+    },
+    {
+      "at": 29,
+      "ja": "私自身も、とても好きな作品。",
+      "en": "It is one of my own favorites."
+    }
+  ],
   "story": null,
   "size_label": {
     "ja": "F0号",
@@ -177,5 +203,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-05T16:36:02.829Z"
+  "generated_at": "2026-11-06T10:23:58.237Z"
 }

@@ -121,6 +121,7 @@ src/recommend/                 画面（index.ts：入口・会話・おすす�
     "palette": ["#a47a62", ...],
     "axes": { "warmth": 0.72, "brightness": 0.58, "energy": 0.81 },   // 0〜1
     "moods": { "ja": ["朝の光", "ぶつかって、ほどける", "にぎやかな静けさ"], "en": [...] },
+    "fit": { "ja": "好きな音楽を流して、ひとりで没頭する時間に", "en": "…" },   // work.json の moods.fit。ja / en だけ（訳さない）。無ければキーごと省略
     "messages": { "ja": ["…"], "en": ["…"] },
     "story": { "ja": "…", "en": "…" },
     "image": "works/harmoney/generated/painting_1024.jpg", "url": "w/harmoney/"
@@ -132,6 +133,7 @@ src/recommend/                 画面（index.ts：入口・会話・おすす�
 - `warmth`：各色の色相 h（度）で `w = 0.5 + 0.5 × cos(h − 40°)`（橙 40° で 1、青 220° で 0）。彩度が低い色（HSL の S < 0.15）は 0.5 とする。重み付き平均
 - `brightness`：各色の相対輝度（`luminance`）の重み付き平均を、`sqrt` で持ち上げる（暗い絵が 0 に張り付かないように）
 - `energy`：`0.6 × 彩度の平均 + 0.4 × 色相の散らばり`。散らばりは色相の円周上の分散（1 − 平均ベクトルの長さ）。`space.json` の `motion.vorticity` があれば `0.5 × 上 + 0.5 × vorticity`
+- `fit`：`work.json` の `moods.fit`（向く人・時間、1 行）をそのまま出す。`moods` の訳には乗せない
 - `moods`：`work.json` の `moods.ja`（3〜5 語）が正。無ければ `ANTHROPIC_API_KEY` があるときだけ Claude が下書きし、`works/<id>/generated/moods.json` に書く（作家が `work.json` に移す）。無ければ空配列。訳は `translate.js` のキャッシュ（作品の `translations.json`）に乗せる
 
 ### 8.4 中継の API（Pages Functions `functions/api/recommend.js`。11-06 に Worker から移した）
@@ -141,7 +143,9 @@ src/recommend/                 画面（index.ts：入口・会話・おすす�
 ```jsonc
 // 要求
 { "lang": "ja", "messages": [{ "role": "user", "content": "朝、静かに始めたい" }, { "role": "assistant", "content": "…" }, ...] }
-// 応答：text/event-stream。data: {"text":"…"} を細切れに、最後に data: {"done":true}
+// 応答：text/event-stream。data: {"text":"…"} を細切れに、おすすめのときはツール recommend_work の入力を 1 回、最後に data: {"done":true}
+//   data: {"recommend": {"recommend": "<id>", "alt": "<id>" | null, "reason": {"ja": "…", "en": "…"}, "matched_moods": ["…"]}}
+//   matched_moods は選んだ作品の moods の語（0〜3 個。中継が文字列以外を捨て、3 個に切る）。reason は形が合わなければ省く
 // 失敗：JSON { "error": "rate_limited" | "refusal" | "upstream" | "bad_request" }、状態 429 / 422 / 502 / 400
 ```
 
@@ -158,10 +162,17 @@ system（日本語で書く。応答は `lang` の言語で）：
 1. 作家の紹介（config の intro）
 2. 話し方：短く（2〜3 文）、聞くのは 1 回に 1 つ、説明や売り込みはしない、情景で話す、名前・連絡先・年齢などの個人情報は聞かない・受け取っても使わない、絵の価格は答えない（「作家に聞けます」）
 3. 進め方：往復 `turns[0]` 以上 `turns[1]` 以下で必ずおすすめに至る。いまが何往復目かは user の件数から数える（`turns[1]` 往復目には必ず出す）
-4. カタログ（作品ごとに id、題名、寸法、販売、軸、moods、作家のメッセージ ja/en、物語 en）
-5. 出力の決まり：**おすすめを出すときは、文のあとに改行して 1 行だけ** `{"recommend":"<id>","alt":"<id>"|null}`。文はその人への言葉で、理由をこめる（JSON に理由は入れない）。それ以外のときは文だけ。JSON の前後に \`\`\` を付けない
+4. カタログ（作品ごとに id、題名、寸法、販売、軸、moods、向く人・時間（fit）、作家のメッセージ ja/en、物語 en）
+5. 出力の決まり：**おすすめを出すときは、文を書いたあとにツール `recommend_work` を 1 回呼ぶ**（文の中に JSON や id を書かない）。文はその人への言葉で、理由を情景でこめる。理由（文と reason）は、その作品の「気分の言葉」か「作家のメッセージ」のことばを 1 つ以上そのまま使う。それ以外のときは文だけ（ツールを呼ばない）
 
-ブラウザ側（`src/recommend/parse.ts`）：ストリーム中は `{"recommend"` が現れた時点でそれ以降を表示しない。`done` で JSON を parse し、id がカタログに無ければ最初の作品にする。
+ツール `recommend_work`（`strict: true`、`tool_choice` は auto）の入力：
+- `recommend`：カタログの id（enum）
+- `alt`：2 番目の候補の id か null
+- `reason`：`{ ja, en }` 1 文ずつ
+- `matched_moods`：文字列の配列、1〜3 個。選んだ作品の moods の語をそのまま
+- 4 つとも required、`additionalProperties: false`
+
+中継（`functions/_lib/relay.js`）がツールの入力を集めて 8.4 の `recommend` の出来事 1 回にする。ブラウザ側はその出来事を受けて、カードに理由と `matched_moods` を出す（id がカタログに無ければ最初の作品にする）。
 
 ### 8.6 ルールだけの版（`src/recommend/rules.ts`）
 

@@ -101,10 +101,122 @@
         "energy": 0.54
       },
       "moods": {
-        "ja": []
+        "ja": [
+          "自分で決める道",
+          "迷路から抜ける",
+          "デジタルをアナログで"
+        ],
+        "en": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "zh-Hans": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "zh-Hant": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "ko": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "fr": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "de": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "es": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "it": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ],
+        "pt": [
+          "A path you choose yourself",
+          "Out of the maze",
+          "Digital, made by hand"
+        ]
+      },
+      "fit": {
+        "ja": "迷いの中で、進む道を決めたいときに",
+        "en": "For when you are lost and want to choose your way"
       },
       "messages": {
-        "ja": []
+        "ja": [
+          "デジタルっぽい感じを、アナログで描く。",
+          "そこに、面白さがある。",
+          "自分の中の、迷路のようなところから、",
+          "「この道を行く」と、自分で決める。"
+        ],
+        "en": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "zh-Hans": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "zh-Hant": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "ko": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "fr": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "de": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "es": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "it": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ],
+        "pt": [
+          "A digital feel, painted by hand.",
+          "That's where the fun is.",
+          "From the maze-like place inside me,",
+          "I decide for myself: \"This is my path.\""
+        ]
       },
       "story": null,
       "image": "works/golden-path/generated/painting_1024.jpg",
@@ -198,6 +310,10 @@
           "Melting, dancing",
           "Immersed, yet balanced"
         ]
+      },
+      "fit": {
+        "ja": "好きな音楽を流して、ひとりで没頭する時間に",
+        "en": "For time alone, lost in your favorite music"
       },
       "messages": {
         "ja": [
@@ -308,10 +424,122 @@
         "energy": 0.52
       },
       "moods": {
-        "ja": []
+        "ja": [
+          "本能的に生まれた",
+          "揺らめく感情",
+          "モチーフのない絵"
+        ],
+        "en": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "zh-Hans": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "zh-Hant": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "ko": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "fr": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "de": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "es": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "it": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ],
+        "pt": [
+          "Born of instinct",
+          "Flickering feelings",
+          "No motif, only feeling"
+        ]
+      },
+      "fit": {
+        "ja": "言葉にならない気持ちを抱えた人に",
+        "en": "For someone holding feelings that words cannot reach"
       },
       "messages": {
-        "ja": []
+        "ja": [
+          "何かをモチーフにしたのではない。",
+          "本能的に、生み出された一枚。",
+          "ただただ、いろいろな感情が揺らめいている。",
+          "私自身も、好きな色合い。"
+        ],
+        "en": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "zh-Hans": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "zh-Hant": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "ko": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "fr": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "de": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "es": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "it": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ],
+        "pt": [
+          "It is not based on any motif.",
+          "It was born from instinct.",
+          "All sorts of feelings, simply flickering.",
+          "These are colors I love, too."
+        ]
       },
       "story": null,
       "image": "works/instinct/generated/painting_1024.jpg",
@@ -347,10 +575,142 @@
         "energy": 0.42
       },
       "moods": {
-        "ja": []
+        "ja": [
+          "火を思わせる赤",
+          "頂に行くぞ",
+          "渦巻くエネルギー",
+          "パワーが湧く"
+        ],
+        "en": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "zh-Hans": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "zh-Hant": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "ko": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "fr": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "de": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "es": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "it": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ],
+        "pt": [
+          "A red like fire",
+          "Off to the summit",
+          "Swirling energy",
+          "Power welling up"
+        ]
+      },
+      "fit": {
+        "ja": "大きな挑戦を前にした人の仕事場に",
+        "en": "For the workspace of someone facing a big challenge"
       },
       "messages": {
-        "ja": []
+        "ja": [
+          "とても強気な一枚。",
+          "火を思わせる赤と、右上には太陽のような赤。",
+          "20 色以上を、重ね重ねて描いた。",
+          "エネルギーが渦巻いて、もっともっと上へ。",
+          "頂に行くぞ。見るだけで、パワーが湧いてくる。"
+        ],
+        "en": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "zh-Hans": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "zh-Hant": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "ko": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "fr": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "de": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "es": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "it": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ],
+        "pt": [
+          "A very bold piece.",
+          "A red like fire, and in the upper right, a red like the sun.",
+          "I layered over twenty colors, again and again.",
+          "Energy swirls, rising higher and higher.",
+          "I'm going to the summit. Just looking gives you power."
+        ]
       },
       "story": null,
       "image": "works/itadaki/generated/painting_1024.jpg",
@@ -386,10 +746,132 @@
         "energy": 0.53
       },
       "moods": {
-        "ja": []
+        "ja": [
+          "新しい章",
+          "元気が出る黄色",
+          "半立体のドット",
+          "新しい扉"
+        ],
+        "en": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "zh-Hans": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "zh-Hant": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "ko": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "fr": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "de": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "es": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "it": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ],
+        "pt": [
+          "A new chapter",
+          "A yellow that lifts you up",
+          "Raised, bubbly dots",
+          "A new door"
+        ]
+      },
+      "fit": {
+        "ja": "新しいことを始める朝の机に",
+        "en": "For your desk on a morning when you start something new"
       },
       "messages": {
-        "ja": []
+        "ja": [
+          "新しい表現に、挑戦した一枚。",
+          "ポコポコした、半立体のようなドット。",
+          "やっぱり可愛くて、とっても元気が出る黄色。",
+          "新しい扉、新しい章を、楽しんでいこう。"
+        ],
+        "en": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "zh-Hans": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "zh-Hant": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "ko": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "fr": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "de": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "es": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "it": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ],
+        "pt": [
+          "A piece where I tried a new way of painting.",
+          "Bubbly dots that rise up, almost three-dimensional.",
+          "It is cute, and this yellow really lifts you up.",
+          "A new door, a new chapter. Let's enjoy it."
+        ]
       },
       "story": null,
       "image": "works/new-chapter/generated/painting_1024.jpg",
@@ -425,10 +907,142 @@
         "energy": 0.51
       },
       "moods": {
-        "ja": []
+        "ja": [
+          "滲み出る色",
+          "和風",
+          "小さな重厚感",
+          "咲き誇る強さ"
+        ],
+        "en": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "zh-Hans": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "zh-Hant": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "ko": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "fr": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "de": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "es": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "it": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ],
+        "pt": [
+          "Colors seeping through",
+          "A Japanese feel",
+          "Small, yet weighty",
+          "The strength to bloom"
+        ]
+      },
+      "fit": {
+        "ja": "厳しい時期を越えようとしている人のそばに",
+        "en": "For someone making their way through a hard season"
       },
       "messages": {
-        "ja": []
+        "ja": [
+          "小さいけれど、重さのある一枚。",
+          "滲み出てくる色と、和風の気配。",
+          "花は、美しいだけではない。",
+          "過酷な環境の中でも、咲き誇る強さがある。",
+          "私自身も、とても好きな作品。"
+        ],
+        "en": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "zh-Hans": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "zh-Hant": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "ko": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "fr": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "de": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "es": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "it": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ],
+        "pt": [
+          "Small, but it carries weight.",
+          "Colors seeping through, with a Japanese feel.",
+          "A flower is not only beautiful.",
+          "It has the strength to bloom even in harsh conditions.",
+          "It is one of my own favorites."
+        ]
       },
       "story": null,
       "image": "works/the-flower-within/generated/painting_1024.jpg",

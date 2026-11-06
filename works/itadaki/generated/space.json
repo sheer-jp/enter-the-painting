@@ -63,7 +63,33 @@
     "voice": null,
     "ambient": "calm"
   },
-  "messages": [],
+  "messages": [
+    {
+      "at": 0,
+      "ja": "とても強気な一枚。",
+      "en": "A very bold piece."
+    },
+    {
+      "at": 7,
+      "ja": "火を思わせる赤と、右上には太陽のような赤。",
+      "en": "A red like fire, and in the upper right, a red like the sun."
+    },
+    {
+      "at": 15.3,
+      "ja": "20 色以上を、重ね重ねて描いた。",
+      "en": "I layered over twenty colors, again and again."
+    },
+    {
+      "at": 22.5,
+      "ja": "エネルギーが渦巻いて、もっともっと上へ。",
+      "en": "Energy swirls, rising higher and higher."
+    },
+    {
+      "at": 30.5,
+      "ja": "頂に行くぞ。見るだけで、パワーが湧いてくる。",
+      "en": "I'm going to the summit. Just looking gives you power."
+    }
+  ],
   "story": null,
   "size_label": {
     "ja": "F10号",
@@ -281,5 +307,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-05T16:36:00.438Z"
+  "generated_at": "2026-11-06T10:23:57.276Z"
 }

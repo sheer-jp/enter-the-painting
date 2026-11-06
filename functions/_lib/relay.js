@@ -39,17 +39,30 @@ export function mapEvent(ev) {
   return null;
 }
 
+// matched_moods の上限（ツールのスキーマの maxItems と同じ）
+const MAX_MATCHED = 3;
+
 /**
- * ツールの入力を確かめる。形が合えば { recommend, alt, reason? }、合わなければ null
+ * @typedef {{ recommend: string, alt: string | null, reason?: { ja: string, en: string }, matched_moods: string[] }} Recommend
+ */
+
+/**
+ * ツールの入力を確かめる。形が合えば { recommend, alt, reason?, matched_moods }、合わなければ null
+ * matched_moods は文字列だけを残し、最大 3 つ。無ければ []
  * @param {any} o
- * @returns {{ recommend: string, alt: string | null, reason?: { ja: string, en: string } } | null}
+ * @returns {Recommend | null}
  */
 export function normalizeRecommend(o) {
   if (!o || typeof o !== 'object' || typeof o.recommend !== 'string' || !o.recommend) return null;
-  /** @type {{ recommend: string, alt: string | null, reason?: { ja: string, en: string } }} */
-  const out = { recommend: o.recommend, alt: typeof o.alt === 'string' && o.alt ? o.alt : null };
-  if (o.reason && typeof o.reason.ja === 'string' && typeof o.reason.en === 'string') out.reason = { ja: o.reason.ja, en: o.reason.en };
-  return out;
+  // キーの順は SSE の形（recommend、alt、reason、matched_moods）に揃える
+  const reason = o.reason && typeof o.reason.ja === 'string' && typeof o.reason.en === 'string' ? { ja: o.reason.ja, en: o.reason.en } : null;
+  const matched = Array.isArray(o.matched_moods) ? o.matched_moods.filter((/** @type {any} */ m) => typeof m === 'string' && m).slice(0, MAX_MATCHED) : [];
+  return {
+    recommend: o.recommend,
+    alt: typeof o.alt === 'string' && o.alt ? o.alt : null,
+    ...(reason ? { reason } : {}),
+    matched_moods: matched,
+  };
 }
 
 /**

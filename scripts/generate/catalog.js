@@ -127,6 +127,9 @@ async function catalogWork(root, id, apiKey) {
   }
 
   const msgs = (space.messages || []).map(({ at, ...langs }) => langs);
+  // 向く人・時間（work.json の moods.fit）。ja / en だけ。訳さない。無ければ省略
+  const f = work.moods?.fit;
+  const fit = f && typeof f.ja === 'string' && f.ja ? { ja: f.ja, ...(typeof f.en === 'string' && f.en ? { en: f.en } : {}) } : null;
   return {
     id,
     title: space.title || { ja: id },
@@ -137,6 +140,7 @@ async function catalogWork(root, id, apiKey) {
     palette: space.palette || [],
     axes: axesFromPalette(space.palette || [], space.palette_weights, vort),
     moods,
+    ...(fit ? { fit } : {}),
     messages: msgs.length ? perLangList(msgs) : { ja: [] },
     story: space.story || null,
     image: `works/${id}/generated/painting_1024.jpg`,
