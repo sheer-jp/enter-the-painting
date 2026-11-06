@@ -32,7 +32,13 @@ async function runCase(name, { webgl = true, lang = 'ja', query = '' } = {}) {
   const browser = await chromium.launch({ args: webgl ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] : ['--disable-webgl', '--disable-webgl2'] });
   const page = await browser.newPage({ viewport: { width: 420, height: 800 }, locale: lang });
   const errors = [];
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  // /api/（計測の送信や受付の API）への 404 は vite preview では想定どおりなので除く（collectErrors と同じ）
+  page.on('console', (m) => {
+    if (m.type() !== 'error') return;
+    const where = m.location()?.url || '';
+    if (/\/api\//.test(where) && /Failed to load resource/i.test(m.text())) return;
+    errors.push(m.text());
+  });
   page.on('pageerror', (e) => errors.push(String(e)));
   const t0 = Date.now();
   await page.goto(`http://localhost:${PORT}/w/harmoney/${query}`, { waitUntil: 'load' });
