@@ -1,7 +1,7 @@
 // 受付（docs/ENTRANCE.md 3 節）。上にキャラクター、下に会話。おすすめの 1 点は別の画面（C2）に 3 段で出す（3.5）
 // 見出し・キャラクター・最初の 2 文・選択肢・入力欄・C2 の枠は HTML にあり（pages.js）、ここは会話を動かすだけ
 // 会話はこのタブのメモリにだけ持ち、どこにも保存しない。保存するのは合言葉（通ったときだけ）と、直前のおすすめ（sessionStorage）
-import { t, pick, applyLang, type Lang } from '../i18n';
+import { t, pick, applyLang, titlePair, type Lang } from '../i18n';
 import { recommendByRules, targetAxes, axisDistance, pickMoods, buildReason, type Answers, type Catalog, type CatalogWork } from '../recommend/rules';
 import { splitRecommendation, resolveRecommendation, parseRecommendEvent, reasonText, type RecJson } from '../recommend/parse';
 import { LAST_REC_KEY, type LastRec } from './last';
@@ -724,7 +724,13 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     let i = 0;
     const rise = <T extends HTMLElement>(el: T): T => { el.classList.add('cg-rise'); el.style.setProperty('--i', String(i++)); card.appendChild(el); return el; };
     const cap = h('p', 'cg-cap');
-    cap.append(h('b', '', pick(w.title, lang)), h('span', '', sizeText(w)));
+    {   // 題名の主従（日本語以外では英語を大きく、日本語を小さく）
+      const tp = titlePair(w.title, lang);
+      const b = h('b', tp.mainLatin ? 'latin' : '', tp.main);
+      cap.appendChild(b);
+      if (tp.sub) cap.appendChild(h('span', tp.mainLatin ? 't-sub' : 't-sub latin', tp.sub));
+      cap.appendChild(h('span', '', sizeText(w)));
+    }
     rise(cap);
     if (info.reason) rise(h('p', 'cg-reason', info.reason));
     if (info.moods.length) {

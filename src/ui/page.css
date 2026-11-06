@@ -43,7 +43,9 @@ main.work { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-a
 .painting img:hover { transform: scale(1.01); }
 .titling { margin: 36px 0 0; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
 .titling h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 4vw, 38px); letter-spacing: .08em; margin: 0; line-height: 1.3; text-wrap: balance; }
-.titling h1 .latin { font-family: var(--latin); font-weight: 300; font-style: italic; font-size: .85em; letter-spacing: .06em; color: var(--ink-2); margin-left: .6em; }
+.titling h1 .t-sub { font-size: .85em; color: var(--ink-2); margin-left: .6em; }
+.titling h1 .t-sub.latin { font-family: var(--latin); font-weight: 300; font-style: italic; letter-spacing: .06em; }
+.titling h1 .t-main.latin { font-family: var(--latin); font-weight: 400; font-style: normal; letter-spacing: .04em; }   /* 11-07 作家：日本語以外では英語を主、日本語を従 */
 .meta { margin: 10px 0 0; font-size: 12.5px; letter-spacing: .12em; color: var(--ink-2); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 6px 0; }
 .meta > *:not(:last-child)::after { content: "·"; margin: 0 .7em; color: var(--line); }
 .avail { color: var(--ink); }
@@ -234,7 +236,9 @@ main.gw { min-height: 100dvh; display: flex; flex-direction: column; padding: en
 .gw-item img { display: block; width: 100%; height: auto; box-shadow: 0 1px 2px rgba(35, 32, 29, .18), 0 14px 30px rgba(35, 32, 29, .14); background: var(--bg-2); }
 .gw-cap { display: block; margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11px; letter-spacing: .12em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .gw-cap b { display: block; font-family: var(--serif); font-weight: 400; font-size: 14px; letter-spacing: .1em; color: var(--ink); }
-.gw-cap i { display: block; font-family: var(--latin); font-weight: 300; font-size: 12px; letter-spacing: .06em; }
+.gw-cap i { display: block; font-size: 12px; font-style: normal; font-family: var(--serif); letter-spacing: .1em; }
+.gw-cap i.latin { font-family: var(--latin); font-weight: 300; font-style: italic; letter-spacing: .06em; }
+.gw-cap b.latin, .other b.latin { font-family: var(--latin); font-weight: 400; letter-spacing: .04em; }
 .gw-foryou { position: absolute; bottom: calc(100% + 12px); left: 0; font-size: 11px; letter-spacing: .2em; color: var(--ink); white-space: nowrap; }
 /* おすすめの 1 点：ほんの少し明るい（背後の光） */
 .gw-item.is-for-you::before { content: ""; position: absolute; inset: -38% -42% -20%; z-index: -1; background: radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0)); pointer-events: none; }

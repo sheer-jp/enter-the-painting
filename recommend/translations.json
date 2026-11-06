@@ -35,18 +35,6 @@
     "it": "Ho bisogno di energia per andare avanti",
     "pt": "Preciso de energia para continuar"
   },
-  "c2dfb235c805": {
-    "ja": "寂しい夜によりそってほしい",
-    "en": "Stay with me on a lonely night",
-    "zh-Hans": "陪我度过寂寞的夜晚",
-    "zh-Hant": "陪我度過寂寞的夜晚",
-    "ko": "외로운 밤, 곁에 있어 줘",
-    "fr": "Reste avec moi les soirs de solitude",
-    "de": "Sei bei mir in einsamen Nächten",
-    "es": "Acompáñame en las noches solitarias",
-    "it": "Stammi vicino nelle notti di solitudine",
-    "pt": "Fica comigo nas noites solitárias"
-  },
   "5a17910eb0c8": {
     "ja": "明るい気持ちになれる絵を",
     "en": "A painting that lifts my mood",
@@ -130,5 +118,17 @@
     "es": "Escribir con mis palabras",
     "it": "Scrivere con parole mie",
     "pt": "Escrever com as minhas palavras"
+  },
+  "fd3249e18e0a": {
+    "ja": "寂しい夜に寄り添ってほしい",
+    "en": "Stay with me on a lonely night",
+    "zh-Hans": "陪我度过寂寞的夜晚",
+    "zh-Hant": "陪我度過寂寞的夜晚",
+    "ko": "외로운 밤, 곁에 있어 줘",
+    "fr": "Reste avec moi les soirs de solitude",
+    "de": "Sei bei mir in einsamen Nächten",
+    "es": "Acompáñame en las noches solitarias",
+    "it": "Stammi vicino nelle notti di solitudine",
+    "pt": "Fica comigo nas noites solitárias"
   }
 }

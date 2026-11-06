@@ -74,7 +74,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
       ${LANGS.map((l) => space.story[l] ? `<p lang="${l}" data-lang="${l}" hidden>${esc(space.story[l])}</p>` : '').join('')}
     </section>` : '';
   const others = allWorks.filter((o) => o.id !== id).map((o) => `
-      <a class="other" href="../${o.id}/"><img src="../../works/${o.id}/generated/painting_1024.jpg" alt="${esc(t(o.title, 'ja'))}" loading="lazy"><b>${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
+      <a class="other" href="../${o.id}/" data-title-ja="${esc(t(o.title, 'ja'))}" data-title-en="${esc(t(o.title, 'en'))}"><img src="../../works/${o.id}/generated/painting_1024.jpg" alt="${esc(t(o.title, 'ja'))}" loading="lazy"><b class="t-main">${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
   const contact = work.contact ? `<a class="btn ghost" id="contact" href="${esc(work.contact)}" target="_blank" rel="noopener" data-i18n="contact">${UI_JA.contact}</a>` : '';
   return `<!doctype html>
 <html lang="ja">
@@ -97,7 +97,7 @@ ${FONTS}
     <img src="${img}" alt="${esc(title)}" fetchpriority="high">
   </figure>
   <header class="titling">
-    <h1>${esc(title)}${titleEn && titleEn !== title ? `<span class="latin">${esc(titleEn)}</span>` : ''}</h1>
+    <h1 data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><span class="t-main">${esc(title)}</span>${titleEn && titleEn !== title ? `<span class="t-sub latin">${esc(titleEn)}</span>` : '<span class="t-sub" hidden></span>'}</h1>
     <p class="meta">${work.year ? `<span>${esc(work.year)}</span>` : ''}<span>${w} × ${h} cm</span>${(space.medium || work.medium) ? `<span>${multi(asMulti(space.medium || work.medium))}</span>` : ''}${avail}</p>
   </header>
   <div class="actions">
@@ -226,7 +226,7 @@ export function galleryWallPage({ works, baseUrl }) {
     <a class="gw-item" data-id="${esc(w.id)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
       <span class="gw-foryou" data-i18n="gw_for_you" hidden>あなたへの 1 点</span>
       <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" alt="${esc(title)}" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
-      <span class="gw-cap"><b>${esc(title)}</b>${titleEn && titleEn !== title ? `<i>${esc(titleEn)}</i>` : ''}<span>${cw} × ${ch} cm</span></span>
+      <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${cw} × ${ch} cm</span></span>
     </a>`;
   }).join('');
   return `<!doctype html>

@@ -30,7 +30,23 @@ export function rememberLang(lang: Lang) {
 }
 
 // data-i18n 属性の要素と、data-lang の段落を差し替える
+// 題名の主従（11-07 作家）：日本語では「日本語を大きく、英語を小さく」、それ以外の言語では逆（英語を大きく、日本語を小さく）。
+// 英語が無ければ ja を主に。主と従が同じ文字列なら従は無し
+export function titlePair(title: Partial<Record<Lang, string>> | null | undefined, lang: Lang): { main: string; sub: string; mainLatin: boolean } {
+  const ja = title?.ja || '', en = title?.en || '';
+  if (lang === 'ja') return { main: ja || en, sub: en && en !== ja ? en : '', mainLatin: !ja };
+  const main = en || ja;
+  return { main, sub: ja && ja !== main ? ja : '', mainLatin: !!en };
+}
+
 export function applyLang(root: ParentNode, lang: Lang) {
+  // 題名の主従：data-title-ja / data-title-en を持つ要素の .t-main / .t-sub を言語で入れ替える
+  root.querySelectorAll<HTMLElement>('[data-title-ja], [data-title-en]').forEach((el) => {
+    const { main, sub, mainLatin } = titlePair({ ja: el.dataset.titleJa, en: el.dataset.titleEn }, lang);
+    const m = el.querySelector<HTMLElement>('.t-main'), s = el.querySelector<HTMLElement>('.t-sub');
+    if (m) { m.textContent = main; m.classList.toggle('latin', mainLatin); }
+    if (s) { s.textContent = sub; s.classList.toggle('latin', !mainLatin && !!sub); s.hidden = !sub; }
+  });
   root.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n!;
     if (UI[key]) el.textContent = t(key, lang, el.dataset.i18nW ? { w: el.dataset.i18nW } : undefined);

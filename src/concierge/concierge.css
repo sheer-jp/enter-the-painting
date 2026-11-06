@@ -41,6 +41,9 @@
 
 .cg-cap { margin: 4px 0 0; text-align: center; font-size: 11px; letter-spacing: .12em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .cg-cap b { display: block; font-family: var(--serif); font-weight: 400; font-size: 17px; letter-spacing: .1em; color: var(--ink); }
+.cg-cap b.latin { font-family: var(--latin); letter-spacing: .04em; }
+.cg-cap .t-sub { display: block; font-family: var(--serif); font-size: 12px; letter-spacing: .1em; color: var(--ink-2); margin-bottom: 2px; }
+.cg-cap .t-sub.latin { font-family: var(--latin); font-style: italic; font-weight: 300; }
 .cg-reason { margin: 0; max-width: 26em; text-align: center; font-family: var(--serif); font-size: 14.5px; line-height: 1.8; letter-spacing: .04em; color: var(--ink); }
 .cg-moods { display: none; margin: 0; flex-wrap: wrap; justify-content: center; gap: 4px 10px; font-size: 11px; letter-spacing: .1em; color: var(--ink-2); }
 .cg-moods-label { letter-spacing: .2em; }
