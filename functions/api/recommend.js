@@ -33,7 +33,11 @@ export async function fetchUpstream(doFetch, delay = RETRY_DELAY) {
   let res = null;
   try { res = await doFetch(); } catch (e) { console.error('Claude API に届かない。再試行する', String(e)); }
   if (res && res.ok) return res;
-  if (res && !retryableStatus(res.status)) { console.error('Claude API の状態', res.status, '（再試行しない）'); return res; }
+  if (res && !retryableStatus(res.status)) {
+    // 4xx は要求の組み立ての問題なので、上流のエラー文（Anthropic の type と message。会話の本文は含まれない）をログに出して原因を追えるようにする
+    if (!res.ok) { try { const err = await res.clone().json(); console.error('Claude API の状態', res.status, '（再試行しない）', err?.error?.type, String(err?.error?.message || '').slice(0, 300)); } catch { console.error('Claude API の状態', res.status, '（再試行しない）'); } }
+    return res;
+  }
   if (res) { console.error('Claude API の状態', res.status, '。再試行する'); try { await res.body?.cancel(); } catch { /* 読まずに捨てる */ } }
   await new Promise((r) => setTimeout(r, delay));
   try { res = await doFetch(); } catch (e) { console.error('Claude API に届かない（再試行後）', String(e)); return null; }

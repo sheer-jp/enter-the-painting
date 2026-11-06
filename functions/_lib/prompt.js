@@ -130,9 +130,8 @@ export function buildTool(catalog) {
         matched_moods: {
           type: 'array',
           items: { type: 'string' },
-          minItems: 1,
-          maxItems: 3,
-          description: '選んだ作品の気分の言葉から、この人に合う 1〜3 語（カタログの moods の語をそのまま）',
+          // strict のスキーマは minItems / maxItems を受け付けない（本番で 400）。個数は description と relay の normalizeRecommend で抑える
+          description: '選んだ作品の気分の言葉から、この人に合う 1〜3 語（カタログの moods の語をそのまま）。1 語以上 3 語まで',
         },
       },
       required: ['recommend', 'alt', 'reason', 'matched_moods'],

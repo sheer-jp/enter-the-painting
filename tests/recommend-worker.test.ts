@@ -72,7 +72,10 @@ describe('functions/_lib/prompt.js', () => {
     const s = t.input_schema;
     expect(s.additionalProperties).toBe(false);
     expect(s.required).toEqual(['recommend', 'alt', 'reason', 'matched_moods']);
-    expect(s.properties.matched_moods).toMatchObject({ type: 'array', items: { type: 'string' }, minItems: 1, maxItems: 3 });
+    expect(s.properties.matched_moods).toMatchObject({ type: 'array', items: { type: 'string' } });
+    // strict は minItems / maxItems を受け付けない（本番で 400 になった）ので入れない
+    expect(s.properties.matched_moods).not.toHaveProperty('minItems');
+    expect(s.properties.matched_moods).not.toHaveProperty('maxItems');
     expect(s.properties.matched_moods.description).toContain('カタログの moods の語をそのまま');
     expect(s.properties.recommend.enum).toEqual(['harmoney', 'blue-tide']);
     expect(s.properties.alt.anyOf).toEqual([{ type: 'string', enum: ['harmoney', 'blue-tide'] }, { type: 'null' }]);
