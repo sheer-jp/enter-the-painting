@@ -43,6 +43,7 @@ export function applyLang(root: ParentNode, lang: Lang) {
   // 題名の主従：data-title-ja / data-title-en を持つ要素の .t-main / .t-sub を言語で入れ替える
   root.querySelectorAll<HTMLElement>('[data-title-ja], [data-title-en]').forEach((el) => {
     const { main, sub, mainLatin } = titlePair({ ja: el.dataset.titleJa, en: el.dataset.titleEn }, lang);
+    if (el instanceof HTMLImageElement) { el.alt = main; return; }   // 作品ページの絵の alt（題名は訳さず、ja 以外は英題）
     const m = el.querySelector<HTMLElement>('.t-main'), s = el.querySelector<HTMLElement>('.t-sub');
     if (m) { m.textContent = main; m.classList.toggle('latin', mainLatin); }
     if (s) { s.textContent = sub; s.classList.toggle('latin', !mainLatin && !!sub); s.hidden = !sub; }
@@ -50,6 +51,12 @@ export function applyLang(root: ParentNode, lang: Lang) {
   root.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n!;
     if (UI[key]) el.textContent = t(key, lang, el.dataset.i18nW ? { w: el.dataset.i18nW } : undefined);
+  });
+  // 属性の訳（AUDIT-1 P1-6）：data-i18n-attr="aria-label:key" 。複数は ; 区切り。差し込みは data-i18n-vars（JSON。値が多言語のオブジェクトなら閲覧者の言語を取る）
+  root.querySelectorAll<HTMLElement>('[data-i18n-attr]').forEach((el) => {
+    let vars: Record<string, string> | undefined;
+    try { const v = JSON.parse(el.dataset.i18nVars || 'null'); if (v) { vars = {}; for (const k in v) vars[k] = typeof v[k] === 'string' ? v[k] : pick(v[k], lang); } } catch {}
+    for (const p of el.dataset.i18nAttr!.split(';')) { const [a, k] = p.split(':'); if (a && k && UI[k]) el.setAttribute(a, t(k, lang, vars)); }
   });
   root.querySelectorAll<HTMLElement>('[data-lang]').forEach((el) => { el.hidden = el.dataset.lang !== lang; });
   // data-lang の段落が閲覧者の言語に無ければ en、それも無ければ ja を出す

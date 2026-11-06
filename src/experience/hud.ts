@@ -28,10 +28,15 @@ export function buildHud(parent: HTMLElement, lang: Lang, opts: { fromQr: boolea
   btn('close', 'close');
   root.append(vignette, textLayer, title, paused, once, caption, ending, pause, skip, close, debug);
   parent.appendChild(root);
+  // 一時停止ボタンの読み上げは操作の文言（「一時停止」／「再開」）。状態の表示（paused の「一時停止中」）とは分ける（FIX-A の引き継ぎ）。
+  // 状態は StoryMode が記号（❚❚ / ▶）で切り替えるので、記号の変化を見て当て直す
+  let cur = lang;
+  const labelPause = () => pause.setAttribute('aria-label', t(pause.textContent === '▶' ? 'hud_resume' : 'hud_pause', cur));
+  new MutationObserver(labelPause).observe(pause, { childList: true, characterData: true, subtree: true });
   const hud: Hud = {
     root, close, skip, pause, title, paused, ending, once, caption, vignette, debug, textLayer,
     setLang(l) {
-      close.setAttribute('aria-label', t('close', l)); skip.textContent = t('skip', l); paused.textContent = t('pause', l); pause.setAttribute('aria-label', t('pause', l));
+      close.setAttribute('aria-label', t('close', l)); skip.textContent = t('skip', l); paused.textContent = t('pause', l); cur = l; labelPause();
       once.textContent = opts.fromQr ? t('once_more', l) : '';
       ending.querySelectorAll<HTMLElement>('[data-i18n]').forEach((b) => (b.textContent = t(b.dataset.i18n!, l)));
     },

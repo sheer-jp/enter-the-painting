@@ -152,7 +152,7 @@ async function entranceCase(name, viewport) {
     const lineFs = await page.locator('.cg-thread .cg-line').first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
     check(lineFs >= 16, `${name}: 吹き出しの文字 ${lineFs}px`);
     const hostTalk = await page.locator('.cg-host').evaluate((el) => el.getBoundingClientRect().height);
-    if (viewport.width < 768) check(hostTalk < hostWelcome * 0.6, `${name}: 会話の状態でキャラクターが小さくなる（${Math.round(hostWelcome)} → ${Math.round(hostTalk)}px）`);
+    if (viewport.width < 768) check(hostTalk < hostWelcome * 0.7, `${name}: 会話の状態でキャラクターが小さくなる（${Math.round(hostWelcome)} → ${Math.round(hostTalk)}px）`);
     await inputEl.fill('朝、静かに始めたい');
     const lines2 = page.locator('.cg-thread .cg-line');
     const n2 = await lines2.count();

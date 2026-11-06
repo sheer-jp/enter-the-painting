@@ -70,6 +70,22 @@ export function fillPhrases(el: HTMLElement, text: string, lang: string, done = 
 }
 
 const FIRST_BYTE_MS = 20000;          // 最初の文字がこれだけ来なければルールだけの版へ（モデルの思考で最初の文が遅れることがある）
+const STALL_MS = 20000;               // 文が来始めたあと、これだけ何も来なければ止まったとみなす（REVIEW-1 P2。上流を切ってルールだけの版へ）
+
+// 選択肢のプールから n 個の番号（REVIEW-1 P2）。Fisher–Yates で偏りなく並べ替え、種類（kinds）が重ならないものを先に、足りなければ残りから。
+// 選んだ番号は会話のあいだ持ち続ける（言語を切り替えても選び直さない）。rand はテストで差し替える
+export function pickOpeners(pool: readonly unknown[], kinds: readonly string[], n: number, rand: () => number = Math.random): number[] {
+  const idx = [...pool.keys()];
+  for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  const used = new Set<string>(); const out: number[] = [];
+  for (const i of idx) { const k = kinds[i] || String(i); if (used.has(k)) continue; used.add(k); out.push(i); if (out.length === n) return out; }
+  for (const i of idx) { if (out.length === n) break; if (!out.includes(i)) out.push(i); }
+  return out;
+}
+// 選んだ番号の文を、閲覧者の言語で（無ければ en → ja）
+export function openerTexts(pool: Partial<Record<Lang, string[]>>, picked: readonly number[], lang: Lang): string[] {
+  return picked.map((i) => pool[lang]?.[i] ?? pool.en?.[i] ?? pool.ja?.[i] ?? '');
+}
 const PASS_KEY = 'etp.passphrase';    // 合言葉を覚える localStorage の鍵（通ったときだけ保存）
 // 全身を見せる条件（pages.js の FULL_MQ と同じ。HTML の <source media> があればそれを使う）
 const FULL_MQ = '(orientation: landscape) and (max-height: 500px), (orientation: landscape) and (min-width: 900px)';
@@ -408,17 +424,10 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     let [list, en] = lists('openers');
     const pool = c?.openers_pool;
     if (pool && (pool.ja?.length ?? 0) >= 3) {
-      if (openerPick.length !== 3) {
-        // 種類（kinds）がばらけるように：種類をシャッフルして先頭から 1 つずつ（11-07 作家「属性がバラバラなものが出るといい」）
-        const n = pool.ja!.length; const kinds = pool.kinds || [];
-        const idx = [...Array(n).keys()].sort(() => Math.random() - 0.5);
-        const used = new Set<string>(); const pick: number[] = [];
-        for (const i of idx) { const k = kinds[i] || String(i); if (used.has(k)) continue; used.add(k); pick.push(i); if (pick.length === 3) break; }
-        for (const i of idx) { if (pick.length === 3) break; if (!pick.includes(i)) pick.push(i); }
-        openerPick = pick;
-      }
-      list = openerPick.map((i) => pool[lang]?.[i] ?? pool.en?.[i] ?? pool.ja?.[i] ?? '');
-      en = openerPick.map((i) => pool.en?.[i] ?? pool.ja?.[i] ?? '');
+      // 種類（kinds）がばらけるように（11-07 作家「属性がバラバラなものが出るといい」）。言語の切り替えでは選び直さない
+      if (openerPick.length !== 3) openerPick = pickOpeners(pool.ja!, pool.kinds || [], 3);
+      list = openerTexts(pool, openerPick, lang);
+      en = openerTexts(pool, openerPick, 'en');
     }
     thread.querySelectorAll<HTMLButtonElement>('button[data-opener-index]:not(.cg-write)').forEach((b) => {
       const i = +b.dataset.openerIndex!;
@@ -465,7 +474,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   langSelect?.addEventListener('change', () => { lang = langSelect.value as Lang; labelUi(); labelOpeners(); });
 
   // ───── 会話の吹き出し（キャラクターは左、自分は右。1 吹き出しずつ） ─────
-  const scrollEnd = () => { thread.scrollTop = thread.scrollHeight; };
+  // 会話は末尾に合わせる。迎えの状態（ボタンだけ。is-talk が無い）は先頭に：低い画面（390×664）で最初の 1 文が窓の下に隠れないように（AUDIT-1 P1-2）
+  const scrollEnd = () => { thread.scrollTop = root.classList.contains('is-talk') ? thread.scrollHeight : 0; };
   function line(who: 'ai' | 'me', text: string): HTMLParagraphElement {
     const p = h('p', `cg-line cg-${who} cg-new`);
     if (who === 'ai') fillPhrases(p, text, lang); else p.textContent = text;
@@ -630,7 +640,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   async function askAi(my: number, extra: boolean): Promise<boolean> {
     const wait = thinking();
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), FIRST_BYTE_MS);
+    let timer = setTimeout(() => ctrl.abort(), FIRST_BYTE_MS);
+    const rearm = () => { clearTimeout(timer); timer = setTimeout(() => ctrl.abort(), STALL_MS); };   // 文が来るたびに張り直す「無音の時間切れ」
     let acc = '';
     let out: HTMLParagraphElement | null = null;
     let toolRec: RecJson | null = null;   // data: {"recommend": ...}（ツール呼び出し）で受けたおすすめ
@@ -655,6 +666,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
         const r = await reader.read();
         if (my !== sess) { ctrl.abort(); return false; }
         if (r.done) break;
+        if (out || toolRec) rearm();
         buf += dec.decode(r.value, { stream: true });
         let k: number;
         while ((k = buf.indexOf('\n\n')) >= 0) {
@@ -667,12 +679,12 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
             if (d.done) { done = true; break; }
             if (d.recommend !== undefined) {
               const rec = parseRecommendEvent(d.recommend);
-              if (rec) { toolRec = rec; clearTimeout(timer); }
+              if (rec) { toolRec = rec; rearm(); }
               continue;
             }
             if (typeof d.text === 'string') {
               if (!out) {
-                clearTimeout(timer);
+                rearm();
                 out = h('p', 'cg-line cg-ai cg-new');
                 // C2 の上の「…考え中」は、カードが来るまで出したまま。文は会話（後ろ）に積む
                 if (wait.parentElement === thread) { wait.replaceWith(out); setFace('smile'); } else thread.appendChild(out);
@@ -688,6 +700,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       if (!acc && !toolRec) throw new Error('empty');
     } catch (e) {
       clearTimeout(timer);
+      ctrl.abort();   // 途中の {error}・時間切れ：上流の読み込みを切る（REVIEW-1 P2）
       if (my !== sess) return false;
       console.warn('AI に届かない。ルールだけの版にする', e);
       wait.remove();
@@ -897,7 +910,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     // キャンバス：表は絵、裏は紙白の面。回転は CSS（.cg-canvas の animation）
     const stageEl = h('div', 'cg-stage');
     // 絵をタップしても入れる（11-06 作家）。主ボタンと同じ流れ。ホバーで手の形に
-    stageEl.setAttribute('role', 'button'); stageEl.setAttribute('tabindex', '0'); stageEl.setAttribute('aria-label', '絵の世界をのぞく');
+    stageEl.setAttribute('role', 'button'); stageEl.setAttribute('tabindex', '0'); stageEl.setAttribute('aria-label', t('enter', lang)); stageEl.dataset.i18nAttr = 'aria-label:enter';
     stageEl.style.cursor = 'pointer';
     stageEl.addEventListener('click', () => { void enterHere(w, false); });
     stageEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); void enterHere(w, false); } });
@@ -1135,7 +1148,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       root.style.setProperty('--cg-h', `${Math.round(vv.height)}px`);
       root.style.setProperty('--cg-top', `${Math.round(vv.offsetTop)}px`);
       root.classList.toggle('is-kb', vv.height < window.innerHeight * 0.75);
-      scrollEnd();
+      if (root.classList.contains('is-talk')) scrollEnd();   // 迎えの状態では、下の選択肢へスクロールした位置を戻さない
     };
     vv.addEventListener('resize', fit);
     vv.addEventListener('scroll', fit);

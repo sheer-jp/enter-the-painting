@@ -256,7 +256,7 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 /* 会話が始まったら（最初の選択か「自分のことばで書く」）キャラクターを小さくして文字を読みやすく。キーボードが出たらさらに小さく（11-06 作家）
    おすすめは別の画面 C2（concierge.css） */
 /* 背の低い縦画面（iPhone SE など、高さ 700px 以下）：迎えの状態は 25%（あいさつ 2 文と 4 つのボタンが入りきるように） */
-@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 25%; } }   /* P-16 でスキップの上に 28px と線を足したぶん、26% → 25%（会話の状態 15% との差を保つ） */
+@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 23%; } }   /* P-16 で 26% → 25%。11-07 FIX-B（AUDIT-1 P1-2）：390×664 で最初の 1 文と選択肢が窓に収まるよう 23% */
 .cg.is-talk { --cg-host: 15%; }
 .cg.is-talk.is-kb, .cg.is-kb { --cg-host: 12%; }
 /* PC・横向きも同じ「上に人、下に会話」（11-06 作家「パソコンでも同じ感じで」）。幅は 640px に抑えて中央に。人の高さは px で上限 */

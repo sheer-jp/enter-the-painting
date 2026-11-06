@@ -30,7 +30,7 @@
     "zh-Hant": "我想要繼續加油的活力",
     "ko": "힘낼 활력이 필요해",
     "fr": "J'ai besoin d'énergie pour continuer",
-    "de": "Ich brauche Kraft, um weiterzumachen",
+    "de": "Ich brauche neue Kraft",
     "es": "Necesito energía para seguir",
     "it": "Ho bisogno di energia per andare avanti",
     "pt": "Preciso de energia para continuar"
@@ -506,7 +506,7 @@
   "488654d2ba49": {
     "ja": "朝の光に合う絵を",
     "en": "Something for morning light",
-    "zh-Hans": "配得上晨光的画",
+    "zh-Hans": "适合晨光的画",
     "zh-Hant": "配得上晨光的畫",
     "ko": "아침 햇살에 어울리는 그림",
     "fr": "Pour la lumière du matin",
@@ -986,7 +986,7 @@
   "0227aaf41f54": {
     "ja": "引っ越し祝いに贈りたい",
     "en": "A housewarming gift",
-    "zh-Hans": "想送作乔迁贺礼",
+    "zh-Hans": "想送一幅画作为乔迁礼物",
     "zh-Hant": "想送作喬遷賀禮",
     "ko": "집들이 선물로 주고 싶어",
     "fr": "Un cadeau pour une crémaillère",
@@ -1060,7 +1060,7 @@
     "en": "Something on a small budget",
     "zh-Hans": "预算不多，想找找看",
     "zh-Hant": "預算不多，想找找看",
-    "ko": "예산은 좀 작게 찾고 싶어",
+    "ko": "적은 예산으로 찾고 싶어",
     "fr": "Avec un petit budget",
     "de": "Mit kleinem Budget",
     "es": "Con poco presupuesto",

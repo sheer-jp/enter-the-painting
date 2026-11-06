@@ -29,7 +29,7 @@ const asMulti = (v) => typeof v === 'string' ? { ja: v } : v;
 const brand = (prefix) => `<a class="brand" href="${prefix}"><b>SHEER Gallery</b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
 // フッター（P-17）：「© SHEER」だけ
 const footer = () => `<footer><span data-i18n="privacy">${UI_JA.privacy}</span></footer>`;
-const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}"></select></label>`;
+const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}" data-i18n-attr="aria-label:language"></select></label>`;
 
 // ja と en が同じ（または en が無い）なら 1 回だけ。違えば「ja / en」（11-07 作家：「SHEER Gallery / SHEER Gallery」と同じ語を 2 回並べない）
 export const jaEnTitle = (ja, en) => (en && en !== ja ? `${ja} / ${en}` : (ja || en || ''));
@@ -55,8 +55,10 @@ const headOg = ({ type = 'website', title, description, image, url }) => `<meta 
 <meta name="twitter:image" content="${image}">`;
 const RECEPTION_DESC = '彩り美しい抽象画の世界を届けます。会話で、今日のあなたへの 1 点を。';
 
-// 部屋の画像の alt。場所の札が「〜て」で終わる（「棚に立てかけて」）ときは「〜た」にし、「に置いた」を付けない（AUDIT-1 P2「立てかけてに置いた」）
-export const roomAlt = (title, label) => `${title} を${/て$/.test(label) ? label.replace(/て$/, 'た') : `${label}に置いた`}イメージ（AI 生成の部屋）`;
+// 属性の訳（AUDIT-1 P1-6）：page.ts の applyLang が data-i18n-attr の鍵で差し替える。vars は data-i18n-vars（JSON。多言語の値は閲覧者の言語を取る）
+const i18nAttr = (spec, vars) => ` data-i18n-attr="${spec}"${vars ? ` data-i18n-vars="${esc(JSON.stringify(vars))}"` : ''}`;
+// 部屋の画像の alt：「<題名>（<場所>）AI 生成の部屋のイメージ」。他の言語は applyLang が room_alt で組み直す（題名は訳さない）
+export const roomAlt = (title, label) => `${title}（${label}）AI 生成の部屋のイメージ`;   // 11-07 FIX-B：ui.json の room_alt（ja）と同じ形。「〜てに置いた」の文の組み立てをやめ、場所の札をそのまま括弧に
 // 小さく出す絵（「他の作品」の帯、ギャラリー）：480 と 1024 を出し分ける（AUDIT-1 P1-5）。作品ページの主役の絵は 1024 のまま
 const smallSrcset = (dir) => `${dir}painting_480.jpg 480w, ${dir}painting_1024.jpg 1024w`;
 // ギャラリーの絵の表示幅：スマホ（< 768px）は 1 列で全幅、PC は横一列（実寸比）で最大でも 560px 程度
@@ -78,7 +80,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
   const caption = multi;
   const rooms = (space.rooms || []).map((r, i) => `
       <figure class="room" data-room-index="${i}">
-        <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(roomAlt(title, t(r.label, 'ja')))}" loading="lazy">
+        <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(roomAlt(title, t(r.label, 'ja')))}"${i18nAttr('alt:room_alt', { t: { ja: title, en: titleEn || title }, p: r.label || {} })} loading="lazy">
         <figcaption>${r.category ? `<span data-i18n="room_cat_${esc(r.category)}">${esc(UI_JA['room_cat_' + r.category] || '')}</span> ─ ` : ''}${caption(r.label)}</figcaption>
       </figure>`).join('');
   const story = space.story ? `
@@ -87,7 +89,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
       ${LANGS.map((l) => space.story[l] ? `<p lang="${l}" data-lang="${l}" hidden>${esc(space.story[l])}</p>` : '').join('')}
     </section>` : '';
   const others = allWorks.filter((o) => o.id !== id).map((o) => `
-      <a class="other" href="../${o.id}/" data-title-ja="${esc(t(o.title, 'ja'))}" data-title-en="${esc(t(o.title, 'en'))}"><img src="../../works/${o.id}/generated/painting_1024.jpg" srcset="${smallSrcset(`../../works/${o.id}/generated/`)}" sizes="132px" alt="${esc(t(o.title, 'ja'))}" loading="lazy"><b class="t-main">${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
+      <a class="other" href="../${o.id}/" data-title-ja="${esc(t(o.title, 'ja'))}" data-title-en="${esc(t(o.title, 'en'))}"><img src="../../works/${o.id}/generated/painting_1024.jpg" srcset="${smallSrcset(`../../works/${o.id}/generated/`)}" sizes="132px" alt="" loading="lazy"><b class="t-main">${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
   const contact = work.contact ? `<a class="btn ghost" id="contact" href="${esc(work.contact)}" target="_blank" rel="noopener" data-i18n="contact">${UI_JA.contact}</a>` : '';
   return `<!doctype html>
 <html lang="ja">
@@ -107,7 +109,7 @@ ${FONTS}
 <main class="work">
   <div class="top">${brand('../../')}<div class="top-tools"><a class="top-gallery" href="../../gallery/" data-i18n="gallery_title">${UI_JA.gallery_title}</a>${langSel()}</div></div>
   <figure class="painting" style="aspect-ratio:${w}/${h}">
-    <img src="${img}" alt="${esc(title)}" fetchpriority="high">
+    <img src="${img}" alt="${esc(title)}" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}" fetchpriority="high">
   </figure>
   <header class="titling">
     <h1 data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><span class="t-main">${esc(title)}</span>${titleEn && titleEn !== title ? `<span class="t-sub latin">${esc(titleEn)}</span>` : '<span class="t-sub" hidden></span>'}</h1>
@@ -204,10 +206,10 @@ ${FONTS}
     <div class="cg-tools">${langSel()}</div>
   </header>
   <figure class="cg-host">
-    <div class="cg-faces" role="img" aria-label="受付のキャラクター">${facePicture('smile', '', { on: true, priority: true })}</div>
+    <div class="cg-faces" role="img" aria-label="受付のキャラクター"${i18nAttr('aria-label:cg_host_label')}>${facePicture('smile', '', { on: true, priority: true })}</div>
     ${host}
   </figure>
-  <section class="cg-talk" aria-label="受付の会話">
+  <section class="cg-talk" aria-label="受付の会話"${i18nAttr('aria-label:cg_talk_label')}>
     <div class="cg-thread" aria-live="polite">
         ${greeting}
         <div class="cg-openers cg-greet" style="--d:${(0.3 + lines.length * 0.4).toFixed(1)}s" role="group" aria-label="${esc(hint.ja)}">
@@ -218,7 +220,7 @@ ${FONTS}
     <a class="cg-skip" href="gallery/" data-i18n="cg_skip" style="--d:${(0.5 + lines.length * 0.4).toFixed(1)}s">受付を飛ばして、ギャラリー全体を見る</a>
   </section>
   <form class="cg-form" action="#concierge" hidden><input name="q" type="text" maxlength="600" autocomplete="off" enterkeyhint="send" placeholder="こんな気分のときに、こうしたい" aria-label="こんな気分のときに、こうしたい" data-i18n-ph="cg_placeholder"><button type="submit" data-i18n="rec_send">送る</button></form>
-  <section class="cg2" tabindex="-1" aria-label="今日のあなたへの 1 点" hidden>
+  <section class="cg2" tabindex="-1" aria-label="今日のあなたへの 1 点"${i18nAttr('aria-label:cg_card_head')} hidden>
     <div class="cg2-in">
       <div class="cg2-host" aria-hidden="true"></div>
       <p class="cg2-line">${jaEn(present.ja, present.en)}</p>
@@ -254,7 +256,7 @@ export function galleryWallPage({ works: input, baseUrl }) {
     return `
     <a class="gw-item" data-id="${esc(w.id)}" data-size="${sizeClass(longSide(w.size_cm))}" data-long="${longSide(w.size_cm)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
       <span class="gw-foryou" data-i18n="gw_for_you" hidden>あなたへの 1 点</span>
-      <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" srcset="${smallSrcset(`../works/${esc(w.id)}/generated/`)}" sizes="${GW_SIZES}" alt="${esc(title)}" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
+      <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" srcset="${smallSrcset(`../works/${esc(w.id)}/generated/`)}" sizes="${GW_SIZES}" alt="" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
       <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${cw} × ${ch} cm</span></span>
     </a>`;
   }).join('') + `
@@ -275,11 +277,11 @@ ${FONTS}
 <main class="gw">
   <div class="gw-top">
     <a class="gw-back" href="../" data-i18n="gw_back">受付に戻る</a>
-    <h1 class="gw-title"><span>ギャラリー</span><span class="latin">Gallery</span></h1>
+    <h1 class="gw-title" aria-label="ギャラリー"${i18nAttr('aria-label:gallery_title')}><span>ギャラリー</span><span class="latin">Gallery</span></h1>
     ${langSel()}
   </div>
-  <div class="gw-filter" role="group" aria-label="大きさで絞り込む">${chips}</div>
-  <div class="gw-wall" style="--maxh:${maxH};--sumcm:${+sumW.toFixed(2)};--n:${works.length}" tabindex="0" aria-label="作品">${items}
+  <div class="gw-filter" role="group" aria-label="大きさで絞り込む"${i18nAttr('aria-label:gw_filter_label')}>${chips}</div>
+  <div class="gw-wall" style="--maxh:${maxH};--sumcm:${+sumW.toFixed(2)};--n:${works.length}" tabindex="0" aria-label="作品"${i18nAttr('aria-label:gw_works_label')}>${items}
   </div>
   <span class="gw-more" aria-hidden="true">→</span>
   <p class="gw-scroll" data-i18n="gw_scroll">横にスクロール</p>
