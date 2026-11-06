@@ -157,11 +157,12 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-skip { font-size: 11px; letter-spacing: .12em; color: var(--ink-2); min-height: 32px; display: inline-flex; align-items: center; border-bottom: 1px solid var(--line); line-height: 1.4; }
 .cg-skip:hover { color: var(--ink); border-bottom-color: var(--ink); }
 /* 人の部分は「窓」（11-06 深夜、作家「ゲームは下に線や窓があって、ここが人の部分だと分かる」）：薄い紙色のパネルと下のヘアライン。胸で切れた画像がパネルの縁で収まる */
-.cg-host { grid-area: host; margin: 0 0 6px; min-height: 0; display: flex; flex-direction: column; align-items: center; position: relative; }
-/* 窓の中は白い展示室の壁（11-07 作家「ギャラリーに来たと思える背景を女の子の後ろに」）。床の線が人の足元に来るよう下寄せ */
-.cg-host::before { content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 360px); height: 100%; background: var(--bg-2) url('/concierge/wall/wall-tall.jpg') center 62% / cover no-repeat; border-radius: 14px; border: 1px solid var(--line); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6); }
+/* 窓そのものが .cg-host（11-07 作家「キャラクターを奥側に置かないと、動いたとき枠をはみ出る」）：枠で切り抜く（overflow hidden）。人は窓の中の層 */
+.cg-host { grid-area: host; margin: 0 auto 6px; min-height: 0; width: min(100%, 360px); display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6); isolation: isolate; }
+/* 窓の中は絵のあるギャラリーカフェのイラスト（DECISIONS 61）。床の線が人の足元に来るよう下寄せ */
+.cg-host::before { content: ""; position: absolute; inset: 0; z-index: 0; background: var(--bg-2) url('/concierge/wall/wall-tall.jpg') center 62% / cover no-repeat; }
 @supports (background-image: url('a.webp')) { .cg-host::before { background-image: url('/concierge/wall/wall-tall.webp'); } }
-@media (min-width: 640px) { .cg-host::before { width: min(100%, 520px); background-image: url('/concierge/wall/wall-wide.jpg'); } @supports (background-image: url('a.webp')) { .cg-host::before { background-image: url('/concierge/wall/wall-wide.webp'); } } }
+@media (min-width: 640px) { .cg-host { width: min(100%, 520px); } .cg-host::before { background-image: url('/concierge/wall/wall-wide.jpg'); } @supports (background-image: url('a.webp')) { .cg-host::before { background-image: url('/concierge/wall/wall-wide.webp'); } } }
 .cg-faces { z-index: 1; }
 /* 表情は重ねて置き、.is-on だけ見せる（300ms のクロスフェードは JS が .is-on を付け替える）
    画像は <picture> の media で選ぶ：縦は上半身（*-bust）、横向き（スマホ横・PC の幅 900px 以上）は全身（*-full）を縦いっぱいに
