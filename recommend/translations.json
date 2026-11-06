@@ -5,7 +5,7 @@
     "zh-Hans": "sheer 是一位抽象画家，描绘色彩相撞又散开的瞬间。她画小幅作品，想着把它们放进某个人的日常里。",
     "zh-Hant": "sheer 是一位抽象畫家，描繪色彩相撞又散開的瞬間。她畫小幅作品，想著把它們放進某個人的日常裡。",
     "ko": "sheer는 색이 부딪히고 풀리는 순간을 그리는 추상화 작가입니다. 작은 그림을 누군가의 일상 속에 두는 것을 생각하며 그립니다.",
-    "fr": "sheer est une peintre abstraite qui peint l'instant où les couleurs se heurtent et se dénouent. Ses petits tableaux sont pensés pour trouver leur place dans le quotidien de quelqu'un.",
+    "fr": "sheer est une peintre abstraite qui peint l’instant où les couleurs se heurtent et se dénouent. Ses petits tableaux sont pensés pour trouver leur place dans le quotidien de quelqu’un.",
     "de": "sheer ist eine abstrakte Malerin, die den Moment malt, in dem Farben aufeinanderprallen und sich lösen. Ihre kleinen Bilder sind dafür gedacht, im Alltag eines Menschen zu leben.",
     "es": "sheer es una pintora abstracta que pinta el instante en que los colores chocan y se deshacen. Sus pequeños cuadros están pensados para vivir en el día a día de alguien.",
     "it": "sheer è una pittrice astratta che dipinge l'istante in cui i colori si scontrano e si sciolgono. I suoi piccoli quadri sono pensati per vivere nella quotidianità di qualcuno.",
@@ -25,11 +25,11 @@
   },
   "07e4f88feea9": {
     "ja": "頑張る活力がほしい",
-    "en": "I want energy to keep going",
+    "en": "I need energy to keep going",
     "zh-Hans": "我想要继续加油的活力",
     "zh-Hant": "我想要繼續加油的活力",
     "ko": "힘낼 활력이 필요해",
-    "fr": "J'ai besoin d'énergie pour continuer",
+    "fr": "J’ai besoin d’énergie pour continuer",
     "de": "Ich brauche neue Kraft",
     "es": "Necesito energía para seguir",
     "it": "Ho bisogno di energia per andare avanti",
@@ -145,7 +145,7 @@
   },
   "25f671cca881": {
     "ja": "今の気持ちに合う絵を選びたい",
-    "en": "A painting that fits how I feel today",
+    "en": "A painting for how I feel today",
     "zh-Hans": "想选一幅合我现在心情的画",
     "zh-Hant": "想選一幅合我現在心情的畫",
     "ko": "지금 기분에 맞는 그림",
@@ -253,7 +253,7 @@
   },
   "0609ddb80e61": {
     "ja": "初めて絵を買おうと思ってる",
-    "en": "Thinking of buying art for the first time",
+    "en": "My first time buying art",
     "zh-Hans": "第一次想买画",
     "zh-Hant": "第一次想買畫",
     "ko": "처음으로 그림을 사 보려고",
@@ -361,7 +361,7 @@
   },
   "6b5fd2828097": {
     "ja": "じっと眺めていられる絵を",
-    "en": "Something I can gaze at for a long time",
+    "en": "Something to gaze at for ages",
     "zh-Hans": "可以一直静静看着的画",
     "zh-Hant": "可以一直靜靜看著的畫",
     "ko": "오래 바라볼 수 있는 그림",
@@ -1189,7 +1189,7 @@
   },
   "6b5e5f16d1b3": {
     "ja": "朝いちばんに見たい絵を",
-    "en": "A painting for first thing in the morning",
+    "en": "A painting for first thing each morning",
     "zh-Hans": "早上第一眼想看到的画",
     "zh-Hant": "早上第一眼想看到的畫",
     "ko": "아침에 제일 먼저 보고 싶은 그림",
@@ -1201,7 +1201,7 @@
   },
   "ed3d144b682f": {
     "ja": "夜の照明で映える絵を",
-    "en": "Something that glows under evening light",
+    "en": "Something that glows at night",
     "zh-Hans": "在夜晚灯光下好看的画",
     "zh-Hant": "在夜晚燈光下好看的畫",
     "ko": "밤 조명에 빛나는 그림을",

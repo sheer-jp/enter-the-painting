@@ -7,7 +7,7 @@
       "zh-Hans": "sheer 是一位抽象画家，描绘色彩相撞又散开的瞬间。她画小幅作品，想着把它们放进某个人的日常里。",
       "zh-Hant": "sheer 是一位抽象畫家，描繪色彩相撞又散開的瞬間。她畫小幅作品，想著把它們放進某個人的日常裡。",
       "ko": "sheer는 색이 부딪히고 풀리는 순간을 그리는 추상화 작가입니다. 작은 그림을 누군가의 일상 속에 두는 것을 생각하며 그립니다.",
-      "fr": "sheer est une peintre abstraite qui peint l'instant où les couleurs se heurtent et se dénouent. Ses petits tableaux sont pensés pour trouver leur place dans le quotidien de quelqu'un.",
+      "fr": "sheer est une peintre abstraite qui peint l’instant où les couleurs se heurtent et se dénouent. Ses petits tableaux sont pensés pour trouver leur place dans le quotidien de quelqu’un.",
       "de": "sheer ist eine abstrakte Malerin, die den Moment malt, in dem Farben aufeinanderprallen und sich lösen. Ihre kleinen Bilder sind dafür gedacht, im Alltag eines Menschen zu leben.",
       "es": "sheer es una pintora abstracta que pinta el instante en que los colores chocan y se deshacen. Sus pequeños cuadros están pensados para vivir en el día a día de alguien.",
       "it": "sheer è una pittrice astratta che dipinge l'istante in cui i colori si scontrano e si sciolgono. I suoi piccoli quadri sono pensati per vivere nella quotidianità di qualcuno.",
@@ -41,7 +41,7 @@
       "마음이 밝아지는 그림을"
     ],
     "fr": [
-      "J'ai besoin d'énergie pour continuer",
+      "J’ai besoin d’énergie pour continuer",
       "Reste avec moi les soirs de solitude",
       "Un tableau qui me remonte le moral"
     ],
@@ -171,11 +171,11 @@
       "質問に答えていくから選んで"
     ],
     "en": [
-      "I want energy to keep going",
+      "I need energy to keep going",
       "Stay with me on a lonely night",
       "A painting that lifts my mood",
       "Find by color",
-      "A painting that fits how I feel today",
+      "A painting for how I feel today",
       "Just give me your recommendation",
       "Looking for a painting for my desk",
       "A small painting for the entrance",
@@ -184,7 +184,7 @@
       "A painting that gives power at work",
       "Looking for a gift for someone",
       "A treat for myself",
-      "Thinking of buying art for the first time",
+      "My first time buying art",
       "Something small I can hold",
       "Something big that owns the room",
       "I love lively reds and oranges",
@@ -193,7 +193,7 @@
       "Brighten the room with yellow",
       "Nothing too loud",
       "Show me something with momentum",
-      "Something I can gaze at for a long time",
+      "Something to gaze at for ages",
       "A painting I see every morning",
       "Comfort after a tiring night",
       "For the me starting something new",
@@ -262,8 +262,8 @@
       "Something like the night sky",
       "Playful, like a child's energy",
       "Grown-up and calm",
-      "A painting for first thing in the morning",
-      "Something that glows under evening light",
+      "A painting for first thing each morning",
+      "Something that glows at night",
       "Something for spring",
       "Something for summer light",
       "For long autumn nights",
@@ -583,7 +583,7 @@
       "질문에 답할 테니 골라 줘"
     ],
     "fr": [
-      "J'ai besoin d'énergie pour continuer",
+      "J’ai besoin d’énergie pour continuer",
       "Reste avec moi les soirs de solitude",
       "Un tableau qui me remonte le moral",
       "Chercher par couleur",

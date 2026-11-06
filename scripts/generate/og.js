@@ -261,6 +261,8 @@ export async function writeIcons(root) {
   const svg = Buffer.from(FAVICON_SVG);
   await sharp(svg, { density: 72 }).flatten({ background: '#ffffff' }).png().toFile(join(pub, 'favicon-32.png'));
   await sharp(svg, { density: (72 * 180) / 32 }).resize(180, 180).flatten({ background: '#ffffff' }).removeAlpha().png().toFile(join(pub, 'apple-touch-icon.png'));
+  // PWA 用の 192 / 512（監査 11-07：manifest に無かった）
+  for (const n of [192, 512]) await sharp(svg, { density: (72 * n) / 32 }).resize(n, n).flatten({ background: '#ffffff' }).removeAlpha().png().toFile(join(pub, `icon-${n}.png`));
   const manifest = {
     name: 'SHEER Gallery', short_name: 'SHEER Gallery', start_url: './', scope: './', display: 'standalone',
     background_color: '#ffffff', theme_color: '#ffffff',
@@ -268,6 +270,8 @@ export async function writeIcons(root) {
       { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' },
       { src: 'favicon-32.png', sizes: '32x32', type: 'image/png' },
       { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+      { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
   };
   writeFileSync(join(pub, 'site.webmanifest'), JSON.stringify(manifest, null, 2) + '\n');
