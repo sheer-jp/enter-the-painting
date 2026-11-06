@@ -96,7 +96,7 @@ ${FONTS}
 // 受付の設定（recommend/config.json）。読めなければ最小の既定値
 function readConfig() {
   const fallback = {
-    title: { ja: 'ようこそ、SHEER のギャラリーへ', en: "Welcome to SHEER's gallery" },
+    title: { ja: 'SHEER ギャラリー', en: 'SHEER Gallery' },
     greeting: { ja: ['いらっしゃいませ。', '今日は、どんな絵をお探しですか？'], en: ['Welcome.', 'What kind of painting are you looking for today?'] },
     openers: { ja: ['頑張る活力がほしい', '寂しい夜によりそってほしい', '明るい気持ちになれる絵を'] },
     persona: { name: { ja: '', en: '' }, intro_line: { ja: '', en: '' } },
@@ -152,7 +152,7 @@ ${FONTS}
 <body class="paper">
 <main class="cg" id="concierge">
   <header class="cg-top">
-    <h1 class="cg-title"><span lang="ja">${esc(title.ja)}</span>${title.en ? `<span class="latin" lang="en">${esc(title.en)}</span>` : ''}</h1>
+    <h1 class="cg-title">${jaEn(title.ja, title.en)}</h1>
     <div class="cg-tools">${langSel()}<a class="cg-skip" href="gallery/" data-i18n="cg_skip">受付を飛ばしてギャラリーへ</a></div>
   </header>
   <figure class="cg-host">

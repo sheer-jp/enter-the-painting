@@ -164,9 +164,11 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-me { align-self: flex-end; background: var(--bg-2); border-top-right-radius: 4px; font-family: var(--sans); font-weight: 400; color: var(--ink); }
 .cg-greet { animation: cg-in .6s ease both; animation-delay: var(--d, 0s); }
 /* 選択肢は吹き出しと見分けがつくボタンに（11-06 作家「チャットと勘違いする」）：左寄せ、白地、角は小さく、右端に › */
-.cg-openers, .cg-choices { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin: 2px 0 4px 8px; }
+.cg-openers, .cg-choices { display: flex; flex-direction: column; align-items: stretch; gap: 6px; margin: 2px 0 4px 8px; }
+/* 背の低い画面（iPhone SE など）はキャラクターを少し小さくして会話を広く */
+@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 27%; } .cg.is-kb { --cg-host: 22%; } }
 .cg-openers-cap { font: 400 11px/1.6 var(--sans); letter-spacing: .14em; color: var(--ink-2); margin-bottom: 2px; }
-.cg-opt { appearance: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; padding: 8px 14px 8px 16px; border: 1px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .06em; line-height: 1.5; text-align: left; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,.06); transition: background .2s, transform .15s; }
+.cg-opt { appearance: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 6px 12px 6px 14px; border: 1px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .06em; line-height: 1.5; text-align: left; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,.06); transition: background .2s, transform .15s; }
 .cg-opt::after { content: '›'; font-family: var(--sans); font-size: 18px; line-height: 1; color: var(--ink-2); flex: none; }
 .cg-opt:hover { background: var(--bg); }
 .cg-opt:active { transform: translateY(1px); }
@@ -179,7 +181,7 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg [hidden] { display: none !important; }
 @keyframes cg-in { from { opacity: 0; transform: translateY(6px); } }
 /* キーボードが出ている間と、おすすめのカードが出たあとは、キャラクターを小さくして会話を広く */
-.cg.is-kb { --cg-host: 18%; }
+.cg.is-kb { --cg-host: 26%; }   /* キーボードが出ても縮みすぎない（11-06 作家） */
 .cg.has-card { --cg-host: 22%; }
 /* 横向き（スマホの横、PC）：キャラクターを左 36%、会話を右に */
 @media (orientation: landscape) and (min-width: 568px) {

@@ -108,14 +108,14 @@ async function entranceCase(name, viewport) {
     const t0 = Date.now();
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'load' });
     const title = (await page.locator('.cg-title').textContent())?.trim();
-    check(/ようこそ、SHEER のギャラリーへ/.test(title || '') && /Welcome to SHEER/.test(title || ''), `${name}: 受付の見出し（ja / en）= ${title}`);
+    check(/SHEER ギャラリー/.test(title || '') && /SHEER Gallery/.test(title || ''), `${name}: 受付の見出し（ja / en）= ${title}`);
     const faceOk = await page.locator('.cg-face.is-on img').evaluate((img) => img.complete && img.naturalWidth > 0);
     check(faceOk, `${name}: キャラクターの画像が出る（${Date.now() - t0}ms）`);
     const paintings = await page.locator('img[src*="painting_"]').count();
     check(paintings === 0, `${name}: 受付には絵が出ない（${paintings}）`);
     await page.waitForTimeout(1600);   // 最初の 2 文が 0.4 秒ずつ現れる
     const greet = await page.locator('.cg-thread .cg-greet.cg-line:visible').allTextContents();
-    check(greet.length === 2 && greet[0].includes('いらっしゃいませ'), `${name}: 最初の 2 文（${greet.join(' / ')}）`);
+    check(greet.length === 2 && greet[0].includes('ようこそ'), `${name}: 最初の 2 文（${greet.join(' / ')}）`);
     const openers = await page.locator('.cg-openers button[data-opener-index]').count();
     check(openers === 3, `${name}: 選択肢 ${openers} 個`);
     const inputFs = await page.locator('.cg-form input').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
