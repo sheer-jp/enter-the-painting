@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-11-07（未明：キャラクター第 6 案、白い壁、E-16 SNS カード、提出動画 V2 を進行中）
+
+**やった**
+- 受付のキャラクターを第 6 案に差し替え（Codex で生成、`character-cutout.swift` で切り抜き、`scripts/concierge-assets.mjs` で 1x/2x・コマを生成）。パキッとした線のポップな絵柄、白いワンピースに鮮やかな絵の具。作家「最初のポップみたいな絵柄…パキッとした白い背景…ビビッド」に対応。窓の中は白い展示室の壁（`public/concierge/wall/`、`.cg-host::before`）
+- `.paper` の `--bg` を `#f6f4ef` → `#ffffff`（受付・ギャラリーのクリーム色が残っていた原因）。黒も `#141210` に
+- E-16（Opus）：`scripts/generate/og.js` でファビコン 3 種・マニフェスト・SNS カード（ギャラリー = 白い壁に 6 点を実寸比、作品 = 中央に 1 点＋題名と寸法）を sharp で合成。文字は Shippori Mincho の部分集合を TTF からパスに（sharp は同梱書体を読めないため）。`<title>` を「題名 — SHEER Gallery」に統一し、受付の「SHEER Gallery / SHEER Gallery」をやめた。QR と OGP の URL を pages.dev に。頂の英題を Itadaki に
+- 録画用 `?space=flat&spin=1`（カメラを ±40° 振る）。提出動画 V2（絵を 1 点で通す、本物の絵の部屋合成でつかみ、VR は端から見た再現）は Opus が制作中
+- 配置 3 回（54a64ee → af1ef78 → 7258d07）。本番で head・画像・manifest の 200 を確認
+
+**決めた**
+- 背景は全ページ `#ffffff`。`docs/DESIGN.md` の「作品ページは暗い面」を廃止に書き換えた
+- og:title は ja と en が違えば「ja / en」併記（作家の判断待ち：ローマ字を出すか）
+
+**困った・学んだ**
+- sharp の SVG `<text>` は macOS では CoreText の書体しか引けず `fontfile` も効かない → TTF を自前でパスにするのが確実。題名が増えたら `og.js` 冒頭のコマンドで書体を取り直す
+- `generate` のたびに `rooms/check/*.jpg` が変わる（JPEG の非決定）。コミットしない
+
+**次にやる**
+- 提出動画 V2 の受け取り → 一貫性（同じ絵で通っているか）を検収 → 720p を作家へ
+- V-6（VR の接近で「空洞が開く」見え方をやめる）、「部屋で見る」→ `#rooms`、「他の作品」の題名 i18n、es/it/pt の中立な挨拶、KV の割当確認
+- 作家：Quest / iPhone の実機、ナレーション、音楽、URL（サブドメイン）の決定、fit/fits の文の確認、合言葉の要否、og:title のローマ字
+
+---
+
 ## 2026-11-06（深夜 2：白基調、計測、10 言語、提出動画 V1）
 
 **やった**
