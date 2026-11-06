@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>数のノート（作家用）</title>
+<!-- 計測（E-14）：作家だけが見るページ。/stats.html?key=<STATS_KEY>。鍵は URL のまま使い、どこにも保存しない。数だけで、個人は追わない -->
+<style>
+  :root { --bg: #f6f4ef; --ink: #23201d; --ink-2: #6e675f; --line: rgba(35, 32, 29, .16);
+    --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    --sans: "Noto Sans JP", "Hiragino Sans", system-ui, -apple-system, sans-serif; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: var(--serif); font-weight: 400; line-height: 1.8; -webkit-text-size-adjust: 100%; }
+  main { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 22px; font-weight: 400; letter-spacing: .08em; margin: 0 0 4px; }
+  h2 { font-size: 16px; font-weight: 400; letter-spacing: .08em; margin: 40px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .note { font-family: var(--sans); font-size: 12px; color: var(--ink-2); margin: 0; }
+  .wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { font-weight: 400; color: var(--ink-2); font-size: 12px; font-family: var(--sans); }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--sans); }
+  td.z { color: var(--line); }
+  .msg { margin-top: 40px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>数のノート</h1>
+  <p class="note" id="asof">読み込み中…</p>
+  <div id="out"></div>
+</main>
+<script>
+(() => {
+  'use strict';
+  const EV = [
+    ['concierge_start', '会話を始めた'],
+    ['concierge_turn', '会話のことば（回）'],
+    ['concierge_recommend', 'おすすめを出した'],
+    ['concierge_other', '「別のにする」'],
+    ['concierge_skip', '受付を飛ばした'],
+    ['gallery_pick', 'ギャラリーで選んだ'],
+    ['enter', '絵の世界をのぞいた'],
+  ];
+  const VIA = { concierge: '受付から', gallery: 'ギャラリーから', page: '作品ページで' };
+  const out = document.getElementById('out');
+  const asof = document.getElementById('asof');
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const num = (n) => { const td = el('td', n ? 'n' : 'n z', String(n || 0)); return td; };
+  function table(head, rows) {
+    const wrap = el('div', 'wrap');
+    const t = el('table');
+    const tr = el('tr');
+    head.forEach((h, i) => tr.appendChild(el('th', i ? 'n' : '', h)));
+    t.appendChild(tr);
+    for (const r of rows) {
+      const row = el('tr');
+      r.forEach((v, i) => row.appendChild(i ? num(v) : el('td', '', v)));
+      t.appendChild(row);
+    }
+    wrap.appendChild(t);
+    return wrap;
+  }
+  function message(text) { asof.textContent = ''; out.replaceChildren(el('p', 'msg', text)); }
+
+  const key = new URLSearchParams(location.search).get('key');
+  if (!key) { message('URL の最後に ?key=（登録した鍵）を付けて開いてください。'); return; }
+
+  // 名前（ev[:via][:id]）を分ける
+  const split = (name) => {
+    const [ev, ...rest] = name.split(':');
+    if (ev === 'enter' && rest.length === 2) return { ev, via: rest[0], id: rest[1] };
+    return { ev, via: null, id: rest[0] || null };
+  };
+  // ev ごとの合計（id・via を足し上げる）
+  const byEvent = (counts) => {
+    const s = {};
+    for (const [name, n] of Object.entries(counts || {})) { const p = split(name); s[p.ev] = (s[p.ev] || 0) + n; }
+    return s;
+  };
+
+  Promise.all([
+    fetch('/api/stats?key=' + encodeURIComponent(key), { cache: 'no-store', referrerPolicy: 'no-referrer' }),
+    fetch('/catalog.json').then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  ]).then(async ([res, catalog]) => {
+    if (!res.ok) { message('見られませんでした。鍵が違うか、まだ登録されていません。'); return; }
+    const data = await res.json();
+    const titles = {};
+    for (const w of (catalog && catalog.works) || []) titles[w.id] = (w.title && (w.title.ja || w.title.en)) || w.id;
+    asof.textContent = `${data.today} 時点（日本時間）。人は数えず、出来事の回数だけです。`;
+    out.replaceChildren();
+
+    // 1. 累計
+    out.appendChild(el('h2', '', 'これまでの合計'));
+    const tot = byEvent(data.total);
+    out.appendChild(table(['出来事', '回数'], EV.map(([k, label]) => [label, tot[k] || 0])));
+
+    // 2. 作品ごと（累計）
+    const works = {};
+    const ids = new Set(Object.keys(titles));
+    for (const [name, n] of Object.entries(data.total || {})) {
+      const p = split(name);
+      if (!p.id) continue;
+      ids.add(p.id);
+      const w = (works[p.id] ||= {});
+      const col = p.ev === 'enter' ? 'enter_' + p.via : p.ev;
+      w[col] = (w[col] || 0) + n;
+    }
+    out.appendChild(el('h2', '', '絵ごと（これまでの合計）'));
+    const cols = [['concierge_recommend', 'おすすめ'], ['gallery_pick', 'ギャラリーで選ぶ'], ['enter_concierge', 'のぞく（' + VIA.concierge + '）'], ['enter_gallery', 'のぞく（' + VIA.gallery + '）'], ['enter_page', 'のぞく（' + VIA.page + '）']];
+    const rows = [...ids].map((id) => [titles[id] || id, ...cols.map(([c]) => (works[id] || {})[c] || 0)]);
+    rows.sort((a, b) => b.slice(1).reduce((x, y) => x + y, 0) - a.slice(1).reduce((x, y) => x + y, 0));
+    out.appendChild(table(['絵', ...cols.map((c) => c[1])], rows));
+
+    // 3. 直近 30 日（日ごと）
+    out.appendChild(el('h2', '', `直近 30 日（${data.since} から）`));
+    const days = Object.keys(data.days || {}).sort().reverse();
+    if (!days.length) out.appendChild(el('p', 'note', 'まだありません。'));
+    else out.appendChild(table(['日付', ...EV.map((e) => e[1])], days.map((d) => { const s = byEvent(data.days[d]); return [d, ...EV.map(([k]) => s[k] || 0)]; })));
+  }).catch(() => message('読み込めませんでした。時間をおいてもう一度開いてください。'));
+})();
+</script>
+</body>
+</html>

@@ -68,6 +68,8 @@
 - 送るのは会話文だけ。名前・連絡先は聞かない（system で禁止）。会話は保存しない
 - 計測：`recommend_start`、`recommend_done`、`enter_via_recommend`、`contact_via_recommend`（Cookie なし）
 - 作品ページに「このおすすめは AI が作家の言葉をもとに選んだもの」と 1 行
+- 11-06：KV の数だけ。個人は追わない（E-14。`POST /api/stat` が出来事の回数を KV `STATS` に +1。IP・名前・会話の文・Cookie は保存しない）
+- 11-06：作家だけが `/stats.html?key=<STATS_KEY>`（`GET /api/stats`）で累計と直近 30 日を見る。鍵が無い・違えば 404
 
 ## 6. 作業の見積もり
 

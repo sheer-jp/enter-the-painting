@@ -9,3 +9,9 @@ compatibility_date = "2025-09-01"
 [vars]
 # 開発中はリーズナブルに Sonnet 5.5。接客の質を上げたければ claude-opus-5-5
 CLAUDE_MODEL = "claude-sonnet-5-5"
+
+# 計測（E-14。docs/RECOMMEND.md 5 節）：数だけを貯める KV（namespace ETP_STATS）。IP・名前・会話は保存しない
+# 見る口 /api/stats は Secret の STATS_KEY と一致したときだけ返す（npx wrangler pages secret put STATS_KEY --project-name enter-the-painting）
+[[kv_namespaces]]
+binding = "STATS"
+id = "5120585b564346e38635bf7c3cf8e867"

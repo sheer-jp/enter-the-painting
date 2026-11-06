@@ -61,6 +61,7 @@ export interface ConciergeOptions {
   configUrl: string;           // GET /api/recommend/config（{ passphrase: boolean }）
   catalogUrl: string;          // catalog.json（受付と同じ階層）
   retry: string | null;        // ?retry=<id>：作品ページの「別のにする」から戻ってきた
+  stat?: (ev: string, id?: string | null, via?: string | null) => void;   // 計測（E-14。page.ts の stat。数だけ）
 }
 
 export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void {
@@ -91,6 +92,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   let rulesMode = noApi;
   let messages: Msg[] = [];
   let busy = false;
+  const stat = opts.stat ?? (() => {});
+  let statStarted = false;          // concierge_start は 1 回の会話に 1 回（reset で戻す）
   let sess = 0;                     // 「もう一度」で古い応答を捨てるための番号
   let mode: 'talk' | 'pass' | 'done' = 'talk';
   let pending: { text: string; extra: boolean } | null = null;   // 合言葉を聞いている間、最初のことばを預かる
@@ -232,13 +235,18 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     send.textContent = t('rec_send', lang);
   }
   function labelOpeners() {
-    // ja と en は HTML の data-lang で出し分ける。他の言語はカタログの訳があれば差し替える
-    if (lang === 'ja' || lang === 'en') return;
-    const list = catalog?.openers?.[lang];
-    if (!list) return;
+    // ja と en は HTML の data-lang で出し分ける。他の言語はカタログに本当の訳があれば差し替える。
+    // 差し替えるときも元の HTML（ja / en の span）を data-orig に残し、ja / en に戻したら復元する
+    //（11-06 深夜：外国語にしてから日本語に戻すと英語が残るバグの修正）
+    const list = (lang === 'ja' || lang === 'en') ? null : catalog?.openers?.[lang];
+    const en = catalog?.openers?.en;
     thread.querySelectorAll<HTMLButtonElement>('button[data-opener-index]:not(.cg-write)').forEach((b) => {
-      const s = list[+b.dataset.openerIndex!];
-      if (s) b.textContent = s;
+      if (b.dataset.orig === undefined) b.dataset.orig = b.innerHTML;
+      const i = +b.dataset.openerIndex!;
+      const s = list?.[i];
+      if (s && s !== en?.[i]) { b.textContent = s; return; }   // 本当の訳があるときだけ
+      b.innerHTML = b.dataset.orig;
+      applyLang(b, lang);
     });
   }
   labelUi();
@@ -284,7 +292,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
 
   function reset() {
     sess++;
-    messages = []; busy = false; pending = null; mode = 'talk';
+    messages = []; busy = false; pending = null; mode = 'talk'; statStarted = false;
     current = null; shown = new Set(); otherPresses = 0; extraUsed = false; rulesRank = null;
     if (c2Pushed && history.state?.cg2) history.back();   // C2 の履歴を下ろす（popstate は stage が talk なので何もしない）
     c2Pushed = false;
@@ -312,6 +320,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (mode === 'pass') { submitPass(text); return; }
     text = text.trim().slice(0, 600);
     if (!text) return;
+    if (!statStarted) { statStarted = true; stat('concierge_start'); }
+    stat('concierge_turn');   // 数だけ。文は送らない
     hideOpeners();
     root.classList.add('is-talk');   // 会話の状態：キャラクターを小さくして会話を広く
     line('me', text);
@@ -639,6 +649,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   // C2 が出ていなければ 3 段を経て C2 に、出ていれば C2 の中で差し替える（短い登場）
   async function showCard(c: Catalog, r: { id: string; alt: string | null }, info: { reason: string; moods: string[]; json?: RecJson }, swap = false) {
     const w = c.works.find((x) => x.id === r.id)!;
+    stat('concierge_recommend', w.id);
     current = r;
     shown.add(w.id);
     // 直前のおすすめを sessionStorage に（作品ページの帯の「別のにする」から戻ったときに使う）
@@ -714,7 +725,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     rise(enterVr);
     vrReady.then((ok) => { if (ok) enterVr.hidden = false; });
     prefetchSpace(w);
-    rise(smallButton('cg-btn cg-other', 'cg_other', () => other()));
+    rise(smallButton('cg-btn cg-other', 'cg_other', () => { if (!busy) stat('concierge_other'); other(); }));
     const all = h('a', 'cg-btn cg-all', t('cg_all', lang));
     all.href = withQuery('gallery/', 'from', w.id);
     rise(all);
@@ -753,6 +764,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   async function enterHere(w: CatalogWork, vr: boolean) {
     if (entering) return;
     entering = true;
+    stat('enter', w.id, 'concierge');
     // 押した操作の中で：音の許可、声の準備、XR セッションの要求（CLAUDE.md の作業ルール）
     const sound = new Soundscape();
     const unlocking = sound.unlock();
@@ -875,6 +887,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       current = { id: retryId, alt: last && last.recommend === retryId ? last.alt : null };
       // alt があれば alt、無ければ AI に再提案（ルールだけの版は近い作品）
       otherPresses = 0;
+      stat('concierge_other');   // 作品ページの帯の「別のにする」
       other(true);
     }, 900);
   }

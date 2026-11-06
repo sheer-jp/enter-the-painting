@@ -168,9 +168,14 @@ V1 でやること（E-4）：
 - 課金よけ：コンソールの月上限 $200（11-06 設定、$10 で通知）。IP ごとの回数制限。合言葉（3.1）
 - URL：いまは `https://enter-the-painting.pages.dev/`。サブドメイン（`gallery.sheerarts.com`）か `sheerarts.com/gallery/`（Worker ルート）かは、QR を刷る前に決める。どちらも Pages プロジェクトはそのまま
 
-## 7. 計測（`docs/RECOMMEND.md` 5 節のまま）
+## 7. 計測（11-06 深夜に実装。作家「Cookie はあってよい。誰がどの絵を見たか、会話の数を見たい」）
 
-- GoatCounter のイベント：`concierge_start`、`concierge_turn`、`concierge_recommend`、`concierge_skip`、`gallery_pick`、`enter`（`via` 付き）。個人情報なし。会話の内容は送らない。U-8 が未決定のあいだは入れない
+- **数だけを Cloudflare KV に貯める**（個人は追わない。IP・UA・会話の文・Cookie は保存しない）。`POST /api/stat`（`concierge_start` / `concierge_turn` / `concierge_recommend:<id>` / `concierge_other` / `concierge_skip` / `enter:<via>:<id>` / `gallery_pick:<id>`）。日ごと（JST、40 日で消える）と累計
+- **見る**：`https://enter-the-painting.pages.dev/stats.html?key=<STATS_KEY>`（Pages の Secret `STATS_KEY` を作家が登録。合計・絵ごと・直近 30 日の表）
+- KV の無料枠は 1 日 1,000 書き込み（1 出来事 2 書き込み）。来場の多い日は数え漏れる。有料プランか、まとめ書きは後で
+- ページ閲覧の数は Cloudflare Web Analytics（Pages のダッシュボードで作家が有効にする。こちらからは切替できない）
+- `prefers-reduced-data` の端末には送らない
+
 
 ## 8. タスク（`docs/TASKS.md` E）
 

@@ -34,6 +34,17 @@ function toast(msg: string) {
   document.body.appendChild(el); setTimeout(() => el.remove(), 1800);
 }
 
+// 計測（E-14）：数だけを送る。会話の文・個人の情報は送らない。失敗しても、ブロックされていても何もしない
+const statUrl = (document.querySelector<HTMLMetaElement>('meta[name="recommend-api"]')?.content.trim() || '').replace(/\/recommend\/?$/, '/stat') || '/api/stat';
+export function stat(ev: string, id: string | null = null, via: string | null = null) {
+  try {
+    if (matchMedia('(prefers-reduced-data: reduce)').matches) return;
+    const body = JSON.stringify(via ? { ev, id, via } : { ev, id });
+    if (navigator.sendBeacon?.(statUrl, body)) return;
+    fetch(statUrl, { method: 'POST', body, keepalive: true }).catch(() => {});
+  } catch { /* 数えられなくてよい */ }
+}
+
 // 「VR でのぞく」は Quest のブラウザだけ（判定は concierge/enter.ts の vrEntryAllowed。受付の C2 と同じ条件）
 
 // 受付（/。docs/ENTRANCE.md 3 節）：会話のコードは import() で読む（体験バンドルは読まない）
@@ -55,8 +66,9 @@ if (cg) {
   };
   cg.addEventListener('click', hold, true);
   cg.addEventListener('submit', hold, true);
+  cg.querySelector('a.cg-skip')?.addEventListener('click', () => stat('concierge_skip'));
   const loading = import('./concierge/index').then((m) => {
-    m.mountConcierge(cg, { lang, api, configUrl: api ? `${api.replace(/\/$/, '')}/config` : '', catalogUrl: 'catalog.json', retry });
+    m.mountConcierge(cg, { lang, api, configUrl: api ? `${api.replace(/\/$/, '')}/config` : '', catalogUrl: 'catalog.json', retry, stat });
     ready = true;
   }).catch((e) => { console.warn('受付を読めない', e); });
 }
@@ -71,6 +83,7 @@ if (wall) {
     item.classList.add('is-for-you');
     item.querySelector<HTMLElement>('.gw-foryou')!.hidden = false;
   }
+  wall.addEventListener('click', (e) => { const id = (e.target as Element).closest<HTMLElement>('.gw-item')?.dataset.id; if (id) stat('gallery_pick', id); });
   wall.addEventListener('wheel', (e) => {
     if (!matchMedia('(min-width: 768px)').matches || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
     const max = wall.scrollWidth - wall.clientWidth;
@@ -122,6 +135,7 @@ if (workId) {
   // .btn の display が hidden 属性を上書きするので、HTML では inline の display:none で隠している（E-12 で判明）
   vrAvailable(forceVr).then((ok) => { if (ok) { enterVr.hidden = false; enterVr.style.display = ''; } });
   const start = async (vr: boolean) => {
+    stat('enter', workId, ['concierge', 'gallery'].includes(url.searchParams.get('via') || '') ? url.searchParams.get('via') : 'page');
     enter.disabled = true; enterVr.disabled = true;
     const label = enter.textContent; enter.textContent = t('loading', lang) + '…';
     // 「入る」のハンドラ内で（ユーザー操作の直後に）：音の許可、声の準備、XR セッションの要求
