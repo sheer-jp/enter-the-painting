@@ -2,15 +2,7 @@
   "id": "new-chapter",
   "title": {
     "ja": "New Chapter",
-    "en": "New Chapter",
-    "zh-Hans": "New Chapter",
-    "zh-Hant": "New Chapter",
-    "ko": "New Chapter",
-    "fr": "New Chapter",
-    "de": "New Chapter",
-    "es": "New Chapter",
-    "it": "New Chapter",
-    "pt": "New Chapter"
+    "en": "New Chapter"
   },
   "size_cm": [
     18,
@@ -412,9 +404,9 @@
       "confidence": "low",
       "occlusion": false,
       "move_px": [
+        480,
         0,
-        0,
-        1600,
+        1145,
         880
       ],
       "place": "lean",
@@ -572,5 +564,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T18:38:30.172Z"
+  "generated_at": "2026-11-06T19:29:14.893Z"
 }

@@ -12,6 +12,7 @@ import { translateAll } from './translate.js';
 const TEXT_DARK_LSTAR = 60;
 import { workPage, galleryPage, galleryWallPage, cardSvg } from './pages.js';
 import { compositeRooms } from './rooms.js';
+import { titleJaEn } from './catalog.js';
 
 // Claude API の鍵：ANTHROPIC_API_KEY か、別名 ENTER_CLAUDE_API_KEY（クラウドのセッションでは ANTHROPIC_API_KEY がセッション側に取られて空になることがある）
 if (!process.env.ANTHROPIC_API_KEY && process.env.ENTER_CLAUDE_API_KEY) process.env.ANTHROPIC_API_KEY = process.env.ENTER_CLAUDE_API_KEY;
@@ -62,6 +63,8 @@ async function generateWork(id) {
   const meta = await sharp(src).metadata();
   const aspect = meta.width / meta.height;
   await sharp(src).rotate().resize({ width: 1024 }).jpeg({ quality: 88, mozjpeg: true }).toFile(join(gen, 'painting_1024.jpg'));
+  // 「他の作品」の帯とギャラリーの小さな表示用（srcset で 1024 と出し分け。AUDIT-1 P1-5）
+  await sharp(src).rotate().resize({ width: 480 }).jpeg({ quality: 82, mozjpeg: true }).toFile(join(gen, 'painting_480.jpg'));
   // 流体の色場の初期値用：元の写真の解像度をそのまま（長辺 2048 まで。写真が小さければ拡大しない）
   const longSide = Math.max(meta.width, meta.height);
   const fullW = longSide > 2048 ? Math.round(meta.width * 2048 / longSide) : meta.width;
@@ -97,10 +100,9 @@ async function generateWork(id) {
   const ROOM_TEXTS = ['compare', 'compare2', 'about', 'note'];
   const roomTexts = [...new Map(rooms.flatMap((r) => ROOM_TEXTS.map((k) => r[k]).filter(Boolean)).map((x) => [x.ja, x])).values()];   // 同じ文は 1 回だけ
 
-  // 5. 翻訳（タイトル、メッセージ、物語、部屋の文章）
+  // 5. 翻訳（メッセージ、物語、部屋の文章）。題名は固有名詞なので訳さない（ja と en だけ。他の言語は pick() の en フォールバック。AUDIT-1 P1-7）
   const messages = (work.messages || []).map((ja, i) => ({ ja, en: work.messages_en?.[i] }));
   const texts = [...messages];
-  if (work.title?.ja) texts.push({ ja: work.title.ja, en: work.title.en });
   const storyPath = join(gen, 'stories.json');
   let stories = existsSync(storyPath) ? JSON.parse(readFileSync(storyPath, 'utf8')) : {};
   // 小さな物語の下書き：無ければ Claude API で 1 本（キーが無ければスキップ）。作家が直したものは再生成で消えない
@@ -140,7 +142,7 @@ async function generateWork(id) {
     return Y <= 0.008856 ? Y * 903.3 : Math.pow(Y, 1 / 3) * 116 - 16;
   })();
   const space = {
-    id, title: work.title?.ja ? { ...tr(work.title.ja), ja: work.title.ja, ...(work.title.en ? { en: work.title.en } : {}) } : { ja: id },
+    id, title: work.title?.ja ? { ja: work.title.ja, ...(work.title.en ? { en: work.title.en } : {}) } : { ja: id },
     size_cm: work.size_cm, aspect: +aspect.toFixed(4), year: work.year ?? null,
     painting: 'painting_1024.jpg', painting_full: 'painting_full.jpg', painting_blur: 'painting_blur.jpg',
     source_px: [meta.width, meta.height],
@@ -194,7 +196,7 @@ async function main() {
   writeFileSync(join(ROOT, 'index.html'), galleryPage({ works: allWorks, baseUrl: BASE_URL }));
   mkdirSync(join(ROOT, 'gallery'), { recursive: true });   // ギャラリー（docs/ENTRANCE.md 4 節）。/ は受付
   writeFileSync(join(ROOT, 'gallery', 'index.html'), galleryWallPage({ works: allWorks, baseUrl: BASE_URL }));
-  writeFileSync(join(ROOT, 'public', 'works.json'), JSON.stringify(allWorks.map((s) => ({ id: s.id, title: s.title, size_cm: s.size_cm })), null, 2) + '\n');
+  writeFileSync(join(ROOT, 'public', 'works.json'), JSON.stringify(allWorks.map((s) => ({ id: s.id, title: titleJaEn(s.title, s.id), size_cm: s.size_cm })), null, 2) + '\n');
   await (await import('./catalog.js')).writeCatalog(ROOT);   // 気分から絵をすすめる（docs/RECOMMEND.md 8.3）
   await (await import('./og.js')).writeOg({ root: ROOT, works: allWorks });   // ファビコンと SNS カード（E-16）
   console.log(`ページ生成：${every.length} 作品、BASE_URL=${BASE_URL}`);

@@ -35,6 +35,7 @@
 - 本文と UI：**Noto Sans JP** 300 / 400。ラベルは 11〜12px、字間 .18em、大文字（ラテン文字のとき）
 - 数字（寸法、年）は `tabular-nums`
 - Google Fonts から読む。読めないときはシステムの明朝とゴシックに落ちる
+- 読む太さ（11-07 FIX-A、AUDIT-1 P1-3）：Shippori Mincho 400 / 600（600 は物語モードの絵の中の文字 `.float-text`）、Cormorant Garamond 300 / 400 / 300 italic、Noto Sans JP 300 / 400（500 は使っていないので読まない）。CSS は `display=swap` のまま `<link rel="preload" as="style" onload>` で描画を止めずに読み、JS が無いときは `<noscript>` の通常の link（`scripts/generate/pages.js` の `FONTS`）
 
 ## レイアウト
 

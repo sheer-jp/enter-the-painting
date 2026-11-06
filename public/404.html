@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ページが見つかりません / Page not found — SHEER Gallery</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ffffff">
+<style>
+  /* 受付と同じトーン：白地、墨、明朝（src/ui/page.css の body.paper）。外部の CSS・フォントは読まない */
+  :root { color-scheme: light; }
+  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; background: #fff; color: #141210;
+    font-family: "Hiragino Sans", "Noto Sans JP", system-ui, -apple-system, sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased; }
+  main { padding: 32px max(24px, env(safe-area-inset-left)); text-align: center; }
+  .brand { font-size: 11px; letter-spacing: .3em; color: #141210; margin: 0 0 40px; }
+  h1 { margin: 0; font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif; font-weight: 400; font-size: 20px; letter-spacing: .14em; line-height: 1.6; }
+  .en { display: block; margin-top: 4px; font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 15px; letter-spacing: .08em; color: #625d56; }
+  .links { margin: 40px 0 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  a { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 26px; border-radius: 999px; border: 1px solid #141210;
+    color: #141210; text-decoration: none; font-size: 13px; letter-spacing: .16em; }
+  a.primary { background: #141210; color: #fff; }
+  a:focus-visible { outline: 1px solid #141210; outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="brand">SHEER Gallery</p>
+  <h1>ページが見つかりません<span class="en" lang="en">Page not found</span></h1>
+  <p class="links">
+    <a class="primary" href="/gallery/">ギャラリーへ <span lang="en">&nbsp;/ Gallery</span></a>
+    <a href="/">受付へ <span lang="en">&nbsp;/ Home</span></a>
+  </p>
+</main>
+</body>
+</html>

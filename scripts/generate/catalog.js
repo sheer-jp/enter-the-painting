@@ -29,6 +29,9 @@ const clamp01 = (v) => Math.max(0, Math.min(1, v));
  * "#rrggbb" → { rgb: [0..255]×3, h: 0..360, s: 0..1, l: 0..1 }（HSL）
  * @param {string} hex
  */
+// 題名を ja / en だけにする（古い space.json に他の言語の訳が残っていても使わない）
+export const titleJaEn = (t, id) => (t && t.ja ? { ja: t.ja, ...(t.en ? { en: t.en } : {}) } : { ja: id });
+
 export function hexToHsl(hex) {
   const n = parseInt(hex.replace('#', ''), 16);
   const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
@@ -148,7 +151,8 @@ async function catalogWork(root, id, apiKey) {
   const fit = f && typeof f.ja === 'string' && f.ja ? { ja: f.ja, ...(typeof f.en === 'string' && f.en ? { en: f.en } : {}) } : null;
   return {
     id,
-    title: space.title || { ja: id },
+    // 題名は ja と en だけ（固有名詞を訳さない。AUDIT-1 P1-7）
+    title: titleJaEn(space.title, id),
     size_cm: space.size_cm ?? work.size_cm ?? null,
     size_label: space.size_label ?? work.size_label ?? null,
     year: space.year ?? work.year ?? null,

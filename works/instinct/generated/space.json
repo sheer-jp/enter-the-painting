@@ -2,15 +2,7 @@
   "id": "instinct",
   "title": {
     "ja": "本能",
-    "en": "Instinct",
-    "zh-Hans": "本能",
-    "zh-Hant": "本能",
-    "ko": "본능",
-    "fr": "Instinct",
-    "de": "Instinkt",
-    "es": "Instinto",
-    "it": "Istinto",
-    "pt": "Instinto"
+    "en": "Instinct"
   },
   "size_cm": [
     33.3,
@@ -412,9 +404,9 @@
       "confidence": "low",
       "occlusion": false,
       "move_px": [
+        480,
         0,
-        0,
-        1600,
+        1145,
         880
       ],
       "place": "lean",
@@ -671,5 +663,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T18:38:28.655Z"
+  "generated_at": "2026-11-06T19:29:12.677Z"
 }

@@ -2,15 +2,7 @@
   "id": "the-flower-within",
   "title": {
     "ja": "内なる心に咲く花よ",
-    "en": "The Flower Within",
-    "zh-Hans": "内心绽放的花啊",
-    "zh-Hant": "內心綻放的花啊",
-    "ko": "내 안에 피는 꽃이여",
-    "fr": "La fleur intérieure",
-    "de": "Die Blume im Inneren",
-    "es": "La flor interior",
-    "it": "Il fiore interiore",
-    "pt": "A flor interior"
+    "en": "The Flower Within"
   },
   "size_cm": [
     18,
@@ -412,9 +404,9 @@
       "confidence": "low",
       "occlusion": false,
       "move_px": [
+        480,
         0,
-        0,
-        1600,
+        1145,
         880
       ],
       "place": "lean",
@@ -572,5 +564,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T18:38:30.862Z"
+  "generated_at": "2026-11-06T19:29:15.752Z"
 }

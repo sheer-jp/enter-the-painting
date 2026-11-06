@@ -24,11 +24,18 @@ export async function run(o: RunOptions): Promise<void> {
   const space: Space = await fetch(base + 'generated/space.json').then((r) => { if (!r.ok) throw new Error('space.json ' + r.status); return r.json(); });
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const stage = document.getElementById('stage')!;
+  const prevFocus = document.activeElement as HTMLElement | null;
   stage.hidden = false;
   document.body.style.overflow = 'hidden';
+  // 物語の画面の裏（作品ページの main、受付の .cg など stage の外）を inert に。Tab が裏へ抜けないように（AUDIT-1 P1-1。受付の setBehind と同じ考え方）
+  const behind = setBehind(stage);
+  // Tab を物語の画面の中で回す（最後の次は最初へ。ページの外へ抜けない）
+  const trap = (e: KeyboardEvent) => { if (e.key === 'Tab') trapTab(stage, e); };
+  document.addEventListener('keydown', trap);
   const sound = o.sound ?? new Soundscape();
   await sound.unlock();
   const hud = buildHud(stage, o.lang, { fromQr: o.fromQr, debug: o.debug, hasRooms: (space.rooms?.length ?? 0) > 0, contact: space.contact });
+  hud.close.focus({ preventScroll: true });
 
   const canvas = document.createElement('canvas');
   stage.appendChild(canvas);
@@ -70,7 +77,12 @@ export async function run(o: RunOptions): Promise<void> {
   const exit = () => {
     hud.dispose(); sound.dispose(); fluid?.dispose(); renderer?.dispose(); canvas.remove();
     stage.hidden = true; document.body.style.overflow = '';
+    behind.forEach((el) => { el.inert = false; });
+    document.removeEventListener('keydown', trap);
     o.onExit?.();
+    // フォーカスを「絵の世界をのぞく」へ返す（受付から入ったときは、押したボタンへ）
+    const back = document.getElementById('enter') ?? prevFocus;
+    if (back && back.isConnected) back.focus({ preventScroll: true });
   };
   try {
     let fellBack = false;
@@ -86,6 +98,28 @@ export async function run(o: RunOptions): Promise<void> {
   } finally {
     exit();
   }
+}
+
+// stage から body までの各階層で、stage の側でない兄弟を inert にする。もともと inert だったものは触らない（戻すときも）
+function setBehind(stage: HTMLElement): HTMLElement[] {
+  const out: HTMLElement[] = [];
+  for (let el: HTMLElement | null = stage; el && el !== document.body; el = el.parentElement) {
+    for (const sib of el.parentElement ? [...el.parentElement.children] : []) {
+      if (sib === el || !(sib instanceof HTMLElement) || sib.inert || /^(SCRIPT|STYLE|LINK)$/.test(sib.tagName)) continue;
+      sib.inert = true; out.push(sib);
+    }
+  }
+  return out;
+}
+
+// stage の中の、いま操作できる要素の間で Tab を回す
+function trapTab(stage: HTMLElement, e: KeyboardEvent) {
+  const f = [...stage.querySelectorAll<HTMLElement>('button, a[href], input, select, [tabindex]:not([tabindex="-1"])')]
+    .filter((el) => !(el as HTMLButtonElement).disabled && !el.closest('[inert], [hidden]') && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden');
+  if (!f.length) return;
+  const i = f.indexOf(document.activeElement as HTMLElement);
+  if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+  else if (!e.shiftKey && (i === -1 || i === f.length - 1)) { e.preventDefault(); f[0].focus(); }
 }
 
 function lighten(hex: string) {

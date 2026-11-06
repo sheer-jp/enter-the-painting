@@ -1700,15 +1700,7 @@
       "id": "golden-path",
       "title": {
         "ja": "Golden Path",
-        "en": "Golden Path",
-        "zh-Hans": "Golden Path",
-        "zh-Hant": "Golden Path",
-        "ko": "Golden Path",
-        "fr": "Golden Path",
-        "de": "Golden Path",
-        "es": "Golden Path",
-        "it": "Golden Path",
-        "pt": "Golden Path"
+        "en": "Golden Path"
       },
       "size_cm": [
         18,
@@ -1891,15 +1883,7 @@
       "id": "harmoney",
       "title": {
         "ja": "Harmoney",
-        "en": "Harmoney",
-        "zh-Hans": "Harmoney",
-        "zh-Hant": "Harmoney",
-        "ko": "Harmoney",
-        "fr": "Harmoney",
-        "de": "Harmoney",
-        "es": "Harmoney",
-        "it": "Harmoney",
-        "pt": "Harmoney"
+        "en": "Harmoney"
       },
       "size_cm": [
         53,
@@ -2101,15 +2085,7 @@
       "id": "instinct",
       "title": {
         "ja": "本能",
-        "en": "Instinct",
-        "zh-Hans": "本能",
-        "zh-Hant": "本能",
-        "ko": "본능",
-        "fr": "Instinct",
-        "de": "Instinkt",
-        "es": "Instinto",
-        "it": "Istinto",
-        "pt": "Instinto"
+        "en": "Instinct"
       },
       "size_cm": [
         33.3,
@@ -2290,15 +2266,7 @@
       "id": "itadaki",
       "title": {
         "ja": "頂",
-        "en": "Itadaki",
-        "zh-Hans": "顶",
-        "zh-Hant": "頂",
-        "ko": "이타다키 (정상)",
-        "fr": "itadaki (le sommet)",
-        "de": "itadaki (der Gipfel)",
-        "es": "itadaki (la cima)",
-        "it": "itadaki (la vetta)",
-        "pt": "itadaki (o cume)"
+        "en": "Itadaki"
       },
       "size_cm": [
         53,
@@ -2491,15 +2459,7 @@
       "id": "new-chapter",
       "title": {
         "ja": "New Chapter",
-        "en": "New Chapter",
-        "zh-Hans": "New Chapter",
-        "zh-Hant": "New Chapter",
-        "ko": "New Chapter",
-        "fr": "New Chapter",
-        "de": "New Chapter",
-        "es": "New Chapter",
-        "it": "New Chapter",
-        "pt": "New Chapter"
+        "en": "New Chapter"
       },
       "size_cm": [
         18,
@@ -2690,15 +2650,7 @@
       "id": "the-flower-within",
       "title": {
         "ja": "内なる心に咲く花よ",
-        "en": "The Flower Within",
-        "zh-Hans": "内心绽放的花啊",
-        "zh-Hant": "內心綻放的花啊",
-        "ko": "내 안에 피는 꽃이여",
-        "fr": "La fleur intérieure",
-        "de": "Die Blume im Inneren",
-        "es": "La flor interior",
-        "it": "Il fiore interiore",
-        "pt": "A flor interior"
+        "en": "The Flower Within"
       },
       "size_cm": [
         18,

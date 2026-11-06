@@ -111,6 +111,31 @@ describe('functions/_lib/prompt.js', () => {
     expect(sanitizeMessages([{ role: 'user', content: 3, name: 'x' }, { role: 'system', content: 'x' }])).toEqual([{ role: 'user', content: '3' }]);
     expect(sanitizeMessages(null)).toEqual([]);
   });
+  it('問いの候補（seed で変わる）は cache_control のブロックより後ろ。head とカタログは seed によらず同じ（REVIEW-1 P1-1）', () => {
+    const qcat = { ...catalog, questions: Array.from({ length: 12 }, (_, i) => ({ ja: `問い${i}はどう？`, kind: `k${i % 4}` })) };
+    const a = buildSystem(qcat, 'ja', 1, 'seedA');
+    const b = buildSystem(qcat, 'ja', 1, 'seedB-other');
+    const ci = a.findIndex((x) => x.cache_control);
+    expect(ci).toBeGreaterThanOrEqual(0);
+    // キャッシュの前置部（cache_control のブロックまで）は seed によらず同じ
+    expect(a.slice(0, ci + 1).map((x) => x.text).join('')).toBe(b.slice(0, ci + 1).map((x) => x.text).join(''));
+    // 候補の問いは前置部に無く、後ろのブロックにある
+    const before = a.slice(0, ci + 1).map((x) => x.text).join('');
+    const after = a.slice(ci + 1).map((x) => x.text).join('');
+    expect(before).not.toMatch(/問い\d+はどう？/);
+    expect(after).toContain('# 今回の問いの候補');
+    expect(after.match(/問い\d+はどう？/g)?.length).toBe(4);
+    // 候補が無いカタログでは見出しも出さない
+    expect(buildSystem(catalog, 'ja', 1, 'seedA').map((x) => x.text).join('')).not.toContain('# 今回の問いの候補');
+  });
+  it('validateRequest：seed は空文字なら未指定と同じ、33 文字・記号は 400', () => {
+    const m = [{ role: 'user', content: 'x' }];
+    expect(validateRequest({ lang: 'ja', messages: m, seed: '' })).toBeNull();
+    expect(validateRequest({ lang: 'ja', messages: m, seed: 'abc_-9' })).toBeNull();
+    expect(validateRequest({ lang: 'ja', messages: m, seed: 'a'.repeat(33) })).toBe('seed');
+    expect(validateRequest({ lang: 'ja', messages: m, seed: 'a b' })).toBe('seed');
+    expect(validateRequest({ lang: 'ja', messages: m, seed: 3 })).toBe('seed');
+  });
   it('validateRequest：制限を超えたら理由を返す', () => {
     const u = (content = 'x') => ({ role: 'user', content });
     const a = { role: 'assistant', content: 'y' };

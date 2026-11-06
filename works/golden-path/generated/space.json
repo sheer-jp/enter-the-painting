@@ -2,15 +2,7 @@
   "id": "golden-path",
   "title": {
     "ja": "Golden Path",
-    "en": "Golden Path",
-    "zh-Hans": "Golden Path",
-    "zh-Hant": "Golden Path",
-    "ko": "Golden Path",
-    "fr": "Golden Path",
-    "de": "Golden Path",
-    "es": "Golden Path",
-    "it": "Golden Path",
-    "pt": "Golden Path"
+    "en": "Golden Path"
   },
   "size_cm": [
     18,
@@ -412,9 +404,9 @@
       "confidence": "low",
       "occlusion": false,
       "move_px": [
+        480,
         0,
-        0,
-        1600,
+        1145,
         880
       ],
       "place": "lean",
@@ -572,5 +564,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T18:38:27.074Z"
+  "generated_at": "2026-11-06T19:29:10.418Z"
 }

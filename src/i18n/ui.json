@@ -96,16 +96,16 @@
     "pt": "Um estúdio"
   },
   "room_cat_house": {
-    "ja": "広い家のリビング",
-    "en": "A spacious living room",
-    "zh-Hans": "宽敞的客厅",
-    "zh-Hant": "寬敞的客廳",
-    "ko": "넓은 집의 거실",
-    "fr": "Un grand salon",
-    "de": "Ein großes Wohnzimmer",
-    "es": "Un salón amplio",
-    "it": "Un ampio soggiorno",
-    "pt": "Uma sala ampla"
+    "ja": "広い家",
+    "en": "Spacious home",
+    "zh-Hans": "宽敞的家",
+    "zh-Hant": "寬敞的家",
+    "ko": "넓은 집",
+    "fr": "Grande maison",
+    "de": "Großes Zuhause",
+    "es": "Casa amplia",
+    "it": "Casa spaziosa",
+    "pt": "Casa espaçosa"
   },
   "close_view": {
     "ja": "寄り",

@@ -67,6 +67,9 @@ export class StoryMode {
   private text: ScreenText;
   private stage = 'T0';
   private paused = false;
+  private pausedAt = 0;          // 一時停止を始めた時刻（paused の間だけ意味がある）
+  private pausedTotal = 0;       // これまでの一時停止の合計（ms）。T3 の最短に数えない
+  private floorSkip = false;     // 文が終わったあとの「次へ」：T3 の最短を待たずに T4 へ
   private running = true;
   private scaleContain = { x: 1, y: 1 };
   private scaleNow = { x: 1, y: 1 };
@@ -91,6 +94,7 @@ export class StoryMode {
 
   constructor(private ctx: StoryCtx) {
     this.text = new ScreenText(ctx.hud.textLayer, ctx.space.text_color);
+    this.text.lang = ctx.lang;   // 日本語のときだけ文節に分ける（文ごとに show の前でも入れ直す）
     this.restoreBase = ctx.space.fluid.restore;
     this.look = lookOf(ctx.space.fluid.look);
   }
@@ -146,13 +150,14 @@ export class StoryMode {
     const band = document.createElement('div'); band.className = 'end-band';
     band.append(this.ctx.hud.caption, this.ctx.hud.ending);
     this.ctx.hud.root.appendChild(band); this.band = band;
+    band.inert = true;   // 見えない間（T0〜T4）は Tab で届かないように（AUDIT-1 P1-1）
     // P-15：帯の主は「部屋で見る」（部屋の画像が無い作品は「もう一度」のまま）。スマホで主を上段にするのは CSS の order
     const roomsBtn = this.ctx.hud.ending.querySelector<HTMLElement>('[data-action="rooms"]');
     if (roomsBtn) {
       this.ctx.hud.ending.querySelectorAll<HTMLElement>('.btn').forEach((b) => b.classList.toggle('primary', b === roomsBtn));
     }
     this.ctx.hud.close.addEventListener('click', () => this.end('exit'));
-    this.ctx.hud.skip.addEventListener('click', () => this.text.skip());
+    this.ctx.hud.skip.addEventListener('click', this.onSkip);
     this.ctx.hud.ending.addEventListener('click', (e) => {
       const b = (e.target as HTMLElement).closest<HTMLElement>('[data-action]'); if (!b) return;
       const a = b.dataset.action;
@@ -214,9 +219,15 @@ export class StoryMode {
     if (lx < -1 || lx > 1 || ly < -1 || ly > 1) return null;
     return fluid.rectToUv((lx + 1) / 2, (ly + 1) / 2);
   }
-  private onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') this.end('exit'); else if (e.key === ' ' && this.stage === 'T3') { e.preventDefault(); this.setPaused(!this.paused); } else if (e.key === 'ArrowRight') this.text.skip(); };
+  private onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') this.end('exit'); else if (e.key === ' ' && this.stage === 'T3') { e.preventDefault(); this.setPaused(!this.paused); } else if (e.key === 'ArrowRight') this.onSkip(); };
+  // 「次へ」：文を飛ばす。文が全部終わって最短の流れを待っている間なら T4 へ（REVIEW-1 P1-5）
+  private onSkip = () => { this.text.skip(); this.floorSkip = true; };
+  // 一時停止を除いた経過（ms）
+  private activeSince(t: number) { const now = performance.now(); return now - t - this.pausedTotal - (this.paused ? now - this.pausedAt : 0); }
 
   private setPaused(p: boolean) {
+    if (p === this.paused) return;
+    if (p) this.pausedAt = performance.now(); else this.pausedTotal += performance.now() - this.pausedAt;
     this.paused = p; this.text.setPaused(p); this.ctx.hud.paused.style.opacity = p ? '1' : '0';
     this.ctx.hud.pause.textContent = p ? '▶' : '❚❚';
     if (p) this.ctx.sound.pauseVoice(); else this.ctx.sound.resumeVoice();
@@ -373,7 +384,7 @@ export class StoryMode {
         const timeline = this.timeline();
         result = await Promise.race([ended, timeline.then(() => ended)]);
         this.text.clear();
-        if (result === 'again') { this.disposeRoomLayer(); this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.rot = 0; this.vignette = 0; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; this.ctx.hud.caption.style.opacity = '0'; this.ctx.hud.caption.textContent = ''; this.band?.classList.remove('on'); }
+        if (result === 'again') { this.disposeRoomLayer(); this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.rot = 0; this.vignette = 0; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; this.ctx.hud.caption.style.opacity = '0'; this.ctx.hud.caption.textContent = ''; this.band?.classList.remove('on'); if (this.band) this.band.inert = true; }
       } while (result === 'again' && this.running);
     } finally {
       this.running = false;
@@ -465,7 +476,9 @@ export class StoryMode {
     await this.enter();
     // T3 流れと語り
     this.stage = 'T3';
-    const t3Start = performance.now();   // 文が先に終わっても、流れは最短 T3_MIN_S 続ける（11-07 T-1 で文が速くなり、絵の中の時間が短くなりすぎたため）
+    // 文が先に終わっても、流れは最短 T3_MIN_S 続ける（11-07 T-1 で文が速くなり、絵の中の時間が短くなりすぎたため）。一時停止の時間は数えない
+    this.pausedTotal = 0;
+    const t3Start = performance.now();
     setTimeout(() => sound.drone(-22, 3), 4000);
     const roomReady = this.loadRoom();
     const voiceUrl = space.audio.voice ? this.ctx.base + space.audio.voice : null;
@@ -483,10 +496,14 @@ export class StoryMode {
         // 声の文の開始時刻まで待つ（一時停止中は進まない）
         while (this.running && sound.voiceTime() < m.at && sound.voiceTime() >= 0 && !(await raced(voiceEnded, 100))) { /* wait */ }
       }
+      // 文の言語（閲覧者の言語の文が無ければ pick と同じく en → ja）。日本語のときだけ文節に分ける
+      this.text.lang = m[lang] ? lang : m.en ? 'en' : 'ja';
       await this.text.show(pick(m, lang), { reduced });
     }
     if (voiceOk) await voiceEnded;
-    while (this.running && !voiceOk && performance.now() - t3Start < T3_MIN_S * 1000) await wait(100);   // 「次へ」で文を飛ばしても、ここで流れを見せる
+    // 最短の流れ：流体があるときだけ（静止画モードは止まった絵を待たせない）。文が全部終わったあとの「次へ」で T4 へ
+    this.floorSkip = false;
+    while (this.running && !voiceOk && fluid && !this.floorSkip && this.activeSince(t3Start) < T3_MIN_S * 1000) await wait(100);
     // T4 余韻：最後の文字が終わると同時に、シューッと引きながら流れが止まり、元の絵へ戻る
     this.stage = 'T4';
     hud.skip.hidden = true;
@@ -525,6 +542,7 @@ export class StoryMode {
     const compare = pick(this.room()?.compare, lang);
     hud.caption.textContent = landed && compare ? compare : '';
     this.band?.classList.add('on');
+    if (this.band) this.band.inert = false;
     hud.ending.style.opacity = '1'; hud.ending.style.pointerEvents = 'auto';
     if (this.ctx.fromQr) hud.once.style.opacity = '1';
     if (landed && compare) {

@@ -7,14 +7,18 @@ const t = (obj, lang) => (obj && (obj[lang] || obj.ja || obj.en)) || '';
 const UI_JA = {
   enter: '絵の世界をのぞく', enter_vr: 'VR でのぞく', enter_note: '色が動き出し、作家の言葉が流れます（約 2 分）', rooms: '部屋で見る', contact: '作家に連絡', share: '共有', others: '他の作品', cg_all: 'ギャラリー全体を見る',   // 11-07 作家「他の作品の下に、ギャラリー全体を見るボタン」
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
-  room_cat_studio: '一人暮らしの部屋', room_cat_house: '広い家のリビング',
+  room_cat_studio: '一人暮らしの部屋', room_cat_house: '広い家',   // 11-07 FIX-A：玄関・靴箱の部屋にも付くので「リビング」を外す（ui.json は別途）
   rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明。絵をドラッグして、好きな場所に置けます',
   gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '© SHEER',   // 11-07 P-17：フッターは「© SHEER」だけ（計測の断りは public/stats.html と README）
   statement: '小さな絵の、奥へ。', statement_en: 'Into the depth of a small painting.',
 };
-const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
+// Google Fonts（AUDIT-1 P1-3）：Noto Sans JP は 300 / 400 だけ（500 は CSS で使っていない）。Shippori Mincho の 600 は絵の中の文字（.float-text）。
+// 描画を止めないよう preload → onload で stylesheet に（JS が無ければ noscript の link）。落ちてもシステムの明朝・ゴシックで読める
+const FONTS_CSS = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&amp;family=Noto+Sans+JP:wght@300;400&amp;display=swap';
+export const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@300;400;500&display=swap">`;
+<link rel="preload" as="style" href="${FONTS_CSS}" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="${FONTS_CSS}"></noscript>`;
 
 // 10 言語ぶんの data-lang の span（ja だけ最初から見せる。page.ts の applyLang が端末の言語で出し分け、無い言語は en → ja に落ちる）
 const multi = (m) => m ? LANGS.filter((l) => m[l]).map((l) => `<span lang="${l}" data-lang="${l}"${l === 'ja' ? '' : ' hidden'}>${esc(m[l])}</span>`).join('') : '';
@@ -51,6 +55,13 @@ const headOg = ({ type = 'website', title, description, image, url }) => `<meta 
 <meta name="twitter:image" content="${image}">`;
 const RECEPTION_DESC = '彩り美しい抽象画の世界を届けます。会話で、今日のあなたへの 1 点を。';
 
+// 部屋の画像の alt。場所の札が「〜て」で終わる（「棚に立てかけて」）ときは「〜た」にし、「に置いた」を付けない（AUDIT-1 P2「立てかけてに置いた」）
+export const roomAlt = (title, label) => `${title} を${/て$/.test(label) ? label.replace(/て$/, 'た') : `${label}に置いた`}イメージ（AI 生成の部屋）`;
+// 小さく出す絵（「他の作品」の帯、ギャラリー）：480 と 1024 を出し分ける（AUDIT-1 P1-5）。作品ページの主役の絵は 1024 のまま
+const smallSrcset = (dir) => `${dir}painting_480.jpg 480w, ${dir}painting_1024.jpg 1024w`;
+// ギャラリーの絵の表示幅：スマホ（< 768px）は 1 列で全幅、PC は横一列（実寸比）で最大でも 560px 程度
+const GW_SIZES = '(max-width: 767.98px) calc(100vw - 32px), 560px';
+
 // 作品ページ /w/<id>/index.html。絵は JS を待たずに出る。JS は「入る」のためだけ
 export function workPage({ work, space, baseUrl, allWorks }) {
   const id = work.id;
@@ -67,7 +78,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
   const caption = multi;
   const rooms = (space.rooms || []).map((r, i) => `
       <figure class="room" data-room-index="${i}">
-        <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(title)} を${esc(t(r.label, 'ja'))}に置いたイメージ（AI 生成の部屋）" loading="lazy">
+        <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(roomAlt(title, t(r.label, 'ja')))}" loading="lazy">
         <figcaption>${r.category ? `<span data-i18n="room_cat_${esc(r.category)}">${esc(UI_JA['room_cat_' + r.category] || '')}</span> ─ ` : ''}${caption(r.label)}</figcaption>
       </figure>`).join('');
   const story = space.story ? `
@@ -76,7 +87,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
       ${LANGS.map((l) => space.story[l] ? `<p lang="${l}" data-lang="${l}" hidden>${esc(space.story[l])}</p>` : '').join('')}
     </section>` : '';
   const others = allWorks.filter((o) => o.id !== id).map((o) => `
-      <a class="other" href="../${o.id}/" data-title-ja="${esc(t(o.title, 'ja'))}" data-title-en="${esc(t(o.title, 'en'))}"><img src="../../works/${o.id}/generated/painting_1024.jpg" alt="${esc(t(o.title, 'ja'))}" loading="lazy"><b class="t-main">${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
+      <a class="other" href="../${o.id}/" data-title-ja="${esc(t(o.title, 'ja'))}" data-title-en="${esc(t(o.title, 'en'))}"><img src="../../works/${o.id}/generated/painting_1024.jpg" srcset="${smallSrcset(`../../works/${o.id}/generated/`)}" sizes="132px" alt="${esc(t(o.title, 'ja'))}" loading="lazy"><b class="t-main">${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
   const contact = work.contact ? `<a class="btn ghost" id="contact" href="${esc(work.contact)}" target="_blank" rel="noopener" data-i18n="contact">${UI_JA.contact}</a>` : '';
   return `<!doctype html>
 <html lang="ja">
@@ -180,6 +191,9 @@ export function galleryPage({ works, baseUrl }) {
 ${headOg({ title: jaEnTitle(title.ja, title.en) || SITE_NAME, description: RECEPTION_DESC, image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/` })}
 ${headIcons('')}
 <meta name="recommend-api" content="${esc(process.env.RECOMMEND_API ?? '/api/recommend')}">
+<!-- 受付の背景の壁（AUDIT-1 P1-4）。src/ui/page.css の .cg-host::before と同じ画像・同じ境目（640px）にそろえる -->
+<link rel="preload" as="image" href="concierge/wall/wall-tall.webp" type="image/webp" media="(max-width: 639.98px)">
+<link rel="preload" as="image" href="concierge/wall/wall-wide.webp" type="image/webp" media="(min-width: 640px)">
 ${FONTS}
 <link rel="stylesheet" href="src/ui/page.css">
 </head>
@@ -240,7 +254,7 @@ export function galleryWallPage({ works: input, baseUrl }) {
     return `
     <a class="gw-item" data-id="${esc(w.id)}" data-size="${sizeClass(longSide(w.size_cm))}" data-long="${longSide(w.size_cm)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
       <span class="gw-foryou" data-i18n="gw_for_you" hidden>あなたへの 1 点</span>
-      <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" alt="${esc(title)}" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
+      <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" srcset="${smallSrcset(`../works/${esc(w.id)}/generated/`)}" sizes="${GW_SIZES}" alt="${esc(title)}" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
       <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${cw} × ${ch} cm</span></span>
     </a>`;
   }).join('') + `

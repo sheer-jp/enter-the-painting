@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { paintingRectFromScale, placeQuad, placeSidesPx, drawPlaceSides, warpOnto, scaleFromReferences, loadReferenceTable, roomTexts, PLACE, SIDE_BOTTOM_CM, SIDE_VIEW, CONTACT_SHADOW_CM } from '../scripts/generate/rooms.js';
 import { clampOffset, quadRect } from '../src/ui/lightbox';
 
@@ -164,4 +164,24 @@ describe('拡大表示：置く場面は横にだけ動かす', () => {
   it('掛ける場面は従来どおり縦にも動く', () => {
     expect(clampOffset(100, -80, r, 1600, 1600)).toEqual([100, -80]);
   });
+});
+
+// REVIEW-1 P1-3：shelf-lean だけ ledge_x_px が無く、壁の端まで横に動かせた
+describe('置く部屋は受けの横の範囲（ledge_x_px）を持つ', () => {
+  const dir = new URL('../rooms/', import.meta.url).pathname;
+  const placed = readdirSync(dir).filter((f) => f.endsWith('.json') && f !== 'REFERENCES.json')
+    .map((f) => ({ f, def: JSON.parse(readFileSync(dir + f, 'utf8')) }))
+    .filter(({ def }) => def.hang?.place);
+  it('置く部屋が 1 つ以上ある', () => { expect(placed.length).toBeGreaterThan(0); });
+  for (const { f, def } of placed) {
+    it(`${f}：ledge_x_px は [x0, x1]（x0 < x1、画像の幅の中）で、最初の位置 x_px を含む`, () => {
+      const lx = def.hang.ledge_x_px;
+      expect(Array.isArray(lx) && lx.length === 2).toBe(true);
+      expect(lx[0]).toBeLessThan(lx[1]);
+      expect(lx[0]).toBeGreaterThanOrEqual(0);
+      expect(lx[1]).toBeLessThanOrEqual(def.image_width_px);
+      expect(def.hang.x_px).toBeGreaterThanOrEqual(lx[0]);
+      expect(def.hang.x_px).toBeLessThanOrEqual(lx[1]);
+    });
+  }
 });

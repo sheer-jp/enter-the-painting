@@ -155,7 +155,7 @@ src/recommend/                 画面（index.ts：入口・会話・おすす�
 - レート制限：IP ごと 1 分 10 回（isolate 内の Map。厳密でなくてよい）
 - origin：サイトと同じ origin なので CORS は不要。同じ origin と `http(s)://localhost:5173`（dev サーバー。このときだけ CORS のヘッダ）、任意で `ALLOWED_ORIGINS` を許す
 - カタログ：同じ配信の `/catalog.json`（`new URL('/catalog.json', request.url)` を `env.ASSETS` から）を isolate の中に 10 分
-- Claude API：`fetch` で直接（SDK を入れない）。`POST https://api.anthropic.com/v1/messages`、`anthropic-version: 2023-06-01`、`stream: true`、モデルは `CLAUDE_MODEL`（既定 `claude-sonnet-5-5`）、`max_tokens: 1500`（思考が数えられる）。system は配列で、カタログのブロックに `cache_control: {type: "ephemeral"}`。`stop_reason` が `refusal` なら 422
+- Claude API：`fetch` で直接（SDK を入れない）。`POST https://api.anthropic.com/v1/messages`、`anthropic-version: 2023-06-01`、`stream: true`、モデルは `CLAUDE_MODEL`（既定 `claude-sonnet-5-5`）、`max_tokens: 1500`（思考が数えられる）。system は配列で、並びは「固定の head（役割・話し方・進め方）→ カタログ（`cache_control: {type: "ephemeral"}`）→ rules（今回の問いの候補・出力の決まり・応答の言語・いまの往復）」。会話ごとに変わるもの（seed で選ぶ問いの候補、言語、往復数）はすべてキャッシュの区切りより後ろに置き、head とカタログはどの訪問者でも同じにする（11-07 FIX-A、REVIEW-1 P1-1。`tests/recommend-worker.test.ts` で確かめる）。`seed` は空文字なら未指定と同じ。`stop_reason` が `refusal` なら 422
 - 秘密：`ANTHROPIC_API_KEY` は Pages の Secret（`wrangler pages secret put`、手元は `.dev.vars`）。ログに会話を残さない
 
 ### 8.5 プロンプトの契約（`functions/_lib/prompt.js`、純関数でテストできるように）

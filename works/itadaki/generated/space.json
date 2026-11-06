@@ -2,15 +2,7 @@
   "id": "itadaki",
   "title": {
     "ja": "頂",
-    "en": "Itadaki",
-    "zh-Hans": "顶",
-    "zh-Hant": "頂",
-    "ko": "이타다키 (정상)",
-    "fr": "itadaki (le sommet)",
-    "de": "itadaki (der Gipfel)",
-    "es": "itadaki (la cima)",
-    "it": "itadaki (la vetta)",
-    "pt": "itadaki (o cume)"
+    "en": "Itadaki"
   },
   "size_cm": [
     53,
@@ -365,5 +357,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T18:38:29.592Z"
+  "generated_at": "2026-11-06T19:29:13.852Z"
 }

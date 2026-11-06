@@ -14,6 +14,8 @@ export class ScreenText {
   private resolveSkip: (() => void) | null = null;
   private paused = false;
   private dark = false;   // 墨文字（淡い絵）のとき true：文字の裏に白を敷く
+  // 表示する文の言語（呼び出し側が show の前に入れる）。日本語のときだけ文節に分ける（REVIEW-1 P1-2：韓国語の空白が消えた）
+  lang = 'en';
   constructor(parent: HTMLElement, color: string) {
     this.el = document.createElement('div');
     this.el.className = 'float-text';
@@ -41,11 +43,17 @@ export class ScreenText {
     const band = this.dark ? 'background:rgba(255,255,255,.9);padding:.06em .4em;-webkit-box-decoration-break:clone;box-decoration-break:clone;border-radius:.12em;' : '';
     const wrap = document.createElement('span');
     if (band) wrap.style.cssText = band;
-    for (const ph of splitPhrases(sentence, /[　-鿿가-힯]/.test(sentence) ? 'ja' : 'en')) {   // 文から言語を見る（呼び出し側を変えない）
-      const s = document.createElement('span');
-      s.textContent = ph;
-      s.style.display = 'inline-block';
-      wrap.appendChild(s);
+    for (const ph of splitPhrases(sentence, this.lang)) {
+      // 文節の前後の空白は span の外（文字ノード）に出す。inline-block の中の末尾の空白は行末として消えるので（"Golden Path を" が "GoldenPath を" になった）
+      const [, lead, core, trail] = /^(\s*)([\s\S]*?)(\s*)$/.exec(ph)!;
+      if (lead) wrap.appendChild(document.createTextNode(lead));
+      if (core) {
+        const s = document.createElement('span');
+        s.textContent = core;
+        s.style.display = 'inline-block';
+        wrap.appendChild(s);
+      }
+      if (trail) wrap.appendChild(document.createTextNode(trail));
     }
     this.el.appendChild(wrap);
     const anim = (frames: Keyframe[], ms: number) => new Promise<void>((res) => {
