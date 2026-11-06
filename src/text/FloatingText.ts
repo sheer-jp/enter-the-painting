@@ -12,6 +12,7 @@ export class ScreenText {
   private token = 0;
   private resolveSkip: (() => void) | null = null;
   private paused = false;
+  private dark = false;   // 墨文字（淡い絵）のとき true：文字の裏に白を敷く
   constructor(parent: HTMLElement, color: string) {
     this.el = document.createElement('div');
     this.el.className = 'float-text';
@@ -19,6 +20,7 @@ export class ScreenText {
     // color は作品の text_color（generate が絵の明るさで決める：濃い絵は白、淡い絵は墨。11-07 作家）。にじみは文字色の反対（白文字に墨、墨文字に白）
     this.el.style.cssText = 'position:absolute;left:0;right:0;top:50%;transform:translateY(-50%) scale(.3);text-align:center;opacity:0;filter:blur(6px);pointer-events:none;word-break:keep-all;overflow-wrap:anywhere;';
     const light = isLight(color);
+    this.dark = !light;
     this.el.style.setProperty('--ft-ink', color);
     this.el.style.setProperty('--ft-glow', light ? '0 0 12px rgba(20,18,16,.85), 0 0 3px rgba(20,18,16,.9)' : '0 0 10px rgba(255,255,255,.95), 0 0 2px rgba(255,255,255,.95)');
     parent.appendChild(this.el);
@@ -32,7 +34,12 @@ export class ScreenText {
     const my = ++this.token;
     const t = screenTextTiming(sentence);
     const rise = opt.rise ?? t.rise, hold = opt.hold ?? t.hold, dissolve = opt.dissolve ?? t.dissolve;
-    this.el.textContent = sentence;
+    // 墨文字（淡い絵）は、蛍光ペンのようにはっきりした白を文字の裏に敷く（11-07 作家「黒文字は裏にはっきりした白がないと読めない」）。白文字は従来どおりにじみだけ
+    this.el.textContent = '';
+    const span = document.createElement('span');
+    span.textContent = sentence;
+    if (this.dark) span.style.cssText = 'background:rgba(255,255,255,.9);padding:.06em .4em;-webkit-box-decoration-break:clone;box-decoration-break:clone;border-radius:.12em;';
+    this.el.appendChild(span);
     const anim = (frames: Keyframe[], ms: number) => new Promise<void>((res) => {
       const a = this.el.animate(frames, { duration: ms, fill: 'forwards', easing: 'cubic-bezier(.2,.7,.3,1)' });
       if (this.paused) a.pause();
