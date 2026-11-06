@@ -79,7 +79,7 @@ section { margin: 0 0 var(--sec); }
 .other { flex: 0 0 132px; scroll-snap-align: start; font-size: 11px; letter-spacing: .08em; color: var(--ink-2); min-width: 0; }
 .other img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; margin-bottom: 8px; }
 .other b { display: block; font-family: var(--serif); font-weight: 400; color: var(--ink); font-size: 13px; }
-/* P-7：「© SHEER　匿名の閲覧数だけを数えています」1 行 */
+/* P-17：フッターは「© SHEER」だけ（11px、--ink-2、上に 1px 線） */
 footer { margin-top: var(--sec); padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 11px; letter-spacing: .1em; display: flex; flex-wrap: wrap; gap: 4px 1.4em; }
 
 /* 体験の舞台 */
@@ -105,6 +105,15 @@ footer { margin-top: var(--sec); padding-top: 18px; border-top: 1px solid var(--
 .hud .end-band .caption { position: static; padding: 0 8px; text-shadow: none; }
 .hud .end-band .caption:empty { display: none; }
 .hud .end-band .ending { position: static; padding: 0; }
+/* P-15：帯のボタンは .btn と同じ見た目（墨 1px の枠、高さ 48px、角 24px、字間 .14em、横に 20px）。主（「部屋で見る」）だけ墨で塗る。間隔 10px */
+.hud .end-band .ending .btn { min-height: 48px; padding: 0 20px; border-radius: 24px; border: 1px solid var(--ink); background: #fff; color: var(--ink); letter-spacing: .14em; justify-content: center; }
+.hud .end-band .ending .btn.primary { background: var(--ink); color: var(--bg); }
+.hud .end-band .ending .btn:not(.primary):hover { background: var(--bg-2); }
+/* スマホ：2 行（主を上段に幅いっぱい、下段に 2 つ） */
+@media (max-width: 639.98px) {
+  .hud .end-band .ending { display: grid; grid-template-columns: 1fr 1fr; width: 100%; max-width: 420px; }
+  .hud .end-band .ending .btn.primary { grid-column: 1 / -1; order: -1; }
+}
 .hud .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(246,244,239,.85) 100%); opacity: 0; transition: opacity .3s; }
 .hud .debug { position: absolute; left: 8px; top: 8px; font: 11px/1.4 monospace; color: #0f0; background: rgba(0,0,0,.5); padding: 4px 6px; white-space: pre; }
 /* 絵の中の作家の言葉（物語モード T3。11-07 T-1：太く・大きく。docs/EXPERIENCE.md 3 節 T3 の数値） */
@@ -193,13 +202,13 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-title { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 15px; letter-spacing: .14em; line-height: 1.5; }
 .cg-title .latin { display: block; font-family: var(--latin); font-style: italic; font-weight: 300; font-size: 12.5px; letter-spacing: .08em; color: var(--ink-2); }
 .cg-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 0; flex: none; }
-/* P-1：スキップはボタン列の下に静かな文字リンク（中央、12px、--ink-2、下線なし、高さ 44px）。会話中も下に残る（キーボードが出たら隠す） */
-.cg-skip { flex: none; align-self: center; font-size: 12px; letter-spacing: .1em; color: var(--ink-2); min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px; line-height: 1.4; text-align: center; animation: cg-in .6s ease both; animation-delay: var(--d, 0s); }
+/* P-16：スキップは会話の欄のいちばん下（4 つ目のボタンとのミスタップを避ける）。上に 28px の空きと 1px の線、12px、--ink-2、高さ 44px、中央。
+   迎えの状態だけ出す（会話が始まったら隠す）。入力欄が隠れている迎えの状態は、ホームバーの分を下に空ける */
+.cg-skip { flex: none; align-self: stretch; justify-content: center; margin: 28px 0 env(safe-area-inset-bottom); border-top: 1px solid var(--line); font-size: 12px; letter-spacing: .1em; color: var(--ink-2); min-height: 44px; display: flex; align-items: center; padding: 0 8px; line-height: 1.4; text-align: center; animation: cg-in .6s ease both; animation-delay: var(--d, 0s); }
 .cg-skip::after { content: "→"; margin-left: .5em; }
 .cg-skip:hover { color: var(--ink); }
-.cg.is-kb .cg-skip { display: none; }
-/* 迎えの状態はボタン列のすぐ下にリンクが来るよう、会話の欄を内容の高さに（あふれたら会話の欄がスクロール） */
-.cg:not(.is-talk) .cg-thread { flex: 0 1 auto; }
+.cg.is-kb .cg-skip, .cg.is-talk .cg-skip { display: none; }
+.cg:not(.is-talk) .cg-thread { padding-bottom: 0; }   /* 迎えの状態：ボタン列とスキップの間はスキップの 28px（＋列の 4px）だけ */
 /* 人の部分は「窓」（11-06 深夜、作家「ゲームは下に線や窓があって、ここが人の部分だと分かる」）：薄い紙色のパネルと下のヘアライン。胸で切れた画像がパネルの縁で収まる */
 /* 窓そのものが .cg-host（11-07 作家「キャラクターを奥側に置かないと、動いたとき枠をはみ出る」）：枠で切り抜く（overflow hidden）。人は窓の中の層 */
 .cg-host { grid-area: host; margin: 0 auto 6px; min-height: 0; width: min(100%, 360px); display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6); isolation: isolate; }
@@ -246,8 +255,8 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 @keyframes cg-in { from { opacity: 0; transform: translateY(6px); } }
 /* 会話が始まったら（最初の選択か「自分のことばで書く」）キャラクターを小さくして文字を読みやすく。キーボードが出たらさらに小さく（11-06 作家）
    おすすめは別の画面 C2（concierge.css） */
-/* 背の低い縦画面（iPhone SE など、高さ 700px 以下）：迎えの状態は 26%（あいさつ 2 文と 4 つのボタンが入りきるように） */
-@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 26%; } }
+/* 背の低い縦画面（iPhone SE など、高さ 700px 以下）：迎えの状態は 25%（あいさつ 2 文と 4 つのボタンが入りきるように） */
+@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 25%; } }   /* P-16 でスキップの上に 28px と線を足したぶん、26% → 25%（会話の状態 15% との差を保つ） */
 .cg.is-talk { --cg-host: 15%; }
 .cg.is-talk.is-kb, .cg.is-kb { --cg-host: 12%; }
 /* PC・横向きも同じ「上に人、下に会話」（11-06 作家「パソコンでも同じ感じで」）。幅は 640px に抑えて中央に。人の高さは px で上限 */
@@ -290,6 +299,15 @@ main.gw { min-height: 100dvh; display: flex; flex-direction: column; padding: en
 .gw-foryou { position: absolute; bottom: calc(100% + 12px); left: 0; font-size: 11px; letter-spacing: .2em; color: var(--ink); white-space: nowrap; }
 /* おすすめの 1 点：ほんの少し明るい（背後の光） */
 .gw-item.is-for-you::before { content: ""; position: absolute; inset: -38% -42% -20%; z-index: -1; background: radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0)); pointer-events: none; }
+/* G-1：大きさの絞り込み（見出しの下、チップ 4 つ）。高さ 36px、墨 1px の枠、選択中は墨で塗る */
+.gw-filter { display: flex; flex-wrap: wrap; gap: 8px; max-width: 1180px; width: 100%; margin: 12px auto 0; }
+.gw-chip { appearance: none; min-height: 36px; padding: 0 16px; border: 1px solid var(--ink); border-radius: 18px; background: #fff; color: var(--ink); font: 400 12px/1.3 var(--sans); letter-spacing: .12em; cursor: pointer; transition: background .2s, color .2s; }
+.gw-chip:hover { background: var(--bg-2); }
+.gw-chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.gw-chip:disabled { opacity: .35; cursor: default; background: #fff; color: var(--ink); }
+/* 該当しない作品は薄く。壁の並びと実寸比はそのまま（詰めない。大きさの比較が崩れるため） */
+.gw-item { transition: transform .6s cubic-bezier(.2,.7,.3,1), opacity .3s ease; }
+.gw[data-size="s"] .gw-item:not([data-size="s"]), .gw[data-size="m"] .gw-item:not([data-size="m"]), .gw[data-size="l"] .gw-item:not([data-size="l"]) { opacity: .25; pointer-events: none; }
 .gw footer { max-width: 1180px; width: 100%; margin: 24px auto 16px; }
 /* P-4：横スクロールのときだけ、右端に「→」の薄い印と「横にスクロール」の 1 行 */
 main.gw { position: relative; }
@@ -306,6 +324,11 @@ main.gw { position: relative; }
   .gw.is-scroll .gw-more, .gw.is-scroll .gw-scroll { display: none; }
   /* P-10：最初の作品の下に 1 回だけ「絵をタップすると、絵の中に入れます」。?from= で先頭が入れ替わっても order で最初の作品の下 */
   .gw-item:first-child { order: -2; }
+  /* G-1：スマホは選んだものだけを縦に。案内は見えている最初の作品（.is-lead）の下 */
+  .gw[data-size="s"] .gw-item:not([data-size="s"]), .gw[data-size="m"] .gw-item:not([data-size="m"]), .gw[data-size="l"] .gw-item:not([data-size="l"]) { display: none; }
+  .gw[data-size] .gw-item:first-child { order: 0; }
+  .gw[data-size] .gw-item.is-lead { order: -2; }
+  .gw-filter { justify-content: center; }
   .gw-tap { display: block; order: -1; margin: -48px 0 0; font-size: 12px; letter-spacing: .1em; color: var(--ink-2); text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) { .gw-item { transition: none; } }

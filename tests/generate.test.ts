@@ -239,3 +239,39 @@ describe('作品ページの技法・部屋の場所（10 言語）', async () =
     expect(old).not.toContain('data-lang="ko"');
   });
 });
+
+// G-1：ギャラリーの大きさの絞り込み（長辺 cm：< 30 → 小、30〜60 → 中、≥ 60 → 大）。並びは長辺の昇順
+describe('ギャラリーの大きさの区分（G-1）', async () => {
+  const { sizeClass, longSide, galleryWallPage } = await import('../scripts/generate/pages.js');
+  it('長辺で小・中・大', () => {
+    expect(sizeClass(18)).toBe('s');
+    expect(sizeClass(29.9)).toBe('s');
+    expect(sizeClass(30)).toBe('m');
+    expect(sizeClass(53)).toBe('m');
+    expect(sizeClass(59.9)).toBe('m');
+    expect(sizeClass(60)).toBe('l');
+    expect(sizeClass(65.2)).toBe('l');
+    expect(longSide([53, 65.2])).toBe(65.2);
+  });
+  const works = [
+    { id: 'big', title: { ja: '大' }, size_cm: [53, 65.2] },
+    { id: 'mid', title: { ja: '中' }, size_cm: [33.3, 24.2] },
+    { id: 'tiny', title: { ja: '小' }, size_cm: [18, 14] },
+  ];
+  const html = galleryWallPage({ works, baseUrl: 'https://example.com' });
+  it('長辺の昇順に並び、data-size と data-long が付く（元の配列は変えない）', () => {
+    const ids = [...html.matchAll(/class="gw-item" data-id="([^"]+)" data-size="([sml])" data-long="([\d.]+)"/g)].map((m) => `${m[1]}:${m[2]}:${m[3]}`);
+    expect(ids).toEqual(['tiny:s:18', 'mid:m:33.3', 'big:l:65.2']);
+    expect(works[0].id).toBe('big');
+  });
+  it('チップ 4 つ。該当 0 の区分は disabled', () => {
+    expect([...html.matchAll(/class="gw-chip" data-size="(\w+)"/g)].map((m) => m[1])).toEqual(['all', 's', 'm', 'l']);
+    expect(html).not.toMatch(/gw-chip[^>]*disabled/);
+    const onlySmall = galleryWallPage({ works: [works[2]], baseUrl: 'https://example.com' });
+    expect(onlySmall).toMatch(/data-size="l"[^>]*disabled/);
+    expect(onlySmall).not.toMatch(/data-size="s"[^>]*disabled/);
+  });
+  it('フッターは「© SHEER」だけ（P-17）', () => {
+    expect(html).toContain('<footer><span data-i18n="privacy">© SHEER</span></footer>');
+  });
+});

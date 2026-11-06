@@ -146,6 +146,11 @@ export class StoryMode {
     const band = document.createElement('div'); band.className = 'end-band';
     band.append(this.ctx.hud.caption, this.ctx.hud.ending);
     this.ctx.hud.root.appendChild(band); this.band = band;
+    // P-15：帯の主は「部屋で見る」（部屋の画像が無い作品は「もう一度」のまま）。スマホで主を上段にするのは CSS の order
+    const roomsBtn = this.ctx.hud.ending.querySelector<HTMLElement>('[data-action="rooms"]');
+    if (roomsBtn) {
+      this.ctx.hud.ending.querySelectorAll<HTMLElement>('.btn').forEach((b) => b.classList.toggle('primary', b === roomsBtn));
+    }
     this.ctx.hud.close.addEventListener('click', () => this.end('exit'));
     this.ctx.hud.skip.addEventListener('click', () => this.text.skip());
     this.ctx.hud.ending.addEventListener('click', (e) => {

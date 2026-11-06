@@ -87,6 +87,28 @@ if (wall) {
   const gw = wall.closest<HTMLElement>('.gw');
   const fit = () => gw?.classList.toggle('is-scroll', wall.scrollWidth > wall.clientWidth + 1);
   fit(); new ResizeObserver(fit).observe(wall);
+  // G-1：大きさの絞り込み。.gw に data-size を付け、CSS が該当しない作品を薄く（スマホは隠す）。壁の並び・実寸比は変えない
+  const items = [...wall.querySelectorAll<HTMLElement>('.gw-item')];
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('.gw-filter .gw-chip')];
+  const applySize = (size: string, push: boolean) => {
+    if (!gw) return;
+    if (!/^[sml]$/.test(size) || chips.find((c) => c.dataset.size === size)?.disabled) size = 'all';
+    if (size === 'all') delete gw.dataset.size; else gw.dataset.size = size;
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.size === size)));
+    let lead = false;
+    items.forEach((el) => {
+      const on = size === 'all' || el.dataset.size === size;
+      el.inert = !on;   // 薄い作品はタップもフォーカスもしない
+      // スマホ：P-10 の「絵をタップすると…」を、見えている最初の作品の下に
+      el.classList.toggle('is-lead', on && !lead); if (on) lead = true;
+    });
+    if (push) {
+      if (size === 'all') url.searchParams.delete('size'); else url.searchParams.set('size', size);
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+    }
+  };
+  chips.forEach((c) => c.addEventListener('click', () => applySize(c.dataset.size || 'all', true)));
+  applySize(url.searchParams.get('size') || 'all', false);
   wall.addEventListener('click', (e) => { const id = (e.target as Element).closest<HTMLElement>('.gw-item')?.dataset.id; if (id) stat('gallery_pick', id); });
   wall.addEventListener('wheel', (e) => {
     if (!matchMedia('(min-width: 768px)').matches || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;

@@ -324,16 +324,16 @@
     "pt": "Guardar / Partilhar"
   },
   "privacy": {
-    "ja": "匿名の閲覧数だけを数えています",
-    "en": "We only count anonymous visits",
-    "zh-Hans": "仅统计匿名浏览次数",
-    "zh-Hant": "僅統計匿名瀏覽次數",
-    "ko": "익명 방문 수만 집계합니다",
-    "fr": "Nous comptons seulement les visites anonymes",
-    "de": "Wir zählen nur anonyme Aufrufe",
-    "es": "Solo contamos las visitas anónimas",
-    "it": "Contiamo solo le visite anonime",
-    "pt": "Contamos apenas as visitas anónimas"
+    "ja": "© SHEER",
+    "en": "© SHEER",
+    "zh-Hans": "© SHEER",
+    "zh-Hant": "© SHEER",
+    "ko": "© SHEER",
+    "fr": "© SHEER",
+    "de": "© SHEER",
+    "es": "© SHEER",
+    "it": "© SHEER",
+    "pt": "© SHEER"
   },
   "gallery_title": {
     "ja": "ギャラリー",
@@ -1066,5 +1066,53 @@
     "es": "Toca un cuadro para entrar en él",
     "it": "Tocca un quadro per entrarci",
     "pt": "Toque num quadro para entrar nele"
+  },
+  "gw_size_all": {
+    "ja": "すべて",
+    "en": "All",
+    "zh-Hans": "全部",
+    "zh-Hant": "全部",
+    "ko": "전체",
+    "fr": "Toutes",
+    "de": "Alle",
+    "es": "Todas",
+    "it": "Tutte",
+    "pt": "Todas"
+  },
+  "gw_size_s": {
+    "ja": "小",
+    "en": "Small (under 30 cm)",
+    "zh-Hans": "小",
+    "zh-Hant": "小",
+    "ko": "소",
+    "fr": "Petites (moins de 30 cm)",
+    "de": "Klein (unter 30 cm)",
+    "es": "Pequeñas (menos de 30 cm)",
+    "it": "Piccole (sotto 30 cm)",
+    "pt": "Pequenas (menos de 30 cm)"
+  },
+  "gw_size_m": {
+    "ja": "中",
+    "en": "Medium (30–60 cm)",
+    "zh-Hans": "中",
+    "zh-Hant": "中",
+    "ko": "중",
+    "fr": "Moyennes (30–60 cm)",
+    "de": "Mittel (30–60 cm)",
+    "es": "Medianas (30–60 cm)",
+    "it": "Medie (30–60 cm)",
+    "pt": "Médias (30–60 cm)"
+  },
+  "gw_size_l": {
+    "ja": "大",
+    "en": "Large (60 cm and up)",
+    "zh-Hans": "大",
+    "zh-Hant": "大",
+    "ko": "대",
+    "fr": "Grandes (60 cm et plus)",
+    "de": "Groß (ab 60 cm)",
+    "es": "Grandes (60 cm o más)",
+    "it": "Grandi (da 60 cm)",
+    "pt": "Grandes (60 cm ou mais)"
   }
 }

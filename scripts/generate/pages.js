@@ -9,7 +9,7 @@ const UI_JA = {
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
   room_cat_studio: '一人暮らしの部屋', room_cat_house: '広い家のリビング',
   rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明。絵をドラッグして、好きな場所に置けます',
-  gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '匿名の閲覧数だけを数えています',   // 11-07 P-7：来場者に唐突でない言い方に
+  gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '© SHEER',   // 11-07 P-17：フッターは「© SHEER」だけ（計測の断りは public/stats.html と README）
   statement: '小さな絵の、奥へ。', statement_en: 'Into the depth of a small painting.',
 };
 const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,8 +23,8 @@ const asMulti = (v) => typeof v === 'string' ? { ja: v } : v;
 
 // 二言語併記（美術館の作法）：言語設定に関わらず日本語と英語を並べる
 const brand = (prefix) => `<a class="brand" href="${prefix}"><b>SHEER Gallery</b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
-// フッター（P-7）：「© SHEER　匿名の閲覧数だけを数えています」1 行
-const footer = () => `<footer><span>© SHEER</span><span data-i18n="privacy">${UI_JA.privacy}</span></footer>`;
+// フッター（P-17）：「© SHEER」だけ
+const footer = () => `<footer><span data-i18n="privacy">${UI_JA.privacy}</span></footer>`;
 const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}"></select></label>`;
 
 // ja と en が同じ（または en が無い）なら 1 回だけ。違えば「ja / en」（11-07 作家：「SHEER Gallery / SHEER Gallery」と同じ語を 2 回並べない）
@@ -218,7 +218,17 @@ ${FONTS}
 }
 
 // ギャラリー /gallery/index.html（docs/ENTRANCE.md 4 節）。白い壁に実寸比で並べる。おすすめ（?from=<id>）は page.ts が先頭に出す
-export function galleryWallPage({ works, baseUrl }) {
+// G-1：大きさの区分（長辺 cm）。小 = 30 未満（F0〜F4）、中 = 30〜60（F6〜F12）、大 = 60 以上（F15〜）
+export const longSide = (sizeCm) => Math.max(...(sizeCm || [0]));
+export function sizeClass(longCm) { return longCm < 30 ? 's' : longCm < 60 ? 'm' : 'l'; }
+const SIZE_CHIPS = [['all', 'すべて', 'gw_size_all'], ['s', '小', 'gw_size_s'], ['m', '中', 'gw_size_m'], ['l', '大', 'gw_size_l']];
+
+export function galleryWallPage({ works: input, baseUrl }) {
+  // G-1：並びは左から小 → 大（長辺の昇順。同じなら元の順）。?from= のおすすめを先頭に出すのは page.ts
+  const works = [...input].sort((a, b) => longSide(a.size_cm) - longSide(b.size_cm));
+  const counts = { all: works.length, s: 0, m: 0, l: 0 };
+  works.forEach((w) => counts[sizeClass(longSide(w.size_cm))]++);
+  const chips = SIZE_CHIPS.map(([k, ja, key]) => `<button type="button" class="gw-chip" data-size="${k}" data-i18n="${key}" aria-pressed="${k === 'all'}"${counts[k] ? '' : ' disabled'}>${ja}</button>`).join('');
   const maxW = Math.max(...works.map((w) => w.size_cm[0]), 1);
   const maxH = Math.max(...works.map((w) => w.size_cm[1]), 1);
   // P-4：PC は一列が必ず収まるように、全作品の幅 cm の合計と点数を CSS に渡す
@@ -228,7 +238,7 @@ export function galleryWallPage({ works, baseUrl }) {
     const title = t(w.title, 'ja');
     const titleEn = t(w.title, 'en');
     return `
-    <a class="gw-item" data-id="${esc(w.id)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
+    <a class="gw-item" data-id="${esc(w.id)}" data-size="${sizeClass(longSide(w.size_cm))}" data-long="${longSide(w.size_cm)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
       <span class="gw-foryou" data-i18n="gw_for_you" hidden>あなたへの 1 点</span>
       <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" alt="${esc(title)}" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
       <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${cw} × ${ch} cm</span></span>
@@ -254,6 +264,7 @@ ${FONTS}
     <h1 class="gw-title"><span>ギャラリー</span><span class="latin">Gallery</span></h1>
     ${langSel()}
   </div>
+  <div class="gw-filter" role="group" aria-label="大きさで絞り込む">${chips}</div>
   <div class="gw-wall" style="--maxh:${maxH};--sumcm:${+sumW.toFixed(2)};--n:${works.length}" tabindex="0" aria-label="作品">${items}
   </div>
   <span class="gw-more" aria-hidden="true">→</span>
