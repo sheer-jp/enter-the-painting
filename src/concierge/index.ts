@@ -45,28 +45,50 @@ export function phraseRuns(text: string, lang: string): string[] {
   });
   return out;
 }
-// ストリーミングで、文が確定したところまでの長さ（最後の句読点か改行のあと。続く閉じ括弧も含める）
+// ストリーミングで、文が確定したところまでの長さ：最後の改行のあと、または句読点のあとに「次の文節の頭」（閉じ括弧・句読点・空白でない文字）が
+// もう来ているところ。句読点が終わりの文字のときや閉じ括弧が続くときは確定させない（「はい。」と の「と」は閉じ括弧の前にくっつくので、
+// 閉じ括弧で切ると全文で切ったときと文節がずれる。REVIEW-2 P2）
+const PUNCT = /[。、，．！？!?…]/;
+const NOT_HEAD = /[\s。、，．！？!?…」』）)\]】〉》〕”’]/;
 export function settledLength(text: string): number {
-  let k = -1;
-  for (let i = text.length - 1; i >= 0; i--) if (/[。、，．！？!?…\n]/.test(text[i])) { k = i; break; }
-  if (k < 0) return 0;
-  k++;
-  while (k < text.length && /[」』）)\]】〉》〕”’]/.test(text[k])) k++;
-  return k;
+  for (let i = text.length - 2; i >= 0; i--) {
+    if (text[i] === '\n') return i + 1;
+    if (PUNCT.test(text[i]) && !NOT_HEAD.test(text[i + 1])) return i + 1;
+  }
+  return 0;
 }
 // 要素の中身を文節の span にする（日本語以外は文字列のまま）。done が偽なら、確定していない終わりの部分は文字列のまま
+// ストリーミング（REVIEW-2 P2）：確定した長さを要素ごとに覚え、伸びた分の文節だけ span を足す。未確定の終わりは最後の 1 つの文字ノードの中身だけ差し替える
+// （毎回作り直すと span の数が文の長さの 2 乗で増え、aria-live の欄で同じ文節が繰り返し読まれるおそれがある）
+// 確定した前置部は句読点のあとで切れるので、足した分を別に文節にしても、全文を一度に文節にしたときと境目は同じ
+const filled = new WeakMap<HTMLElement, { text: string; tail: Text }>();   // 確定して span にした文字列と、終わりの文字ノード
 export function fillPhrases(el: HTMLElement, text: string, lang: string, done = true) {
-  if (!lang.startsWith('ja')) { el.textContent = text; return; }
-  const n = done ? text.length : settledLength(text);
-  el.textContent = '';
-  for (const ph of phraseRuns(text.slice(0, n), lang)) {
-    if (/^\s+$/.test(ph)) { el.append(ph); continue; }   // 改行・空白は span の外の文字（空白は折り返しの位置にもなる）
-    const s = document.createElement('span');
-    s.className = 'cg-ph';
-    s.textContent = ph;
-    el.appendChild(s);
+  const ja = lang.startsWith('ja');
+  const n = !ja || done ? text.length : settledLength(text);
+  let st = filled.get(el);
+  // 前回の続きでなければ（別の文・言語の切り替えなど）最初から
+  if (!st || !text.startsWith(st.text) || el.lastChild !== st.tail) {
+    el.textContent = '';
+    st = { text: '', tail: document.createTextNode('') };
+    el.appendChild(st.tail);
+    filled.set(el, st);
   }
-  if (n < text.length) el.append(text.slice(n));
+  const add = text.slice(st.text.length, Math.max(n, st.text.length));
+  if (add) {
+    const frag = document.createDocumentFragment();
+    if (!ja) frag.append(add);
+    else for (const ph of phraseRuns(add, lang)) {
+      if (/^\s+$/.test(ph)) { frag.append(ph); continue; }   // 改行・空白は span の外の文字（空白は折り返しの位置にもなる）
+      const sp = document.createElement('span');
+      sp.className = 'cg-ph';
+      sp.textContent = ph;
+      frag.appendChild(sp);
+    }
+    el.insertBefore(frag, st.tail);
+    st.text += add;
+  }
+  const rest = text.slice(st.text.length);
+  if (st.tail.data !== rest) st.tail.data = rest;
 }
 
 const FIRST_BYTE_MS = 20000;          // 最初の文字がこれだけ来なければルールだけの版へ（モデルの思考で最初の文が遅れることがある）
@@ -253,7 +275,11 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   // 動かし方（11-07 A-1、作家「もっとアニメーションっぽく」）：
   //   待っている・聞いている（smile / listening）：6〜12 秒ごとに nod / tilt / tilt2 のどれか（同じものは続けない）。listening はまばたきも
   //   入力中：3 秒ごとに nod。考え中（「…」）：think の 1 コマ目で止め、2 秒ごとに think（まばたき）。おすすめ：happy → wave。「別のにする」：tilt
-  const sequences: Record<string, FrameDef> = {};   // 全コマを読み込めたものだけ
+  // 11-07 A-2：手の位置を合わせたコマ。いまの表情に合う列を選ぶ（smile → nod / tilt、listening → nod-down / tilt-down、present → happy-up → wave）。
+  //   合う列が無い表情では動かさない（手が 1 コマで跳ぶので）
+  const sequences: Record<string, FrameDef> = {};   // frames.json の列（読めたコマかどうかは canPlay が上半身／全身ごとに見る）
+  // 読み込めたコマ（`<名前>-<bust|full>` → 先読みした画像）。画像の参照を持ち続けて、メモリのキャッシュに残す（下の先読みの注を参照）
+  const okFrames = new Map<string, HTMLImageElement>();
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   let frameTimer = 0;
   let blinkTimer = 0;
@@ -266,6 +292,26 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   let lastIdle = '';
   const swapName = (url: string, name: string) => url.replace(/\/([^/\s]+?)-(full|bust)((?:@2x)?\.(?:png|webp))/g, `/${name}-$2$3`);
   const restOf = (pic: HTMLElement) => pic.dataset.rest || pic.dataset.face!;
+  // そのキャラクターがいま出している版：全身の <source media> が当たっていれば full、無ければ上半身（受付の最初の smile と C2 の写しは上半身だけ）
+  const variantOf = (pic: HTMLElement): 'full' | 'bust' => {
+    const m = pic.querySelector<HTMLSourceElement>('source[media]')?.media;
+    return m && matchMedia(m).matches ? 'full' : 'bust';
+  };
+  // 動きの種類 → いまの表情に合う列（手の位置が同じコマだけ）
+  const MOTION: Record<string, Partial<Record<Face, string>>> = {
+    nod: { smile: 'nod', listening: 'nod-down' },
+    tilt: { smile: 'tilt', listening: 'tilt-down' },
+    tilt2: { smile: 'tilt2', listening: 'tilt-down2' },
+    happy: { present: 'happy-up' },
+  };
+  const motionFor = (kind: string, pic: HTMLElement | null) => (pic ? MOTION[kind]?.[pic.dataset.face as Face] ?? null : null);
+  // 列の全コマが、そのキャラクターの版（上半身／全身）で読み込めているか。読めていない列は使わない（その場で取りに行くと 120ms のコマに間に合わない）
+  function canPlay(seqName: string | null, pic: HTMLElement | null): boolean {
+    const def = seqName ? sequences[seqName] : null;
+    if (!def || !pic) return false;
+    const v = variantOf(pic);
+    return def.seq.every((n) => (FACES as readonly string[]).includes(n) || okFrames.has(`${n}-${v}`));
+  }
   function setFrame(pic: HTMLElement, name: string) {
     if (pic.dataset.frame === name || (!pic.dataset.frame && name === pic.dataset.face)) return;
     pic.dataset.frame = name;
@@ -282,10 +328,11 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (playingPic) setFrame(playingPic, restOf(playingPic));
     playingPic = null;
   }
-  function play(seqName: string, o: { hold?: boolean; then?: () => void } = {}): boolean {
+  // 再生先は o.pic（無ければいま見えているキャラクター）。then には再生したキャラクターを渡す（続けて流すときに同じ相手か確かめる）
+  function play(seqName: string | null, o: { hold?: boolean; then?: (pic: HTMLElement) => void; pic?: HTMLElement | null } = {}): boolean {
+    const pic = o.pic ?? visiblePic();
+    if (!seqName || !pic || reduced() || document.hidden || !canPlay(seqName, pic)) return false;
     const def = sequences[seqName];
-    const pic = visiblePic();
-    if (!def || !pic || reduced()) return false;
     stopFrames();
     playingPic = pic;
     const rest = restOf(pic);
@@ -301,7 +348,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
         if (o.hold) pic.dataset.rest = seq[seq.length - 1];   // 最後のコマで止める
         else setFrame(pic, restOf(pic));
         playingPic = null;
-        o.then?.();
+        o.then?.(pic);
       }, ms);
     };
     step();
@@ -309,7 +356,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   }
   function scheduleBlink() {
     clearTimeout(blinkTimer);
-    if (!sequences.blink) return;
+    if (!sequences.blink || document.hidden) return;
     blinkTimer = window.setTimeout(() => {
       if (face !== 'listening') return;
       if (!playingPic && !thinkingNow && c2.hidden) play('blink');
@@ -322,35 +369,36 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (reduced()) return;
     idleTimer = window.setTimeout(() => {
       if (c2.hidden && (face === 'smile' || face === 'listening') && !thinkingNow && !typeTimer && !playingPic && !document.hidden) {
-        const pool = IDLE_MOTIONS.filter((n) => sequences[n] && n !== lastIdle);
+        const pic = visiblePic();
+        const pool = IDLE_MOTIONS.filter((n) => n !== lastIdle && canPlay(motionFor(n, pic), pic));
         const n = pool[Math.floor(Math.random() * pool.length)];
-        if (n && play(n)) lastIdle = n;
+        if (n && play(motionFor(n, pic), { pic })) lastIdle = n;
       }
       scheduleIdle();
     }, 6000 + Math.random() * 6000);
   }
-  // 入力中（入力欄にフォーカスがあり、文字がある）：すぐに 1 回、そのあと 3 秒ごとに nod
+  // 入力中（入力欄にフォーカスがあり、文字がある）：すぐに 1 回、そのあと 3 秒ごとにうなずき（表情に合う列）
   const typingNow = () => document.activeElement === input && !!input.value && mode === 'talk' && !busy && c2.hidden;
   function stopTyping() { clearTimeout(typeTimer); typeTimer = 0; }
   function onTyping() {
-    if (!typingNow() || !sequences.nod) { stopTyping(); return; }
+    if (!typingNow() || !Object.keys(sequences).length) { stopTyping(); return; }
     if (typeTimer) return;
     const tick = () => {
       if (!typingNow()) { stopTyping(); return; }
-      if (!playingPic) play('nod');
+      if (!playingPic) { const pic = visiblePic(); play(motionFor('nod', pic), { pic }); }
       typeTimer = window.setTimeout(tick, 3000);
     };
     typeTimer = window.setTimeout(tick, 0);
   }
   // 考え中（「…」の吹き出し・「…考え中」の行のあいだ）：think の 1 コマ目で止め、2 秒ごとに think（まばたき）
   function startThink(pic: HTMLElement) {
-    if (!sequences.think || reduced()) return;
+    if (!canPlay('think', pic) || reduced()) return;
     clearInterval(thinkTimer);
     stopFrames();
     thinkPic = pic;
     pic.dataset.rest = sequences.think.seq[0];
     setFrame(pic, pic.dataset.rest);
-    thinkTimer = window.setInterval(() => { if (!playingPic) play('think', { hold: true }); }, 2000);
+    thinkTimer = window.setInterval(() => { if (!playingPic) play('think', { hold: true, pic }); }, 2000);
   }
   function setThinking(on: boolean) {
     if (on === thinkingNow) return;
@@ -370,35 +418,68 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (thinkingNow) { const v = visiblePic(); if (v) startThink(v); return; }   // 考え中に表情が切り替わった（画像の読み込み待ちのあと）
     if (f === 'listening') scheduleBlink();
     else clearTimeout(blinkTimer);
-    if (f === 'present') { if (!play('happy', { then: () => play('wave') })) play('wave'); }   // うれしそうに → 手を振る
+    if (f === 'present') {
+      // うれしそうに（手を差し出したまま）→ 手を振る。再生先はいま見えている C2 の写しに固定し、
+      // happy-up のあいだに C2 を閉じた・「もう一度」を押したときは wave を流さない（受付の窓に手を振るコマが出ないように。REVIEW-2 P2）
+      const target = visiblePic();
+      const wave = (p: HTMLElement) => { if (p === visiblePic() && face === 'present' && p.isConnected) play('wave', { pic: p }); };
+      if (target && !play(motionFor('happy', target), { pic: target, then: wave })) wave(target);
+    }
     if (f === 'smile') play('smileDeep', { hold: true });   // 最後のコマで止める
   }
-  // frames.json を読み、各コマ列の画像を先に読み込む（いま使っている解像度・上半身/全身の分だけ）。無い・壊れているときは何もしない
+  // タブが隠れたら、まばたき・考え中・入力中のタイマーとコマ列を止め、見えたら戻す（docs/ENTRANCE.md 3.3。REVIEW-2 P2）
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopFrames(); clearTimeout(blinkTimer); clearInterval(thinkTimer); stopTyping();
+      return;
+    }
+    if (thinkingNow) { const v = visiblePic(); if (v) startThink(v); }
+    else if (face === 'listening') scheduleBlink();
+    onTyping();
+  });
+  // frames.json を読み、コマの画像を先に読み込む。無い・壊れているときは何もしない
+  // 先読み（REVIEW-2 P1）：必要になる順に、3 本ずつ並べて読む。最初の表情（smile、上半身）の列 → C2 の列（happy-up・wave・think、
+  // C2 の写しはいつも上半身）→ 聞いているとき（listening。PC の横長は全身）の列。解像度（1x / @2x、WebP / PNG）は最初の顔が選んだものに合わせる。
+  // 通信を節約する設定（navigator.connection.saveData）のときはコマを読まない（呼吸だけ。コマ無しで成り立つ）
+  const saveData = !!(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
   fetch(faceBase + 'frames.json')
     .then((r) => (r.ok && /json/.test(r.headers.get('content-type') || '') ? r.json() : {}))
     .then(async (defs: unknown) => {
       if (!defs || typeof defs !== 'object') return;
-      const first = faces.querySelector<HTMLImageElement>('.cg-face img')!;
-      if (!first.complete) await new Promise((res) => { first.addEventListener('load', res, { once: true }); first.addEventListener('error', res, { once: true }); });
-      const sample = first.currentSrc || first.src;
-      const loaded = new Map<string, Promise<boolean>>();   // 同じコマを 2 回読まない
-      const load = (n: string) => {
-        if (!loaded.has(n)) loaded.set(n, new Promise<boolean>((res) => {
-          const im = new Image();
-          im.onload = () => res(true); im.onerror = () => res(false);
-          im.src = swapName(sample, n);
-        }));
-        return loaded.get(n)!;
-      };
       for (const [k, raw] of Object.entries(defs as Record<string, unknown>)) {
         const def = parseFrameDef(raw, FRAME_MS);
-        if (!def) continue;
-        const ok = await Promise.all([...new Set(def.seq)].map(load));
-        if (ok.every(Boolean)) sequences[k] = def;
+        if (def) sequences[k] = def;
       }
       if (face === 'listening') scheduleBlink();
       scheduleIdle();
       onTyping();
+      if (saveData) return;
+      const first = faces.querySelector<HTMLImageElement>('.cg-face img')!;
+      if (!first.complete) await new Promise((res) => { first.addEventListener('load', res, { once: true }); first.addEventListener('error', res, { once: true }); });
+      const m = /-(?:full|bust)(@2x)?\.(webp|png)(?:[?#].*)?$/.exec(first.currentSrc || first.src);
+      const tail = m ? `${m[1] || ''}.${m[2]}` : '.png';
+      const listenV = variantOf(faceEl('listening'));
+      // 列の端の表情（smile / listening / present）も読んで持つ（コマから戻るときの画像。C2 の写しの present-bust など、手放すとメモリのキャッシュから落ちる）
+      const queue: string[] = [];   // `<名前>-<版>`、必要な順、重なりなし
+      const plan: [string[], string][] = [[['smileDeep', 'nod', 'tilt', 'tilt2'], 'bust'], [['happy-up', 'wave', 'think'], 'bust'], [['nod-down', 'think', 'tilt-down', 'tilt-down2', 'blink'], listenV]];
+      for (const [names, v] of plan) for (const k of names) for (const n of sequences[k]?.seq ?? []) {
+        const key = `${n}-${v}`;
+        if (!queue.includes(key)) queue.push(key);
+      }
+      // 読んだ画像は参照を持ち続ける（okFrames。手放すとメモリのキャッシュから落ち、差し替えのたびに取りに行く。Cloudflare Pages の既定は
+      // max-age=0, must-revalidate なので 1 往復の確認が入り、120ms のコマに間に合わない）
+      const worker = async () => {
+        for (let key = queue.shift(); key; key = queue.shift()) {
+          const k = key;
+          const im = new Image();
+          const ok = await new Promise<boolean>((res) => {
+            im.onload = () => res(true); im.onerror = () => res(false);
+            im.src = `${faceBase}${k}${tail}`;
+          });
+          if (ok) okFrames.set(k, im);
+        }
+      };
+      await Promise.all([worker(), worker(), worker()]);
     })
     .catch(() => { /* コマが無くても待機の呼吸だけで成り立つ */ });
   // ───── 文言 ─────
@@ -1054,7 +1135,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     const w = c.works.find((x) => x.id === next)!;
     const inC2 = stage === 'present';
     showCard(c, { id: next, alt: null }, { reason: defaultReason(w), moods: pickMoods(w, lang).slice(0, 2) }, true);
-    if (inC2 && !quiet) play('tilt');   // 「では、こちらは」と首をかしげる
+    // 「では、こちらは」：C2 の写しは手を差し出した姿勢（present）なので、手の位置が合う happy-up を 1 回（かしげのコマは手を合わせた形で、手が跳ぶ）
+    if (inC2 && !quiet) { const pic = visiblePic(); play(motionFor('happy', pic), { pic }); }
   }
 
   // まだ出していない作品のうち、3 軸でいちばん近いもの。全部出したら最初からやり直す

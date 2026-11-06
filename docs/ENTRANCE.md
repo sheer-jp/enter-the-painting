@@ -90,21 +90,28 @@ V0（11-06 夕方）に、作家の判断を反映した版。この文書が入
 - **ポーズ**：`listening` ← 聞く、`smile` ← 手を合わせる、`present` ← 手を上げる。切り替えは 300ms クロスフェード
 - **動き**：CSS の呼吸（±2px、scale 1.00〜1.012、4.5 秒）は常に。コマがあれば `frames.json` のコマ列で `blink`（聞いているあいだ 4〜7 秒おき）、`wave`（差し出した直後に 1 回）、`smileDeep`。1 コマ 120ms。コマは確定した 3 枚と同じ構図で Codex に生成（`concept/*-frames/`）。揺れが目立つコマは使わない。`prefers-reduced-motion` では呼吸もコマも止める
 - **動きのパターン（11-07 A-1、作家「もっとアニメーションっぽく」）**：コマを 8 枚追加（`nod-1/2`、`tilt-1/2`、`think-1/2`、`happy-1/2`。Codex 生成、`concept/concierge-v6-frames/`）。元は 1254×1254 で、既存の cutouts と同じ大きさだった。`smile`（`01-welcome-hands`）の足元（下端と下 100 行の重心）に**整数の平行移動**（0〜3px）で合わせて `concept/concierge-v6/cutouts/` に置いた。拡縮はしない（頭の幅の差 0.2〜1.4% はかしげ・うなずきの形の差、足の幅も 1% 前後）。合わせたあとのずれは横 0.4px・縦 0px（0.03% 以内）。`happy-2` は「少し跳ねる」コマなので上下はそのまま（14px 上、1.1%）。新しいコマは内側の不透明度が 240〜254 にゆらいでいたので 255 にそろえた（輪郭の半透明はそのまま）
-  - **新しいコマの手は `smile`（胸の前で合わせる）と同じ形**。`listening`（手は下）・`present`（手を上げる）から入ると、手が 1 コマで跳ぶ。そこでコマ列の中の表情の名前（`listening` / `smile` / `present`）は「いまの表情の止まっているコマ」に置き換えて再生する（`smile` のあいだは `smile` か `smile-2` から入る＝跳ばない）。入力中（`listening`）のうなずきと、C2（`present`）の `happy` / `tilt` は手が 1 コマで跳ぶ。今の 8 枚では避けられない（手を下げた／上げたうなずき・かしげのコマを作れば消える）
+  - **新しいコマの手は `smile`（胸の前で合わせる）と同じ形**。`listening`（手は下）・`present`（手を上げる）から入ると、手が 1 コマで跳ぶ。そこでコマ列の中の表情の名前（`listening` / `smile` / `present`）は「いまの表情の止まっているコマ」に置き換えて再生する（`smile` のあいだは `smile` か `smile-2` から入る＝跳ばない）
+  - **11-07 A-2：手の位置を合わせたコマ**（6 枚。Codex 生成、`concept/concierge-v6-frames2/`）：`nod-down-1/2`・`tilt-down-1/2`（`listening` の姿勢＝手を下で組んだまま）、`happy-up-1/2`（`present` の姿勢＝片手を上げたまま）。A-1 と同じ方法で `listening`（`03-listening`）／`present`（`02-welcome-wave`）の足元に整数の平行移動で合わせた（横 0px・縦 0〜2px。合わせたあとの重心のずれは 0.5px 以内。`happy-up-2` は跳ねるコマなので縦は `happy-up-1` と同じだけ動かし、跳ねた 20px はそのまま）。内側の不透明度（240〜254）は 255 に。手・腕の帯（下 30%）の差は `listening` → `nod-down` で 6.5〜7.3（旧 `nod` は 23〜25）、`present` → `happy-up-1` で 5.8（旧 `happy-1` は 18.6）
+  - **いまの表情に合う列を選ぶ**（`index.ts` の `MOTION`）：`smile` → `nod` / `tilt` / `tilt2`、`listening` → `nod-down` / `tilt-down` / `tilt-down2`、`present` → `happy-up` → `wave`。合う列が無い表情では動かさない（手が跳ぶので）。C2 の「別のにする」は、`present` のかしげのコマが無いので `happy-up` を 1 回
   - **コマ列**（`frames.json`。形は `["a", "b"]`（1 コマ 120ms）か `{ "seq": [...], "ms": 160 | [120, 800, 120] }`。ページはどちらも読む。`src/concierge/index.ts` の `parseFrameDef`）：
-    - `nod`：listening → nod-1 → nod-2 → nod-1 → listening（1 コマ 160ms）
-    - `tilt`：listening → tilt-1 → listening、`tilt2` は tilt-2（かしげたコマを 0.8 秒保つ。120ms では「ぴくっ」としか見えない）
+    - `nod`：smile → nod-1 → nod-2 → nod-1 → smile（1 コマ 160ms）。smile 用（A-2 で端を listening から smile に。再生時は止まっているコマに置き換えるので動きは同じ）
+    - `tilt`：smile → tilt-1 → smile、`tilt2` は tilt-2（かしげたコマを 0.8 秒保つ。120ms では「ぴくっ」としか見えない）。smile 用
     - `think`：think-1 → think-2 → think-1（120ms。考え中は think-1 で止め、これを 2 秒ごと＝まばたき）
-    - `happy`：present → happy-1 → happy-2 → happy-1 → present（happy-2 だけ 160ms）
+    - `happy`：smile → happy-1 → happy-2 → happy-1 → smile（happy-2 だけ 160ms）。A-2 からは使っていない（present は `happy-up`）。残してある
+    - `nod-down`：listening → nod-down-1 → nod-down-2 → nod-down-1 → listening（160ms）。listening 用
+    - `tilt-down` / `tilt-down2`：listening → tilt-down-1 / tilt-down-2 → listening（[120, 800, 120]）。listening 用
+    - `happy-up`：present → happy-up-1 → happy-up-2 → happy-up-1 → present（happy-up-2 だけ 160ms）。present（C2）用。終わったら `wave`
     - 従来の `blink` / `wave` / `smileDeep` はそのまま
   - **動かし方**：
-    - 迎え（`smile`）と聞いている（`listening`）あいだ：6〜12 秒ごとに `nod` / `tilt` / `tilt2` のどれか（直前と同じものは選ばない）。`listening` はまばたき（4〜7 秒）も。入力中・考え中・C2 のあいだ・別のコマ列の再生中・タブが隠れているときは見送る
-    - 入力中（入力欄にフォーカスがあり文字がある）：すぐに 1 回、そのあと 3 秒ごとに `nod`
+    - 迎え（`smile`）と聞いている（`listening`）あいだ：6〜12 秒ごとに うなずき / かしげ / 逆かしげ のどれか（表情に合う列。直前と同じものは選ばない）。`listening` はまばたき（4〜7 秒）も。入力中・考え中・C2 のあいだ・別のコマ列の再生中・タブが隠れているときは見送る
+    - 入力中（入力欄にフォーカスがあり文字がある）：すぐに 1 回、そのあと 3 秒ごとにうなずき（`listening` なので `nod-down`）
     - 考え中（「…」の吹き出し、「…考え中」の行、C2 の上の「…考えています」）：`think-1` で止め、2 秒ごとに `think`。文が届く・カードが出る・表情が変わると戻る
-    - おすすめ（C2 が立ち上がる）：C2 の上のキャラクターで `happy` → `wave`（受付の窓のキャラクターは C2 の下に隠れているので、C2 の写しを動かす。従来の `wave` も窓の方で動いていて見えていなかった）
-    - 「別のにする」（C2 の中の差し替え）：`tilt` を 1 回
-    - `prefers-reduced-motion` ではどれも動かさない。コマが読めない列は使わない（従来どおり）。コマは `frames.json` を読んだあとに先読み（最初の表示は待たない）
-  - **重さ**：WebP の合計（15 枚 × 上半身／全身 × 1x／2x）は q80・alpha 90 のままでは 3.3MB。コマだけ質を下げても 2.5MB に入らず、入れ替えの瞬間に画質が跳ねるので、**全部を q72・alpha 70** に（2x の顔の拡大で差は見えない）。合計 2,362,370 バイト（2.36MB）、最初に読む `smile` の上半身（1x + 2x）は 101KB → 73KB。PNG（fallback）は変えていない
+    - おすすめ（C2 が立ち上がる）：C2 の上のキャラクターで `happy-up` → `wave`（受付の窓のキャラクターは C2 の下に隠れているので、C2 の写しを動かす）。再生先は C2 の写しに固定し、`happy-up` のあいだに C2 を閉じた・「もう一度」を押したときは `wave` を流さない（受付の窓に手を振るコマが出ないように。REVIEW-2）
+    - 「別のにする」（C2 の中の差し替え）：`happy-up` を 1 回（A-2 まではかしげ。present のかしげのコマが無く手が跳ぶので）
+    - `prefers-reduced-motion` ではどれも動かさない。タブが隠れたら（`visibilitychange`）まばたき・考え中・入力中のタイマーとコマ列を止め、見えたら戻す（REVIEW-2）
+    - **先読み**（REVIEW-2 P1）：`frames.json` を読んだあと、最初の表示を待ってから、**必要になる順に 3 本ずつ**読む。最初の表情（`smile`、上半身）の列 → C2 の列（`happy-up`・`wave`・`think`。C2 の写しはいつも**上半身**。PC の横長でも）→ 聞いているとき（`listening`。PC の横長は全身）の列（`nod-down`・`think`・`tilt-down`・`tilt-down2`・`blink`）。解像度（1x / @2x、WebP / PNG）は最初の顔が選んだものに合わせる。読めたコマは上半身／全身ごとに覚え、**全コマが読めた列だけ**その版で使う（その場で取りに行くと 120ms のコマに間に合わない）。列の端の表情（`smile` / `present` / `listening`）の画像もその版で読む。読んだ画像の参照は持ち続ける（手放すとメモリのキャッシュから落ち、Cloudflare Pages の既定 `max-age=0, must-revalidate` では差し替えのたびに確認の往復が入る）。`navigator.connection.saveData` のときはコマを読まない（呼吸だけ）
+  - **重さ（11-07 A-2）**：21 枚 × 上半身／全身 × 1x／2x の WebP の合計は q72・alpha 70 のままでは 3.30MB。**q68・alpha 60・`preset: 'picture'`** で **2,981,530 バイト（2.98MB、上限 3.0MB）**、最初に読む `smile` の上半身（1x + 2x）は 67KB。PNG（fallback）は変えていない（既存の PNG はバイト単位で同じ）。WebP の合計はテスト（`tests/concierge-frames.test.ts`）で 3,000,000 バイト以下を確かめる
+  - **重さ（A-1 の記録）**：WebP の合計（15 枚 × 上半身／全身 × 1x／2x）は q80・alpha 90 のままでは 3.3MB。コマだけ質を下げても 2.5MB に入らず、入れ替えの瞬間に画質が跳ねるので、**全部を q72・alpha 70** に（2x の顔の拡大で差は見えない）。合計 2,362,370 バイト（2.36MB）、最初に読む `smile` の上半身（1x + 2x）は 101KB → 73KB。PNG（fallback）は変えていない
 - 名前と口調は `recommend/config.json` の `persona`。作家が直す。仮：名前は空（画面に出さない）、口調は丁寧で短い
 - 画像は生成 AI（作家の絵は入れない）。`THIRD_PARTY.md` に生成手段を書く
 

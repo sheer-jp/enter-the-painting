@@ -61,8 +61,11 @@ const i18nAttr = (spec, vars) => ` data-i18n-attr="${spec}"${vars ? ` data-i18n-
 export const roomAlt = (title, label) => `${title}（${label}）AI 生成の部屋のイメージ`;   // 11-07 FIX-B：ui.json の room_alt（ja）と同じ形。「〜てに置いた」の文の組み立てをやめ、場所の札をそのまま括弧に
 // 小さく出す絵（「他の作品」の帯、ギャラリー）：480 と 1024 を出し分ける（AUDIT-1 P1-5）。作品ページの主役の絵は 1024 のまま
 const smallSrcset = (dir) => `${dir}painting_480.jpg 480w, ${dir}painting_1024.jpg 1024w`;
-// ギャラリーの絵の表示幅：スマホ（< 768px）は 1 列で全幅、PC は横一列（実寸比）で最大でも 560px 程度
-const GW_SIZES = '(max-width: 767.98px) calc(100vw - 32px), 560px';
+// ギャラリーの絵の表示幅：スマホ（< 768px）は 1 列で全幅、PC は横一列（実寸比）。PC の幅は CSS（page.css の .gw-item）の上限
+// min(62vh, 560px) / maxh × wcm を px の目安にする（REVIEW-2 P2：560px 固定では PC で 480px の絵が一度も選ばれなかった）
+const gwSizes = (wcm, maxH) => `(max-width: 767.98px) calc(100vw - 32px), ${Math.max(72, Math.ceil(560 / maxH * wcm))}px`;
+// 「他の作品」の帯：高さ 132px の正方形に object-fit: cover。横長の絵は 132 × 縦横比 の幅が要る（REVIEW-2 P2）
+const otherSizes = (sizeCm) => `${Math.ceil(132 * Math.max(1, (sizeCm?.[0] || 1) / (sizeCm?.[1] || 1)))}px`;
 
 // 作品ページ /w/<id>/index.html。絵は JS を待たずに出る。JS は「入る」のためだけ
 export function workPage({ work, space, baseUrl, allWorks }) {
@@ -89,7 +92,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
       ${LANGS.map((l) => space.story[l] ? `<p lang="${l}" data-lang="${l}" hidden>${esc(space.story[l])}</p>` : '').join('')}
     </section>` : '';
   const others = allWorks.filter((o) => o.id !== id).map((o) => `
-      <a class="other" href="../${o.id}/" data-title-ja="${esc(t(o.title, 'ja'))}" data-title-en="${esc(t(o.title, 'en'))}"><img src="../../works/${o.id}/generated/painting_1024.jpg" srcset="${smallSrcset(`../../works/${o.id}/generated/`)}" sizes="132px" alt="" loading="lazy"><b class="t-main">${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
+      <a class="other" href="../${o.id}/" data-title-ja="${esc(t(o.title, 'ja'))}" data-title-en="${esc(t(o.title, 'en'))}"><img src="../../works/${o.id}/generated/painting_1024.jpg" srcset="${smallSrcset(`../../works/${o.id}/generated/`)}" sizes="${otherSizes(o.size_cm)}" alt="" loading="lazy"><b class="t-main">${esc(t(o.title, 'ja'))}</b>${o.size_cm[0]} × ${o.size_cm[1]} cm</a>`).join('');
   const contact = work.contact ? `<a class="btn ghost" id="contact" href="${esc(work.contact)}" target="_blank" rel="noopener" data-i18n="contact">${UI_JA.contact}</a>` : '';
   return `<!doctype html>
 <html lang="ja">
@@ -256,7 +259,7 @@ export function galleryWallPage({ works: input, baseUrl }) {
     return `
     <a class="gw-item" data-id="${esc(w.id)}" data-size="${sizeClass(longSide(w.size_cm))}" data-long="${longSide(w.size_cm)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
       <span class="gw-foryou" data-i18n="gw_for_you" hidden>あなたへの 1 点</span>
-      <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" srcset="${smallSrcset(`../works/${esc(w.id)}/generated/`)}" sizes="${GW_SIZES}" alt="" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
+      <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" srcset="${smallSrcset(`../works/${esc(w.id)}/generated/`)}" sizes="${gwSizes(cw, maxH)}" alt="" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
       <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${cw} × ${ch} cm</span></span>
     </a>`;
   }).join('') + `

@@ -221,7 +221,8 @@ export class StoryMode {
   }
   private onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') this.end('exit'); else if (e.key === ' ' && this.stage === 'T3') { e.preventDefault(); this.setPaused(!this.paused); } else if (e.key === 'ArrowRight') this.onSkip(); };
   // 「次へ」：文を飛ばす。文が全部終わって最短の流れを待っている間なら T4 へ（REVIEW-1 P1-5）
-  private onSkip = () => { this.text.skip(); this.floorSkip = true; };
+  // 「次へ」：一時停止中なら解いてから進める（REVIEW-2 P2。止まったまま T4 へ進むと「一時停止」の表示と文の停止が残る）
+  private onSkip = () => { if (this.paused) this.setPaused(false); this.text.skip(); this.floorSkip = true; };
   // 一時停止を除いた経過（ms）
   private activeSince(t: number) { const now = performance.now(); return now - t - this.pausedTotal - (this.paused ? now - this.pausedAt : 0); }
 
@@ -504,7 +505,8 @@ export class StoryMode {
     // 最短の流れ：流体があるときだけ（静止画モードは止まった絵を待たせない）。文が全部終わったあとの「次へ」で T4 へ
     this.floorSkip = false;
     while (this.running && !voiceOk && fluid && !this.floorSkip && this.activeSince(t3Start) < T3_MIN_S * 1000) await wait(100);
-    // T4 余韻：最後の文字が終わると同時に、シューッと引きながら流れが止まり、元の絵へ戻る
+    // T4 余韻：最後の文字が終わると同時に、シューッと引きながら流れが止まり、元の絵へ戻る（一時停止は T3 だけ。残っていれば解く）
+    if (this.paused) this.setPaused(false);
     this.stage = 'T4';
     hud.skip.hidden = true;
     sound.fadeOutAll(4);

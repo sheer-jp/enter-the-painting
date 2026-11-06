@@ -17,19 +17,19 @@
   ],
   "nod": {
     "seq": [
-      "listening",
+      "smile",
       "nod-1",
       "nod-2",
       "nod-1",
-      "listening"
+      "smile"
     ],
     "ms": 160
   },
   "tilt": {
     "seq": [
-      "listening",
+      "smile",
       "tilt-1",
-      "listening"
+      "smile"
     ],
     "ms": [
       120,
@@ -39,9 +39,9 @@
   },
   "tilt2": {
     "seq": [
-      "listening",
+      "smile",
       "tilt-2",
-      "listening"
+      "smile"
     ],
     "ms": [
       120,
@@ -56,10 +56,60 @@
   ],
   "happy": {
     "seq": [
-      "present",
+      "smile",
       "happy-1",
       "happy-2",
       "happy-1",
+      "smile"
+    ],
+    "ms": [
+      120,
+      120,
+      160,
+      120,
+      120
+    ]
+  },
+  "nod-down": {
+    "seq": [
+      "listening",
+      "nod-down-1",
+      "nod-down-2",
+      "nod-down-1",
+      "listening"
+    ],
+    "ms": 160
+  },
+  "tilt-down": {
+    "seq": [
+      "listening",
+      "tilt-down-1",
+      "listening"
+    ],
+    "ms": [
+      120,
+      800,
+      120
+    ]
+  },
+  "tilt-down2": {
+    "seq": [
+      "listening",
+      "tilt-down-2",
+      "listening"
+    ],
+    "ms": [
+      120,
+      800,
+      120
+    ]
+  },
+  "happy-up": {
+    "seq": [
+      "present",
+      "happy-up-1",
+      "happy-up-2",
+      "happy-up-1",
       "present"
     ],
     "ms": [

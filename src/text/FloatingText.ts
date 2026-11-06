@@ -94,8 +94,11 @@ export class SpaceText {
   private gaze = new THREE.Vector3(0, 0, -1);
   private color: string;
   private font: string;
+  // 表示する文の言語（呼び出し側が show の前に入れる。ScreenText.lang と同じ）
+  lang: string;
   constructor(color: string, lang: string) {
     this.color = color;
+    this.lang = lang;
     this.font = /^(ja|zh|ko)/.test(lang) ? '"Hiragino Sans","Noto Sans JP","Noto Sans CJK JP","Noto Sans SC","Noto Sans KR",sans-serif' : 'system-ui,"Noto Sans",sans-serif';
     this.canvas.width = 2048; this.canvas.height = 512;
     this.tex = new THREE.CanvasTexture(this.canvas); this.tex.colorSpace = THREE.SRGBColorSpace;
@@ -111,11 +114,12 @@ export class SpaceText {
     c.clearRect(0, 0, this.canvas.width, this.canvas.height);
     c.font = `600 110px ${this.font}`;
     c.textAlign = 'center'; c.textBaseline = 'middle';
-    // 2 行まで。日本語は文節の間だけで折り返す（11-07）。他の言語は語の間
-    const ja = /[　-鿿가-힯]/.test(text);
-    const phrases = ja ? splitPhrases(text, 'ja') : text.split(' ');
-    const lines = wrapPhrases(phrases, 1024 * 1.8, (s) => c.measureText(s).width);
-    const ls = lines.slice(0, 2);
+    // 2 行まで。日本語は文節の間だけで折り返す（11-07）。判定は文の言語（this.lang。物語モードの ScreenText と同じ。REVIEW-2 P2）
+    // 中国語は字の間、他の言語（韓国語も）は語の間。語の後ろの空白は語に付けたまま（つなぐときに詰まらない）、行の端の空白は描く前に落とす
+    const lang = this.lang;
+    const phrases = lang.startsWith('ja') ? splitPhrases(text, 'ja') : lang.startsWith('zh') ? Array.from(text) : (text.match(/\S+\s*/g) ?? [text]);
+    const lines = wrapPhrases(phrases, 1024 * 1.8, (s) => c.measureText(s.trim()).width);
+    const ls = lines.slice(0, 2).map((l) => l.trim());
     // 背後のにじみ（柔らかい暗い影）
     c.shadowColor = 'rgba(0,0,0,0.95)'; c.shadowBlur = 40;
     c.fillStyle = this.color;

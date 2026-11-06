@@ -1,0 +1,11 @@
+# Cloudflare Pages のヘッダ（11-07 深夜）。キャラクターのコマと生成物は長く cache（名前が変われば URL も変わる前提。コマは差し替えたら名前を変えるか、1 日で切れる）
+/concierge/*
+  Cache-Control: public, max-age=86400
+/works/*
+  Cache-Control: public, max-age=86400
+/rooms/*
+  Cache-Control: public, max-age=86400
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/api/*
+  Cache-Control: no-store

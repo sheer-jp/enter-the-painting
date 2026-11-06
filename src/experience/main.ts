@@ -32,50 +32,14 @@ export async function run(o: RunOptions): Promise<void> {
   // Tab を物語の画面の中で回す（最後の次は最初へ。ページの外へ抜けない）
   const trap = (e: KeyboardEvent) => { if (e.key === 'Tab') trapTab(stage, e); };
   document.addEventListener('keydown', trap);
-  const sound = o.sound ?? new Soundscape();
-  await sound.unlock();
-  const hud = buildHud(stage, o.lang, { fromQr: o.fromQr, debug: o.debug, hasRooms: (space.rooms?.length ?? 0) > 0, contact: space.contact });
-  hud.close.focus({ preventScroll: true });
-
-  const canvas = document.createElement('canvas');
-  stage.appendChild(canvas);
+  // 後片付け。途中で例外が出ても（hud や流体を作る前でも）裏の inert と Tab の捕捉を必ず戻す（REVIEW-2 P2）
+  let hud: ReturnType<typeof buildHud> | null = null;
+  let sound: Soundscape | null = null;
   let renderer: THREE.WebGLRenderer | null = null;
   let fluid: Fluid | null = null;
-  let relief: THREE.Texture | null = null;
-  try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', alpha: false });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.setSize(innerWidth, innerHeight, false);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    // ?space=flat&spin=1（録画用）：平面カメラを左右に ±40° ゆっくり振る（正弦、周期 16 秒）
-    if (flatSpace && new URLSearchParams(location.search).get('spin') === '1') {
-      const draw = renderer.render.bind(renderer);
-      renderer.render = (scene, cam) => { if ((cam as THREE.PerspectiveCamera).isPerspectiveCamera) cam.rotation.y = (40 * Math.PI / 180) * Math.sin((performance.now() / 16000) * 2 * Math.PI); draw(scene, cam); };
-    }
-    if (Fluid.supported(renderer)) {
-      // 物語モードは絵だけの領域（解像度を絵に全部使う）、VR は等距離円筒。色場の初期値は写真のフル解像度
-      const [painting, flow] = await Promise.all([loadTexture(base + 'generated/' + (space.painting_full || space.painting)), loadTexture(base + 'generated/' + space.flow.texture)]);
-      painting.minFilter = THREE.LinearFilter; painting.generateMipmaps = false;
-      flow.minFilter = THREE.LinearFilter; flow.generateMipmaps = false;
-      // 絵の具の厚みの初期値（無い・読めない作品は平ら）
-      relief = space.relief ? await loadTexture(base + 'generated/' + space.relief.texture).catch(() => null) : null;
-      if (relief) { relief.minFilter = THREE.LinearFilter; relief.generateMipmaps = false; }
-      // ?debug=1&q=medium などで品質を固定できる（スクリーンショットの確認用）
-      const forced = o.debug ? new URLSearchParams(location.search).get('q') : null;
-      const quality: Quality = forced === 'high' || forced === 'medium' || forced === 'low' ? forced : o.vr ? 'high' : (/Mobi|Android/i.test(navigator.userAgent) ? 'medium' : space.fluid.quality || 'high');
-      fluid = new Fluid(renderer, { ...space.fluid, quality });
-      fluid.init(painting, flow, { ...space.fluid, quality, speed: reduced ? space.fluid.speed * 0.3 : space.fluid.speed, tempo: reduced ? (space.fluid.tempo ?? 0.6) * 0.5 : space.fluid.tempo }, placementFor(space.aspect), space.back_color, lighten(space.back_color), o.vr ? 'equirect' : 'painting', space.aspect, relief);
-      // コンテキスト喪失（iOS のバックグラウンド復帰など）→ 静止画モードに落とす
-      canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); console.warn('WebGL context lost'); }, { once: true });
-    }
-  } catch (e) {
-    console.warn('流体を初期化できない。静止画モードへ', e);
-    fluid = null;
-  }
-
-  const ctx = { renderer, fluid, relief, space, sound, hud, lang: o.lang, reduced, fromQr: o.fromQr, base, debug: o.debug, canvas };
+  let canvas: HTMLCanvasElement | null = null;
   const exit = () => {
-    hud.dispose(); sound.dispose(); fluid?.dispose(); renderer?.dispose(); canvas.remove();
+    try { hud?.dispose(); sound?.dispose(); fluid?.dispose(); renderer?.dispose(); canvas?.remove(); } catch (e) { console.warn('後片付けに失敗', e); }
     stage.hidden = true; document.body.style.overflow = '';
     behind.forEach((el) => { el.inert = false; });
     document.removeEventListener('keydown', trap);
@@ -85,6 +49,46 @@ export async function run(o: RunOptions): Promise<void> {
     if (back && back.isConnected) back.focus({ preventScroll: true });
   };
   try {
+    sound = o.sound ?? new Soundscape();
+    await sound.unlock();
+    hud = buildHud(stage, o.lang, { fromQr: o.fromQr, debug: o.debug, hasRooms: (space.rooms?.length ?? 0) > 0, contact: space.contact });
+    hud.close.focus({ preventScroll: true });
+
+    canvas = document.createElement('canvas');
+    stage.appendChild(canvas);
+    let relief: THREE.Texture | null = null;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', alpha: false });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setSize(innerWidth, innerHeight, false);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      // ?space=flat&spin=1（録画用）：平面カメラを左右に ±40° ゆっくり振る（正弦、周期 16 秒）
+      if (flatSpace && new URLSearchParams(location.search).get('spin') === '1') {
+        const draw = renderer.render.bind(renderer);
+        renderer.render = (scene, cam) => { if ((cam as THREE.PerspectiveCamera).isPerspectiveCamera) cam.rotation.y = (40 * Math.PI / 180) * Math.sin((performance.now() / 16000) * 2 * Math.PI); draw(scene, cam); };
+      }
+      if (Fluid.supported(renderer)) {
+        // 物語モードは絵だけの領域（解像度を絵に全部使う）、VR は等距離円筒。色場の初期値は写真のフル解像度
+        const [painting, flow] = await Promise.all([loadTexture(base + 'generated/' + (space.painting_full || space.painting)), loadTexture(base + 'generated/' + space.flow.texture)]);
+        painting.minFilter = THREE.LinearFilter; painting.generateMipmaps = false;
+        flow.minFilter = THREE.LinearFilter; flow.generateMipmaps = false;
+        // 絵の具の厚みの初期値（無い・読めない作品は平ら）
+        relief = space.relief ? await loadTexture(base + 'generated/' + space.relief.texture).catch(() => null) : null;
+        if (relief) { relief.minFilter = THREE.LinearFilter; relief.generateMipmaps = false; }
+        // ?debug=1&q=medium などで品質を固定できる（スクリーンショットの確認用）
+        const forced = o.debug ? new URLSearchParams(location.search).get('q') : null;
+        const quality: Quality = forced === 'high' || forced === 'medium' || forced === 'low' ? forced : o.vr ? 'high' : (/Mobi|Android/i.test(navigator.userAgent) ? 'medium' : space.fluid.quality || 'high');
+        fluid = new Fluid(renderer, { ...space.fluid, quality });
+        fluid.init(painting, flow, { ...space.fluid, quality, speed: reduced ? space.fluid.speed * 0.3 : space.fluid.speed, tempo: reduced ? (space.fluid.tempo ?? 0.6) * 0.5 : space.fluid.tempo }, placementFor(space.aspect), space.back_color, lighten(space.back_color), o.vr ? 'equirect' : 'painting', space.aspect, relief);
+        // コンテキスト喪失（iOS のバックグラウンド復帰など）→ 静止画モードに落とす
+        canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); console.warn('WebGL context lost'); }, { once: true });
+      }
+    } catch (e) {
+      console.warn('流体を初期化できない。静止画モードへ', e);
+      fluid = null;
+    }
+
+    const ctx = { renderer, fluid, relief, space, sound, hud, lang: o.lang, reduced, fromQr: o.fromQr, base, debug: o.debug, canvas };
     let fellBack = false;
     if (o.vr && renderer && fluid) {
       const { SpaceMode } = await import('../space/SpaceMode');

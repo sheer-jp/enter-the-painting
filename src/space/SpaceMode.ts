@@ -573,6 +573,7 @@ export class SpaceMode {
     for (const m of space.messages) {
       if (!this.running) return;
       if (voiceOk) { while (this.running && sound.voiceTime() >= 0 && sound.voiceTime() < m.at) { if (await Promise.race([voiceEnded.then(() => true), wait(100).then(() => false)])) break; } }
+      this.text.lang = m[lang] ? lang : m.en ? 'en' : 'ja';   // 文の言語（pick と同じ順）。日本語のときだけ文節に
       await this.text.show(pick(m, lang), this.camera, { reduced });
     }
     if (voiceOk) await voiceEnded;

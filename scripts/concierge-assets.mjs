@@ -11,6 +11,9 @@
 //      コマ列の中の表情の名前（listening / smile / present）は「いまの表情の止まっているコマ」に置き換えて再生する（index.ts の play）
 // 11-07（A-1）：nod / tilt / tilt2 / think / happy を追加。元は Codex 生成の 1254×1254（concept/concierge-v6-frames/）を
 //      smile（01-welcome-hands）の足元（下端と下 100 行の重心）に整数の平行移動で合わせて cutouts/ に置いたもの（拡縮なし。ずれは 0.03% 以内、happy-2 は跳ねるので上下はそのまま）
+// 11-07（A-2）：nod-down-1/2・tilt-down-1/2（listening の姿勢）、happy-up-1/2（present の姿勢）を追加。元は concept/concierge-v6-frames2/。
+//      listening（03-listening）／present（02-welcome-wave）の足元に同じ方法で合わせた（横 0px・縦 0〜2px。happy-up-2 は跳ねるので縦は happy-up-1 と同じだけ）。
+//      内側の不透明度（240〜254）は 255 にそろえた
 import sharp from 'sharp';
 import { readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, basename, extname } from 'node:path';
@@ -27,17 +30,24 @@ const SEQUENCES = {
   blink: ['listening', 'blink', 'listening'],
   wave: ['present', 'wave-1', 'wave-2', 'wave-1', 'present'],
   smileDeep: ['smile', 'smile-2'],
-  nod: { seq: ['listening', 'nod-1', 'nod-2', 'nod-1', 'listening'], ms: 160 },
+  // nod / tilt / tilt2 / happy：手を胸の前で合わせた形（smile 用）。11-07 A-2 から smile のときだけ使う
+  nod: { seq: ['smile', 'nod-1', 'nod-2', 'nod-1', 'smile'], ms: 160 },
   // かしげる：1 コマ 120ms では「ぴくっ」としか見えないので、かしげたコマを 0.8 秒保つ
-  tilt: { seq: ['listening', 'tilt-1', 'listening'], ms: [120, 800, 120] },
-  tilt2: { seq: ['listening', 'tilt-2', 'listening'], ms: [120, 800, 120] },
+  tilt: { seq: ['smile', 'tilt-1', 'smile'], ms: [120, 800, 120] },
+  tilt2: { seq: ['smile', 'tilt-2', 'smile'], ms: [120, 800, 120] },
   think: ['think-1', 'think-2', 'think-1'],
-  happy: { seq: ['present', 'happy-1', 'happy-2', 'happy-1', 'present'], ms: [120, 120, 160, 120, 120] },
+  happy: { seq: ['smile', 'happy-1', 'happy-2', 'happy-1', 'smile'], ms: [120, 120, 160, 120, 120] },
+  // 11-07 A-2：手の位置を合わせたコマ。listening（手を下ろす）用のうなずき・かしげ、present（手を差し出す）用のうれしい
+  'nod-down': { seq: ['listening', 'nod-down-1', 'nod-down-2', 'nod-down-1', 'listening'], ms: 160 },
+  'tilt-down': { seq: ['listening', 'tilt-down-1', 'listening'], ms: [120, 800, 120] },
+  'tilt-down2': { seq: ['listening', 'tilt-down-2', 'listening'], ms: [120, 800, 120] },
+  'happy-up': { seq: ['present', 'happy-up-1', 'happy-up-2', 'happy-up-1', 'present'], ms: [120, 120, 160, 120, 120] },
 };
 const seqOf = (d) => (Array.isArray(d) ? d : d.seq);
-// WebP の質：15 枚（表情 3 + コマ 12）の合計を 2.5MB 以内に（11-07 A-1）。q80 / alpha 90 では 3.3MB。
+// WebP の質：21 枚（表情 3 + コマ 18）の合計を 3.0MB 以内に（11-07 A-2。A-1 の 15 枚は 2.5MB 以内、q72 / alpha 70）。
+// A-2 の 21 枚は q72 / alpha 70 で 3.30MB、q68 だけでも 3.17MB。alpha 60 と preset 'picture' を足して 2.98MB。
 // コマだけ下げると入れ替えの瞬間に画質が跳ねるので、全部を同じ質に（2x の顔の拡大で差は見えない）
-const WEBP = { quality: 72, alphaQuality: 70, effort: 6 };
+const WEBP = { quality: 68, alphaQuality: 60, effort: 6, preset: 'picture' };
 
 const files = readdirSync(src).filter((f) => /\.png$/i.test(f));
 const named = new Map();   // 出力の名前 → 元のファイル
