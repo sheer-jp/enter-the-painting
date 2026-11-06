@@ -163,9 +163,13 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-ai { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-top-left-radius: 4px; font-family: var(--serif); color: var(--ink); }
 .cg-me { align-self: flex-end; background: var(--bg-2); border-top-right-radius: 4px; font-family: var(--sans); font-weight: 400; color: var(--ink); }
 .cg-greet { animation: cg-in .6s ease both; animation-delay: var(--d, 0s); }
-.cg-openers, .cg-choices { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-.cg-opt { appearance: none; min-height: 44px; padding: 6px 18px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .06em; line-height: 1.5; text-align: right; cursor: pointer; transition: border-color .3s, background .3s; }
-.cg-opt:hover { border-color: var(--ink); background: #fff; }
+/* 選択肢は吹き出しと見分けがつくボタンに（11-06 作家「チャットと勘違いする」）：左寄せ、白地、角は小さく、右端に › */
+.cg-openers, .cg-choices { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin: 2px 0 4px 8px; }
+.cg-openers-cap { font: 400 11px/1.6 var(--sans); letter-spacing: .14em; color: var(--ink-2); margin-bottom: 2px; }
+.cg-opt { appearance: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; padding: 8px 14px 8px 16px; border: 1px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .06em; line-height: 1.5; text-align: left; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,.06); transition: background .2s, transform .15s; }
+.cg-opt::after { content: '›'; font-family: var(--sans); font-size: 18px; line-height: 1; color: var(--ink-2); flex: none; }
+.cg-opt:hover { background: var(--bg); }
+.cg-opt:active { transform: translateY(1px); }
 .cg-form { grid-area: form; display: flex; gap: 8px; align-items: center; padding: 8px 0 calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--bg); }
 .cg-form input { flex: 1; min-width: 0; min-height: 44px; background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 22px; padding: 8px 16px; font: 400 16px/1.5 var(--sans); letter-spacing: .02em; }
 .cg-form input:focus { outline: none; border-color: var(--ink); }

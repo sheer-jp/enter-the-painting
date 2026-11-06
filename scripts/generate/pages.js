@@ -98,7 +98,7 @@ function readConfig() {
   const fallback = {
     title: { ja: 'ようこそ、SHEER のギャラリーへ', en: "Welcome to SHEER's gallery" },
     greeting: { ja: ['いらっしゃいませ。', '今日は、どんな絵をお探しですか？'], en: ['Welcome.', 'What kind of painting are you looking for today?'] },
-    openers: { ja: ['朝、静かに始めたい', '夜、ひとりで息をつきたい', '人を迎える部屋に彩りを'] },
+    openers: { ja: ['頑張る活力がほしい', '寂しい夜によりそってほしい', '明るい気持ちになれる絵を'] },
     persona: { name: { ja: '', en: '' }, intro_line: { ja: '', en: '' } },
   };
   try { return { ...fallback, ...JSON.parse(readFileSync(new URL('../../recommend/config.json', import.meta.url), 'utf8')) }; } catch { return fallback; }
@@ -162,7 +162,8 @@ ${FONTS}
   <section class="cg-talk" aria-label="受付の会話">
     <div class="cg-thread" aria-live="polite">
         ${greeting}
-        <div class="cg-openers cg-greet" style="--d:${(0.3 + lines.length * 0.4).toFixed(1)}s" role="group">
+        <div class="cg-openers cg-greet" style="--d:${(0.3 + lines.length * 0.4).toFixed(1)}s" role="group" aria-label="近いものがあれば、選んでください">
+          <span class="cg-openers-cap">${jaEn('近いものがあれば、選んでください', 'Pick one if it fits')}</span>
           ${openers}
         </div>
     </div>
