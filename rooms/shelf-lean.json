@@ -1,0 +1,55 @@
+{
+  "name": "shelf-lean",
+  "image_width_px": 1600,
+  "image_height_px": 1600,
+  "label": {
+    "ja": "棚に立てかけて",
+    "en": "Leaning on the shelf"
+  },
+  "category": "studio",
+  "scene": "低い木の本棚の天板。左に鉢植え、右に本。白い壁に立てかける。明るい昼の光。AI 生成のイメージ（Codex）。",
+  "references": [
+    {
+      "ref": "bookshelf_low.width",
+      "px": 1237,
+      "primary": true,
+      "note": "本体の幅 x239〜1822（2048px、y1500）。高さ 85cm で取ると 7.3px/cm で、横の本が約 29cm になり大きすぎる"
+    },
+    {
+      "ref": "bookshelf_low.height",
+      "px": 623,
+      "note": "天板の手前 y1127 〜 脚の先 y1924（2048px）。画像の棚は横長で、幅 110cm と高さ 85cm が同時には合わない"
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1600,
+        0
+      ],
+      [
+        1600,
+        880
+      ],
+      [
+        0,
+        880
+      ]
+    ]
+  },
+  "hang": {
+    "place": "lean",
+    "ledge_y_px": 859,
+    "x_px": 688,
+    "floor_y_px": 1434,
+    "note": "天板の奥の辺 y1092、手前 y1127（2048px）。立てかけた絵の底は壁から少し前なので y1100。空き x620〜1160"
+  },
+  "suits_cm": [
+    15,
+    45
+  ]
+}

@@ -28,3 +28,19 @@ describe('絵の移動量のクランプ', () => {
     expect(clampOffset(50, 50, { x0: -10, y0: 0, x1: 110, y1: 50 }, 100, 50)).toEqual([0, 0]);
   });
 });
+
+// 動かせる範囲（move_px）：壁の範囲に限る（11-07 作家「椅子の手前に絵が来るとおかしい」）
+import { clampOffset as clampB } from '../src/ui/lightbox';
+describe('clampOffset with bounds', () => {
+  const r = { x0: 100, y0: 100, x1: 200, y1: 180 };
+  it('壁の範囲より下（家具の手前）には下げられない', () => {
+    expect(clampB(0, 500, r, 1000, 1000, false, [50, 0, 900, 400])).toEqual([0, 220]);
+  });
+  it('壁の左右の端で止まる', () => {
+    expect(clampB(-500, 0, r, 1000, 1000, false, [50, 0, 900, 400])).toEqual([-50, 0]);
+    expect(clampB(5000, 0, r, 1000, 1000, false, [50, 0, 900, 400])).toEqual([700, 0]);
+  });
+  it('範囲が無ければ画像全体', () => {
+    expect(clampB(5000, 5000, r, 1000, 1000)).toEqual([800, 820]);
+  });
+});

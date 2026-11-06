@@ -1,0 +1,64 @@
+{
+  "name": "desk-easel",
+  "image_width_px": 1600,
+  "image_height_px": 1600,
+  "label": {
+    "ja": "机の上のイーゼル",
+    "en": "On the desk easel"
+  },
+  "category": "studio",
+  "scene": "ワンルームの木の机。卓上イーゼル（28 cm）、マグ、閉じたノート PC、鉢植え。明るい昼の光。AI 生成のイメージ（Codex）。",
+  "references": [
+    {
+      "ref": "tabletop_easel.height",
+      "px": 340,
+      "primary": true,
+      "note": "頂点 y738 〜 脚の先 y1174（2048px 基準）= 435px → ×0.78125"
+    },
+    {
+      "ref": "mug.height",
+      "px": 103,
+      "note": "2048px で約 132px"
+    },
+    {
+      "ref": "laptop.width",
+      "px": 344,
+      "note": "閉じた PC の手前の辺 x499〜939（2048px）"
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        125,
+        0
+      ],
+      [
+        1600,
+        0
+      ],
+      [
+        1600,
+        880
+      ],
+      [
+        125,
+        880
+      ]
+    ]
+  },
+  "hang": {
+    "place": "easel",
+    "ledge_y_px": 816,
+    "ledge_x_px": [
+      853,
+      1102
+    ],
+    "x_px": 977,
+    "floor_y_px": 1470,
+    "note": "受け桟の上端 y1044、桟 x1092〜1410（2048px 基準）。絵の底（側面の帯の下端）をここに乗せる。docs/PLACEMENT.md 6 節"
+  },
+  "suits_cm": [
+    15,
+    45
+  ]
+}

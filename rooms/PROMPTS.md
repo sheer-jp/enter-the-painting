@@ -71,6 +71,20 @@ JSON には、家具の上端（`hang.furniture_top_y_px`）と家具の実寸�
 
 `suits_cm` は `[15, 70]`（F15 も置いて「狭い部屋では大きく見える」を見せる）。基準物：シングルベッド幅 100 cm、カラーボックス高さ 88 cm、机 72 cm、天井 230 cm（`ceiling_old`）。
 
+## 置く場面（小さな絵を卓上イーゼルに置く・棚に立てかける。11-07、`docs/PLACEMENT.md` 6 節）
+
+作家「小さい絵が壁から浮いて見える。机やイーゼルに置く方がいい」を受けて、Codex（内蔵の image_gen）で 3 枚を生成（11-07）。商用利用は他の部屋と同じ扱い（作家確認済み）。生成記録の全文は `_meta/development/enter-the-painting/concept/rooms-placed/PROMPTS.md`（リポジトリの外）。返った画像は 1254px で、2048px に縦横同率で拡大したもの。ここでは幅 1600px に縮めて使う。
+
+共通：写実の室内写真、正方形。絵・額・キャンバス・画板は入れない（空のイーゼル／棚の空き）。白い壁、明るい昼の拡散光、直射日光や光の模様なし。カメラは壁から 1.5〜2 m、正面、35mm 相当で縦の線を平行に。人・文字・ロゴなし。
+
+| name | 場面 | プロンプトの要点（英語の要約） |
+| --- | --- | --- |
+| desk-easel | 机の上の卓上イーゼル | A bright modest Japanese studio apartment; oak desk (72 cm) against a plain white wall. On the desk: an EMPTY 28 cm tabletop A-frame easel slightly right of center (only legs, a slender mast and a horizontal receiving ledge; no canvas or board), a 9 cm mug and a closed 30 cm laptop on the left, a small potted plant on the right. Seated eye height, about 1.5 m from the wall. 追加調整：イーゼルだけを 15% 縮小（マグ・PC に対して大きすぎたため） |
+| shelf-lean | 低い本棚に立てかける | A low oak bookshelf (85 cm tall, about 110 cm wide) against a plain white wall; a plant at the far left and plain books at the far right of the top; a clearly empty 40 cm area slightly left of center against the wall, for a painting to rest on the shelf and lean on the wall. Standing eye height, about 1.5 m from the wall |
+| sideboard-easel | サイドボードの上の卓上イーゼル | A warm oak sideboard (80 cm tall, 160 cm wide) against a plain white wall in a living room; an EMPTY 28 cm tabletop easel exactly at the center, a small vase at the left end and a stack of plain books at the right end. Standing eye height, about 2 m from the wall. 追加調整：イーゼルだけを 22% 縮小 |
+
+JSON は `hang.place`（`easel` / `lean`）、`hang.ledge_y_px`（絵の底が乗る y）、`hang.x_px`、イーゼルは `hang.ledge_x_px`（受けの左右の端。接地の影をこの中に）。縮尺の主はイーゼルの高さ 28 cm（`tabletop_easel.height`）、棚は本棚の幅。計測値は `rooms/README.md` の下の表。
+
 ## 受け取ったあとの手順
 
 1. `rooms/<name>.jpg` として保存（横 1600px 以上）

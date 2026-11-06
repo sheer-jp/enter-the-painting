@@ -22,9 +22,12 @@ export function quadRect(q: [number, number][]): Rect {
   return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
 }
 // 絵の移動量（画像の px）を、絵が部屋の画像（iw × ih）の内側に収まる範囲に切り詰める。大きさは変えない
-export function clampOffset(dx: number, dy: number, r: Rect, iw: number, ih: number): [number, number] {
+// horizontalOnly：置く場面（イーゼル・棚）。下端は受けに乗ったまま、横にだけ動かす（docs/PLACEMENT.md 6 節）
+// bounds：動かせる範囲 [x0, y0, x1, y1]（space.json の move_px。壁の範囲で、家具の手前には出さない）。無ければ画像全体
+export function clampOffset(dx: number, dy: number, r: Rect, iw: number, ih: number, horizontalOnly = false, bounds?: [number, number, number, number]): [number, number] {
   const c = (v: number, lo: number, hi: number) => (lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v)));
-  return [c(dx, -r.x0, iw - r.x1), c(dy, -r.y0, ih - r.y1)];
+  const [bx0, by0, bx1, by1] = bounds && bounds[2] > bounds[0] && bounds[3] > bounds[1] ? bounds : [0, 0, iw, ih];
+  return [c(dx, bx0 - r.x0, bx1 - r.x1), horizontalOnly ? 0 : c(dy, by0 - r.y0, by1 - r.y1)];
 }
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, parent?: HTMLElement) => {
@@ -53,6 +56,9 @@ export function openLightbox(o: LightboxOptions): () => void {
   const frame = el('div', 'lb-frame', media);
   const img = el('img', 'lb-img', frame); img.alt = ''; img.draggable = false;
   // 絵の層（素の部屋の上に、実物の写真を quad_px の位置に置く。ドラッグ・矢印キーで動く）
+  // 置く場面では、絵の層の下に側面の帯と接地の影を敷く（合成画像と同じ見え方に。帯の色と大きさは space.json から）
+  const sides = el('div', 'lb-art-sides', frame); sides.hidden = true;
+  sides.style.position = 'absolute'; sides.style.pointerEvents = 'none';
   const art = el('img', 'lb-art', frame); art.alt = ''; art.draggable = false; art.hidden = true;
   art.tabIndex = 0; art.setAttribute('role', 'img'); art.setAttribute('aria-label', t('move_painting', lang));
   const svg = document.createElementNS(SVG_NS, 'svg'); svg.setAttribute('class', 'lb-dims'); svg.setAttribute('aria-hidden', 'true');
@@ -147,11 +153,22 @@ export function openLightbox(o: LightboxOptions): () => void {
     const [iw, ih] = ip;
     art.style.left = `${(r.x0 / iw) * 100}%`; art.style.top = `${(r.y0 / ih) * 100}%`;
     art.style.width = `${((r.x1 - r.x0) / iw) * 100}%`; art.style.height = `${((r.y1 - r.y0) / ih) * 100}%`;
+    const sp = room.sides_px;
+    if (room.place && sp) {
+      // 帯：絵の矩形を下に sp.bottom、右に sp.right 広げた箱。絵の層の下にあるので、見えるのは帯だけ
+      const bw = r.x1 - r.x0 + sp.right, bh = r.y1 - r.y0 + sp.bottom;
+      sides.style.left = `${(r.x0 / iw) * 100}%`; sides.style.top = `${(r.y0 / ih) * 100}%`;
+      sides.style.width = `${(bw / iw) * 100}%`; sides.style.height = `${(bh / ih) * 100}%`;
+      sides.style.background = room.side_color || '#555';
+      // 接地の影：箱の下にだけ落とす（画面の px に直す）
+      const k = fit.k || 1, s = sp.shadow * k;
+      sides.style.boxShadow = `0 ${(s * 0.5).toFixed(1)}px ${(s * 0.8).toFixed(1)}px ${(-s * 0.1).toFixed(1)}px rgba(0,0,0,0.45)`;
+    }
   }
   function moveArt(dx: number, dy: number) {
     const room = rooms[index]; const ip = room.image_px;
     if (!movable || !room.quad_px || !ip) return;
-    off = clampOffset(dx, dy, quadRect(room.quad_px), ip[0], ip[1]);
+    off = clampOffset(dx, dy, quadRect(room.quad_px), ip[0], ip[1], !!room.place, room.move_px);
     placeArt(); drawDims(room);
   }
 
@@ -172,6 +189,7 @@ export function openLightbox(o: LightboxOptions): () => void {
     fit = { w: iw * k, h: ih * k, k };
     frame.style.width = `${fit.w}px`; frame.style.height = `${fit.h}px`;
     applyZoom();
+    placeArt();   // 接地の影は画面の px なので、大きさが変わったら置き直す
     drawDims(room);
   }
   function clampPan() {
@@ -211,7 +229,8 @@ export function openLightbox(o: LightboxOptions): () => void {
     const base = o.bases?.[index];
     movable = !!(base && o.painting && !room.occlusion && room.quad_px && room.image_px);
     if (document.activeElement === art && !movable) close.focus();
-    art.hidden = !movable; resetBtn.hidden = !movable;
+    art.hidden = !movable; resetBtn.hidden = !movable; sides.hidden = !(movable && room.place && room.sides_px);
+    art.style.boxShadow = room.place ? 'none' : '';   // 置く場面は壁に落とす影（page.css）をやめ、帯と接地の影に
     if (movable) { if (art.getAttribute('src') !== o.painting) art.src = o.painting!; placeArt(); }
     img.src = movable ? base! : srcs[index] || '';
     renderText(room);
@@ -223,7 +242,7 @@ export function openLightbox(o: LightboxOptions): () => void {
   // 素の部屋が読めなければ合成画像に戻す
   img.addEventListener('error', () => {
     if (!movable || !srcs[index]) return;
-    movable = false; art.hidden = true; resetBtn.hidden = true; off = [0, 0];
+    movable = false; art.hidden = true; resetBtn.hidden = true; sides.hidden = true; off = [0, 0];
     img.src = srcs[index]; drawDims(rooms[index]);
   });
 
@@ -258,6 +277,7 @@ export function openLightbox(o: LightboxOptions): () => void {
   art.addEventListener('keydown', (e) => {
     const d: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
     const v = d[e.key]; if (!v || !movable) return;
+    if (rooms[index].place && v[1] !== 0) { e.preventDefault(); e.stopPropagation(); return; }   // 置く場面は縦に動かさない
     e.preventDefault(); e.stopPropagation();
     moveArt(off[0] + v[0] * KEY_STEP, off[1] + v[1] * KEY_STEP);
   });

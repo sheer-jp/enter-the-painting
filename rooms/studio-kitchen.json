@@ -48,5 +48,6 @@
   "suits_cm": [
     15,
     80
-  ]
+  ],
+  "disabled": "置く部屋（desk-easel・shelf-lean・sideboard-easel）が揃ったので外す。小さな絵を壁に掛けると浮いて見える（11-07 作家、docs/PLACEMENT.md 6 節）"
 }

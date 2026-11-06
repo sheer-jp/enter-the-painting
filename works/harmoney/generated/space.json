@@ -222,6 +222,12 @@
       "px_per_cm": 4.045,
       "confidence": "high",
       "occlusion": false,
+      "move_px": [
+        0,
+        0,
+        1024,
+        608
+      ],
       "compare": {
         "ja": "このソファの約 0.8 倍の高さ。",
         "en": "About 0.8 times the height of the sofa.",
@@ -304,6 +310,12 @@
       "px_per_cm": 4,
       "confidence": "high",
       "occlusion": false,
+      "move_px": [
+        0,
+        0,
+        1024,
+        600
+      ],
       "compare": {
         "ja": "この花瓶の約 2.2 倍の高さ。",
         "en": "About 2.2 times the height of the vase.",
@@ -397,6 +409,12 @@
       "px_per_cm": 4.236,
       "confidence": "mid",
       "occlusion": true,
+      "move_px": [
+        0,
+        0,
+        1024,
+        985
+      ],
       "compare": {
         "ja": "このダイニングテーブルとほぼ同じ高さ。",
         "en": "About the same height as the dining table.",
@@ -450,5 +468,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-06T15:59:16.855Z"
+  "generated_at": "2026-11-06T16:35:18.284Z"
 }

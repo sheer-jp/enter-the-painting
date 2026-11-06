@@ -108,7 +108,7 @@
     }
   },
   "laptop": {
-    "width_cm": 31,
+    "width_cm": 30,
     "label": {
       "ja": "ノート PC",
       "en": "the laptop"
@@ -224,5 +224,22 @@
       "en": "the pillow"
     },
     "note": "2 つでダブルベッドの幅を埋める大きめの枕。日本の標準は 43×63、欧州型は 50×70"
+  },
+  "tabletop_easel": {
+    "height_cm": 28,
+    "label": {
+      "ja": "卓上イーゼル",
+      "en": "the tabletop easel"
+    },
+    "note": "置く場面（docs/PLACEMENT.md 6 節）。画板受けの付いた小さな A 型"
+  },
+  "bookshelf_low": {
+    "height_cm": 85,
+    "width_cm": 110,
+    "label": {
+      "ja": "本棚",
+      "en": "the bookshelf"
+    },
+    "note": "低い本棚。置く場面の shelf-lean"
   }
 }

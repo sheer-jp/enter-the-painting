@@ -79,6 +79,7 @@ export function warpOnto(room, painting, quad, { shadow = 0.35 } = {}) {
 export function paintingRectFromScale(def, sizeCm, imageWidthPx) {
   const k = imageWidthPx && def.image_width_px ? imageWidthPx / def.image_width_px : 1;
   const pxPerCm = def.scale.px_per_cm * k;
+  if (def.hang.place) return placeQuad(def.hang, sizeCm, pxPerCm, k);
   const w = sizeCm[0] * pxPerCm, h = sizeCm[1] * pxPerCm;
   const cx = def.hang.x_px * k;
   // 掛ける高さ：3 通り。(a) 家具の上端の画素 furniture_top_y_px から gap_cm（既定 20）上に下端（家具が壁より手前でも、床の線の読み違いでもずれない。家具の上に掛けるときはこれ）
@@ -89,6 +90,146 @@ export function paintingRectFromScale(def, sizeCm, imageWidthPx) {
   else cy = def.hang.floor_y_px * k - (def.hang.bottom_from_floor_cm + sizeCm[1] / 2) * pxPerCm;
   const x0 = cx - w / 2, x1 = cx + w / 2, y0 = cy - h / 2, y1 = cy + h / 2;
   return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+}
+
+// ---- 置く場面（docs/PLACEMENT.md 6 節）----
+// easel：卓上イーゼルの受けに乗せる。面が少し上を向くので、上辺を下辺より 3% 短く、高さ 0.96 倍（台形）
+// lean：棚の天板に立てかける。高さ 0.97 倍、上辺はそのまま
+export const PLACE = {
+  easel: { height: 0.96, taper: 0.03, right_cm: 1 },
+  lean: { height: 0.97, taper: 0, right_cm: 0 },
+};
+export const SIDE_BOTTOM_CM = 2.5;     // キャンバスの側面（下辺）の厚み（物の寸法）
+export const SIDE_VIEW = 0.4;          // 下の側面が見える割合（視線の角度。正面に近いので 2.5 cm × 0.4 ≈ 1 cm の細い帯に。そのままだと台座のように厚く見えた）
+export const CONTACT_SHADOW_CM = 1.5;  // 接地の影の高さ
+export const SIDE_DARKEN = 0.35;       // 側面は絵の端の色を 35% 暗く
+
+// 側面の帯と接地の影の大きさ（画像の px）
+export function placeSidesPx(place, pxPerCm) {
+  const p = PLACE[place] || PLACE.lean;
+  return { bottom: SIDE_BOTTOM_CM * SIDE_VIEW * pxPerCm, right: p.right_cm * pxPerCm, shadow: CONTACT_SHADOW_CM * pxPerCm };
+}
+
+// 置く場面の 4 隅（左上から時計回り）。ledge_y_px は「物としての絵」の底（側面の帯の下端）が乗る線。
+// 絵の面の下辺は、そこから見えている側面の帯（2.5 cm × SIDE_VIEW）だけ上。受けの木が帯で隠れないように（帯を受けの前に垂らすと、受けが消えて浮いて見える）
+export function placeQuad(hang, sizeCm, pxPerCm, k = 1) {
+  const p = PLACE[hang.place];
+  if (!p) throw new Error(`hang.place は easel か lean（${hang.place}）`);
+  const w = sizeCm[0] * pxPerCm, h = sizeCm[1] * pxPerCm * p.height;
+  const wt = w * (1 - p.taper);
+  const cx = hang.x_px * k;
+  const yb = hang.ledge_y_px * k - placeSidesPx(hang.place, pxPerCm).bottom, yt = yb - h;
+  return [[cx - wt / 2, yt], [cx + wt / 2, yt], [cx + w / 2, yb], [cx - w / 2, yb]];
+}
+
+// 置いた絵に厚みと接地の影を描く（warpOnto で面を貼ったあと、shadow: 0 で）。buf は RGB raw（書き換える）
+// - lean：壁にごく薄い影（絵の左右と上に、寄りかかった分だけ）
+// - 下辺：厚み 2.5 cm の側面が見える分（× SIDE_VIEW）の帯。色は絵の下端の色を 35% 暗く
+// - easel：右辺にも 1 cm の帯（絵の右端の色を 35% 暗く）
+// - 接地の影：帯の直下に高さ 1.5 cm。中心が濃く、端が薄い
+// ledgeX：受けの左右の端 [x0, x1]（画像の px）。あれば接地の影をその中だけに落とす（受けからはみ出た所は宙に浮いた壁なので影を置かない）
+export function drawPlaceSides(buf, W, H, painting, quad, { place, pxPerCm, ledgeX = null }) {
+  const sz = placeSidesPx(place, pxPerCm);
+  const [tl, tr, br, bl] = quad;
+  const yt = tl[1], yb = bl[1], xl = bl[0], xr = br[0];
+  const yBand = yb + sz.bottom;
+  const Hi = invert3(homographyFromUnitSquare(quad));
+  const inside = (x, y) => {
+    const w = Hi[6] * x + Hi[7] * y + Hi[8];
+    const u = (Hi[0] * x + Hi[1] * y + Hi[2]) / w, v = (Hi[3] * x + Hi[4] * y + Hi[5]) / w;
+    return u >= 0 && u < 1 && v >= 0 && v < 1;
+  };
+  const darken = (o, a) => { for (let c = 0; c < 3; c++) buf[o + c] = Math.round(buf[o + c] * (1 - a)); };
+  const mix = (o, rgb, a) => { for (let c = 0; c < 3; c++) buf[o + c] = Math.round(buf[o + c] * (1 - a) + rgb[c] * a); };
+  // 絵の端の色（下端・右端の 3 行 / 列の平均を、長さの 12% の幅でならす。画素ごとの色だと縦縞になる）を 35% 暗く
+  const edgeProfile = (axis) => {
+    const { data, width: pw, height: ph } = painting;
+    const n = axis === 'bottom' ? pw : ph;
+    const raw = Array.from({ length: n }, (_, j) => {
+      const out = [0, 0, 0];
+      for (let i = 0; i < 3; i++) {
+        const px = axis === 'bottom' ? j : pw - 1 - i, py = axis === 'bottom' ? ph - 1 - i : j;
+        for (let c = 0; c < 3; c++) out[c] += data[(py * pw + px) * 3 + c] / 3;
+      }
+      return out;
+    });
+    const r = Math.max(1, Math.round(n * 0.06));
+    return raw.map((_, j) => {
+      const out = [0, 0, 0]; let cnt = 0;
+      for (let t = Math.max(0, j - r); t <= Math.min(n - 1, j + r); t++) { for (let c = 0; c < 3; c++) out[c] += raw[t][c]; cnt++; }
+      return out.map((v) => (v / cnt) * (1 - SIDE_DARKEN));
+    });
+  };
+  const profB = edgeProfile('bottom'), profR = edgeProfile('right');
+  const edgeColor = (axis, t) => {
+    const prof = axis === 'bottom' ? profB : profR;
+    return prof[Math.min(prof.length - 1, Math.max(0, Math.round(t * (prof.length - 1))))];
+  };
+  const clampX = (v) => Math.max(0, Math.min(W - 1, v)), clampY = (v) => Math.max(0, Math.min(H - 1, v));
+  // 右辺の x（y で線形。台形の右の辺）
+  const rightAt = (y) => tr[0] + (br[0] - tr[0]) * ((y - yt) / (yb - yt));
+
+  // (1) lean：壁のごく薄い影（絵の外、天板より上）
+  if (place === 'lean') {
+    const d = 0.8 * pxPerCm;
+    for (let y = clampY(Math.floor(yt - d)); y <= clampY(Math.ceil(yb)); y++) for (let x = clampX(Math.floor(xl - d)); x <= clampX(Math.ceil(xr + d)); x++) {
+      if (inside(x, y)) continue;
+      const dx = x < xl ? xl - x : x > xr ? x - xr : 0, dy = y < yt ? yt - y : 0;
+      const dd = Math.hypot(dx, dy);
+      if (dd >= d) continue;
+      darken((y * W + x) * 3, 0.10 * (1 - dd / d) ** 2);
+    }
+  }
+  // (2) 接地の影（帯の下。中心が濃く、端が薄い）。帯で隠れる所に描いても後で上書きされる
+  {
+    let x0 = xl - sz.shadow, x1 = xr + sz.right + sz.shadow;
+    if (ledgeX) { x0 = Math.max(x0, ledgeX[0]); x1 = Math.min(x1, ledgeX[1]); }
+    const cx = (x0 + x1) / 2, half = Math.max(1, (x1 - x0) / 2);
+    for (let y = clampY(Math.floor(yBand)); y <= clampY(Math.ceil(yBand + sz.shadow)); y++) for (let x = clampX(Math.floor(x0)); x <= clampX(Math.ceil(x1)); x++) {
+      const tv = Math.min(1, Math.max(0, (y - yBand) / sz.shadow));
+      const th = Math.abs(x - cx) / half;
+      const a = 0.7 * (1 - tv) * (1 - smoothstep(0.7, 1.1, th));
+      if (a > 0) darken((y * W + x) * 3, a);
+    }
+  }
+  // (3) 右辺の帯（easel）：面の右の辺から右へ sz.right。下は帯の下端まで
+  if (sz.right > 0) {
+    for (let y = clampY(Math.floor(yt)); y <= clampY(Math.ceil(yBand) - 1); y++) {
+      const xe = rightAt(Math.min(y + 0.5, yb));
+      const col = edgeColor('right', Math.min(1, Math.max(0, (y - yt) / (yb - yt))));
+      for (let x = clampX(Math.floor(xe)); x <= clampX(Math.ceil(xe + sz.right)); x++) {
+        // 横の被覆率（端の画素は割合で混ぜる）
+        const cov = Math.min(1, x + 1 - xe) - Math.max(0, x - (xe + sz.right));
+        const covV = Math.min(1, y + 1 - yt) * Math.min(1, yBand - y);
+        const a = Math.max(0, Math.min(1, cov)) * Math.max(0, Math.min(1, covV));
+        if (a > 0 && !inside(x + 0.5, y + 0.5)) mix((y * W + x) * 3, col, a);
+      }
+    }
+  }
+  // (4) 下辺の帯：面の下辺から下へ sz.bottom
+  for (let y = clampY(Math.floor(yb)); y <= clampY(Math.ceil(yBand) - 1); y++) {
+    const covV = Math.max(0, Math.min(1, Math.min(y + 1, yBand) - Math.max(y, yb)));
+    if (covV <= 0) continue;
+    for (let x = clampX(Math.floor(xl)); x <= clampX(Math.ceil(xr)); x++) {
+      const cov = Math.max(0, Math.min(1, Math.min(x + 1, xr) - Math.max(x, xl)));
+      if (cov <= 0) continue;
+      // 帯の下ほど少し暗く（丸みのある木枠に見せる）
+      // 面との境の 1px は暗い継ぎ目（角が回り込んで見える）
+      const t = (y + 0.5 - yb) / sz.bottom;
+      const seam = y - yb < 1 ? 0.75 : 1;
+      const col = edgeColor('bottom', (x + 0.5 - xl) / (xr - xl)).map((v) => v * (1 - 0.25 * t) * seam);
+      mix((y * W + x) * 3, col, cov * covV);
+    }
+  }
+  return buf;
+}
+
+// 帯の色（space.json の side_color。拡大表示で絵の層の下に敷く）：絵の下端の平均を 35% 暗く
+export function sideColorHex(painting) {
+  const { data, width: pw, height: ph } = painting;
+  const s = [0, 0, 0];
+  for (let i = 0; i < 3; i++) for (let x = 0; x < pw; x++) for (let c = 0; c < 3; c++) s[c] += data[((ph - 1 - i) * pw + x) * 3 + c];
+  return '#' + s.map((v) => Math.round((v / (3 * pw)) * (1 - SIDE_DARKEN)).toString(16).padStart(2, '0')).join('');
 }
 
 // 絵の中心の床からの高さ（cm）。文章用。家具の上端で決めたときは、置いた位置と床の線から逆算する
@@ -323,7 +464,7 @@ export function fractionOf(r) {
 }
 
 // 顧客に馴染みがある順（ドア > ソファ > 机 > 棚 > カウンター > ナイトテーブル > 天井 > その他）
-export const FAMILIAR = ['door_interior', 'door_entrance', 'sofa_2seat', 'armchair', 'bench', 'desk', 'low_shelf', 'kitchen_counter', 'nightstand', 'ceiling', 'ceiling_entrance', 'window', 'kettle', 'table_lamp', 'laptop', 'mug'];
+export const FAMILIAR = ['door_interior', 'door_entrance', 'sofa_2seat', 'armchair', 'bench', 'desk', 'low_shelf', 'tabletop_easel', 'sideboard', 'bookshelf_low', 'kitchen_counter', 'nightstand', 'ceiling', 'ceiling_entrance', 'window', 'kettle', 'table_lamp', 'laptop', 'mug'];
 // 幅で比べてよい物（横長の絵と、横に長い家具）
 const WIDE = new Set(['sofa_2seat', 'bench', 'desk', 'low_shelf', 'window']);
 const rankOf = (k) => { const i = FAMILIAR.indexOf(k); return i < 0 ? FAMILIAR.length : i; };
@@ -354,7 +495,8 @@ export function compareSentence({ item, dim, ratio, cm }, { withCm = false, appr
 }
 
 // 部屋の文章：比較の一文、2 つ目の比較、部屋の説明、注記（ja / en）
-export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, centerFromFloorCm, aboveFurniture = false }) {
+/** @param {{ references: any[], table: any, sizeCm: number[], confidence: string | null, wallWidthCm: number, centerFromFloorCm: number, aboveFurniture?: boolean, place?: string | null }} args */
+export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, centerFromFloorCm, aboveFurniture = false, place = null }) {
   const seen = new Set();
   const cands = [];
   for (const r of [...references].sort((a, b) => rankOf(a.ref.split('.')[0]) - rankOf(b.ref.split('.')[0]))) {
@@ -370,7 +512,12 @@ export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, 
   const m = (wallWidthCm / 100).toFixed(1);
   const hc = Math.round(centerFromFloorCm / 5) * 5;
   const seated = centerFromFloorCm < 140;
-  const about = {
+  // 置く場面：掛ける高さではなく、何に置いたか
+  const PLACE_ABOUT = {
+    easel: { ja: '小さな卓上イーゼル（高さ約 28 cm）の受けに、絵の底を乗せて置いています。', en: 'The painting stands on a small tabletop easel (about 28 cm tall), resting on its ledge.' },
+    lean: { ja: '棚の天板に絵の底を乗せ、壁に立てかけています。', en: 'The painting rests on the top of the shelf, leaning against the wall.' },
+  };
+  const about = place && PLACE_ABOUT[place] ? PLACE_ABOUT[place] : {
     ja: aboveFurniture
       ? `壁の幅は約 ${m} m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 ${hc} cm）。`
       : `壁の幅は約 ${m} m。${seated ? '座ったときの目の高さ' : '目の高さ'}（床から約 ${hc} cm）に掛けています。`,
@@ -386,13 +533,16 @@ export function roomTexts({ references, table, sizeCm, confidence, wallWidthCm, 
 }
 
 // 確認用の重ね描き（SVG）：絵の枠（赤）、床の線（青、画像内のときだけ）、左上に縮尺の文字
-function checkOverlaySvg({ width, height, quad, floorY, lines }) {
+function checkOverlaySvg({ width, height, quad, floorY, lines, ledgeY = null }) {
   const pts = quad.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-  const floor = floorY >= 0 && floorY < height ? `<line x1="0" y1="${floorY.toFixed(1)}" x2="${width}" y2="${floorY.toFixed(1)}" stroke="#2060ff" stroke-width="3"/>` : '';
+  // 置く場面：受けの線（緑の破線）。絵の底（側面の帯の下端）がここに乗る
+  const ledge = ledgeY != null && Number.isFinite(ledgeY) ? `<line x1="0" y1="${ledgeY.toFixed(1)}" x2="${width}" y2="${ledgeY.toFixed(1)}" stroke="#00b050" stroke-width="2" stroke-dasharray="10 6"/>` : '';
+  const floor = Number.isFinite(floorY) && floorY >= 0 && floorY < height ? `<line x1="0" y1="${floorY.toFixed(1)}" x2="${width}" y2="${floorY.toFixed(1)}" stroke="#2060ff" stroke-width="3"/>` : '';
   const text = lines.map((l, i) => `<text x="16" y="${34 + i * 28}">${xmlEsc(l)}</text>`).join('');
   return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
   <polygon points="${pts}" fill="none" stroke="#ff2020" stroke-width="3"/>
   ${floor}
+  ${ledge}
   <rect x="6" y="6" width="${Math.min(width - 12, 1100)}" height="${lines.length * 28 + 16}" fill="rgba(255,255,255,0.8)"/>
   <g font-family="Noto Sans CJK JP, WenQuanYi Zen Hei, sans-serif" font-size="20" fill="#111">${text}</g>
 </svg>`);
@@ -408,7 +558,9 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
   let names = work.rooms;
   if (!names) {
     const perCat = {};
-    names = readdirSync(roomsDir).filter((f) => f.endsWith('.json') && f !== 'REFERENCES.json').map((f) => f.replace(/\.json$/, '')).sort().filter((n) => {
+    // 置く部屋（hang.place）を、同じ種類の掛ける部屋より先に（小さな絵は置く方が浮かない。docs/PLACEMENT.md 6 節）
+    const isPlace = (n) => (readDef(n).hang?.place ? 0 : 1);
+    names = readdirSync(roomsDir).filter((f) => f.endsWith('.json') && f !== 'REFERENCES.json').map((f) => f.replace(/\.json$/, '')).sort().sort((a, b) => isPlace(a) - isPlace(b)).filter((n) => {
       const d = readDef(n);
       if (d.disabled) return false;   // 暗い部屋など、使わないと決めた部屋（11-07 作家「暗い部屋はやめた方がいい」）。work.json の rooms で明示しても使わない
       if (d.suits_cm && !(longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1])) return false;
@@ -449,7 +601,11 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       // 従来の方式（後方互換）：壁幅 cm から縮尺を出す
       quad = paintingQuadOnWall(wall, work.size_cm);
     }
-    let buf = warpOnto({ data: room.data, width: W, height: H }, { data: painting.data, width: painting.info.width, height: painting.info.height }, quad);
+    const paintingRaw = { data: painting.data, width: painting.info.width, height: painting.info.height };
+    const place = def.hang?.place && sc ? def.hang.place : null;
+    // 置く場面は、壁に落とす影をやめて、側面の帯と接地の影にする（docs/PLACEMENT.md 6 節）
+    let buf = warpOnto({ data: room.data, width: W, height: H }, paintingRaw, quad, place ? { shadow: 0 } : undefined);
+    if (place) drawPlaceSides(buf, W, H, paintingRaw, quad, { place, pxPerCm, ledgeX: def.hang.ledge_x_px ? def.hang.ledge_x_px.map((v) => v * scale) : null });
     // 手前の物（紐、傘、花瓶）を絵の上に戻す。mask_png（白 = 手前）があればキーの代わりにそれを使う
     let fgAlpha = null, fgSource = '';
     const occ = def.occlusion;
@@ -486,7 +642,11 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
         ...(!sc.all.length && def.scale?.basis?.ja ? [`basis=${def.scale.basis.ja}`] : []),
       ];
       if (fgAlpha) lines.push(`手前の物（緑）：${fgSource}  絵の前 ${frontPx}px`);
-      const svg = checkOverlaySvg({ width: W, height: H, quad, floorY: def.hang.floor_y_px * scale, lines });
+      if (place) {
+        const s = placeSidesPx(place, pxPerCm);
+        lines.push(`置く（${place}）：受け y=${fmt(def.hang.ledge_y_px * scale)}  側面 下 ${fmt(s.bottom)}px（${SIDE_BOTTOM_CM}cm×${SIDE_VIEW}）${s.right ? `・右 ${fmt(s.right)}px` : ''}  接地の影 ${fmt(s.shadow)}px  高さ ${PLACE[place].height} 倍・上辺 ${1 - PLACE[place].taper} 倍`);
+      }
+      const svg = checkOverlaySvg({ width: W, height: H, quad, floorY: def.hang.floor_y_px * scale, lines, ledgeY: place ? def.hang.ledge_y_px * scale : null });
       // 手前の物のマスクを緑（50%）で重ねる
       let checkBuf = buf;
       if (fgAlpha) {
@@ -503,7 +663,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
 
     // 顧客向けの文章（ja / en。他の言語は index.js で翻訳キャッシュから）
     const texts = def.references?.length
-      ? roomTexts({ references: def.references, table, sizeCm: work.size_cm, confidence: sc.confidence, wallWidthCm, centerFromFloorCm: hangCenterCm(def, work.size_cm, quad, pxPerCm, scale), aboveFurniture: def.hang.bottom_from_floor_cm != null || def.hang.furniture_top_y_px != null })
+      ? roomTexts({ references: def.references, table, sizeCm: work.size_cm, confidence: sc.confidence, wallWidthCm, centerFromFloorCm: place ? 0 : hangCenterCm(def, work.size_cm, quad, pxPerCm, scale), aboveFurniture: def.hang.bottom_from_floor_cm != null || def.hang.furniture_top_y_px != null, place })
       : { compare: null, compare2: null, about: null, note: null, primary_ref: null };
 
     results.push({
@@ -511,6 +671,16 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       image_px: [W, H], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]),
       ...(sc ? { px_per_cm: +pxPerCm.toFixed(3), confidence: sc.confidence || null } : {}),
       occlusion: frontPx > 0,
+      // 拡大表示で動かせる範囲（画像の px）：壁の範囲。家具の上端（furniture_top_y_px）より下には下げない（11-07 作家「椅子の手前に絵が来るとおかしい」）。置く場面は受けの幅
+      move_px: (() => {
+        const wb = bbox(wall.corners_px);
+        let [x0, y0, x1, y1] = [wb.x0, wb.y0, wb.x1, wb.y1];
+        if (def.hang.furniture_top_y_px != null) y1 = Math.min(y1, def.hang.furniture_top_y_px * scale);
+        if (place && def.hang.ledge_x_px) [x0, x1] = def.hang.ledge_x_px.map((v) => v * scale);
+        return [x0, y0, x1, y1].map((v) => Math.round(Math.min(Math.max(v, 0), v === x0 || v === x1 ? W : H)));
+      })(),
+      // 置く場面（拡大表示では横にだけ動かす。帯の色は絵の層の下に敷く）
+      ...(place ? (() => { const s = placeSidesPx(place, pxPerCm); return { place, side_color: sideColorHex(paintingRaw), sides_px: { bottom: +s.bottom.toFixed(1), right: +s.right.toFixed(1), shadow: +s.shadow.toFixed(1) } }; })() : {}),
       ...texts,
     });
   }

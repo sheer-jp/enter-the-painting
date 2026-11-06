@@ -188,24 +188,30 @@
       "quad_px": [
         [
           635,
-          195
+          467
         ],
         [
           815,
-          195
+          467
         ],
         [
           815,
-          349
+          622
         ],
         [
           635,
-          349
+          622
         ]
       ],
       "px_per_cm": 3.4,
       "confidence": "high",
       "occlusion": false,
+      "move_px": [
+        335,
+        0,
+        1115,
+        690
+      ],
       "compare": {
         "ja": "このドアの約 4 分の 1 の高さ。",
         "en": "About a quarter the height of the door.",
@@ -231,16 +237,8 @@
         "pt": "Cerca de 0,2 vezes a altura do teto desta entrada (cerca de 230 cm)."
       },
       "about": {
-        "ja": "壁の幅は約 2.3 m。目の高さ（床から約 145 cm）に掛けています。",
-        "en": "The wall is about 2.3 m wide. The painting hangs at eye level (about 145 cm from the floor).",
-        "zh-Hans": "墙宽约 2.3 m。挂在视线高度（离地约 145 cm）。",
-        "zh-Hant": "牆寬約 2.3 m。掛在視線高度（離地約 145 cm）。",
-        "ko": "벽의 폭은 약 2.3 m. 눈높이(바닥에서 약 145 cm)에 걸었습니다.",
-        "fr": "Le mur fait environ 2,3 m de large. Le tableau est accroché à hauteur des yeux (à environ 145 cm du sol).",
-        "de": "Die Wand ist etwa 2,3 m breit. Das Bild hängt auf Augenhöhe (etwa 145 cm über dem Boden).",
-        "es": "La pared mide unos 2,3 m de ancho. El cuadro está colgado a la altura de los ojos (a unos 145 cm del suelo).",
-        "it": "La parete è larga circa 2,3 m. Il quadro è appeso all'altezza degli occhi (a circa 145 cm dal pavimento).",
-        "pt": "A parede tem cerca de 2,3 m de largura. O quadro está pendurado à altura dos olhos (a cerca de 145 cm do chão)."
+        "ja": "壁の幅は約 2.3 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 65 cm）。",
+        "en": "The wall is about 2.3 m wide. The painting hangs about 20 cm above the furniture (center about 65 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
@@ -281,24 +279,30 @@
       "quad_px": [
         [
           704,
-          262
+          393
         ],
         [
           896,
-          262
+          393
         ],
         [
           896,
-          427
+          558
         ],
         [
           704,
-          427
+          558
         ]
       ],
       "px_per_cm": 3.625,
       "confidence": "high",
       "occlusion": false,
+      "move_px": [
+        215,
+        0,
+        1385,
+        630
+      ],
       "compare": {
         "ja": "このドアの約 4 分の 1 の高さ。",
         "en": "About a quarter the height of the door.",
@@ -324,16 +328,8 @@
         "pt": "Cerca de 0,2 vezes a altura do teto deste espaço (cerca de 240 cm)."
       },
       "about": {
-        "ja": "壁の幅は約 3.2 m。座ったときの目の高さ（床から約 140 cm）に掛けています。",
-        "en": "The wall is about 3.2 m wide. The painting hangs at seated eye level (about 140 cm from the floor).",
-        "zh-Hans": "墙宽约 3.2 m。挂在坐着时的视线高度（离地约 140 cm）。",
-        "zh-Hant": "牆寬約 3.2 m。掛在坐著時的視線高度（離地約 140 cm）。",
-        "ko": "벽의 폭은 약 3.2 m. 앉았을 때의 눈높이(바닥에서 약 140 cm)에 걸었습니다.",
-        "fr": "Le mur fait environ 3,2 m de large. Le tableau est accroché à hauteur des yeux en position assise (à environ 140 cm du sol).",
-        "de": "Die Wand ist etwa 3,2 m breit. Das Bild hängt auf Augenhöhe im Sitzen (etwa 140 cm über dem Boden).",
-        "es": "La pared mide unos 3,2 m de ancho. El cuadro está colgado a la altura de los ojos estando sentado (a unos 140 cm del suelo).",
-        "it": "La parete è larga circa 3,2 m. Il quadro è appeso all'altezza degli occhi da seduti (a circa 140 cm dal pavimento).",
-        "pt": "A parede tem cerca de 3,2 m de largura. O quadro está pendurado à altura dos olhos de quem está sentado (a cerca de 140 cm do chão)."
+        "ja": "壁の幅は約 3.2 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 100 cm）。",
+        "en": "The wall is about 3.2 m wide. The painting hangs about 20 cm above the furniture (center about 100 cm from the floor)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
@@ -348,160 +344,9 @@
         "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "door_interior"
-    },
-    {
-      "name": "studio-desk",
-      "image": "room_studio-desk.jpg",
-      "base": "rooms/studio-desk.jpg",
-      "category": "studio",
-      "label": {
-        "ja": "机の上",
-        "en": "Above the desk",
-        "zh-Hans": "书桌上方",
-        "zh-Hant": "書桌上方",
-        "ko": "책상 위",
-        "fr": "Au-dessus du bureau",
-        "de": "Über dem Schreibtisch",
-        "es": "Sobre el escritorio",
-        "it": "Sopra la scrivania",
-        "pt": "Por cima da secretária"
-      },
-      "wall_width_cm": 167,
-      "image_px": [
-        1586,
-        992
-      ],
-      "quad_px": [
-        [
-          614,
-          279
-        ],
-        [
-          946,
-          279
-        ],
-        [
-          946,
-          564
-        ],
-        [
-          614,
-          564
-        ]
-      ],
-      "px_per_cm": 6.273,
-      "confidence": "mid",
-      "occlusion": false,
-      "compare": {
-        "ja": "この机の約 3 分の 2 の高さ。",
-        "en": "About two thirds the height of the desk.",
-        "zh-Hans": "约为这张书桌高度的三分之二。",
-        "zh-Hant": "約為這張書桌高度的三分之二。",
-        "ko": "이 책상 높이의 약 3분의 2.",
-        "fr": "Environ deux tiers de la hauteur de ce bureau.",
-        "de": "Etwa zwei Drittel so hoch wie dieser Schreibtisch.",
-        "es": "Aproximadamente dos tercios de la altura de este escritorio.",
-        "it": "Circa due terzi dell'altezza di questa scrivania.",
-        "pt": "Cerca de dois terços da altura desta secretária."
-      },
-      "compare2": {
-        "ja": "このデスクランプ（約 40 cm）の約 1.1 倍の高さ。",
-        "en": "About 1.1 times the height of the desk lamp (about 40 cm).",
-        "zh-Hans": "约为这盏台灯（约 40 cm）高度的 1.1 倍。",
-        "zh-Hant": "約為這盞檯燈（約 40 cm）高度的 1.1 倍。",
-        "ko": "이 스탠드(약 40 cm) 높이의 약 1.1배.",
-        "fr": "Environ 1,1 fois la hauteur de cette lampe de bureau (environ 40 cm).",
-        "de": "Etwa 1,1-mal so hoch wie diese Schreibtischlampe (ca. 40 cm).",
-        "es": "Aproximadamente 1,1 veces la altura de esta lámpara de escritorio (unos 40 cm).",
-        "it": "Circa 1,1 volte l'altezza di questa lampada da scrivania (circa 40 cm).",
-        "pt": "Cerca de 1,1 vezes a altura deste candeeiro de secretária (cerca de 40 cm)."
-      },
-      "about": {
-        "ja": "壁の幅は約 1.7 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 115 cm）。",
-        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 115 cm from the floor).",
-        "zh-Hans": "墙宽约 1.7 m。挂在离家具上沿约 20 cm 的位置（画的中心离地约 115 cm）。",
-        "zh-Hant": "牆寬約 1.7 m。掛在離家具上緣約 20 cm 的位置（畫的中心離地約 115 cm）。",
-        "ko": "벽의 폭은 약 1.7 m. 가구 윗면에서 20 cm 정도 띄워 걸었습니다(그림의 중심은 바닥에서 약 115 cm).",
-        "fr": "Le mur fait environ 1,7 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 115 cm du sol).",
-        "de": "Die Wand ist etwa 1,7 m breit. Das Bild hängt etwa 20 cm über dem Möbelstück (Bildmitte etwa 115 cm über dem Boden).",
-        "es": "La pared mide unos 1,7 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 115 cm del suelo).",
-        "it": "La parete è larga circa 1,7 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 115 cm dal pavimento).",
-        "pt": "A parede tem cerca de 1,7 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 115 cm do chão)."
-      },
-      "note": {
-        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
-        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
-        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
-        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
-        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
-        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
-        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
-        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
-        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
-      },
-      "primary_ref": "desk"
-    },
-    {
-      "name": "studio-entrance",
-      "image": "room_studio-entrance.jpg",
-      "base": "rooms/studio-entrance.jpg",
-      "category": "studio",
-      "label": {
-        "ja": "小さな玄関",
-        "en": "Entrance"
-      },
-      "wall_width_cm": 228,
-      "image_px": [
-        1586,
-        992
-      ],
-      "quad_px": [
-        [
-          678,
-          148
-        ],
-        [
-          922,
-          148
-        ],
-        [
-          922,
-          358
-        ],
-        [
-          678,
-          358
-        ]
-      ],
-      "px_per_cm": 4.6,
-      "confidence": "low",
-      "occlusion": false,
-      "compare": {
-        "ja": "この玄関のドアの約 4 分の 1 の高さ（寸法は目安）。",
-        "en": "About a quarter the height of the front door (size is approximate)."
-      },
-      "compare2": null,
-      "about": {
-        "ja": "壁の幅は約 2.3 m。目の高さ（床から約 145 cm）に掛けています。",
-        "en": "The wall is about 2.3 m wide. The painting hangs at eye level (about 145 cm from the floor).",
-        "zh-Hans": "墙宽约 2.3 m。挂在视线高度（离地约 145 cm）。",
-        "zh-Hant": "牆寬約 2.3 m。掛在視線高度（離地約 145 cm）。",
-        "ko": "벽의 폭은 약 2.3 m. 눈높이(바닥에서 약 145 cm)에 걸었습니다.",
-        "fr": "Le mur fait environ 2,3 m de large. Le tableau est accroché à hauteur des yeux (à environ 145 cm du sol).",
-        "de": "Die Wand ist etwa 2,3 m breit. Das Bild hängt auf Augenhöhe (etwa 145 cm über dem Boden).",
-        "es": "La pared mide unos 2,3 m de ancho. El cuadro está colgado a la altura de los ojos (a unos 145 cm del suelo).",
-        "it": "La parete è larga circa 2,3 m. Il quadro è appeso all'altezza degli occhi (a circa 145 cm dal pavimento).",
-        "pt": "A parede tem cerca de 2,3 m de largura. O quadro está pendurado à altura dos olhos (a cerca de 145 cm do chão)."
-      },
-      "note": {
-        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide."
-      },
-      "primary_ref": "door_entrance"
     }
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T15:59:18.817Z"
+  "generated_at": "2026-11-06T16:35:20.240Z"
 }

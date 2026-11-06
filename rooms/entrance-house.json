@@ -42,7 +42,9 @@
   "hang": {
     "x_px": 725,
     "floor_y_px": 765,
-    "center_from_floor_cm": 145
+    "center_from_floor_cm": 145,
+    "furniture_top_y_px": 690,
+    "note": "11-07：家具（ソファ／ベンチ）の上端を記録。絵はその 20cm 上に掛け、拡大表示のドラッグもそこより下には行かない"
   },
   "suits_cm": [
     20,

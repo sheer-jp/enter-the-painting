@@ -28,6 +28,11 @@ export interface Room {
   compare2?: Multi | null;   // 2 つ目の比較（基準物の実寸つき）
   about?: Multi | null;      // 部屋の説明（壁の幅、掛ける高さ）
   note?: Multi | null;       // 注記（AI のイメージ、目安）
+  // 置く場面（docs/PLACEMENT.md 6 節）。easel：卓上イーゼル、lean：棚に立てかけ。拡大表示では絵を横にだけ動かす
+  place?: 'easel' | 'lean';
+  move_px?: [number, number, number, number];   // 拡大表示で動かせる範囲（壁。家具の手前には出さない）
+  side_color?: string;       // キャンバスの側面の色（絵の下端を 35% 暗く）
+  sides_px?: { bottom: number; right: number; shadow: number };   // 側面の帯（下・右）と接地の影の大きさ（画像の px）
 }
 
 // 質感のパラメータ（space.json の fluid.look。docs/FLUID_LOOK.md 2 節）

@@ -1,0 +1,59 @@
+{
+  "name": "sideboard-easel",
+  "image_width_px": 1600,
+  "image_height_px": 1600,
+  "label": {
+    "ja": "サイドボードのイーゼル",
+    "en": "On the sideboard easel"
+  },
+  "category": "house",
+  "scene": "リビングのオークのサイドボード。中央に卓上イーゼル（28 cm）、左に花瓶、右に本。明るい昼の光。AI 生成のイメージ（Codex）。",
+  "references": [
+    {
+      "ref": "tabletop_easel.height",
+      "px": 291,
+      "primary": true,
+      "note": "頂点 y808 〜 脚の先 y1180（2048px）= 372px → ×0.78125"
+    },
+    {
+      "ref": "sideboard.width",
+      "px": 1502,
+      "note": "本体の幅 x64〜1986（2048px、y1220）。手前の辺なので少し大きめに出る"
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1600,
+        0
+      ],
+      [
+        1600,
+        937
+      ],
+      [
+        0,
+        937
+      ]
+    ]
+  },
+  "hang": {
+    "place": "easel",
+    "ledge_y_px": 827,
+    "ledge_x_px": [
+      677,
+      925
+    ],
+    "x_px": 801,
+    "floor_y_px": 1460,
+    "note": "受け桟の上端 y1059、桟 x867〜1184（2048px 基準）"
+  },
+  "suits_cm": [
+    15,
+    45
+  ]
+}
