@@ -270,6 +270,13 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     }
     thread.querySelectorAll<HTMLButtonElement>('button[data-opener-index]:not(.cg-write)').forEach((b) => {
       const i = +b.dataset.openerIndex!;
+      if (pool && openerPick.length === 3) {
+        // プールの文で HTML の元（ja + 隠した en）を作り直す（swapText は ja / en のとき data-orig に戻すため）
+        const ja = pool.ja?.[openerPick[i]] ?? '', enText = pool.en?.[openerPick[i]] ?? '';
+        const s1 = h('span', '', ja); s1.setAttribute('lang', 'ja'); s1.dataset.lang = 'ja';
+        const s2 = h('span', '', enText); s2.setAttribute('lang', 'en'); s2.dataset.lang = 'en'; s2.hidden = true;
+        b.dataset.orig = s1.outerHTML + (enText ? s2.outerHTML : '');
+      }
       swapText(b, list?.[i], en?.[i]);
     });
     const [greet, greetEn] = lists('greeting');
