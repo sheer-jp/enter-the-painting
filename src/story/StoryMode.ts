@@ -7,10 +7,12 @@ import type { Hud } from '../experience/hud';
 import type { Space } from '../experience/types';
 import { ScreenText } from '../text/FloatingText';
 import { pick, type Lang } from '../i18n';
+import { Particles } from '../space/Particles';
 
 export interface StoryCtx {
   renderer: THREE.WebGLRenderer | null; fluid: Fluid | null; space: Space; sound: Soundscape; hud: Hud; lang: Lang;
   reduced: boolean; fromQr: boolean; base: string; debug: boolean; canvas: HTMLCanvasElement;
+  relief?: THREE.Texture | null;   // 絵の具の厚みの初期値（look.dots の作品のドットの粒に使う）
 }
 
 // 表示：質感（SHADING）+ 視界の回転（入りの渦）+ 周辺減光
@@ -55,6 +57,7 @@ export class StoryMode {
   private roomMesh: THREE.Mesh | null = null;
   private roomMat: THREE.MeshBasicMaterial | null = null;
   private roomTex: THREE.Texture | null = null;
+  private dots: Particles | null = null;   // look.dots の作品のドットの粒（F-6）
   private posNow = { x: 0, y: 0 };
   private img: HTMLImageElement | null = null;     // 静止画モード
   private text: ScreenText;
@@ -113,6 +116,11 @@ export class StoryMode {
       });
       this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.mat);
       this.scene.add(this.mesh);
+      // look.dots の作品だけ、厚みの山に粒を置いて流れに乗せる（VR の粒の層の平面版。1 ドローコール）
+      if (this.look.dots > 0 && this.ctx.relief) {
+        this.dots = Particles.flat(this.ctx.relief, space.palette, this.look.dots, hashSeed(space.id));
+        if (this.dots) this.scene.add(this.dots.mesh);
+      }
       renderer.setClearColor(0x000000, 1);
     } else {
       canvas.remove();
@@ -228,12 +236,18 @@ export class StoryMode {
       (U.uRotCenter.value as THREE.Vector2).set((-this.posNow.x / this.scaleNow.x + 1) / 2, (-this.posNow.y / this.scaleNow.y + 1) / 2);
       U.uMeshAspect.value = (this.scaleNow.x * innerWidth) / Math.max(1, this.scaleNow.y * innerHeight);
       U.uVignette.value = this.vignette;
+      if (this.dots) {
+        // T2〜T4 だけ、流れの強さに合わせて出る（静止した絵と部屋の場面には出さない）
+        const gate = this.stage === 'T2' || this.stage === 'T3' || this.stage === 'T4' ? clamp01(this.strength) : 0;
+        const k = this.ctx.space.fluid.speed * Math.min(1, this.strength) * 0.22;   // Fluid の色の移流と同じ換算
+        this.dots.updateFlat(0.9 * this.fade * gate, this.posNow, this.scaleNow, innerWidth / Math.max(1, innerHeight), fluid, [k / this.ctx.space.aspect, k]);
+      }
       renderer.getDrawingBufferSize(this.bufSize); (U.uResolution.value as THREE.Vector2).copy(this.bufSize);
       renderer.setRenderTarget(null);
       renderer.render(this.scene, this.camera);
       if (this.ctx.debug) {
         const fps = this.fpsSamples.reduce((a, b) => a + b, 0) / this.fpsSamples.length;
-        this.ctx.hud.debug.textContent = `${this.stage}  ${fps.toFixed(0)} fps  q=${fluid.getQuality()}  ${fluid.size.join('x')}  strength=${this.strength.toFixed(2)}`;
+        this.ctx.hud.debug.textContent = `${this.stage}  ${fps.toFixed(0)} fps  q=${fluid.getQuality()}  ${fluid.size.join('x')}  strength=${this.strength.toFixed(2)}${fluid.arcSeconds >= 0 ? `  arc=${fluid.arcSeconds.toFixed(0)}s` : ''}`;
       }
     }
   };
@@ -300,7 +314,7 @@ export class StoryMode {
     } finally {
       this.running = false;
       window.removeEventListener('resize', this.onResize); window.removeEventListener('keydown', this.onKey);
-      this.text.dispose(); this.img?.remove(); this.roomTex?.dispose(); this.roomMat?.dispose();
+      this.text.dispose(); this.img?.remove(); this.roomTex?.dispose(); this.roomMat?.dispose(); this.dots?.dispose();
     }
     return result;
   }
@@ -452,6 +466,9 @@ export class StoryMode {
     }
   }
 }
+
+// 作品 id → 粒の大きさの乱数の種
+function hashSeed(id: string): number { let h = 2166136261; for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619); return h >>> 0; }
 
 // p が ms 以内に解決すれば true
 function raced(p: Promise<unknown>, ms: number): Promise<boolean> {

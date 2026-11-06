@@ -1,6 +1,6 @@
 // 触れる強さと長さ、速さの呼吸（docs/EXPERIENCE.md 8.1・8.2）の数値
 import { describe, it, expect } from 'vitest';
-import { touchStroke, touchVortex, tapStrength, breathing, driveDirVector, DRIVE_DIR_WEIGHT } from '../src/fluid/Fluid';
+import { touchStroke, touchVortex, tapStrength, breathing, driveDirVector, DRIVE_DIR_WEIGHT, arcFactor } from '../src/fluid/Fluid';
 import { shadingUniforms, lookOf, DEFAULT_LOOK, SHADING } from '../src/fluid/shading';
 
 describe('touchStroke', () => {
@@ -92,5 +92,50 @@ describe('shadingUniforms（docs/FLUID_PER_WORK.md F-1）', () => {
     expect(u.uLightMode.value).toBe(0); expect(u.uReliefScale.value).toBe(1);
     expect(u.uLightWorld.value.toArray()).toEqual([0, 0, 0]);
     for (const n of ['uSwell', 'uDots', 'uBleed', 'uLightWorld', 'uLightMode', 'uReliefScale']) expect(SHADING).toContain(`uniform ${n === 'uLightWorld' ? 'vec3' : 'float'} ${n};`);
+  });
+});
+
+describe('arcFactor（時間の弧、docs/FLUID_PER_WORK.md 5 節）', () => {
+  const arc = { peak_s: 60, calm_s: 150 };
+  it('arc が無ければ常に 1', () => {
+    expect(arcFactor(500, null)).toEqual({ speed: 1, drive: 1, restore: 1 });
+    expect(arcFactor(500)).toEqual({ speed: 1, drive: 1, restore: 1 });
+  });
+  it('0 秒と peak までは全部 1', () => {
+    expect(arcFactor(0, arc)).toEqual({ speed: 1, drive: 1, restore: 1 });
+    expect(arcFactor(60, arc)).toEqual({ speed: 1, drive: 1, restore: 1 });
+  });
+  it('中間（105 秒）は smoothstep で半分', () => {
+    const f = arcFactor(105, arc);
+    expect(f.speed).toBeCloseTo(0.65); expect(f.drive).toBeCloseTo(0.65); expect(f.restore).toBeCloseTo(2.5);
+  });
+  it('ease-in-out：peak の直後はゆっくり（4 分の 1 の時点で 4 分の 1 未満）', () => {
+    expect(1 - arcFactor(82.5, arc).speed).toBeLessThan((1 - 0.3) / 4);
+  });
+  it('calm 以降は固定（速さ 0.3、駆動 0.3、戻る力 4）', () => {
+    for (const t of [150, 180, 1000]) {
+      const f = arcFactor(t, arc);
+      expect(f.speed).toBeCloseTo(0.3); expect(f.drive).toBeCloseTo(0.3); expect(f.restore).toBeCloseTo(4);
+    }
+  });
+  it('calm_s <= peak_s は peak を過ぎたら一気に落ち着いた値', () => {
+    expect(arcFactor(61, { peak_s: 60, calm_s: 60 }).speed).toBeCloseTo(0.3);
+  });
+});
+
+describe('物語モードのドットの粒（F-6）の配置', async () => {
+  const { flatDotCount, brightestIndex, peakUvs } = await import('../src/space/depth');
+  it('数：dots 0 → 0、0.8 → 36、1 以上 → 40', () => {
+    expect(flatDotCount(0)).toBe(0); expect(flatDotCount(0.8)).toBe(36); expect(flatDotCount(3)).toBe(40);
+  });
+  it('最も明るい主要色', () => { expect(brightestIndex(['#b59440', '#d7d0b6', '#a57e0c'])).toBe(1); });
+  it('厚みの山：高い順、離れたものだけ、v は上下反転', () => {
+    const w = 20, h = 10, px = new Uint8Array(w * h * 4);
+    const put = (x: number, y: number, v: number) => { px[(y * w + x) * 4] = v; };
+    put(5, 2, 200); put(6, 2, 150); put(15, 7, 250);
+    const uv = peakUvs(px, w, h, 5);
+    expect(uv.length).toBe(2);
+    expect(uv[0][0]).toBeCloseTo(15.5 / 20); expect(uv[0][1]).toBeCloseTo(1 - 7.5 / 10);
+    expect(uv[1][0]).toBeCloseTo(5.5 / 20);
   });
 });

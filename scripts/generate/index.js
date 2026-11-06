@@ -39,6 +39,9 @@ export function fluidSpec(ov = {}, motion = { vorticity: 0.5, speed: 0.4 }) {
   };
   const dir = normalizeDriveDir(ov.drive_dir);
   if (dir) fluid.drive_dir = dir;
+  // 時間の弧（docs/FLUID_PER_WORK.md 5 節）。無ければ出さない（従来どおり一定）
+  const arc = ov.arc;
+  if (arc && Number.isFinite(Number(arc.peak_s)) && Number.isFinite(Number(arc.calm_s))) fluid.arc = { peak_s: Number(arc.peak_s), calm_s: Number(arc.calm_s) };
   return fluid;
 }
 

@@ -1,8 +1,9 @@
 // 手前の粒の層（docs/VR_DEPTH.md 1 節、V-1）：絵の具の粒・筆の欠片が頭のそばを通って遠ざかる。
 // InstancedMesh 1 つ = 1 ドローコール。位置は頂点シェーダで時間から決め（状態を持たない）、流体の速度で横にずらす
+// 物語モード（2D）のドットの粒（F-6）も同じシェーダの平面の分岐（uFlat）で描く：aCenter.xy が絵の UV、そこから流れの速度 × 遅れでずらす
 import * as THREE from 'three';
 import type { Fluid } from '../fluid/Fluid';
-import { PARTICLE_MAX, placeParticles, particleCount, type DepthQuality, type ParticleSeed } from './depth';
+import { PARTICLE_MAX, placeParticles, particleCount, flatDotCount, brightestIndex, peakUvs, rng, type DepthQuality, type ParticleSeed } from './depth';
 
 const VERT = /* glsl */ `
 attribute vec3 aCenter;      // 最接近点（頭からの位置）
@@ -19,6 +20,11 @@ uniform sampler2D uVel;      // 流体の速度（等距離円筒、単位はシ
 uniform vec2 uVelTexel;
 uniform float uVelOn;
 uniform vec3 uLightWorld;
+uniform float uFlat;         // 1：物語モードの平面（画面の NDC に直接置く）
+uniform vec4 uPlane;         // 絵のメッシュの位置 xy・大きさ zw（NDC）
+uniform float uScreenAspect; // 画面の幅 / 高さ
+uniform vec2 uVelToUv;       // 平面：速度 → UV/秒
+uniform float uLag;          // 平面：流れに何秒ぶん乗ったか
 varying vec2 vUv;
 varying vec2 vQ;
 varying float vAlpha;
@@ -27,6 +33,20 @@ varying vec3 vLight;         // 光の向き（ビュー空間）
 const float PI = 3.141592653589793;
 const float LAG = 1.6;       // 流れに何秒ぶん乗ったか（横ずれの大きさ）
 void main() {
+  if (uFlat > 0.5) {
+    // 物語モード：山の位置（UV）から、その点の流れの速度 × 遅れでずらす。端を出たら反対側へ
+    vec2 q = aCenter.xy;
+    vec2 v = texture2D(uVel, q).xy * uVelOn;
+    q = fract(q + clamp(v * uVelToUv * uLag, -0.25, 0.25));
+    vec2 ndc = uPlane.xy + (q * 2.0 - 1.0) * uPlane.zw;
+    vQ = position.xy * 2.0;
+    vUv = uv * 0.5 + vec2(0.0, 0.5);     // アトラスの柔らかい丸（Canvas の左上のマス。テクスチャは上下反転なので v は上半分）
+    vAlpha = uAlpha;
+    vColor = aColor;
+    vLight = vec3(0.0, 0.0, 1.0);
+    gl_Position = vec4(ndc + position.xy * aMotion.w * 2.0 * vec2(1.0 / uScreenAspect, 1.0), 0.0, 1.0);
+    return;
+  }
   float s = fract(uTime / aMotion.y + aMotion.z);
   vec3 p = aCenter + aAxis * aMotion.x * (2.0 * s - 1.0);
   // 流体の速度に沿ってずらす（自分の方位角・仰角 → UV で 1 回参照）
@@ -122,10 +142,15 @@ export class Particles {
   // 検査モードのため、配置（頭からの位置の計算に使う）を残す
   readonly seeds: ParticleSeed[];
 
-  constructor(palette: string[], lightWorld: THREE.Vector3, radius: number, seed = 1) {
-    const seeds = this.seeds = placeParticles(PARTICLE_MAX, palette.length, seed);
+  // flat：物語モードのドット（山の UV、色、直径＝画面の高さに対する割合）。あれば VR の配置の代わりに使う
+  constructor(palette: string[], lightWorld: THREE.Vector3, radius: number, seed = 1, flat?: { uvs: [number, number][]; color: string; sizes: number[] }) {
+    const seeds = this.seeds = flat
+      ? flat.uvs.map((uv, i) => ({ center: [uv[0], uv[1], 0] as [number, number, number], axis: [0, 0, 0] as [number, number, number], half: 0, size: flat.sizes[i], period: 1, phase: 0, shape: 0, color: 0, spin: 0 }))
+      : placeParticles(PARTICLE_MAX, palette.length, seed);
+    if (flat) palette = [flat.color];
+    const max = seeds.length;
     const geo = new THREE.PlaneGeometry(1, 1);
-    const center = new Float32Array(PARTICLE_MAX * 3), axis = new Float32Array(PARTICLE_MAX * 3), motion = new Float32Array(PARTICLE_MAX * 4), look = new Float32Array(PARTICLE_MAX * 4), color = new Float32Array(PARTICLE_MAX * 3);
+    const center = new Float32Array(max * 3), axis = new Float32Array(max * 3), motion = new Float32Array(max * 4), look = new Float32Array(max * 4), color = new Float32Array(max * 3);
     const cols = (palette.length ? palette : ['#888888']).map((h) => new THREE.Color(h));
     seeds.forEach((p, i) => {
       center.set(p.center, i * 3); axis.set(p.axis, i * 3);
@@ -143,10 +168,12 @@ export class Particles {
       uniforms: {
         uTime: { value: 0 }, uHead: { value: new THREE.Vector3() }, uRadius: { value: radius }, uToLayer: { value: 0 }, uAlpha: { value: 0 },
         uVel: { value: null }, uVelTexel: { value: new THREE.Vector2(1 / 512, 1 / 256) }, uVelOn: { value: 0 },
-        uLightWorld: { value: lightWorld }, uAtlas: { value: this.atlas }, uBright: { value: 0.85 },
+        uLightWorld: { value: lightWorld }, uAtlas: { value: this.atlas }, uBright: { value: flat ? 1 : 0.85 },
+        uFlat: { value: flat ? 1 : 0 }, uPlane: { value: new THREE.Vector4(0, 0, 1, 1) }, uScreenAspect: { value: 1 }, uVelToUv: { value: new THREE.Vector2() }, uLag: { value: 2.5 },
       },
     });
-    this.mesh = new THREE.InstancedMesh(geo, this.mat, PARTICLE_MAX);
+    if (flat) { this.mat.depthTest = false; this.mat.side = THREE.FrontSide; }
+    this.mesh = new THREE.InstancedMesh(geo, this.mat, max);
     this.mesh.frustumCulled = false;   // 位置は頂点シェーダで動く
     this.mesh.renderOrder = 10;        // 奥の光 < 床 < 絵の層 < 粒
     this.mesh.count = 0;
@@ -164,6 +191,38 @@ export class Particles {
     u.uVel.value = vt; u.uVelOn.value = vt ? 1 : 0;
     const img = vt?.image as { width?: number; height?: number } | undefined;
     if (img?.width && img?.height) (u.uVelTexel.value as THREE.Vector2).set(1 / img.width, 1 / img.height);
+  }
+
+  // 物語モードのドットの層（F-6）。look.dots > 0 で厚みがある作品だけ。無ければ null
+  static flat(relief: THREE.Texture, palette: string[], dots: number, seed = 1): Particles | null {
+    const n = flatDotCount(dots);
+    const img = relief.image as CanvasImageSource & { width?: number; height?: number } | undefined;
+    if (!n || !img?.width || !img?.height) return null;
+    // 厚みを小さく読んで山を探す（長辺 256）
+    const k = Math.min(1, 256 / Math.max(img.width, img.height));
+    const w = Math.max(8, Math.round(img.width * k)), h = Math.max(8, Math.round(img.height * k));
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const g = cv.getContext('2d', { willReadFrequently: true }); if (!g) return null;
+    g.drawImage(img, 0, 0, w, h);
+    const uvs = peakUvs(g.getImageData(0, 0, w, h).data, w, h, n);
+    if (!uvs.length) return null;
+    const r = rng(seed);
+    const sizes = uvs.map(() => 0.012 + 0.012 * r());     // 直径は画面の高さの 1.2〜2.4%
+    const p = new Particles(palette, new THREE.Vector3(), 1, seed, { uvs, color: palette[brightestIndex(palette)] || '#ffffff', sizes });
+    p.mesh.count = uvs.length;
+    return p;
+  }
+
+  // 毎フレーム（物語モード）：絵のメッシュの位置と大きさ（NDC）、流体の速度、不透明度。velToUv は速度 → UV/秒
+  updateFlat(alpha: number, pos: { x: number; y: number }, scale: { x: number; y: number }, screenAspect: number, fluid: Fluid, velToUv: [number, number]) {
+    const u = this.mat.uniforms;
+    this.mesh.visible = alpha > 0.001;
+    u.uAlpha.value = alpha;
+    (u.uPlane.value as THREE.Vector4).set(pos.x, pos.y, scale.x, scale.y);
+    u.uScreenAspect.value = screenAspect;
+    const vt = velocityTexture(fluid);
+    u.uVel.value = vt; u.uVelOn.value = vt ? 1 : 0;
+    (u.uVelToUv.value as THREE.Vector2).set(velToUv[0], velToUv[1]);
   }
 
   dispose() { this.mesh.geometry.dispose(); this.mat.dispose(); this.atlas.dispose(); }

@@ -42,10 +42,10 @@
   },
   "fluid": {
     "vorticity": 0.85,
-    "speed": 0.65,
+    "speed": 0.8,
     "quality": "high",
     "restore": 0.02,
-    "drive": 0.4,
+    "drive": 0.5,
     "tempo": 0.7,
     "look": {
       "relief": 0.9,
@@ -61,7 +61,11 @@
     "drive_dir": [
       0,
       1
-    ]
+    ],
+    "arc": {
+      "peak_s": 50,
+      "calm_s": 140
+    }
   },
   "space": {
     "radius_m": 2.3,
@@ -315,5 +319,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T12:22:27.464Z"
+  "generated_at": "2026-11-06T12:40:34.970Z"
 }

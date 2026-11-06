@@ -200,6 +200,11 @@ describe('絵ごとの流体の性格（docs/FLUID_PER_WORK.md）', async () => 
     const f = fluidSpec({}, { vorticity: 0.3, speed: 0.4 });
     expect(f.look.swell).toBe(0); expect(f.look.dots).toBe(0); expect(f.look.bleed).toBe(0);
     expect('drive_dir' in f).toBe(false);
+    expect('arc' in f).toBe(false);
+  });
+  it('arc（時間の弧）を space.json の fluid に通す。不正なら出さない', () => {
+    expect(fluidSpec({ arc: { peak_s: 60, calm_s: 150 } }).arc).toEqual({ peak_s: 60, calm_s: 150 });
+    expect('arc' in fluidSpec({ arc: { peak_s: 'x', calm_s: 150 } })).toBe(false);
   });
   it('drive_dir は正規化。長さ 0・不正は null', () => {
     const d = normalizeDriveDir([3, 4])!;

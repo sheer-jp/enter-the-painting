@@ -117,3 +117,46 @@ export function whiteRatio(px: ArrayLike<number>): number {
 }
 
 function clamp01(x: number) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+
+// ── 物語モードのドットの粒（docs/FLUID_PER_WORK.md 5 節、F-6）。VR の粒の層を平面で流用する ──
+// 数：look.dots 0 → 出さない、0〜1 → 20〜40
+export const FLAT_DOT_MAX = 40;
+export function flatDotCount(dots: number): number {
+  if (!(dots > 0)) return 0;
+  return Math.max(20, Math.min(FLAT_DOT_MAX, Math.round(20 + 20 * Math.min(1, dots))));
+}
+
+// 主要色のうち最も明るい色の番号（相対輝度）
+export function brightestIndex(palette: string[]): number {
+  let best = 0, bl = -1;
+  palette.forEach((h, i) => {
+    const n = parseInt(h.replace('#', ''), 16);
+    if (!Number.isFinite(n)) return;
+    const l = 0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
+    if (l > bl) { bl = l; best = i; }
+  });
+  return best;
+}
+
+// 厚み（RGBA の R）の山の位置：3×3 の極大を高い順に、互いに minDist（UV）以上離して n 個。
+// 画像の行 0 は上、流体の UV は下が 0 なので v を反転する
+export function peakUvs(px: ArrayLike<number>, w: number, h: number, n: number, minDist = 0.06): [number, number][] {
+  const R = (x: number, y: number) => px[(y * w + x) * 4];
+  const cand: { x: number; y: number; v: number }[] = [];
+  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+    const v = R(x, y);
+    if (v <= 0) continue;
+    let max = true;
+    for (let dy = -1; dy <= 1 && max; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && R(x + dx, y + dy) > v) { max = false; break; }
+    if (max) cand.push({ x, y, v });
+  }
+  cand.sort((a, b) => b.v - a.v);
+  const out: [number, number][] = [];
+  const d2 = minDist * minDist;
+  for (const c of cand) {
+    if (out.length >= n) break;
+    const u = (c.x + 0.5) / w, v = 1 - (c.y + 0.5) / h;
+    if (out.every((o) => (o[0] - u) ** 2 + (o[1] - v) ** 2 >= d2)) out.push([u, v]);
+  }
+  return out;
+}

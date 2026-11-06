@@ -69,6 +69,7 @@ works/<id>/
     "restore": 0.014,                     // 0.005〜0.03。原画への戻る力。小さいと長く崩れる（docs/FLUID_PER_WORK.md）
     "drive": 0.3,                         // 0.1〜0.6。常時の駆動（止まらずに流れ続ける力）
     "drive_dir": [0, 1],                  // [x, y]。常時の駆動に足す一定の向き（v は下 → 上。正規化し重み 0.3）。省略時は向きなし
+    "arc": { "peak_s": 60, "calm_s": 150 }, // 時間の弧。全力で流れ始めてから peak_s 秒は全力、calm_s までに速さ ×0.45・駆動 ×0.4・戻る力 ×2.5 へ落ち着く（docs/FLUID_PER_WORK.md 5 節）。省略時は一定
     "flow_sigma": 6,                      // 3〜10。流れ場の平滑化（生成時）。小さいと筆致の細部まで流れる
     "look": {                             // 質感（docs/FLUID_LOOK.md 2 節）。省略した鍵は既定
       "relief": 0.5, "gloss": 0.18, "sharpness": 96, "bloom": 0.04, "grain": 0.02, "vivid": 0.45,

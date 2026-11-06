@@ -7,7 +7,9 @@ export type Quality = 'high' | 'medium' | 'low';
 // equirect：2:1 の等距離円筒（VR。横は繰り返し）。painting：絵だけの領域（物語モード。解像度を絵に全部使う）
 export type Domain = 'equirect' | 'painting';
 // drive_dir：常時の駆動に足す一定の向き [x, y]（v は下 → 上。space.json の fluid.drive_dir）。無ければ従来どおり
-export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number; drive?: number; tempo?: number; drive_dir?: [number, number] | null }
+export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number; drive?: number; tempo?: number; drive_dir?: [number, number] | null; arc?: Arc | null }
+// 時間の弧（docs/FLUID_PER_WORK.md 5 節、F-5）：peak_s まで全力、calm_s までに落ち着く（秒は全力で流れ始めてから）
+export interface Arc { peak_s: number; calm_s: number }
 export interface PaintingRect { x: number; y: number; w: number; h: number }
 
 const EQUIRECT: Record<Quality, { dye: [number, number]; sim: [number, number]; iters: number }> = {
@@ -45,6 +47,16 @@ export function driveDirVector(dir?: readonly number[] | null, weight = DRIVE_DI
   const l = Math.hypot(x, y);
   if (!Number.isFinite(l) || l < 1e-6) return [0, 0];
   return [(x / l) * weight, (y / l) * weight];
+}
+
+// 時間の弧の倍率。t <= peak_s は全部 1、peak_s → calm_s で smoothstep、calm_s 以降は固定（速さ ×0.45、駆動 ×0.4、戻る力 ×2.5）
+export const ARC_CALM = { speed: 0.3, drive: 0.3, restore: 4 };   // 11-06 夜：×0.45 / ×0.4 / ×2.5 では 180 秒で頂の構図が戻りきらなかったので強めた
+export function arcFactor(t: number, arc?: Arc | null): { speed: number; drive: number; restore: number } {
+  if (!arc || !(t > arc.peak_s)) return { speed: 1, drive: 1, restore: 1 };
+  const span = arc.calm_s - arc.peak_s;
+  const x = span <= 0 ? 1 : Math.min(1, (t - arc.peak_s) / span);
+  const k = x * x * (3 - 2 * x);
+  return { speed: 1 + (ARC_CALM.speed - 1) * k, drive: 1 + (ARC_CALM.drive - 1) * k, restore: 1 + (ARC_CALM.restore - 1) * k };
 }
 
 // 渦の強さ：strength 1 を 1 秒続けると、最大の所の速さが「領域の高さ × これ / 秒」増える（解像度と作品の speed によらない）
@@ -122,6 +134,7 @@ export class Fluid {
   private iters = 20;
   private strength = 1;
   private time = 0;
+  private arcTime = -1;   // 全力（strength 1）で流れ始めてからの秒。まだなら -1
   private painting!: THREE.Texture; private flow!: THREE.Texture;
   private back = new THREE.Color('#222'); private back2 = new THREE.Color('#333');
   placement: PaintingRect = { x: 0.35, y: 0.125, w: 0.3, h: 0.75 };
@@ -144,6 +157,10 @@ export class Fluid {
   }
 
   get texture(): THREE.Texture { return this.dye.read.texture; }
+  // 速度場（texel/秒）。手前の粒が流れに乗るのに使う
+  get velocity(): THREE.Texture { return this.vel.read.texture; }
+  // 時間の弧の秒（全力になってから。まだなら -1）。検査用
+  get arcSeconds(): number { return this.arcTime; }
   get size(): [number, number] { return this.sizes.dye; }
   // 絵の具の厚み（R、0〜1）。表示のシェーダが法線に使う
   get thickness(): THREE.Texture { return this.thick.read.texture; }
@@ -252,6 +269,7 @@ export class Fluid {
     // 圧力を 0 に
     this.renderer.setRenderTarget(this.pressure.read); this.renderer.clear(); this.renderer.setRenderTarget(null);
     this.time = 0;
+    this.arcTime = -1;
   }
 
   // 0〜1。S1 のかすかな流れ〜本来の強さ
@@ -301,17 +319,21 @@ export class Fluid {
     dt = Math.min(dt, 1 / 30);
     if (dt <= 0) return;
     this.time += dt;
+    // 時間の弧：全力になった時刻を 0 に数える（T4 などで strength が下がっても進み続ける）
+    if (this.arcTime < 0 && this.strength >= 0.999) this.arcTime = 0;
+    else if (this.arcTime >= 0) this.arcTime += dt;
+    const af = arcFactor(Math.max(0, this.arcTime), this.arcTime >= 0 ? this.params.arc : null);
     const sz = this.sizes;
     const simTexel = new THREE.Vector2(1 / sz.sim[0], 1 / sz.sim[1]);
     const dyeTexel = new THREE.Vector2(1 / sz.dye[0], 1 / sz.dye[1]);
     // 速度の単位：領域の高さに対する割合/秒 → texel/秒 は sim の高さ倍
-    const speed = this.params.speed * this.strength;
+    const speed = this.params.speed * this.strength * af.speed;
     const velDt = dt * speed * sz.sim[1] * 0.22;     // 0.22 は手触りの係数（速すぎる、との感想で 0.35 から下げた）
     const dyeDt = dt * speed * sz.dye[1] * 0.22;
     const P = this.passes;
 
     // 常時の駆動（流れ続ける）。強さは strength に比例。texel/秒 の単位に合わせる
-    const drive = this.params.drive ?? 0.3;
+    const drive = (this.params.drive ?? 0.3) * af.drive;
     if (drive > 0 && this.strength > 0.001) {
       P.drive.mat.uniforms.uVelocity.value = this.vel.read.texture;
       P.drive.mat.uniforms.uRate.value = Math.min(1, drive * dt * 1.5);          // 1 秒で目標の約 45%（drive=0.3）
@@ -384,7 +406,7 @@ export class Fluid {
     this.run(P.advect, this.tmp2);
     const M = P.maccormack.mat.uniforms;
     M.uVelocity.value = this.vel.read.texture; M.uPhi0.value = this.dye.read.texture; M.uPhiHat1.value = this.tmp1.texture; M.uPhiHat0.value = this.tmp2.texture;
-    M.uOriginal.value = this.original.texture; M.uTexel.value = dyeTexel; M.uDt.value = dyeDt; M.uRestore.value = this.params.restore * dt * 60;
+    M.uOriginal.value = this.original.texture; M.uTexel.value = dyeTexel; M.uDt.value = dyeDt; M.uRestore.value = this.params.restore * af.restore * dt * 60;
     this.run(P.maccormack, this.dye.write); this.dye.swap();
 
     // 厚みの移流（MacCormack、色と同じ）+ 増減・跡・泡・回帰を 1 パスに
@@ -399,7 +421,7 @@ export class Fluid {
     const T = P.thick.mat.uniforms;
     T.uVelocity.value = this.vel.read.texture; T.uPhi0.value = this.thick.read.texture; T.uPhiHat1.value = this.thickTmp1.texture; T.uPhiHat0.value = this.thickTmp2.texture;
     T.uOriginal.value = this.thickOriginal.texture; T.uDiv.value = this.div.texture; T.uTexel.value = thickTexel; T.uDt.value = thickDt;
-    T.uRestore.value = this.params.restore * dt * 60; T.uDivK.value = 0.5 * dt;
+    T.uRestore.value = this.params.restore * af.restore * dt * 60; T.uDivK.value = 0.5 * dt;
     T.uFizzProgress.value = this.fizzProgress; T.uFizzAmount.value = this.fizzAmount * 0.04 * dt * 60; T.uTime.value = this.time;
     T.uStampCount.value = this.stamps.length;
     this.stamps.forEach((st, i) => { (T.uStamp.value as THREE.Vector4[])[i].set(st.x, st.y, st.r, st.amount); (T.uStampDir.value as THREE.Vector4[])[i].set(st.dx, st.dy, st.kind, st.ring); });

@@ -34,6 +34,7 @@ export async function run(o: RunOptions): Promise<void> {
   stage.appendChild(canvas);
   let renderer: THREE.WebGLRenderer | null = null;
   let fluid: Fluid | null = null;
+  let relief: THREE.Texture | null = null;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', alpha: false });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -45,7 +46,7 @@ export async function run(o: RunOptions): Promise<void> {
       painting.minFilter = THREE.LinearFilter; painting.generateMipmaps = false;
       flow.minFilter = THREE.LinearFilter; flow.generateMipmaps = false;
       // 絵の具の厚みの初期値（無い・読めない作品は平ら）
-      const relief = space.relief ? await loadTexture(base + 'generated/' + space.relief.texture).catch(() => null) : null;
+      relief = space.relief ? await loadTexture(base + 'generated/' + space.relief.texture).catch(() => null) : null;
       if (relief) { relief.minFilter = THREE.LinearFilter; relief.generateMipmaps = false; }
       // ?debug=1&q=medium などで品質を固定できる（スクリーンショットの確認用）
       const forced = o.debug ? new URLSearchParams(location.search).get('q') : null;
@@ -60,7 +61,7 @@ export async function run(o: RunOptions): Promise<void> {
     fluid = null;
   }
 
-  const ctx = { renderer, fluid, space, sound, hud, lang: o.lang, reduced, fromQr: o.fromQr, base, debug: o.debug, canvas };
+  const ctx = { renderer, fluid, relief, space, sound, hud, lang: o.lang, reduced, fromQr: o.fromQr, base, debug: o.debug, canvas };
   const exit = () => {
     hud.dispose(); sound.dispose(); fluid?.dispose(); renderer?.dispose(); canvas.remove();
     stage.hidden = true; document.body.style.overflow = '';
