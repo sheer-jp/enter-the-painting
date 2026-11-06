@@ -12,7 +12,9 @@
 - ローカルの作業環境：`sheer-jp/enter-the-painting` を `/Users/arisa/ai-dev/apps/enter-the-painting` に clone。`npm ci`、型、テスト 67 件、`generate`、`build` を通した。dev は自己署名 HTTPS（記録は `ai-dev/_meta/development/enter-the-painting/local-setup-20261106.md`）
 - `dist/`（6 作品）を作家だけが見られるアーティファクトにした（https://claude.ai/artifact/2ddzBdcfimDY5dMKP9Jwya）。フォルダのリンクを `index.html` 付きに書き換えて載せた。下層ページへの遷移と WebGL はアーティファクト上で未検証
 - 作家の構想（受付の会話が先、白いギャラリー、そこから絵の中へ）を `docs/ENTRANCE.md` に整理。API の選択（Messages API 継続 + ツール `recommend_work`）と置き場（Cloudflare Pages 一本化）の提案を同じ文書に
-- 受付キャラクターの候補画像 4 方向を Codex（CLI）に依頼（`ai-dev/_meta/development/enter-the-painting/concept/concierge-candidates/`）
+- 受付キャラクターの候補画像を Codex（CLI）で 3 回生成（`ai-dev/_meta/development/enter-the-painting/concept/`）。第 1 案 4 方向 → 作家「架空のオーナーではなく、作家のメタファーの小さな人間」→ 第 2 案 3 ポーズ → 作家「カップルウィッシュリストのあーちゃんが元。耳なし・髪長め・黒目・白シャツに絵の具」→ 第 3 案 3 ポーズ（`concierge-v3/`）
+- **配備**：Cloudflare Pages プロジェクト `enter-the-painting` を作成し、`dist/` と Functions を配置（https://enter-the-painting.pages.dev）。作家が `ANTHROPIC_API_KEY` を Pages の Secret に登録。Secret は配置し直して反映。実際の Claude API で会話を通し、2 往復目にツール `recommend_work` で「頂」（あるいは「New Chapter」）が返ることを確認
+- **課金よけ**：Anthropic コンソールの組織の月間支出上限を $1,000 → **$20** に、$10 でメール通知（Fable が Chrome で設定、作家が確認）
 
 **決めた**
 - 未決定 U-12〜U-15 を追加（キャラクター、D5-2 の部屋の背景は取り下げ案、置き場、受付を必ず通すか）
@@ -23,7 +25,7 @@
 - Cloudflare の配備が進まなかった原因は、サイト本体・Worker のルート・キーの置き場が 3 つに割れていたこと（`docs/ENTRANCE.md` 5.2）
 
 **次にやる**
-- 作家：候補画像からキャラクターを選ぶ、名前と口調、5 点の `messages` と `moods`、Cloudflare Pages の接続（U-12〜U-15）
+- 作家：第 3 案のキャラクターの最終確認、名前と口調、5 点の `messages` と `moods`。サブドメインか `/gallery/` かは QR を刷る前に決める（いまは pages.dev）
 - Fable → Opus：E-1 受付画面、E-2 ギャラリー空間、E-3 Pages Functions への移植とツール `recommend_work`、E-4 スモーク（`docs/ENTRANCE.md` 7 節）。作家の決定後に着手
 
 ## 2026-11-06（金沢展の作品素材5点）
