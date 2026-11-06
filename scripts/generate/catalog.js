@@ -208,7 +208,7 @@ export async function buildCatalog(root, { apiKey = process.env.ANTHROPIC_API_KE
     version: 1,
     artist: { intro: intro.ja ? perLangText(full(intro)) : { ja: '' } },
     openers: perLangList((openers.ja || []).map((ja, i) => full({ ja, en: openers.en?.[i] }))),
-    openers_pool: perLangList((pool.ja || []).map((ja, i) => full({ ja, en: pool.en?.[i] }))),
+    openers_pool: { ...perLangList((pool.ja || []).map((ja, i) => full({ ja, en: pool.en?.[i] }))), kinds: (pool.ja || []).map((_, i) => pool.kinds?.[i] || '') },   // kinds：種類（ブラウザが違う種類から 3 つ選ぶ）
     questions,
     greeting: perLangList(greeting.ja.map((ja, i) => full({ ja, en: greeting.en?.[i] }))),
     present_line: line(lines.present_line),

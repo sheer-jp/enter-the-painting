@@ -66,7 +66,7 @@ export interface ConciergeOptions {
 
 // catalog.json の受付の固定文（E-15。scripts/generate/catalog.js）。無い古いカタログでは HTML の ja / en のまま
 type UiCatalog = Catalog & {
-  openers_pool?: Partial<Record<Lang, string[]>>;   // 選択肢のプール（11-07）
+  openers_pool?: Partial<Record<Lang, string[]>> & { kinds?: string[] };   // 選択肢のプール（11-07）。kinds は種類
   greeting?: Partial<Record<Lang, string[]>>;
   present_line?: Partial<Record<Lang, string>>;
   ui_hint?: Partial<Record<Lang, string>>;
@@ -264,7 +264,15 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     let [list, en] = lists('openers');
     const pool = c?.openers_pool;
     if (pool && (pool.ja?.length ?? 0) >= 3) {
-      if (openerPick.length !== 3) { const n = pool.ja!.length; const idx = [...Array(n).keys()].sort(() => Math.random() - 0.5); openerPick = idx.slice(0, 3); }
+      if (openerPick.length !== 3) {
+        // 種類（kinds）がばらけるように：種類をシャッフルして先頭から 1 つずつ（11-07 作家「属性がバラバラなものが出るといい」）
+        const n = pool.ja!.length; const kinds = pool.kinds || [];
+        const idx = [...Array(n).keys()].sort(() => Math.random() - 0.5);
+        const used = new Set<string>(); const pick: number[] = [];
+        for (const i of idx) { const k = kinds[i] || String(i); if (used.has(k)) continue; used.add(k); pick.push(i); if (pick.length === 3) break; }
+        for (const i of idx) { if (pick.length === 3) break; if (!pick.includes(i)) pick.push(i); }
+        openerPick = pick;
+      }
       list = openerPick.map((i) => pool[lang]?.[i] ?? pool.en?.[i] ?? pool.ja?.[i] ?? '');
       en = openerPick.map((i) => pool.en?.[i] ?? pool.ja?.[i] ?? '');
     }
