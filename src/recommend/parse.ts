@@ -1,11 +1,30 @@
-// AI の出力の解釈（docs/RECOMMEND.md 8.5）。文のあとに 1 行だけ {"recommend":"<id>","alt":"<id>"|null}
+// AI の出力の解釈（docs/RECOMMEND.md 8.5）
+// 経路は 2 つ：(1) 中継が流す data: {"recommend": {...}}（ツール recommend_work の呼び出し。正）
+//             (2) 文のあとの 1 行 {"recommend":"<id>","alt":"<id>"|null}（古い応答や、ツールが呼ばれなかったときの保険）
 import type { Catalog } from './rules';
 
-export interface RecJson { recommend: string; alt: string | null }
+export interface RecJson { recommend: string; alt: string | null; reason?: { ja: string; en: string } }
+
+// 経路 (1)：SSE の data の "recommend" の中身を確かめる。形が合わなければ null
+export function parseRecommendEvent(v: unknown): RecJson | null {
+  if (!v || typeof v !== 'object') return null;
+  const o = v as Record<string, unknown>;
+  if (typeof o.recommend !== 'string' || !o.recommend) return null;
+  const out: RecJson = { recommend: o.recommend, alt: typeof o.alt === 'string' && o.alt ? o.alt : null };
+  const r = o.reason as Record<string, unknown> | undefined;
+  if (r && typeof r === 'object' && typeof r.ja === 'string' && typeof r.en === 'string') out.reason = { ja: r.ja, en: r.en };
+  return out;
+}
+
+// 文が空のときに出す理由（閲覧者の言語が ja なら ja、それ以外は en）
+export function reasonText(json: RecJson, lang: string): string {
+  if (!json.reason) return '';
+  return (lang === 'ja' ? json.reason.ja : json.reason.en) || json.reason.en || json.reason.ja || '';
+}
 
 const MARK = '{"recommend"';
 
-// 文と JSON に分ける。ストリーム中でも呼べる：JSON の始まり（途中まで来た "{\"rec" なども）から後ろは文に含めない
+// 経路 (2)：文と JSON に分ける。ストリーム中でも呼べる：JSON の始まり（途中まで来た "{\"rec" なども）から後ろは文に含めない
 export function splitRecommendation(text: string): { prose: string; json: RecJson | null } {
   const m = /\{\s*"recommend"/.exec(text);
   if (!m) return { prose: trimTail(stripPartialMark(text)), json: null };

@@ -1,13 +1,15 @@
 // 気分から絵をすすめる：Claude API に渡す system と本文を組み立てる（docs/RECOMMEND.md 8.5）
-// 純関数だけ。Worker のグローバルに触れない（vitest から import してテストする）
+// 純関数だけ。Pages Functions のグローバルに触れない（vitest から import してテストする）
 
 export const LANG_NAMES = {
   ja: '日本語', en: '英語（English）', 'zh-Hans': '簡体字中国語（简体中文）', 'zh-Hant': '繁体字中国語（繁體中文）', ko: '韓国語（한국어）',
   fr: 'フランス語（Français）', de: 'ドイツ語（Deutsch）', es: 'スペイン語（Español）', it: 'イタリア語（Italiano）', pt: 'ポルトガル語（Português）',
 };
 
-// 思考（effort low でも消せない）が max_tokens に数えられるので、文 2〜3 文 + JSON のために余裕を持たせる（レビューで 600 → 1500）
+// 思考（effort low でも消せない）が max_tokens に数えられるので、文 2〜3 文 + ツール呼び出しのために余裕を持たせる（レビューで 600 → 1500）
 export const MAX_TOKENS = 1500;
+// おすすめを受け取るツールの名前（buildTool）
+export const TOOL_NAME = 'recommend_work';
 // 安全分類で拒否されたとき、サーバー側で推奨のモデルに引き継ぐ（fallbacks: "default"）。対応するモデルだけに付ける
 export const FALLBACK_BETA = 'server-side-fallback-2026-07-01';
 const FALLBACK_MODELS = ['claude-opus-5-5', 'claude-opus-5', 'claude-fable-5-1', 'claude-sonnet-5-5'];
@@ -79,12 +81,10 @@ ${intro}
 - 最初は相手の気分や、絵を置きたい時間・場所を 1 つだけ聞く。`;
 
   const rules = `# 出力の決まり
-- おすすめを出すときは、文のあとに改行して、次の形の JSON を 1 行だけ書く：
-{"recommend":"<id>","alt":"<id>"|null}
+- おすすめを出すときは、文を書いたあとに必ずツール ${TOOL_NAME} を 1 回呼ぶ。文の中に JSON や id を書かない。
 - recommend と alt はカタログの id（${ids.join(', ') || 'なし'}）から選ぶ。作品が 2 点以上あるときは alt に 2 番目の候補、1 点だけのときは alt を null にして、文で正直に「いまはこの 1 点です」と伝える。
-- 文はその人に向けた言葉で、なぜこの絵なのかを情景でこめる。JSON に理由は入れない。
-- おすすめを出さないときは、文だけを書く（JSON を書かない）。
-- JSON の前後に \`\`\` を付けない。JSON のあとには何も書かない。
+- 文はその人に向けた言葉で、なぜこの絵なのかを情景でこめる。ツールの reason には、その理由を日本語（ja）と英語（en）で 1 文ずつ書く。
+- おすすめを出さないときは、文だけを書く（ツールを呼ばない）。
 
 # 応答の言語
 - 応答の文は${LANG_NAMES[/** @type {keyof typeof LANG_NAMES} */ (lang)] || LANG_NAMES.en}で書く（カタログが日本語でも、訳して話す）。${
@@ -96,6 +96,39 @@ ${intro}
     { type: 'text', text: catalogText(catalog), cache_control: { type: 'ephemeral' } },
     { type: 'text', text: rules },
   ];
+}
+
+/**
+ * おすすめを受け取るツール（strict: true で入力の型を保証する。docs/ENTRANCE.md 5.1）
+ * カタログに作品が無いときは enum が空になり不正なスキーマになるので null を返す（ツールを付けない）
+ * @param {any} catalog
+ */
+export function buildTool(catalog) {
+  const ids = (catalog?.works || []).map((/** @type {any} */ w) => String(w.id));
+  if (!ids.length) return null;
+  return {
+    name: TOOL_NAME,
+    description: '訪れた人に作品を 1 点すすめる。おすすめの文を書いたあとに 1 回だけ呼ぶ。recommend は最もすすめたい作品の id、alt は 2 番目の候補の id（作品が 1 点だけなら null）、reason はすすめる理由を日本語と英語で 1 文ずつ。',
+    strict: true,
+    input_schema: {
+      type: 'object',
+      properties: {
+        recommend: { type: 'string', enum: ids, description: '最もすすめたい作品の id' },
+        alt: { anyOf: [{ type: 'string', enum: ids }, { type: 'null' }], description: '2 番目の候補の id。無ければ null' },
+        reason: {
+          type: 'object',
+          properties: {
+            ja: { type: 'string', description: 'すすめる理由（日本語で 1 文）' },
+            en: { type: 'string', description: 'すすめる理由（英語で 1 文）' },
+          },
+          required: ['ja', 'en'],
+          additionalProperties: false,
+        },
+      },
+      required: ['recommend', 'alt', 'reason'],
+      additionalProperties: false,
+    },
+  };
 }
 
 /**
@@ -130,6 +163,12 @@ export function buildBody(catalog, lang, messages, model) {
     system: buildSystem(catalog, lang, userTurns),
     messages: msgs,
   };
+  const tool = buildTool(catalog);
+  if (tool) {
+    body.tools = [tool];
+    // Sonnet 5.5 / Opus 5.5 は any / tool を受け付けない（400）。auto のまま system で呼ぶよう指示する
+    body.tool_choice = { type: 'auto' };
+  }
   if (supportsFallbacks(model)) body.fallbacks = 'default';
   return body;
 }

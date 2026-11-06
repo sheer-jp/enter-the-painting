@@ -1,4 +1,4 @@
-// Claude API の SSE を読み、ブラウザに渡す出来事に直す（純関数と非同期イテレータ。Worker のグローバルに触れない）
+// Claude API の SSE を読み、ブラウザに渡す出来事に直す（純関数と非同期イテレータ。Pages Functions のグローバルに触れない）
 
 /**
  * SSE の行を区切る小さなパーサ。push に受け取った文字列を渡すと、完結した data: の JSON を返す
@@ -26,6 +26,7 @@ export function createSseParser() {
 /**
  * 上流の出来事 1 つを、ブラウザに渡す形に直す
  * { text } 文の断片、{ refusal: true } 拒否、{ done: true } 終わり、{ error: true } 上流の失敗。関係ないものは null
+ * 状態を持たない。ツール呼び出し（{ recommend }）は createEventMapper が扱う
  * @param {any} ev
  * @returns {{ text: string } | { refusal: true } | { done: true } | { error: true } | null}
  */
@@ -39,13 +40,59 @@ export function mapEvent(ev) {
 }
 
 /**
- * 上流の本文（ReadableStream<Uint8Array>）を読み、mapEvent の結果を順に返す
+ * ツールの入力を確かめる。形が合えば { recommend, alt, reason? }、合わなければ null
+ * @param {any} o
+ * @returns {{ recommend: string, alt: string | null, reason?: { ja: string, en: string } } | null}
+ */
+export function normalizeRecommend(o) {
+  if (!o || typeof o !== 'object' || typeof o.recommend !== 'string' || !o.recommend) return null;
+  /** @type {{ recommend: string, alt: string | null, reason?: { ja: string, en: string } }} */
+  const out = { recommend: o.recommend, alt: typeof o.alt === 'string' && o.alt ? o.alt : null };
+  if (o.reason && typeof o.reason.ja === 'string' && typeof o.reason.en === 'string') out.reason = { ja: o.reason.ja, en: o.reason.en };
+  return out;
+}
+
+/**
+ * 状態を持つ変換。mapEvent に加えて、ツール recommend_work の呼び出しを集める
+ * content_block_start（tool_use）→ input_json_delta を index ごとに集め、content_block_stop で JSON.parse して { recommend } を 1 回返す
+ * 壊れた JSON や形の合わない入力は捨てる（ブラウザは文の中の JSON を拾う経路に落ちる）
+ * @param {string} [toolName]
+ */
+export function createEventMapper(toolName = 'recommend_work') {
+  /** @type {Map<number, string>} */
+  const tools = new Map();
+  /** @param {any} ev */
+  return (ev) => {
+    if (!ev || typeof ev !== 'object') return null;
+    if (ev.type === 'content_block_start' && ev.content_block?.type === 'tool_use') {
+      if (ev.content_block.name === toolName) tools.set(ev.index, '');
+      return null;
+    }
+    if (ev.type === 'content_block_delta' && ev.delta?.type === 'input_json_delta') {
+      if (tools.has(ev.index) && typeof ev.delta.partial_json === 'string') tools.set(ev.index, tools.get(ev.index) + ev.delta.partial_json);
+      return null;
+    }
+    if (ev.type === 'content_block_stop' && tools.has(ev.index)) {
+      const raw = /** @type {string} */ (tools.get(ev.index));
+      tools.delete(ev.index);
+      try {
+        const rec = normalizeRecommend(JSON.parse(raw));
+        return rec ? { recommend: rec } : null;
+      } catch { return null; }
+    }
+    return mapEvent(ev);
+  };
+}
+
+/**
+ * 上流の本文（ReadableStream<Uint8Array>）を読み、createEventMapper の結果を順に返す
  * @param {ReadableStream<Uint8Array>} body
  */
 export async function* relayEvents(body) {
   const reader = body.getReader();
   const dec = new TextDecoder();
   const parser = createSseParser();
+  const map = createEventMapper();
   let finished = false;
   try {
     for (;;) {
@@ -53,7 +100,7 @@ export async function* relayEvents(body) {
       finished = done;
       const chunk = done ? dec.decode() + '\n\n' : dec.decode(value, { stream: true });
       for (const ev of parser.push(chunk)) {
-        const m = mapEvent(ev);
+        const m = map(ev);
         if (m) yield m;
       }
       if (done) return;

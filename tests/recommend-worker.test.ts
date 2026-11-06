@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { buildSystem, buildBody, validateRequest, sanitizeMessages, FALLBACK_BETA } from '../worker/src/prompt.js';
-import { createSseParser, mapEvent, relayEvents, sse } from '../worker/src/relay.js';
+import { buildSystem, buildBody, buildTool, validateRequest, sanitizeMessages, FALLBACK_BETA, TOOL_NAME } from '../functions/_lib/prompt.js';
+import { createSseParser, createEventMapper, mapEvent, normalizeRecommend, relayEvents, sse } from '../functions/_lib/relay.js';
 
 const catalog = {
   version: 1,
@@ -16,7 +16,7 @@ const catalog = {
   ],
 };
 
-describe('worker/src/prompt.js', () => {
+describe('functions/_lib/prompt.js', () => {
   it('system にカタログの id が全部入り、カタログのブロックに cache_control', () => {
     const sys = buildSystem(catalog, 'ja');
     const all = sys.map((b) => b.text).join('\n');
@@ -31,7 +31,8 @@ describe('worker/src/prompt.js', () => {
     const all = buildSystem(catalog, 'ja').map((b) => b.text).join('\n');
     expect(all).toContain('2 回以上、4 回以下');
     expect(all).toContain('4 往復目の応答では、必ずおすすめを出す');
-    expect(all).toContain('{"recommend":"<id>","alt":"<id>"|null}');
+    expect(all).toContain('必ずツール recommend_work を 1 回呼ぶ');
+    expect(all).not.toContain('{"recommend":"<id>"');
     expect(all).toContain('価格');
     expect(all).toContain('個人情報');
   });
@@ -57,6 +58,30 @@ describe('worker/src/prompt.js', () => {
     const ms = [];
     for (let i = 0; i < 4; i++) { ms.push({ role: 'user', content: 'u' + i }); if (i < 3) ms.push({ role: 'assistant', content: 'a' + i }); }
     expect(JSON.stringify(buildBody(catalog, 'ja', ms, 'claude-opus-5-5').system)).toContain('この応答で必ずおすすめを出す');
+  });
+  it('buildBody に strict のツール recommend_work が 1 つ入り、tool_choice は auto', () => {
+    const body = buildBody(catalog, 'ja', [{ role: 'user', content: 'x' }], 'claude-sonnet-5-5');
+    expect(body.tools).toHaveLength(1);
+    const t = body.tools[0];
+    expect(t.name).toBe(TOOL_NAME);
+    expect(TOOL_NAME).toBe('recommend_work');
+    expect(t.strict).toBe(true);
+    expect(body.tool_choice).toEqual({ type: 'auto' });
+    expect(body.thinking).toBeUndefined();
+    expect(body.output_config).toEqual({ effort: 'low' });
+    const s = t.input_schema;
+    expect(s.additionalProperties).toBe(false);
+    expect(s.required).toEqual(['recommend', 'alt', 'reason']);
+    expect(s.properties.recommend.enum).toEqual(['harmoney', 'blue-tide']);
+    expect(s.properties.alt.anyOf).toEqual([{ type: 'string', enum: ['harmoney', 'blue-tide'] }, { type: 'null' }]);
+    expect(s.properties.reason.required).toEqual(['ja', 'en']);
+    expect(s.properties.reason.additionalProperties).toBe(false);
+  });
+  it('作品が無いカタログではツールを付けない（空の enum は不正なスキーマ）', () => {
+    expect(buildTool({ works: [] })).toBeNull();
+    const body = buildBody({ works: [] }, 'ja', [{ role: 'user', content: 'x' }], 'claude-sonnet-5-5');
+    expect(body.tools).toBeUndefined();
+    expect(body.tool_choice).toBeUndefined();
   });
   it('fallbacks は対応するモデルだけ', () => {
     expect(buildBody(catalog, 'ja', [{ role: 'user', content: 'x' }], 'claude-haiku-5-5').fallbacks).toBeUndefined();
@@ -88,7 +113,7 @@ function upstream(chunks: string[]) {
 }
 const ev = (type: string, data: object) => `event: ${type}\ndata: ${JSON.stringify({ type, ...data })}\n\n`;
 
-describe('worker/src/relay.js', () => {
+describe('functions/_lib/relay.js', () => {
   it('SSE のパーサは途中で切れた行をつなぐ', () => {
     const p = createSseParser();
     const full = ev('content_block_delta', { index: 0, delta: { type: 'text_delta', text: 'こんにちは' } });
@@ -124,6 +149,53 @@ describe('worker/src/relay.js', () => {
     const out = [];
     for await (const e of relayEvents(upstream([ev('message_start', {}), ev('message_delta', { delta: { stop_reason: 'refusal' } }), ev('message_stop', {})]))) out.push(e);
     expect(out[0]).toEqual({ refusal: true });
+  });
+  it('relayEvents：ツール recommend_work の呼び出しを { recommend } 1 回に直す（文はいままで通り）', async () => {
+    const input = '{"recommend":"harmoney","alt":"blue-tide","reason":{"ja":"朝の光に合う。","en":"It suits morning light."}}';
+    const s = ev('message_start', { message: { id: 'm' } })
+      + ev('content_block_start', { index: 0, content_block: { type: 'thinking', thinking: '' } })
+      + ev('content_block_stop', { index: 0 })
+      + ev('content_block_start', { index: 1, content_block: { type: 'text', text: '' } })
+      + ev('content_block_delta', { index: 1, delta: { type: 'text_delta', text: 'それなら、この絵を。' } })
+      + ev('content_block_stop', { index: 1 })
+      + ev('content_block_start', { index: 2, content_block: { type: 'tool_use', id: 'toolu_1', name: 'recommend_work', input: {} } })
+      + ev('content_block_delta', { index: 2, delta: { type: 'input_json_delta', partial_json: '' } })
+      + ev('content_block_delta', { index: 2, delta: { type: 'input_json_delta', partial_json: input.slice(0, 30) } })
+      + ev('content_block_delta', { index: 2, delta: { type: 'input_json_delta', partial_json: input.slice(30) } })
+      + ev('content_block_stop', { index: 2 })
+      + ev('message_delta', { delta: { stop_reason: 'tool_use' } })
+      + ev('message_stop', {});
+    const bytes = new TextEncoder().encode(s);
+    const body = new ReadableStream<Uint8Array>({ start(c) { for (let i = 0; i < bytes.length; i += 11) c.enqueue(bytes.slice(i, i + 11)); c.close(); } });
+    const out = [];
+    for await (const e of relayEvents(body)) out.push(e);
+    expect(out).toEqual([
+      { text: 'それなら、この絵を。' },
+      { recommend: { recommend: 'harmoney', alt: 'blue-tide', reason: { ja: '朝の光に合う。', en: 'It suits morning light.' } } },
+      { done: true },
+    ]);
+    expect(sse(out[1])).toBe(`data: {"recommend":${input}}\n\n`);
+  });
+  it('createEventMapper：壊れた JSON や別のツールは捨てる。alt の null を保つ', () => {
+    const map = createEventMapper();
+    expect(map({ type: 'content_block_start', index: 0, content_block: { type: 'tool_use', name: 'recommend_work' } })).toBeNull();
+    expect(map({ type: 'content_block_delta', index: 0, delta: { type: 'input_json_delta', partial_json: '{"recommend":"har' } })).toBeNull();
+    expect(map({ type: 'content_block_stop', index: 0 })).toBeNull();
+    map({ type: 'content_block_start', index: 1, content_block: { type: 'tool_use', name: 'other' } });
+    map({ type: 'content_block_delta', index: 1, delta: { type: 'input_json_delta', partial_json: '{"recommend":"x","alt":null}' } });
+    expect(map({ type: 'content_block_stop', index: 1 })).toBeNull();
+    map({ type: 'content_block_start', index: 2, content_block: { type: 'tool_use', name: 'recommend_work' } });
+    map({ type: 'content_block_delta', index: 2, delta: { type: 'input_json_delta', partial_json: '{"recommend":"x","alt":null,"reason":{"ja":"a","en":"b"}}' } });
+    expect(map({ type: 'content_block_stop', index: 2 })).toEqual({ recommend: { recommend: 'x', alt: null, reason: { ja: 'a', en: 'b' } } });
+    expect(map({ type: 'message_delta', delta: { stop_reason: 'tool_use' } })).toBeNull();
+    expect(map({ type: 'content_block_delta', index: 3, delta: { type: 'text_delta', text: 'a' } })).toEqual({ text: 'a' });
+    expect(normalizeRecommend({ recommend: '' })).toBeNull();
+    expect(normalizeRecommend({ recommend: 'x', alt: 3 })).toEqual({ recommend: 'x', alt: null });
+  });
+  it('relayEvents：ツール呼び出しのあとの拒否はいままで通り { refusal }', async () => {
+    const out = [];
+    for await (const e of relayEvents(upstream([ev('message_start', {}), ev('content_block_delta', { index: 0, delta: { type: 'text_delta', text: 'a' } }), ev('message_delta', { delta: { stop_reason: 'refusal' } }), ev('message_stop', {})]))) out.push(e);
+    expect(out).toEqual([{ text: 'a' }, { refusal: true }, { done: true }]);
   });
   it('sse は data: 行を作る', () => {
     expect(sse({ text: 'a' })).toBe('data: {"text":"a"}\n\n');

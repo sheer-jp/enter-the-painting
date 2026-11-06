@@ -1,7 +1,7 @@
 // 気分から絵をすすめる：出力の解釈（parse.ts）とルールだけの版（rules.ts）。docs/RECOMMEND.md 8.8
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { splitRecommendation, resolveRecommendation } from '../src/recommend/parse';
+import { splitRecommendation, resolveRecommendation, parseRecommendEvent, reasonText } from '../src/recommend/parse';
 import { recommendByRules, targetAxes, buildReason, pickMoods, type Catalog } from '../src/recommend/rules';
 
 const catalog: Catalog = JSON.parse(readFileSync(new URL('./fixtures/catalog.json', import.meta.url), 'utf8'));
@@ -43,6 +43,30 @@ describe('splitRecommendation', () => {
   it('壊れた JSON は null', () => {
     expect(splitRecommendation('x\n{"recommend": harmoney}').json).toBeNull();
     expect(splitRecommendation('x\n{"recommend": 3}').json).toBeNull();
+  });
+});
+
+describe('parseRecommendEvent（ツール呼び出しの経路）', () => {
+  it('data: {"recommend": {...}} の中身を受ける', () => {
+    const r = parseRecommendEvent({ recommend: 'harmoney', alt: 'sample-blue', reason: { ja: '朝の光に。', en: 'For morning light.' } });
+    expect(r).toEqual({ recommend: 'harmoney', alt: 'sample-blue', reason: { ja: '朝の光に。', en: 'For morning light.' } });
+    expect(resolveRecommendation(r!, catalog)).toEqual({ id: 'harmoney', alt: 'sample-blue' });
+  });
+  it('alt の null、reason の欠け、形の合わないものを扱う', () => {
+    expect(parseRecommendEvent({ recommend: 'x', alt: null })).toEqual({ recommend: 'x', alt: null });
+    expect(parseRecommendEvent({ recommend: 'x', alt: null, reason: { ja: 1 } })).toEqual({ recommend: 'x', alt: null });
+    expect(parseRecommendEvent({ recommend: 3 })).toBeNull();
+    expect(parseRecommendEvent(null)).toBeNull();
+    expect(parseRecommendEvent('harmoney')).toBeNull();
+  });
+  it('reasonText は ja なら ja、ほかは en。理由が無ければ空', () => {
+    const r = { recommend: 'x', alt: null, reason: { ja: 'あ', en: 'a' } };
+    expect(reasonText(r, 'ja')).toBe('あ');
+    expect(reasonText(r, 'fr')).toBe('a');
+    expect(reasonText({ recommend: 'x', alt: null }, 'ja')).toBe('');
+  });
+  it('両方の経路：ツールが無くても文の中の JSON は従来通り拾える', () => {
+    expect(splitRecommendation('この絵を。\n{"recommend":"harmoney","alt":null}').json).toEqual({ recommend: 'harmoney', alt: null });
   });
 });
 

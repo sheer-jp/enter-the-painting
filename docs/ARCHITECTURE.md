@@ -204,15 +204,15 @@ type Lang = 'ja' | 'en' | 'zh-Hans' | 'zh-Hant' | 'ko' | 'fr' | 'de' | 'es' | 'i
 
 追記（11-04）：`FluidParams` に `drive?: number`（常時の駆動、既定 0.3）と `tempo?: number`（速さのむら、既定 0.6。`docs/EXPERIENCE.md` 8.1）。`vortex(uv, strength, radius)` は両モードの「渦が育つ」にも使う（8.2）。
 
-## 12. 気分から絵をすすめる（`recommend/`、`worker/`。11-04 追加）
+## 12. 気分から絵をすすめる（`recommend/`、`functions/`。11-04 追加、11-06 Pages Functions に移す）
 
 設計は `docs/RECOMMEND.md`。実行時に外部 API を呼ばない規則の**唯一の例外**。
 
 | 用途 | 選定 | 理由 |
 | --- | --- | --- |
-| API キーの置き場 | Cloudflare Workers（`worker/`、wrangler） | 作家のドメインが Cloudflare にある。キーは Worker の Secret。静的ホスティングのままでよい |
-| Claude API の呼び出し | Worker から `fetch` で直接 | SDK を Worker に入れない（依存最小）。ストリーミングは SSE をそのまま中継 |
-| カタログ | `public/catalog.json`（`npm run generate` が作る） | ブラウザ（ルールだけの版）と Worker（system prompt）が同じものを読む |
+| API キーの置き場 | Cloudflare Pages Functions（`functions/api/recommend.js`、共通は `functions/_lib/`。設定はリポジトリ直下の `wrangler.toml`） | サイト本体と同じ Pages プロジェクト・同じ origin（`/api/recommend`）。キーは Pages の Secret（`docs/ENTRANCE.md` 5.2） |
+| Claude API の呼び出し | Pages Functions から `fetch` で直接 | SDK を入れない（依存最小）。ストリーミングは SSE を中継。おすすめはツール `recommend_work`（`strict: true`）で受け取る |
+| カタログ | `public/catalog.json`（`npm run generate` が作る） | ブラウザ（ルールだけの版）と Pages Functions（system prompt。同じ配信の `/catalog.json`）が同じものを読む |
 | 落ちどころ | `src/recommend/rules.ts` | API 無し・オフライン・拒否で、3 問の選択肢から 3 軸の距離で選ぶ。会場でも動く |
 
 ```ts
@@ -222,7 +222,7 @@ export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: st
 export function recommendByRules(catalog: Catalog, answers: { time: 'morning'|'day'|'night'; color: 'warm'|'cool'|'vivid'|'soft'; mood: 'quiet'|'lively' }): { id: string; alt: string | null };
 // parse.ts
 export function splitRecommendation(text: string): { prose: string; json: { recommend: string; alt: string | null } | null };
-// worker/src/prompt.js（純関数）
+// functions/_lib/prompt.js（純関数）
 export function buildSystem(catalog, lang): Array<{ type: 'text'; text: string; cache_control?: { type: 'ephemeral' } }>;
 export function buildBody(catalog, lang, messages, model): object;   // Messages API の本文（stream: true）
 ```

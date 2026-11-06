@@ -2,7 +2,7 @@
 // 会話はこのタブのメモリにだけ持ち、どこにも保存しない
 import { t, pick, LANGS, type Lang } from '../i18n';
 import { recommendByRules, pickMoods, buildReason, type Answers, type Catalog, type CatalogWork } from './rules';
-import { splitRecommendation, resolveRecommendation } from './parse';
+import { splitRecommendation, resolveRecommendation, parseRecommendEvent, reasonText, type RecJson } from './parse';
 import './recommend.css';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
@@ -124,6 +124,7 @@ export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: st
     const timer = setTimeout(() => ctrl.abort(), FIRST_BYTE_MS);
     let acc = '';
     let out: HTMLParagraphElement | null = null;
+    let toolRec: RecJson | null = null;   // data: {"recommend": ...}（ツール呼び出し）で受けたおすすめ
     try {
       const res = await fetch(opts.api!, {
         method: 'POST', headers: { 'content-type': 'application/json' },
@@ -144,10 +145,15 @@ export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: st
           const ev = buf.slice(0, k); buf = buf.slice(k + 2);
           for (const l of ev.split('\n')) {
             if (!l.startsWith('data:')) continue;
-            let d: { text?: string; done?: boolean; error?: string };
+            let d: { text?: string; done?: boolean; error?: string; recommend?: unknown };
             try { d = JSON.parse(l.slice(5)); } catch { continue; }
             if (d.error) throw new Error(d.error);
             if (d.done) { done = true; break; }
+            if (d.recommend !== undefined) {
+              const rec = parseRecommendEvent(d.recommend);
+              if (rec) { toolRec = rec; clearTimeout(timer); }
+              continue;
+            }
             if (typeof d.text === 'string') {
               if (!out) { clearTimeout(timer); out = h('p', 'rec-line rec-ai'); wait.replaceWith(out); }
               acc += d.text;
@@ -157,7 +163,7 @@ export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: st
           if (done) break;
         }
       }
-      if (!acc) throw new Error('empty');
+      if (!acc && !toolRec) throw new Error('empty');
     } catch (e) {
       clearTimeout(timer);
       if (my !== session) return false;
@@ -170,14 +176,19 @@ export function mountRecommend(section: HTMLElement, opts: { lang: Lang; api: st
       return false;
     }
     clearTimeout(timer);
-    messages.push({ role: 'assistant', content: acc });
-    const { prose, json } = splitRecommendation(acc);
+    const split = splitRecommendation(acc);
+    // ツール呼び出しで受けたおすすめを優先し、無ければ文の中の JSON を拾う（保険）
+    const json = toolRec || split.json;
+    const prose = split.prose || (json ? reasonText(json, lang) : '');
+    // 会話の履歴は文だけ（API は空の assistant を受け付けないので、文が空なら理由で埋める）
+    messages.push({ role: 'assistant', content: acc || prose });
     if (json) {
       const c = await catalogReady;
       if (my !== session) return false;
       if (!c?.works.length) { offline(); return false; }
-      out!.textContent = prose;
-      showCard(c, resolveRecommendation(json, c), out!);
+      if (!out) { out = h('p', 'rec-line rec-ai'); wait.replaceWith(out); }
+      out.textContent = prose;
+      showCard(c, resolveRecommendation(json, c), out);
       return true;
     }
     // 最大の往復まで来てもおすすめが出なかった（JSON が無い）：次の送信は Worker が 400 にするので、先にルールだけの版へ
