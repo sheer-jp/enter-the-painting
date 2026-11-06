@@ -410,6 +410,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
     const perCat = {};
     names = readdirSync(roomsDir).filter((f) => f.endsWith('.json') && f !== 'REFERENCES.json').map((f) => f.replace(/\.json$/, '')).sort().filter((n) => {
       const d = readDef(n);
+      if (d.disabled) return false;   // 暗い部屋など、使わないと決めた部屋（11-07 作家「暗い部屋はやめた方がいい」）。work.json の rooms で明示しても使わない
       if (d.suits_cm && !(longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1])) return false;
       const c = d.category || '';
       perCat[c] = (perCat[c] || 0) + 1;
@@ -424,6 +425,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
     const imgPath = ['jpg', 'png', 'jpeg'].map((e) => join(roomsDir, `${name}.${e}`)).find(existsSync);
     if (!existsSync(jsonPath) || !imgPath) { console.warn(`  部屋 ${name} の json か画像が無い。スキップ`); continue; }
     const def = JSON.parse(readFileSync(jsonPath, 'utf8'));
+    if (def.disabled) { console.warn(`  部屋 ${name} は使わない（${def.disabled}）。スキップ`); continue; }
     const room = await sharp(imgPath).resize({ width: 1600, withoutEnlargement: true }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
     const W = room.info.width, H = room.info.height;
     const scale = W / (def.image_width_px || W);
