@@ -1,12 +1,37 @@
 {
-  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す",
+  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す。greeting は受付の最初の 2 文（API を待たずに出す）、title は受付の見出し",
+  "title": {
+    "ja": "ようこそ、SHEER のギャラリーへ",
+    "en": "Welcome to SHEER's gallery"
+  },
+  "greeting": {
+    "ja": [
+      "いらっしゃいませ。",
+      "今日は、どんな絵をお探しですか？"
+    ],
+    "en": [
+      "Welcome.",
+      "What kind of painting are you looking for today?"
+    ]
+  },
   "intro": {
     "ja": "sheer は、色がぶつかってほどける瞬間を描く抽象画の作家です。小さな絵を、誰かの日々の中に置くことを考えて描いています。",
     "en": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday."
   },
   "openers": {
-    "ja": ["朝、静かに始めたい", "夜、ひとりで息をつきたい", "人を迎える部屋に彩りを"],
-    "en": ["To start the morning quietly", "To breathe alone at night", "To color a room where I welcome people"]
+    "ja": [
+      "朝、静かに始めたい",
+      "夜、ひとりで息をつきたい",
+      "人を迎える部屋に彩りを"
+    ],
+    "en": [
+      "To start the morning quietly",
+      "To breathe alone at night",
+      "To color a room where I welcome people"
+    ]
   },
-  "turns": [2, 4]
+  "turns": [
+    2,
+    4
+  ]
 }

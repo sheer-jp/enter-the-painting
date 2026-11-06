@@ -6,6 +6,26 @@
 
 ---
 
+## 2026-11-06（夕方：ローカル環境、入口の設計 V0、API と置き場の提案）
+
+**やった**
+- ローカルの作業環境：`sheer-jp/enter-the-painting` を `/Users/arisa/ai-dev/apps/enter-the-painting` に clone。`npm ci`、型、テスト 67 件、`generate`、`build` を通した。dev は自己署名 HTTPS（記録は `ai-dev/_meta/development/enter-the-painting/local-setup-20261106.md`）
+- `dist/`（6 作品）を作家だけが見られるアーティファクトにした（https://claude.ai/artifact/2ddzBdcfimDY5dMKP9Jwya）。フォルダのリンクを `index.html` 付きに書き換えて載せた。下層ページへの遷移と WebGL はアーティファクト上で未検証
+- 作家の構想（受付の会話が先、白いギャラリー、そこから絵の中へ）を `docs/ENTRANCE.md` に整理。API の選択（Messages API 継続 + ツール `recommend_work`）と置き場（Cloudflare Pages 一本化）の提案を同じ文書に
+- 受付キャラクターの候補画像 4 方向を Codex（CLI）に依頼（`ai-dev/_meta/development/enter-the-painting/concept/concierge-candidates/`）
+
+**決めた**
+- 未決定 U-12〜U-15 を追加（キャラクター、D5-2 の部屋の背景は取り下げ案、置き場、受付を必ず通すか）
+
+**困った・学んだ**
+- アーティファクトのホストがフォルダの index を解決するか不明。相対リンクを明示の `index.html` にして回避
+- Claude のブラウザは claude.ai に未サインインで、アーティファクトの目視ができない。作家が開いて確かめる
+- Cloudflare の配備が進まなかった原因は、サイト本体・Worker のルート・キーの置き場が 3 つに割れていたこと（`docs/ENTRANCE.md` 5.2）
+
+**次にやる**
+- 作家：候補画像からキャラクターを選ぶ、名前と口調、5 点の `messages` と `moods`、Cloudflare Pages の接続（U-12〜U-15）
+- Fable → Opus：E-1 受付画面、E-2 ギャラリー空間、E-3 Pages Functions への移植とツール `recommend_work`、E-4 スモーク（`docs/ENTRANCE.md` 7 節）。作家の決定後に着手
+
 ## 2026-11-06（金沢展の作品素材5点）
 
 **やった**
