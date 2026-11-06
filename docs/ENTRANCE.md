@@ -85,7 +85,7 @@ V0（11-06 夕方）に、作家の判断を反映した版。この文書が入
 ### 3.3 キャラクター（11-06 夜の判断を反映）
 
 - **決定（11-06 夜）：女の子（`public/concierge/artist/`）に確定**。作家「女の子のキャラのほうがかわいい」。猫（`concept/concierge-cat-v2/`）は比較用として概念フォルダに残し、サイトからは外す。`?chara=` の切り替えも外す（U-12 済）
-- **画像**：全身の透過 PNG が元（女の子は第 5 案 `concept/concierge-v5/cutouts/`：水彩イラストのタッチ、黒に寄せた髪、黒目、白いロングワンピースに絵の具。猫は `concept/concierge-cat-v2/cutouts/`）。背景は Mac の Vision で抜く（カップルウィッシュリストの `character-cutout.swift`）
+- **画像**：全身の透過 PNG が元（女の子は 11-07 から第 6 案 `concept/concierge-v6/cutouts/`：パキッとした線のポップな絵柄、白いワンピースに鮮やかな絵の具。第 5 案は水彩のタッチ。猫は `concept/concierge-cat-v2/cutouts/`）。**窓の背景**（`public/concierge/wall/wall-wide|tall`、`.cg-host::before`）：キャラクターと同じ世界観のイラストの「絵のあるギャラリーカフェ」（白い壁、大きな観葉植物、木のカウンター、照明。Codex 生成）。壁の絵は実物の写真を sharp で合成し、この背景に限って実寸より 1.5〜1.8 倍大きめに掛ける（DECISIONS 61）。背景は Mac の Vision で抜く（カップルウィッシュリストの `character-cutout.swift`）
 - **上半身版は切り出し**（生成し直さない）：全身から上 58%・横中央 72% を `*-bust.png`。スマホ縦と PC の通常は bust、横向き・幅 900px 以上は full を縦いっぱい。1x 512 / 2x 1024、`scripts/concierge-assets.mjs` で作る
 - **ポーズ**：`listening` ← 聞く、`smile` ← 手を合わせる、`present` ← 手を上げる。切り替えは 300ms クロスフェード
 - **動き**：CSS の呼吸（±2px、scale 1.00〜1.012、4.5 秒）は常に。コマがあれば `frames.json` のコマ列で `blink`（聞いているあいだ 4〜7 秒おき）、`wave`（差し出した直後に 1 回）、`smileDeep`。1 コマ 120ms。コマは確定した 3 枚と同じ構図で Codex に生成（`concept/*-frames/`）。揺れが目立つコマは使わない。`prefers-reduced-motion` では呼吸もコマも止める
