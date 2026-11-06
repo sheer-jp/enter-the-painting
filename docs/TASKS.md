@@ -127,6 +127,8 @@
 | E-6 | スモーク：受付（ルールだけの版）→ 1 点 → ギャラリー → S0 → 入る。スマホ幅でも | Opus（E-1 と同じ人） | headless で通る | F-63、F-65、F-68 |
 | E-7 | docs の整合（EXPERIENCE 1 節、REQUIREMENTS、JOURNEY J2 / J6、PLAN、DESIGN、TASKS、CHANGELOG V3、CLAUDE.md） | Opus（Fable がレビュー） | 文書間で矛盾なし | — |
 | E-8 | 配置と実機（iPhone Safari、Android Chrome、PC Chrome）。`docs/LOG.md` に記録 | Fable + 作家 | 受け入れ 7 | F-66 |
+| E-9 | キャラクター 2 セット（artist / cat）、上半身の切り出し、コマのアニメーション、`?chara=` の切り替え（`docs/ENTRANCE.md` 3.3） | Codex + Opus + Fable | 1.5h | E-1 | 両セットで受付が動く。コマが無くても動く | F-59 |
+| E-10 | おすすめ以降の流れ（往復 2〜3、カードの 3 択、S0 の帯、別のにする）と登場の演出（3.1、3.4） | Opus | 1.5h | E-1 | 受け入れ 2、8 | F-62 |
 
 ## 並行の目安と、現実的な見立て
 
