@@ -6,6 +6,31 @@
 
 ---
 
+## 2026-11-06（深夜 2：白基調、計測、10 言語、提出動画 V1）
+
+**やった**
+- 画面：絵をタップでも入れる。物語モード・作品ページ・受付を**しっかり白**に（絵の外のにじみ無し、HUD はインク色）。見出し「SHEER Gallery」。キャラクターは「窓」に。あいさつ 3 文（「彩り美しい抽象画の世界を届けます。」）。迎えの空白を詰める。白黒をはっきり。PC は中央 640px、人は px 固定。スマホのギャラリーは幅いっぱい。共有ボタンを外す。5 点のメッセージを「込めた思い」中心に
+- 言語を外国語 → 日本語に戻すと英語が残るバグを修正（選択肢の元 HTML を `data-orig` に残して復元）
+- **計測**（E-14）：KV の数だけ（`/api/stat`、`/stats.html?key=`）。`STATS_KEY` は Fable が生成・登録（`_meta/development/enter-the-painting/stats-key.txt`）。Cloudflare Web Analytics も Fable がダッシュボードで有効化（Chrome、保存された Google プロファイル）
+- **10 言語**：Claude API を呼ばず Opus が訳してキャッシュに直接書いた（920 + 248 + 288 件、`scripts/translate-fill.mjs`）。受付の固定文・技法・号数・部屋の名前も 10 言語（E-15）。generate のスキップ 0
+- **提出動画 V1**（`docs/VIDEO.md`、`_meta/development/enter-the-painting/video/v1/`）：2 分 50 秒、11 章、無音・字幕焼き込み、`subtitles.srt`。本番の画面録画＋PC の実 GPU 録画。VR と実写は Codex 生成のイメージで仮置き（札つき）
+- 作家の質問「なんで翻訳にキーが必要？」→ 要らない。訳すのは Claude 自身でできる
+
+**決めた**
+- 主ボタン「絵の世界をのぞく」＋説明 1 行。VR ボタンは Quest だけ。頂は渦 → 静かに戻る。New Chapter はドットの粒。背景は白。見出しは英語。計測は数だけ（個人は追わない）
+
+**困った・学んだ**
+- `[hidden]` は `display` を持つ規則に負ける（`.btn[hidden]`、`.cg [hidden]` に `display:none !important`）
+- 外国語の訳が無いときに en を textContent で上書きすると、ja に戻せなくなる。元の HTML を残して復元する
+- ffmpeg 8（Homebrew）に `drawtext` が無い。字幕はブラウザで描いた透過 PNG を重ねる
+- 受付のページ用 JS は `page.js` 17KB + chunk 9KB = 26.2KB（予算を 27KB に）
+- KV の無料枠は 1 日 1,000 書き込み。来場の多い日は数え漏れる
+
+**次にやる**
+- 作家：Quest の 1 人称録画（頂・Harmoney、S1 → S4）、会場の小さな絵の実写、描く手元、ナレーション。Quest と iPhone の実機確認
+- 動画 V2：受付の録画を最新の画面で撮り直し、実写・Quest を差し替え、声を入れる
+- 細かい積み残し：終わりの「部屋で見る」で `#rooms` へ、「他の作品」の題名の多言語、es / it / pt の「ようこそ」の中立形、KV の有料プラン判断
+
 ## 2026-11-06（深夜：作家と対話しながらの作り込み。C2、文言、流体の性格、VR の立体感、一気に絵の中へ）
 
 **やった**
