@@ -1,5 +1,5 @@
 {
-  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す。greeting は受付の最初の 2 文（API を待たずに出す）、title は受付の見出し",
+  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す。greeting は受付の最初の 2 文（API を待たずに出す）、title は受付の見出し。persona は受付のキャラクター：name（ja/en。空なら画面に出さない）、tone（AI の話し方の指示）、intro_line（ja/en。空でなければ最初の 2 文の前にキャラクターが言う 1 文）",
   "title": {
     "ja": "ようこそ、SHEER のギャラリーへ",
     "en": "Welcome to SHEER's gallery"
@@ -13,6 +13,17 @@
       "Welcome.",
       "What kind of painting are you looking for today?"
     ]
+  },
+  "persona": {
+    "name": {
+      "ja": "",
+      "en": ""
+    },
+    "tone": "丁寧で短く。説明や売り込みをしない。情景で話す",
+    "intro_line": {
+      "ja": "",
+      "en": ""
+    }
   },
   "intro": {
     "ja": "sheer は、色がぶつかってほどける瞬間を描く抽象画の作家です。小さな絵を、誰かの日々の中に置くことを考えて描いています。",
@@ -32,6 +43,6 @@
   },
   "turns": [
     2,
-    4
+    3
   ]
 }

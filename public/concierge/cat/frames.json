@@ -1,0 +1,18 @@
+{
+  "blink": [
+    "listening",
+    "blink",
+    "listening"
+  ],
+  "wave": [
+    "present",
+    "wave-1",
+    "wave-2",
+    "wave-1",
+    "present"
+  ],
+  "smileDeep": [
+    "smile",
+    "smile-2"
+  ]
+}

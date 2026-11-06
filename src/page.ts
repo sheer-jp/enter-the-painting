@@ -1,4 +1,4 @@
-// 作品ページ / ギャラリーの小さなスクリプト。言語の切り替えと「入る」だけ。体験は「入る」で読む
+// 作品ページ / 受付 / ギャラリーの小さなスクリプト。言語の切り替えと「入る」。受付の会話と体験は import() で読む
 import { detectLang, rememberLang, applyLang, fillLangSelect, t, type Lang } from './i18n';
 import { Soundscape } from './audio/Soundscape';
 import './ui/page.css';
@@ -43,27 +43,83 @@ async function vrAvailable(): Promise<boolean> {
   } catch { return false; }
 }
 
-// 気分から絵をすすめる（ギャラリー）：入口に触れたとき（選択肢を押す / 入力欄にフォーカス）に import() で読む
-const rec = document.getElementById('recommend');
-if (rec) {
+// 受付（/。docs/ENTRANCE.md 3 節）：会話のコードは import() で読む（体験バンドルは読まない）
+// 読み込み前の操作（選択肢 / 送る）は止めておき、読めたらもう一度起こす
+const cg = document.getElementById('concierge');
+if (cg) {
+  // キャラクターの画像の組：?chara=cat / ?chara=artist で切り替え、localStorage に覚える（見比べ用。UI は置かない）
+  const CHARAS = ['artist', 'cat'];
+  let chara = url.searchParams.get('chara');
+  try {
+    if (chara && CHARAS.includes(chara)) localStorage.setItem('etp.chara', chara);
+    else chara = localStorage.getItem('etp.chara');
+  } catch {}
+  if (!chara || !CHARAS.includes(chara)) chara = 'artist';
+  if (chara !== 'artist') cg.querySelectorAll<HTMLSourceElement | HTMLImageElement>('.cg-face source, .cg-face img').forEach((el) => {
+    el.srcset = el.srcset.replace(/concierge\/artist\//g, `concierge/${chara}/`);
+    if (el instanceof HTMLImageElement) el.src = el.src.replace('concierge/artist/', `concierge/${chara}/`);
+  });
+  const retry = url.searchParams.get('retry');
+  if (retry) { url.searchParams.delete('retry'); history.replaceState(null, '', url.pathname + url.search + url.hash); }
   const api = document.querySelector<HTMLMetaElement>('meta[name="recommend-api"]')?.content.trim() || null;
-  let loading: Promise<void> | null = null;
-  const mount = () => (loading ||= import('./recommend/index').then((m) => {
-    m.mountRecommend(rec, { lang, api, catalogUrl: 'catalog.json' });
-    off();   // 載せられてから外す（失敗したら入口のハンドラを残して、次の操作でやり直す）
-  }).catch((e) => { loading = null; console.warn('おすすめを読めない', e); }));
-  // 読み込み前の操作は止めておき、読めたらもう一度起こす
-  const later = (e: Event, again: () => void) => { e.preventDefault(); e.stopImmediatePropagation(); mount().then(() => { if (!loading) return; again(); }); };
-  const onClick = (e: Event) => { const b = (e.target as Element).closest('button'); if (b && rec.contains(b)) later(e, () => b.click()); };
-  const onSubmit = (e: Event) => later(e, () => (e.target as HTMLFormElement).requestSubmit());
-  const onFocus = () => { mount(); };
-  const off = () => { rec.removeEventListener('click', onClick, true); rec.removeEventListener('submit', onSubmit, true); rec.removeEventListener('focusin', onFocus); };
-  rec.addEventListener('click', onClick, true);
-  rec.addEventListener('submit', onSubmit, true);
-  rec.addEventListener('focusin', onFocus);
+  let ready = false;
+  const hold = (e: Event) => {
+    if (ready) return;
+    const target = e.target as Element;
+    if (e.type === 'submit' || target.closest('button[data-opener-index]')) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      loading.then(() => { if (!ready) return; if (e.type === 'submit') (target as HTMLFormElement).requestSubmit(); else (target.closest('button') as HTMLButtonElement).click(); });
+    }
+  };
+  cg.addEventListener('click', hold, true);
+  cg.addEventListener('submit', hold, true);
+  const loading = import('./concierge/index').then((m) => {
+    m.mountConcierge(cg, { lang, api, configUrl: api ? `${api.replace(/\/$/, '')}/config` : '', catalogUrl: 'catalog.json', chara: chara!, retry });
+    ready = true;
+  }).catch((e) => { console.warn('受付を読めない', e); });
+}
+
+// ギャラリー（/gallery/。docs/ENTRANCE.md 4 節）：おすすめの 1 点（?from=<id>）を最初に、PC はホイールの縦を横に
+const wall = document.querySelector<HTMLElement>('.gw-wall');
+if (wall) {
+  const from = url.searchParams.get('from');
+  const item = from ? [...wall.querySelectorAll<HTMLElement>('.gw-item')].find((el) => el.dataset.id === from) : null;
+  if (item) {
+    wall.prepend(item);
+    item.classList.add('is-for-you');
+    item.querySelector<HTMLElement>('.gw-foryou')!.hidden = false;
+  }
+  wall.addEventListener('wheel', (e) => {
+    if (!matchMedia('(min-width: 768px)').matches || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    const max = wall.scrollWidth - wall.clientWidth;
+    if (max <= 0) return;
+    const next = Math.min(max, Math.max(0, wall.scrollLeft + e.deltaY));
+    if (next === wall.scrollLeft) return;
+    e.preventDefault();
+    wall.scrollLeft = next;
+  }, { passive: false });
 }
 
 if (workId) {
+  // 受付から来たとき（?via=concierge）：絵の下・「入る」の上に細い帯（docs/ENTRANCE.md 3.1）
+  if (url.searchParams.get('via') === 'concierge') {
+    const assetRoot = document.querySelector<HTMLMetaElement>('meta[name="asset-base"]')?.content ?? '../../';
+    const band = document.createElement('div');
+    band.className = 'via-band';
+    const label = document.createElement('span');
+    label.dataset.i18n = 'cg_card_head'; label.textContent = t('cg_card_head', lang);
+    const other = document.createElement('a');
+    other.dataset.i18n = 'cg_other'; other.textContent = t('cg_other', lang);
+    other.href = `${assetRoot}?retry=${encodeURIComponent(workId)}`;
+    const all = document.createElement('a');
+    all.dataset.i18n = 'cg_all'; all.textContent = t('cg_all', lang);
+    all.href = `${assetRoot}gallery/?from=${encodeURIComponent(workId)}`;
+    const links = document.createElement('span');
+    links.className = 'via-links';
+    links.append(other, all);
+    band.append(label, links);
+    document.querySelector('.actions')?.before(band);
+  }
   const enter = document.getElementById('enter') as HTMLButtonElement;
   const enterVr = document.getElementById('enter-vr') as HTMLButtonElement;
   vrAvailable().then((ok) => { if (ok) enterVr.hidden = false; });

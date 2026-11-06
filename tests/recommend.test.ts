@@ -47,6 +47,14 @@ describe('splitRecommendation', () => {
 });
 
 describe('parseRecommendEvent（ツール呼び出しの経路）', () => {
+  it('matched_moods（使ったことば）を通す。文字列でない語・空の語は落とし、3 語まで', () => {
+    const r = parseRecommendEvent({ recommend: 'harmoney', alt: null, reason: { ja: 'a', en: 'b' }, matched_moods: ['朝の光', ' にぎやかな静けさ '] });
+    expect(r?.matched_moods).toEqual(['朝の光', 'にぎやかな静けさ']);
+    expect(parseRecommendEvent({ recommend: 'x', alt: null, matched_moods: ['a', 2, '', 'b', 'c', 'd'] })?.matched_moods).toEqual(['a', 'b', 'c']);
+    expect(parseRecommendEvent({ recommend: 'x', alt: null, matched_moods: 'a' })).toEqual({ recommend: 'x', alt: null });
+    expect(parseRecommendEvent({ recommend: 'x', alt: null, matched_moods: [] })).toEqual({ recommend: 'x', alt: null });
+  });
+
   it('data: {"recommend": {...}} の中身を受ける', () => {
     const r = parseRecommendEvent({ recommend: 'harmoney', alt: 'sample-blue', reason: { ja: '朝の光に。', en: 'For morning light.' } });
     expect(r).toEqual({ recommend: 'harmoney', alt: 'sample-blue', reason: { ja: '朝の光に。', en: 'For morning light.' } });

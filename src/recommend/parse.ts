@@ -3,7 +3,7 @@
 //             (2) 文のあとの 1 行 {"recommend":"<id>","alt":"<id>"|null}（古い応答や、ツールが呼ばれなかったときの保険）
 import type { Catalog } from './rules';
 
-export interface RecJson { recommend: string; alt: string | null; reason?: { ja: string; en: string } }
+export interface RecJson { recommend: string; alt: string | null; reason?: { ja: string; en: string }; matched_moods?: string[] }
 
 // 経路 (1)：SSE の data の "recommend" の中身を確かめる。形が合わなければ null
 export function parseRecommendEvent(v: unknown): RecJson | null {
@@ -13,6 +13,11 @@ export function parseRecommendEvent(v: unknown): RecJson | null {
   const out: RecJson = { recommend: o.recommend, alt: typeof o.alt === 'string' && o.alt ? o.alt : null };
   const r = o.reason as Record<string, unknown> | undefined;
   if (r && typeof r === 'object' && typeof r.ja === 'string' && typeof r.en === 'string') out.reason = { ja: r.ja, en: r.en };
+  // 使ったことば（作品の moods の語）。文字列の配列のときだけ通す。空の語は落とす。最大 3 語
+  if (Array.isArray(o.matched_moods)) {
+    const m = o.matched_moods.filter((x): x is string => typeof x === 'string' && x.trim() !== '').map((x) => x.trim()).slice(0, 3);
+    if (m.length) out.matched_moods = m;
+  }
   return out;
 }
 

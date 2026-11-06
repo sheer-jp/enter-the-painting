@@ -36,9 +36,12 @@ function copyWorks(): Plugin {
   };
 }
 
-// w/<id>/index.html を MPA の入力にする
+// 受付 index.html、ギャラリー gallery/index.html、w/<id>/index.html を MPA の入力にする
 function workPages(): Record<string, string> {
   const inputs: Record<string, string> = { main: resolve('index.html') };
+  // ギャラリー /gallery/（docs/ENTRANCE.md 4 節）。generate が作る。w/*/index.html と同じ扱い
+  const gallery = resolve('gallery/index.html');
+  if (existsSync(gallery)) inputs.gallery = gallery;
   const wdir = resolve('w');
   if (existsSync(wdir)) {
     for (const id of readdirSync(wdir)) {

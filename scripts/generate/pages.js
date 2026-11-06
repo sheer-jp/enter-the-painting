@@ -83,7 +83,7 @@ ${FONTS}
   </div>
   ${rooms ? `<section class="rooms"><h2 class="eyebrow"><span>Rooms</span><span data-i18n="rooms">${UI_JA.rooms}</span></h2><div class="strip">${rooms}</div><p class="rooms-hint"><span data-i18n="tap_for_size">${UI_JA.tap_for_size}</span><span data-i18n="rooms_note">${UI_JA.rooms_note}</span></p></section>` : ''}
   ${story}
-  ${others ? `<section class="others"><h2 class="eyebrow"><span>Works</span><span data-i18n="others">${UI_JA.others}</span></h2><div class="strip">${others}</div></section>` : ''}
+  ${others ? `<section class="others"><h2 class="eyebrow"><span>Works</span><a class="eyebrow-link" href="../../gallery/" data-i18n="others">${UI_JA.others}</a></h2><div class="strip">${others}</div></section>` : ''}
   <footer><span data-i18n="privacy">${UI_JA.privacy}</span><span>© sheerarts</span></footer>
 </main>
 <div id="stage" hidden></div>
@@ -93,56 +93,130 @@ ${FONTS}
 `;
 }
 
-// ギャラリー /index.html。作品を実物の寸法比で並べ、各作品の光（ぼかし画像）を背後に置く
+// 受付の設定（recommend/config.json）。読めなければ最小の既定値
+function readConfig() {
+  const fallback = {
+    title: { ja: 'ようこそ、SHEER のギャラリーへ', en: "Welcome to SHEER's gallery" },
+    greeting: { ja: ['いらっしゃいませ。', '今日は、どんな絵をお探しですか？'], en: ['Welcome.', 'What kind of painting are you looking for today?'] },
+    openers: { ja: ['朝、静かに始めたい', '夜、ひとりで息をつきたい', '人を迎える部屋に彩りを'] },
+    persona: { name: { ja: '', en: '' }, intro_line: { ja: '', en: '' } },
+  };
+  try { return { ...fallback, ...JSON.parse(readFileSync(new URL('../../recommend/config.json', import.meta.url), 'utf8')) }; } catch { return fallback; }
+}
+
+// ja と en を data-lang で持つ（en は最初は隠す。page.ts が端末の言語で出し分ける。他の言語は en に落ちる）
+const jaEn = (ja, en) => `<span lang="ja" data-lang="ja">${esc(ja)}</span>${en ? `<span lang="en" data-lang="en" hidden>${esc(en)}</span>` : ''}`;
+
+// キャラクターの表情 1 枚（<picture>）。ファイル名は固定：作家が差し替える（scripts/concierge-assets.mjs が <表情>-full / -bust を作る）
+// 横向き（スマホの横、PC の幅 900px 以上）は全身（full）を縦いっぱいに、それ以外は上半身（bust）。選ぶのは media query（JS ではない）
+// WebP を先に、PNG を fallback に。画像は 2 組（public/concierge/artist/ と cat/）。HTML は既定の artist を書き、?chara=cat のときは page.ts が差し替える
+// src/concierge/index.ts の faceEl() と同じ形にする
+export const FULL_MQ = '(orientation: landscape) and (max-height: 500px), (orientation: landscape) and (min-width: 900px)';
+export function facePicture(face, prefix, { on = false, priority = false, chara = 'artist' } = {}) {
+  const b = `${prefix}concierge/${chara}/${face}`;
+  const set = (v, ext) => `${b}-${v}.${ext} 1x, ${b}-${v}@2x.${ext} 2x`;
+  return `<picture class="cg-face${on ? ' is-on' : ''}" data-face="${face}"><source media="${FULL_MQ}" type="image/webp" srcset="${set('full', 'webp')}"><source media="${FULL_MQ}" srcset="${set('full', 'png')}"><source type="image/webp" srcset="${set('bust', 'webp')}"><img src="${b}-bust.png" srcset="${set('bust', 'png')}" width="512" height="412" alt=""${priority ? ' fetchpriority="high"' : ' loading="lazy"'}></picture>`;
+}
+
+// 受付 /index.html（docs/ENTRANCE.md 3 節）。絵は出さない。見出し・キャラクター・最初の 2 文・選択肢・入力欄は JS の前に HTML で出す
 export function galleryPage({ works, baseUrl }) {
+  const cfg = readConfig();
+  const title = cfg.title || {};
+  const greet = cfg.greeting || {};
+  const name = cfg.persona?.name || {};
+  const intro = cfg.persona?.intro_line || {};
+  const lines = [];
+  if (intro.ja) lines.push([intro.ja, intro.en]);
+  (greet.ja || []).slice(0, 2).forEach((ja, i) => lines.push([ja, greet.en?.[i]]));
+  // 最初の文は 0.4 秒ずつ間を置いて現れる（CSS の animation-delay）
+  const greeting = lines.map(([ja, en], i) => `<p class="cg-line cg-ai cg-greet" style="--d:${(0.3 + i * 0.4).toFixed(1)}s">${jaEn(ja, en)}</p>`).join('\n        ');
+  const openers = (cfg.openers?.ja || []).slice(0, 3).map((ja, i) =>
+    `<button type="button" class="cg-opt" data-opener-index="${i}">${jaEn(ja, cfg.openers?.en?.[i])}</button>`).join('\n          ');
+  const host = name.ja ? `<figcaption class="cg-name">${jaEn(name.ja, name.en)}</figcaption>` : '';
+  return `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>${esc(title.ja)}${title.en ? ` / ${esc(title.en)}` : ''}</title>
+<meta name="description" content="${esc(title.ja)}。気分を話すと、あなたへの 1 点をおすすめします。絵の中に入れるギャラリー">
+<meta property="og:title" content="${esc(title.ja)} / ${esc(title.en)}">
+<meta property="og:image" content="${baseUrl}/works/${works[0]?.id}/generated/painting_1024.jpg">
+<meta property="og:url" content="${baseUrl}/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f6f4ef">
+<meta name="recommend-api" content="${esc(process.env.RECOMMEND_API ?? '/api/recommend')}">
+${FONTS}
+<link rel="stylesheet" href="src/ui/page.css">
+</head>
+<body class="paper">
+<main class="cg" id="concierge">
+  <header class="cg-top">
+    <h1 class="cg-title"><span lang="ja">${esc(title.ja)}</span>${title.en ? `<span class="latin" lang="en">${esc(title.en)}</span>` : ''}</h1>
+    <div class="cg-tools">${langSel()}<a class="cg-skip" href="gallery/" data-i18n="cg_skip">受付を飛ばしてギャラリーへ</a></div>
+  </header>
+  <figure class="cg-host">
+    <div class="cg-faces" role="img" aria-label="受付のキャラクター">${facePicture('smile', '', { on: true, priority: true })}</div>
+    ${host}
+  </figure>
+  <section class="cg-talk" aria-label="受付の会話">
+    <div class="cg-thread" aria-live="polite">
+        ${greeting}
+        <div class="cg-openers cg-greet" style="--d:${(0.3 + lines.length * 0.4).toFixed(1)}s" role="group">
+          ${openers}
+        </div>
+    </div>
+  </section>
+  <form class="cg-form" action="#concierge"><input name="q" type="text" maxlength="600" autocomplete="off" enterkeyhint="send" placeholder="こんな気分のときに、こうしたい" aria-label="こんな気分のときに、こうしたい" data-i18n-ph="cg_placeholder"><button type="submit" data-i18n="rec_send">送る</button></form>
+</main>
+<script type="module" src="src/page.ts"></script>
+</body>
+</html>
+`;
+}
+
+// ギャラリー /gallery/index.html（docs/ENTRANCE.md 4 節）。白い壁に実寸比で並べる。おすすめ（?from=<id>）は page.ts が先頭に出す
+export function galleryWallPage({ works, baseUrl }) {
   const maxW = Math.max(...works.map((w) => w.size_cm[0]), 1);
+  const maxH = Math.max(...works.map((w) => w.size_cm[1]), 1);
   const items = works.map((w) => {
-    const rel = Math.max(0.22, w.size_cm[0] / maxW);   // 最小でも 22%（小品が消えないように）
-    const blur = `works/${w.id}/generated/${w.painting_blur || 'painting_1024.jpg'}`;
+    const [cw, ch] = w.size_cm;
+    const title = t(w.title, 'ja');
+    const titleEn = t(w.title, 'en');
     return `
-    <a class="item" href="w/${w.id}/" style="--rel:${rel.toFixed(3)};--blur-url:url('${blur}')">
-      <img src="works/${w.id}/generated/painting_1024.jpg" alt="${esc(t(w.title, 'ja'))}" loading="lazy" style="aspect-ratio:${w.size_cm[0]}/${w.size_cm[1]}">
-      <span class="cap"><b>${esc(t(w.title, 'ja'))}</b>${w.size_cm[0]} × ${w.size_cm[1]} cm</span>
+    <a class="gw-item" data-id="${esc(w.id)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
+      <span class="gw-foryou" data-i18n="gw_for_you" hidden>あなたへの 1 点</span>
+      <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" alt="${esc(title)}" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
+      <span class="gw-cap"><b>${esc(title)}</b>${titleEn && titleEn !== title ? `<i>${esc(titleEn)}</i>` : ''}<span>${cw} × ${ch} cm</span></span>
     </a>`;
   }).join('');
-  // 気分から絵をすすめる（docs/RECOMMEND.md 8.7）：入口は JS の前に出す。選択肢は recommend/config.json（ja・en）。他の言語は mountRecommend が catalog.json で差し替える
-  let rec = { openers: { ja: ['朝、静かに始めたい', '夜、ひとりで息をつきたい', '人を迎える部屋に彩りを'] } };
-  try { rec = JSON.parse(readFileSync(new URL('../../recommend/config.json', import.meta.url), 'utf8')); } catch {}
-  const openers = (rec.openers?.ja || []).slice(0, 3).map((ja, i) => {
-    const en = rec.openers?.en?.[i];
-    return `<button type="button" class="rec-opt" data-opener-index="${i}"><span lang="ja" data-lang="ja">${esc(ja)}</span>${en ? `<span lang="en" data-lang="en" hidden>${esc(en)}</span>` : ''}</button>`;
-  }).join('\n      ');
   return `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>絵の中に入る</title>
-<meta name="description" content="小さな絵の、奥へ。絵の中に入れるデジタルギャラリー">
-<meta property="og:title" content="絵の中に入る / Enter the Painting">
+<title>ギャラリー / Gallery</title>
+<meta name="description" content="白い壁に、絵を実物の寸法の比で並べたギャラリー。選ぶと絵の中に入れます">
+<meta property="og:title" content="ギャラリー / Gallery">
 <meta property="og:image" content="${baseUrl}/works/${works[0]?.id}/generated/painting_1024.jpg">
-<meta property="og:url" content="${baseUrl}/">
+<meta property="og:url" content="${baseUrl}/gallery/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="recommend-api" content="${esc(process.env.RECOMMEND_API ?? '/api/recommend')}">
+<meta name="theme-color" content="#f6f4ef">
 ${FONTS}
-<link rel="stylesheet" href="src/ui/page.css">
+<link rel="stylesheet" href="../src/ui/page.css">
 </head>
-<body class="gallery-body">
-<main class="gallery">
-  <div class="top">${brand('./')}${langSel()}</div>
-  <section class="statement"><h1>${UI_JA.statement}</h1><p>${UI_JA.statement_en}</p></section>
-  <section class="recommend" id="recommend" aria-labelledby="rec-title">
-    <h2 id="rec-title" data-i18n="rec_title">どんな気分のときに、絵を見たいですか</h2>
-    <div class="rec-openers">
-      ${openers}
-    </div>
-    <div class="rec-thread" aria-live="polite"></div>
-    <form class="rec-form" action="#recommend"><input name="q" type="text" maxlength="600" autocomplete="off" enterkeyhint="send" placeholder="いまの気分を、ひとことで" aria-label="いまの気分を、ひとことで"><button type="submit" data-i18n="rec_send">送る</button></form>
-  </section>
-  <div class="wall">${items}</div>
+<body class="paper">
+<main class="gw">
+  <div class="gw-top">
+    <a class="gw-back" href="../" data-i18n="gw_back">受付に戻る</a>
+    <h1 class="gw-title"><span>ギャラリー</span><span class="latin">Gallery</span></h1>
+    ${langSel()}
+  </div>
+  <div class="gw-wall" style="--maxh:${maxH}" tabindex="0" aria-label="作品">${items}
+  </div>
   <footer><span data-i18n="privacy">${UI_JA.privacy}</span><span>© sheerarts</span></footer>
 </main>
-<script type="module" src="src/page.ts"></script>
+<script type="module" src="../src/page.ts"></script>
 </body>
 </html>
 `;

@@ -10,6 +10,36 @@ const RATE_WINDOW = 60_000;
 const MAX_BODY = 16_000;          // 要求の本文の上限（バイト）
 // 同じ origin のほかに許す origin（npm run dev の Vite から叩けるように）
 const DEV_ORIGINS = ['http://localhost:5173', 'https://localhost:5173'];
+const RETRY_DELAY = 800;          // 上流の一時的な失敗のあと、再試行までの待ち（ミリ秒）
+
+// 合言葉（docs/ENTRANCE.md 3.1）。expected が空なら照合しない（true）。値はログに出さない
+// 長さで早く抜けないよう、両方を最後まで比べる
+export function checkPassphrase(expected, given) {
+  const want = String(expected ?? '');
+  if (!want) return true;
+  const got = String(given ?? '');
+  const n = Math.max(want.length, got.length);
+  let diff = want.length ^ got.length;
+  for (let i = 0; i < n; i++) diff |= (want.charCodeAt(i) || 0) ^ (got.charCodeAt(i) || 0);
+  return diff === 0;
+}
+
+// 再試行してよい上流の状態（混雑・一時的な失敗）
+export const retryableStatus = (status) => status === 429 || status === 529 || (status >= 500 && status <= 599);
+
+// Claude API へ送る。例外か 429 / 5xx / 529 なら 800ms 待って 1 回だけ再試行する。最後の応答（または null）を返す
+// ログは状態コードと再試行の有無だけ。本文は出さない
+export async function fetchUpstream(doFetch, delay = RETRY_DELAY) {
+  let res = null;
+  try { res = await doFetch(); } catch (e) { console.error('Claude API に届かない。再試行する', String(e)); }
+  if (res && res.ok) return res;
+  if (res && !retryableStatus(res.status)) { console.error('Claude API の状態', res.status, '（再試行しない）'); return res; }
+  if (res) { console.error('Claude API の状態', res.status, '。再試行する'); try { await res.body?.cancel(); } catch { /* 読まずに捨てる */ } }
+  await new Promise((r) => setTimeout(r, delay));
+  try { res = await doFetch(); } catch (e) { console.error('Claude API に届かない（再試行後）', String(e)); return null; }
+  if (!res.ok) console.error('Claude API の状態（再試行後）', res.status);
+  return res;
+}
 
 // isolate の中だけのレート制限（厳密でなくてよい）
 const hits = new Map();
@@ -36,7 +66,7 @@ function corsHeaders(req, origin) {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Passphrase',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
@@ -77,6 +107,8 @@ async function handle(req, env) {
 
   const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
   if (rateLimited(ip)) return json(429, { error: 'rate_limited' }, { ...cors, 'Retry-After': '60' });
+  // 合言葉は回数制限のあとで比べる（総当たりも回数制限に掛かるように）
+  if (!checkPassphrase(env.PASSPHRASE, req.headers.get('X-Passphrase'))) return json(403, { error: 'passphrase' }, cors);
 
   let body;
   try {
@@ -93,7 +125,8 @@ async function handle(req, env) {
     return json(502, { error: 'upstream' }, cors);
   }
   const turns = Array.isArray(catalog.turns) && catalog.turns.length === 2 ? catalog.turns : [2, 4];
-  if (validateRequest(body, turns)) return json(400, { error: 'bad_request' }, cors);
+  // 上限は 1 回だけ超えてよい（受付の「別のにする」で AI に「別の絵を」の 1 往復を足すため。docs/ENTRANCE.md 3.1）
+  if (validateRequest(body, [turns[0], turns[1] + 1])) return json(400, { error: 'bad_request' }, cors);
 
   if (!env.ANTHROPIC_API_KEY) {
     console.error('ANTHROPIC_API_KEY が無い');
@@ -102,15 +135,9 @@ async function handle(req, env) {
   const model = env.CLAUDE_MODEL || 'claude-sonnet-5-5';
   const headers = { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' };
   if (supportsFallbacks(model)) headers['anthropic-beta'] = FALLBACK_BETA;
-  let up;
-  try {
-    up = await fetch(API_URL, { method: 'POST', headers, body: JSON.stringify(buildBody(catalog, body.lang, body.messages, model)) });
-  } catch (e) {
-    console.error('Claude API に届かない', String(e));
-    return json(502, { error: 'upstream' }, cors);
-  }
-  if (!up.ok || !up.body) {
-    console.error('Claude API の状態', up.status);   // 本文はログに出さない
+  const upBody = JSON.stringify(buildBody(catalog, body.lang, body.messages, model));
+  const up = await fetchUpstream(() => fetch(API_URL, { method: 'POST', headers, body: upBody }));
+  if (!up || !up.ok || !up.body) {   // 状態コードは fetchUpstream がログに出す（本文は出さない）
     return json(502, { error: 'upstream' }, cors);
   }
 

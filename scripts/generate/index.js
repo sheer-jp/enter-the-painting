@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path';
 import { kmeans, toHex, textColor, backColor, brightCenter } from './color.js';
 import { structureTensorFlow, flowToRGB, motionFromFlow, reliefFromGray, toGray8 } from './flow.js';
 import { translateAll } from './translate.js';
-import { workPage, galleryPage, cardSvg } from './pages.js';
+import { workPage, galleryPage, galleryWallPage, cardSvg } from './pages.js';
 import { compositeRooms } from './rooms.js';
 
 // Claude API の鍵：ANTHROPIC_API_KEY か、別名 ENTER_CLAUDE_API_KEY（クラウドのセッションでは ANTHROPIC_API_KEY がセッション側に取られて空になることがある）
@@ -148,6 +148,8 @@ async function main() {
     writeFileSync(join(pdir, 'index.html'), workPage({ work, space, baseUrl: BASE_URL, allWorks }));
   }
   writeFileSync(join(ROOT, 'index.html'), galleryPage({ works: allWorks, baseUrl: BASE_URL }));
+  mkdirSync(join(ROOT, 'gallery'), { recursive: true });   // ギャラリー（docs/ENTRANCE.md 4 節）。/ は受付
+  writeFileSync(join(ROOT, 'gallery', 'index.html'), galleryWallPage({ works: allWorks, baseUrl: BASE_URL }));
   writeFileSync(join(ROOT, 'public', 'works.json'), JSON.stringify(allWorks.map((s) => ({ id: s.id, title: s.title, size_cm: s.size_cm })), null, 2) + '\n');
   await (await import('./catalog.js')).writeCatalog(ROOT);   // 気分から絵をすすめる（docs/RECOMMEND.md 8.3）
   console.log(`ページ生成：${every.length} 作品、BASE_URL=${BASE_URL}`);

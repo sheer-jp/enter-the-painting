@@ -1,0 +1,67 @@
+/* 受付の会話とおすすめのカード（docs/ENTRANCE.md 3.1、3.4。docs/DESIGN.md「受付」）。画面の骨組みと最初の吹き出しは page.css（JS の前に出す） */
+.cg-new { animation: cg-in .5s ease both; }
+.cg-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* 「…」：3 点をゆっくり明滅 */
+.cg-dots { display: inline-flex; gap: 5px; padding: 6px 2px; }
+.cg-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-2); animation: cg-blink 1.6s ease-in-out infinite; }
+.cg-dots i:nth-child(2) { animation-delay: .2s; }
+.cg-dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes cg-blink { 0%, 100% { opacity: .2; } 40% { opacity: .9; } }
+
+/* ───── おすすめのカード ───── */
+.cg-card {
+  --spin-d: 1.1s;          /* 回転の長さ（差し替えは 0.8 秒） */
+  --spin-a: 900deg;        /* 2 回転半（差し替えは 1 回転半） */
+  align-self: stretch; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  margin: 8px 0 4px; padding: 16px 0 6px; border-top: 1px solid var(--line);
+}
+.cg-card.is-swap { --spin-d: .8s; --spin-a: 540deg; }
+.cg-card-head { margin: 0; font-family: var(--serif); font-size: 14px; letter-spacing: .2em; color: var(--ink); animation: cg-in .5s ease both; }
+
+/* キャンバス：少し下から上がりながら Y 軸で回り、正面で止まる（くるんくるんくるん） */
+.cg-stage { position: relative; isolation: isolate; perspective: 900px; width: min(72%, 300px, calc(30dvh * var(--ar, 1))); margin: 6px 0 4px; }
+.cg-canvas { position: relative; transform-style: preserve-3d; animation: cg-spin var(--spin-d) cubic-bezier(.2, .8, .2, 1) both, cg-shrink var(--spin-d) linear both; }
+.cg-front { position: relative; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 1px 2px rgba(35, 32, 29, .18), 0 14px 30px rgba(35, 32, 29, .16); background: var(--bg-2); }
+.cg-front img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* 裏面：紙白の面（回っている間に見える） */
+.cg-back { position: absolute; inset: 0; background: #faf8f3; border: 1px solid var(--line); transform: rotateY(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+@keyframes cg-spin { from { transform: translateY(28px) rotateY(var(--spin-a)); } to { transform: translateY(0) rotateY(0deg); } }
+@keyframes cg-shrink { 0%, 82% { scale: .86; } 100% { scale: 1; } }
+
+/* ピカーン：止まった瞬間に絵の後ろで淡い光がふくらみ、表面を細い光の帯が左上から右下へ 1 回走る。色は絵の主要色の明るい版（--glow-c） */
+.cg-glow { position: absolute; inset: -30%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, var(--glow-c, hsl(40 60% 82%)), transparent); opacity: 0; pointer-events: none; animation: cg-glow .45s ease-out var(--spin-d) both; }
+@keyframes cg-glow { 0% { opacity: 0; scale: .6; } 40% { opacity: .9; } 100% { opacity: 0; scale: 1.6; } }
+.cg-sheen { position: absolute; inset: -20%; pointer-events: none; background: linear-gradient(120deg, transparent 42%, color-mix(in srgb, var(--glow-c, hsl(40 60% 82%)) 75%, transparent) 50%, transparent 58%); opacity: 0; transform: translate(-60%, -60%); animation: cg-sheen .5s ease-in-out var(--spin-d) both; mix-blend-mode: screen; }
+@keyframes cg-sheen { 0% { opacity: 1; transform: translate(-60%, -60%); } 100% { opacity: 1; transform: translate(60%, 60%); } }
+
+/* 題名・寸法・理由・3 つの選択：止まったあと 0.15 秒ずつ遅れて下からふわっと */
+.cg-rise { animation: cg-rise .5s ease both; animation-delay: calc(var(--spin-d) + var(--i, 0) * .15s); }
+@keyframes cg-rise { from { opacity: 0; transform: translateY(8px); } }
+
+.cg-cap { margin: 4px 0 0; text-align: center; font-size: 11px; letter-spacing: .12em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.cg-cap b { display: block; font-family: var(--serif); font-weight: 400; font-size: 17px; letter-spacing: .1em; color: var(--ink); }
+.cg-reason { margin: 0; max-width: 26em; text-align: center; font-family: var(--serif); font-size: 14.5px; line-height: 1.8; letter-spacing: .04em; color: var(--ink); }
+.cg-moods { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; font-size: 11px; letter-spacing: .1em; color: var(--ink-2); }
+.cg-moods-label { letter-spacing: .2em; }
+.cg-moods-label::after { content: "："; }
+.cg-mood:not(:last-child)::after { content: "・"; margin-left: 10px; color: var(--line); }
+
+/* 3 つの選択は縦に並べる（タップの的 44px） */
+.cg-btn { display: flex; align-items: center; justify-content: center; width: min(100%, 320px); min-height: 46px; padding: 0 20px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-family: var(--sans); font-size: 13.5px; letter-spacing: .16em; cursor: pointer; transition: border-color .3s, background .3s, color .3s; }
+.cg-btn:hover { border-color: var(--ink); background: #fff; }
+.cg-btn.primary { border-color: var(--ink); background: var(--ink); color: var(--bg); font-size: 14px; }
+.cg-btn.primary:hover { background: #000; }
+.cg-note { margin: 2px 0 0; max-width: 26em; text-align: center; font-size: 10.5px; letter-spacing: .08em; line-height: 1.6; color: var(--ink-2); }
+.cg-again { appearance: none; min-height: 44px; padding: 0 6px; border: 0; background: transparent; color: var(--ink-2); font-size: 12px; letter-spacing: .18em; text-decoration: underline; text-underline-offset: 5px; text-decoration-color: var(--line); cursor: pointer; }
+.cg-again:hover { color: var(--ink); text-decoration-color: var(--ink); }
+
+/* 動きを減らす設定：回転と光は出さず、0.3 秒のフェードだけ */
+@media (prefers-reduced-motion: reduce) {
+  .cg-new, .cg-card-head { animation: none; }
+  .cg-dots i { animation: none; opacity: .6; }
+  .cg-card { animation: cg-fade .3s ease both; }
+  .cg-canvas, .cg-rise { animation: none; }
+  .cg-glow, .cg-sheen { display: none; }
+}
+@keyframes cg-fade { from { opacity: 0; } }
