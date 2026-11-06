@@ -44,3 +44,37 @@ describe('clampOffset with bounds', () => {
     expect(clampB(5000, 5000, r, 1000, 1000)).toEqual([800, 820]);
   });
 });
+
+// 絵の層の置き方（src/ui/roomArt.ts。拡大表示と T5 の終わりで共通）
+import { pctBox, coverBox, canMove } from '../src/ui/roomArt';
+describe('roomArt の純関数', () => {
+  it('画像の px の矩形を枠の % に', () => {
+    expect(pctBox({ x0: 400, y0: 800, x1: 800, y1: 1200 }, 1600, 1600)).toEqual([25, 50, 25, 25]);
+  });
+  it('cover：縦長の画面では高さで合わせ、横は中央でははみ出す', () => {
+    const b = coverBox(1600, 1600, 390, 844);
+    expect(b.k).toBeCloseTo(844 / 1600); expect(b.h).toBeCloseTo(844); expect(b.y).toBeCloseTo(0);
+    expect(b.x).toBeCloseTo((390 - 844) / 2);
+  });
+  it('cover：横長の画面では幅で合わせる', () => {
+    const b = coverBox(1600, 1600, 1280, 800);
+    expect(b.k).toBeCloseTo(0.8); expect(b.x).toBeCloseTo(0); expect(b.y).toBeCloseTo((800 - 1280) / 2);
+  });
+  it('T5 の演出の終点と絵の層の初期位置が一致する（quad の外接矩形 × cover）', () => {
+    const quad: [number, number][] = [[697, 623], [903, 623], [906, 781], [694, 781]];
+    const b = coverBox(1600, 1600, 390, 844);
+    const [l, t, w, h] = pctBox({ x0: 694, y0: 623, x1: 906, y1: 781 }, 1600, 1600);
+    // StoryMode.roomLayout と同じ式で画面の矩形を出す
+    const xs = quad.map((p) => p[0]), ys = quad.map((p) => p[1]);
+    expect(b.x + (l / 100) * b.w).toBeCloseTo(Math.min(...xs) * b.k + b.x);
+    expect(b.y + (t / 100) * b.h).toBeCloseTo(Math.min(...ys) * b.k + b.y);
+    expect((w / 100) * b.w).toBeCloseTo((Math.max(...xs) - Math.min(...xs)) * b.k);
+    expect((h / 100) * b.h).toBeCloseTo((Math.max(...ys) - Math.min(...ys)) * b.k);
+  });
+  it('素の部屋が無い・手前に物がある部屋は動かさない（合成画像のまま）', () => {
+    const room = { name: 'a', image: 'a.jpg', label: {}, wall_width_cm: 300, image_px: [1600, 1600] as [number, number], quad_px: [[0, 0], [1, 0], [1, 1], [0, 1]] as [number, number][] };
+    expect(canMove(room as never, 'rooms/a.jpg', 'p.jpg')).toBe(true);
+    expect(canMove(room as never, null, 'p.jpg')).toBe(false);
+    expect(canMove({ ...room, occlusion: true } as never, 'rooms/a.jpg', 'p.jpg')).toBe(false);
+  });
+});

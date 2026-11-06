@@ -15,9 +15,12 @@ export class ScreenText {
   constructor(parent: HTMLElement, color: string) {
     this.el = document.createElement('div');
     this.el.className = 'float-text';
-    // 書体・大きさ・太さ・色・にじみは page.css の .float-text（11-07 T-1：--ink の 600、白のにじみ）。ここは位置と動きだけ。
-    // color（作品の text_color）は物語モードでは使わない（白い流体の上で読めるよう --ink に統一）。呼び出し側を変えないため引数は残す
+    // 書体・大きさ・太さは page.css の .float-text（11-07 T-1：600）。ここは位置と動きと色。
+    // color は作品の text_color（generate が絵の明るさで決める：濃い絵は白、淡い絵は墨。11-07 作家）。にじみは文字色の反対（白文字に墨、墨文字に白）
     this.el.style.cssText = 'position:absolute;left:0;right:0;top:50%;transform:translateY(-50%) scale(.3);text-align:center;opacity:0;filter:blur(6px);pointer-events:none;word-break:keep-all;overflow-wrap:anywhere;';
+    const light = isLight(color);
+    this.el.style.setProperty('--ft-ink', color);
+    this.el.style.setProperty('--ft-glow', light ? '0 0 12px rgba(20,18,16,.85), 0 0 3px rgba(20,18,16,.9)' : '0 0 10px rgba(255,255,255,.95), 0 0 2px rgba(255,255,255,.95)');
     parent.appendChild(this.el);
     // 最初の文が代わりの書体で出ないよう、600 を先に読んでおく（失敗しても続ける）
     document.fonts?.load('600 40px "Shippori Mincho"').catch(() => {});
@@ -132,4 +135,13 @@ export class SpaceText {
   }
   clear() { this.token++; this.mesh.visible = false; this.mat.opacity = 0; }
   dispose() { this.tex.dispose(); this.mat.dispose(); this.mesh.geometry.dispose(); }
+}
+
+// 色が明るいか（#rrggbb の相対輝度 > 0.5）。白文字なら墨のにじみ、墨文字なら白のにじみ
+function isLight(hex: string): boolean {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return false;
+  const v = parseInt(m[1], 16);
+  const [r, g, b] = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x) => x / 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.5;
 }

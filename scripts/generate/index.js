@@ -7,6 +7,9 @@ import { pathToFileURL } from 'node:url';
 import { kmeans, toHex, textColor, backColor, brightCenter } from './color.js';
 import { structureTensorFlow, flowToRGB, motionFromFlow, reliefFromGray, toGray8 } from './flow.js';
 import { translateAll } from './translate.js';
+
+// 文字を白にする絵の明るさの上限（L*）。6 作品：New Chapter 67 だけ墨、ほかは白（docs/EXPERIENCE.md 3 節 T3）
+const TEXT_DARK_LSTAR = 60;
 import { workPage, galleryPage, galleryWallPage, cardSvg } from './pages.js';
 import { compositeRooms } from './rooms.js';
 
@@ -128,12 +131,22 @@ async function generateWork(id) {
 
   // 6. space.json
   const ov = work.overrides || {};
+  // 絵の平均の明るさ L*（painting_1024 の平均 RGB → 線形 → Y → L*）
+  const lstar = await (async () => {
+    const st = await sharp(join(gen, 'painting_1024.jpg')).stats();
+    const lin = (v) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+    const [r, g, b] = st.channels.map((ch) => lin(ch.mean / 255));
+    const Y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    return Y <= 0.008856 ? Y * 903.3 : Math.pow(Y, 1 / 3) * 116 - 16;
+  })();
   const space = {
     id, title: work.title?.ja ? { ...tr(work.title.ja), ja: work.title.ja, ...(work.title.en ? { en: work.title.en } : {}) } : { ja: id },
     size_cm: work.size_cm, aspect: +aspect.toFixed(4), year: work.year ?? null,
     painting: 'painting_1024.jpg', painting_full: 'painting_full.jpg', painting_blur: 'painting_blur.jpg',
     source_px: [meta.width, meta.height],
-    palette: paletteHex, text_color: ov.text_color || textColor(palette), back_color: ov.back_color || backColor(palette),
+    palette: paletteHex,
+    // 文字色は絵の平均の明るさ（L*）で決める：濃い絵は白、淡い絵は墨（11-07 作家「濃い絵に黒文字は見づらい。淡い絵なら黒でもいい」）。overrides.text_color で上書き可
+    luma: +lstar.toFixed(1), text_color: ov.text_color || (lstar < TEXT_DARK_LSTAR ? '#ffffff' : '#141210'), back_color: ov.back_color || backColor(palette),
     bright_center: bright,
     flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density, sigma: ov.flow_sigma ?? FLOW_SIGMA_DEFAULT },
     relief: { texture: 'relief.png' },

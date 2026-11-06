@@ -372,16 +372,16 @@
     "pt": "Este dispositivo não suporta o fluido; imagem fixa"
   },
   "tap_for_size": {
-    "ja": "画像をタップすると、寸法と詳しい説明が見られます",
-    "en": "Tap an image to see its size and more details",
-    "zh-Hans": "点按图片，可查看尺寸和详细说明",
-    "zh-Hant": "點按圖片，可查看尺寸與詳細說明",
-    "ko": "이미지를 탭하면 크기와 자세한 설명을 볼 수 있습니다",
-    "fr": "Touchez une image pour voir les dimensions et plus de détails",
-    "de": "Tippen Sie auf ein Bild, um Maße und Details zu sehen",
-    "es": "Toca una imagen para ver las medidas y más detalles",
-    "it": "Tocca un'immagine per vedere le dimensioni e altri dettagli",
-    "pt": "Toque numa imagem para ver as dimensões e mais detalhes"
+    "ja": "画像をタップすると、寸法と詳しい説明。絵をドラッグして、好きな場所に置けます",
+    "en": "Tap an image for its size and details. Drag the painting to place it wherever you like",
+    "zh-Hans": "点按图片，可查看尺寸和详细说明。拖动画作，可放到喜欢的位置",
+    "zh-Hant": "點按圖片，可查看尺寸與詳細說明。拖曳畫作，可放到喜歡的位置",
+    "ko": "이미지를 탭하면 크기와 자세한 설명을 볼 수 있습니다. 그림을 드래그해 원하는 곳에 둘 수 있습니다",
+    "fr": "Touchez une image pour voir les dimensions et plus de détails. Faites glisser le tableau où vous voulez",
+    "de": "Tippen Sie auf ein Bild für Maße und Details. Ziehen Sie das Bild an die gewünschte Stelle",
+    "es": "Toca una imagen para ver las medidas y más detalles. Arrastra el cuadro adonde quieras",
+    "it": "Tocca un'immagine per le dimensioni e altri dettagli. Trascina il quadro dove preferisci",
+    "pt": "Toque numa imagem para ver as dimensões e mais detalhes. Arraste o quadro para onde quiser"
   },
   "dims_hide": {
     "ja": "寸法を隠す",
@@ -1018,5 +1018,29 @@
     "es": "Posición del cuadro. Arrástrelo o use las flechas",
     "it": "Posizione del quadro. Trascinalo o usa i tasti freccia",
     "pt": "Posição do quadro. Arraste ou use as setas"
+  },
+  "drag_hint": {
+    "ja": "絵をドラッグして、好きな場所へ",
+    "en": "Drag the painting wherever you like",
+    "zh-Hans": "拖动画作，放到喜欢的位置",
+    "zh-Hant": "拖曳畫作，放到喜歡的位置",
+    "ko": "그림을 드래그해 원하는 곳으로",
+    "fr": "Faites glisser le tableau où vous voulez",
+    "de": "Ziehen Sie das Bild, wohin Sie möchten",
+    "es": "Arrastra el cuadro adonde quieras",
+    "it": "Trascina il quadro dove preferisci",
+    "pt": "Arraste o quadro para onde quiser"
+  },
+  "drag_hint_place": {
+    "ja": "絵をドラッグして、横に動かせます",
+    "en": "Drag the painting to slide it sideways",
+    "zh-Hans": "拖动画作，可左右移动",
+    "zh-Hant": "拖曳畫作，可左右移動",
+    "ko": "그림을 드래그해 좌우로 옮길 수 있습니다",
+    "fr": "Faites glisser le tableau pour le décaler sur le côté",
+    "de": "Ziehen Sie das Bild, um es seitlich zu verschieben",
+    "es": "Arrastra el cuadro para moverlo hacia los lados",
+    "it": "Trascina il quadro per spostarlo di lato",
+    "pt": "Arraste o quadro para o mover para os lados"
   }
 }

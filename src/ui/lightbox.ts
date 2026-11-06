@@ -2,6 +2,8 @@
 // 作品ページで帯の画像を初めてタップしたときに import() で読む（ページ用 JS を小さく保つ）
 import { t, pick, type Lang } from '../i18n';
 import type { Multi, Room } from '../experience/types';
+import { mountRoomArt, quadRect, canMove, type Rect } from './roomArt';
+export { quadRect, clampOffset, type Rect } from './roomArt';   // テストと既存の呼び出し元のため
 
 export interface LightboxSpace { size_cm: [number, number]; size_label?: Multi | null; rooms: Room[] }
 // srcs：合成画像（帯と同じ）。bases：素の部屋の URL（room.base。無ければ null）。painting：絵の写真の URL（painting_1024.jpg）
@@ -13,22 +15,9 @@ const GAP = 12;         // 寸法線と絵の間（画面の px）
 const TICK = 5;         // 目盛りの半分の長さ
 const FONT = 12;        // ラベルの文字の大きさ
 const SMALL = 60;       // 絵がこれより小さい（画面の px）ときはラベルを 1 行にまとめる
-const KEY_STEP = 10;    // 矢印キーで絵を動かす量（画像の px）
-
-export interface Rect { x0: number; y0: number; x1: number; y1: number }
-// 4 隅から軸に平行な矩形
-export function quadRect(q: [number, number][]): Rect {
-  const xs = q.map((p) => p[0]), ys = q.map((p) => p[1]);
-  return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
-}
-// 絵の移動量（画像の px）を、絵が部屋の画像（iw × ih）の内側に収まる範囲に切り詰める。大きさは変えない
-// horizontalOnly：置く場面（イーゼル・棚）。下端は受けに乗ったまま、横にだけ動かす（docs/PLACEMENT.md 6 節）
-// bounds：動かせる範囲 [x0, y0, x1, y1]（space.json の move_px。壁の範囲で、家具の手前には出さない）。無ければ画像全体
-export function clampOffset(dx: number, dy: number, r: Rect, iw: number, ih: number, horizontalOnly = false, bounds?: [number, number, number, number]): [number, number] {
-  const c = (v: number, lo: number, hi: number) => (lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v)));
-  const [bx0, by0, bx1, by1] = bounds && bounds[2] > bounds[0] && bounds[3] > bounds[1] ? bounds : [0, 0, iw, ih];
-  return [c(dx, bx0 - r.x0, bx1 - r.x1), horizontalOnly ? 0 : c(dy, by0 - r.y0, by1 - r.y1)];
-}
+const HINT_STRONG_MS = 3000;   // 案内の 1 行を濃く出す時間（最初に開いたときだけ）
+let hintSeen = false;          // このページで一度でも案内を濃く出したか
+let hintDone = false;          // このページで一度でも絵を動かしたか（以後は案内を出さない）
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, parent?: HTMLElement) => {
   const e = document.createElement(tag); e.className = cls; parent?.appendChild(e); return e;
@@ -47,26 +36,29 @@ export function openLightbox(o: LightboxOptions): () => void {
   let zoom = 1, tx = 0, ty = 0;
   let fit = { w: 0, h: 0, k: 1 };   // 画像を画面に収めた大きさと倍率（画面 px / 画像 px）
   let dimsTimer = 0;
-  let off: [number, number] = [0, 0];   // 絵の移動量（画像の px）。部屋ごとに 0 から。保存しない
   let movable = false;                  // いまの部屋で絵を別の層にして動かせるか
+  let hintTimer = 0;
 
   const root = el('div', 'lb');
   root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true');
   const media = el('div', 'lb-media', root);
   const frame = el('div', 'lb-frame', media);
   const img = el('img', 'lb-img', frame); img.alt = ''; img.draggable = false;
-  // 絵の層（素の部屋の上に、実物の写真を quad_px の位置に置く。ドラッグ・矢印キーで動く）
-  // 置く場面では、絵の層の下に側面の帯と接地の影を敷く（合成画像と同じ見え方に。帯の色と大きさは space.json から）
-  const sides = el('div', 'lb-art-sides', frame); sides.hidden = true;
-  sides.style.position = 'absolute'; sides.style.pointerEvents = 'none';
-  const art = el('img', 'lb-art', frame); art.alt = ''; art.draggable = false; art.hidden = true;
-  art.tabIndex = 0; art.setAttribute('role', 'img'); art.setAttribute('aria-label', t('move_painting', lang));
+  // 絵の層（素の部屋の上に、実物の写真を quad_px の位置に置く。ドラッグ・矢印キーで動く。roomArt.ts と T5 で共通）
+  const ra = mountRoomArt({
+    frame, painting: o.painting || '', label: t('move_painting', lang),
+    fitK: () => fit.k, zoom: () => zoom,
+    onMove: () => { hideHint(); drawDims(rooms[index]); },
+  });
+  const art = ra.el;
   const svg = document.createElementNS(SVG_NS, 'svg'); svg.setAttribute('class', 'lb-dims'); svg.setAttribute('aria-hidden', 'true');
   frame.appendChild(svg);
   const prev = el('button', 'lb-nav lb-prev', media); prev.type = 'button'; prev.textContent = '‹'; prev.setAttribute('aria-label', t('prev_room', lang));
   const next = el('button', 'lb-nav lb-next', media); next.type = 'button'; next.textContent = '›'; next.setAttribute('aria-label', t('next_room', lang));
   const text = el('div', 'lb-text', root);
   const head = el('p', 'lb-head', text);
+  // 案内の 1 行（「絵をドラッグして、好きな場所へ」）。動かせる部屋だけ。動かしたら消す
+  const hint = el('p', 'lb-hint', text); hint.hidden = true;
   const body = el('div', 'lb-body', text);
   const tools = el('div', 'lb-tools', text);
   const toggle = el('button', 'lb-tool', tools); toggle.type = 'button';
@@ -142,35 +134,20 @@ export function openLightbox(o: LightboxOptions): () => void {
   // 絵の矩形（画像の px、移動量を足したもの）。寸法線と 2× の中心もこれに従う
   function artRect(room: Room): Rect | null {
     if (!room.quad_px) return null;
-    const r = quadRect(room.quad_px);
+    const r = quadRect(room.quad_px); const off = movable ? ra.offset() : [0, 0];
     return { x0: r.x0 + off[0], y0: r.y0 + off[1], x1: r.x1 + off[0], y1: r.y1 + off[1] };
   }
-  // 絵の層の位置（枠に対する %。枠の拡大 transform にそのまま乗る）
-  function placeArt() {
-    const room = rooms[index];
-    const r = artRect(room); const ip = room.image_px;
-    if (!movable || !r || !ip) return;
-    const [iw, ih] = ip;
-    art.style.left = `${(r.x0 / iw) * 100}%`; art.style.top = `${(r.y0 / ih) * 100}%`;
-    art.style.width = `${((r.x1 - r.x0) / iw) * 100}%`; art.style.height = `${((r.y1 - r.y0) / ih) * 100}%`;
-    const sp = room.sides_px;
-    if (room.place && sp) {
-      // 帯：絵の矩形を下に sp.bottom、右に sp.right 広げた箱。絵の層の下にあるので、見えるのは帯だけ
-      const bw = r.x1 - r.x0 + sp.right, bh = r.y1 - r.y0 + sp.bottom;
-      sides.style.left = `${(r.x0 / iw) * 100}%`; sides.style.top = `${(r.y0 / ih) * 100}%`;
-      sides.style.width = `${(bw / iw) * 100}%`; sides.style.height = `${(bh / ih) * 100}%`;
-      sides.style.background = room.side_color || '#555';
-      // 接地の影：箱の下にだけ落とす（画面の px に直す）
-      const k = fit.k || 1, s = sp.shadow * k;
-      sides.style.boxShadow = `0 ${(s * 0.5).toFixed(1)}px ${(s * 0.8).toFixed(1)}px ${(-s * 0.1).toFixed(1)}px rgba(0,0,0,0.45)`;
-    }
+  function showHint(room: Room) {
+    clearTimeout(hintTimer);
+    // 動かしたあとは見えなくするだけで場所は残す（文章の高さが変わって部屋の画像が跳ねないように）
+    hint.hidden = !movable; hint.classList.toggle('gone', hintDone);
+    hint.textContent = t(room.place ? 'drag_hint_place' : 'drag_hint', lang);
+    if (hint.hidden || hintDone) return;
+    // 最初に開いたときだけ 3 秒ほど濃く、そのあと薄く残す
+    hint.classList.toggle('strong', !hintSeen);
+    if (!hintSeen) { hintSeen = true; hintTimer = window.setTimeout(() => hint.classList.remove('strong'), HINT_STRONG_MS); }
   }
-  function moveArt(dx: number, dy: number) {
-    const room = rooms[index]; const ip = room.image_px;
-    if (!movable || !room.quad_px || !ip) return;
-    off = clampOffset(dx, dy, quadRect(room.quad_px), ip[0], ip[1], !!room.place, room.move_px);
-    placeArt(); drawDims(room);
-  }
+  function hideHint() { hintDone = true; clearTimeout(hintTimer); hint.classList.remove('strong'); hint.classList.add('gone'); }
 
   function setDimsVisible(animateIn: boolean) {
     clearTimeout(dimsTimer);
@@ -189,7 +166,7 @@ export function openLightbox(o: LightboxOptions): () => void {
     fit = { w: iw * k, h: ih * k, k };
     frame.style.width = `${fit.w}px`; frame.style.height = `${fit.h}px`;
     applyZoom();
-    placeArt();   // 接地の影は画面の px なので、大きさが変わったら置き直す
+    if (movable) ra.place();   // 接地の影は画面の px なので、大きさが変わったら置き直す
     drawDims(room);
   }
   function clampPan() {
@@ -222,18 +199,18 @@ export function openLightbox(o: LightboxOptions): () => void {
 
   function show(i: number) {
     index = (i + rooms.length) % rooms.length;
-    zoom = 1; tx = 0; ty = 0; off = [0, 0]; artDrag = null;
+    zoom = 1; tx = 0; ty = 0;
     const room = rooms[index];
     svg.classList.remove('on');
     // 素の部屋があり、手前に物が無い部屋だけ、絵を別の層にして動かせる。それ以外は従来どおり合成画像
     const base = o.bases?.[index];
-    movable = !!(base && o.painting && !room.occlusion && room.quad_px && room.image_px);
+    movable = canMove(room, base, o.painting);
     if (document.activeElement === art && !movable) close.focus();
-    art.hidden = !movable; resetBtn.hidden = !movable; sides.hidden = !(movable && room.place && room.sides_px);
-    art.style.boxShadow = room.place ? 'none' : '';   // 置く場面は壁に落とす影（page.css）をやめ、帯と接地の影に
-    if (movable) { if (art.getAttribute('src') !== o.painting) art.src = o.painting!; placeArt(); }
+    resetBtn.hidden = !movable;
+    ra.set(movable ? room : null);
     img.src = movable ? base! : srcs[index] || '';
     renderText(room);
+    showHint(room);
     layout();
     const ready = () => { layout(); setDimsVisible(true); };
     if (img.complete && img.naturalWidth) ready(); else img.addEventListener('load', ready, { once: true });
@@ -242,45 +219,12 @@ export function openLightbox(o: LightboxOptions): () => void {
   // 素の部屋が読めなければ合成画像に戻す
   img.addEventListener('error', () => {
     if (!movable || !srcs[index]) return;
-    movable = false; art.hidden = true; resetBtn.hidden = true; sides.hidden = true; off = [0, 0];
+    movable = false; ra.set(null); resetBtn.hidden = true; hint.hidden = true;
     img.src = srcs[index]; drawDims(rooms[index]);
   });
 
   // ---- 操作 ----
-  // 絵の上から始まるドラッグは絵を動かす（media の拡大・パン・スワイプには渡さない）
-  let artDrag: { id: number; x: number; y: number; off: [number, number] } | null = null;
-  art.addEventListener('pointerdown', (e) => {
-    if (!movable || e.button > 0) return;
-    e.stopPropagation(); e.preventDefault();
-    if (artDrag) return;   // 2 本目の指は無視（絵の上ではピンチしない）
-    artDrag = { id: e.pointerId, x: e.clientX, y: e.clientY, off: [off[0], off[1]] };
-    dragged = false;
-    try { art.setPointerCapture(e.pointerId); } catch {}
-    art.classList.add('dragging');
-  });
-  art.addEventListener('pointermove', (e) => {
-    if (!artDrag || e.pointerId !== artDrag.id) return;
-    e.stopPropagation();
-    const dx = e.clientX - artDrag.x, dy = e.clientY - artDrag.y;
-    if (Math.hypot(dx, dy) > 3) dragged = true;
-    const s = fit.k * zoom || 1;   // 画面の px → 画像の px（枠は zoom 倍に拡大されている）
-    moveArt(artDrag.off[0] + dx / s, artDrag.off[1] + dy / s);
-  });
-  const artUp = (e: PointerEvent) => {
-    if (!artDrag || e.pointerId !== artDrag.id) return;
-    e.stopPropagation();
-    artDrag = null; art.classList.remove('dragging');
-  };
-  art.addEventListener('pointerup', artUp);
-  art.addEventListener('pointercancel', artUp);
-  art.addEventListener('dblclick', (e) => e.stopPropagation());   // 絵のダブルクリックでは拡大しない（動かす操作と紛れる）
-  art.addEventListener('keydown', (e) => {
-    const d: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
-    const v = d[e.key]; if (!v || !movable) return;
-    if (rooms[index].place && v[1] !== 0) { e.preventDefault(); e.stopPropagation(); return; }   // 置く場面は縦に動かさない
-    e.preventDefault(); e.stopPropagation();
-    moveArt(off[0] + v[0] * KEY_STEP, off[1] + v[1] * KEY_STEP);
-  });
+  // 絵の上のドラッグ・矢印キーは roomArt.ts が受け、ここ（拡大・パン・スワイプ）には渡さない
   let dragged = false;
   let downTarget: EventTarget | null = null;   // ポインタを捕まえると click の target が変わるので、押した場所で判定する
   root.addEventListener('pointerdown', (e) => { downTarget = e.target; }, true);
@@ -332,7 +276,7 @@ export function openLightbox(o: LightboxOptions): () => void {
   next.addEventListener('click', () => show(index + 1));
   toggle.addEventListener('click', () => { showDims = !showDims; renderText(rooms[index]); setDimsVisible(false); });
   zoomBtn.addEventListener('click', () => { const [px, py] = paintingCenter(); zoomAt(zoom > 1 ? 1 : MAX_ZOOM, px, py); });
-  resetBtn.addEventListener('click', () => moveArt(0, 0));
+  resetBtn.addEventListener('click', () => { ra.move(0, 0); drawDims(rooms[index]); });
   const onKey = (e: KeyboardEvent) => {
     if (e.target === art && e.key.startsWith('Arrow')) return;   // 絵の層の矢印キーは絵を動かす（上で処理済み）
     if (e.key === 'Escape') { e.preventDefault(); dispose(); }
@@ -355,7 +299,7 @@ export function openLightbox(o: LightboxOptions): () => void {
   let disposed = false;
   function dispose() {
     if (disposed) return; disposed = true;
-    clearTimeout(dimsTimer);
+    clearTimeout(dimsTimer); clearTimeout(hintTimer);
     document.removeEventListener('keydown', onKey);
     window.removeEventListener('resize', onResize);
     document.documentElement.style.overflow = prevOverflow;

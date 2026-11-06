@@ -6,7 +6,8 @@ import type { Soundscape } from '../audio/Soundscape';
 import type { Hud } from '../experience/hud';
 import type { Space } from '../experience/types';
 import { ScreenText } from '../text/FloatingText';
-import { pick, type Lang } from '../i18n';
+import { pick, t, type Lang } from '../i18n';
+import { mountRoomArt, coverBox, canMove, type RoomArt } from '../ui/roomArt';
 import { Particles } from '../space/Particles';
 
 // T3 の最短の長さ（秒）。docs/EXPERIENCE.md 3 節 T3「数値」。声があるときは声の長さが優先
@@ -79,6 +80,9 @@ export class StoryMode {
   private fpsSamples: number[] = [];
   private resolveEnd: ((v: 'again' | 'exit') => void) | null = null;
   private restoreBase: number;
+  // T5 の終わりの画面：素の部屋 + 絵の層（ドラッグで動かせる。docs/EXPERIENCE.md 3 節 T5）。位置は保存しない
+  private roomLayer: { root: HTMLDivElement; frame: HTMLDivElement; ra: RoomArt; hint: HTMLDivElement; k: number } | null = null;
+  private roomGen = 0;   // 「もう一度」で増やす（読み込み中の層を捨てる）
   // 押している指・マウス（docs/EXPERIENCE.md 8.2）。渦は frame で毎フレーム育てる
   // moved：押し始めた点からの最大の距離（px）。累計にすると指のわずかな震えで「止めている」判定が外れる
   private touch: { x: number; y: number; x0: number; y0: number; uv: [number, number] | null; p: number; startTime: number; moved: number } | null = null;
@@ -186,7 +190,7 @@ export class StoryMode {
     window.addEventListener('keydown', this.onKey);
   }
 
-  private onResize = () => { this.layout(); };
+  private onResize = () => { this.layout(); this.layoutRoomLayer(); };
 
   // 触れる場面か（溶け始めてから、絵に戻るまで）
   private touchable() { return !!this.ctx.fluid && (this.stage === 'T2' || this.stage === 'T3' || this.stage === 'T4') && !this.paused; }
@@ -302,6 +306,55 @@ export class StoryMode {
     return { roomScale, paintScale, paintPos };
   }
 
+  // T5：部屋の画像を素の部屋（room.base）にし、絵を別の層として quad_px の位置に置く。lightbox と同じ roomArt.ts
+  // base が無い・occlusion の部屋・画像が読めないときは、従来どおり合成画像（WebGL の部屋）のまま
+  private async mountRoomLayer() {
+    const room = this.room();
+    const assetBase = this.ctx.base.replace(/works\/[^/]+\/$/, '');   // ctx.base は <assetBase>works/<id>/
+    const base = room?.base ? assetBase + room.base : null;
+    const painting = this.ctx.base + 'generated/' + this.ctx.space.painting;
+    if (!room || !canMove(room, base, painting)) return;
+    const gen = this.roomGen;
+    const root = document.createElement('div'); root.className = 'room-art';
+    const frame = document.createElement('div'); frame.className = 'room-art-frame'; root.appendChild(frame);
+    const img = document.createElement('img'); img.className = 'room-art-img'; img.alt = ''; img.draggable = false; frame.appendChild(img);
+    const hint = document.createElement('div'); hint.className = 'room-art-hint';
+    hint.textContent = t(room.place ? 'drag_hint_place' : 'drag_hint', this.ctx.lang);
+    const ra = mountRoomArt({
+      frame, painting, label: t('move_painting', this.ctx.lang), fitK: () => this.roomLayer?.k || 1,
+      onMove: () => { if (!hint.classList.contains('gone')) { hint.classList.add('gone'); this.ctx.hud.caption.style.transform = 'translateY(26px)'; } },
+    });
+    // 素の部屋と絵の写真を読み終えてから入れ替える（読めなければ合成画像のまま。待つのは 4 秒まで）
+    const loaded = (el: HTMLImageElement, src: string) => new Promise<boolean>((res) => {
+      el.addEventListener('load', () => res(true), { once: true }); el.addEventListener('error', () => res(false), { once: true });
+      el.src = src;
+    });
+    ra.set(room);
+    const ok = await Promise.race([Promise.all([loaded(img, base!), ra.el.complete && ra.el.naturalWidth ? Promise.resolve(true) : loaded(ra.el, painting)]).then((a) => a.every(Boolean)), wait(4000).then(() => false)]);
+    if (!ok || gen !== this.roomGen || !this.running || this.stage !== 'T5') { ra.dispose(); return; }
+    this.roomLayer = { root, frame, ra, hint, k: 1 };
+    this.layoutRoomLayer();
+    document.getElementById('stage')!.insertBefore(root, this.ctx.hud.root);
+    this.ctx.hud.root.appendChild(hint);
+    hint.style.bottom = `calc(${Math.round(this.ctx.hud.ending.getBoundingClientRect().height) + 28 + 14}px + env(safe-area-inset-bottom))`;
+  }
+  // 部屋の枠を、WebGL の部屋と同じ cover の位置・大きさに
+  private layoutRoomLayer() {
+    const L = this.roomLayer; const room = this.room();
+    if (!L || !room?.image_px) return;
+    const b = coverBox(room.image_px[0], room.image_px[1], innerWidth, innerHeight);
+    L.k = b.k;
+    Object.assign(L.frame.style, { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px` });
+    L.ra.place();
+  }
+  private disposeRoomLayer() {
+    this.roomGen++;
+    const L = this.roomLayer; if (!L) return;
+    L.ra.dispose(); L.root.remove(); L.hint.remove();
+    this.ctx.hud.caption.style.transform = '';
+    this.roomLayer = null;
+  }
+
   async start(): Promise<'again' | 'exit'> {
     this.setup();
     this.frame();
@@ -312,12 +365,12 @@ export class StoryMode {
         const timeline = this.timeline();
         result = await Promise.race([ended, timeline.then(() => ended)]);
         this.text.clear();
-        if (result === 'again') { this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.rot = 0; this.vignette = 0; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; this.ctx.hud.caption.style.opacity = '0'; }
+        if (result === 'again') { this.disposeRoomLayer(); this.ctx.fluid?.reset(); this.ctx.fluid?.setRestore(this.restoreBase); this.posNow = { x: 0, y: 0 }; this.rot = 0; this.vignette = 0; this.fade = 0; if (this.roomMat) this.roomMat.opacity = 0; this.ctx.hud.ending.style.opacity = '0'; this.ctx.hud.ending.style.pointerEvents = 'none'; this.ctx.hud.once.style.opacity = '0'; this.ctx.hud.caption.style.opacity = '0'; }
       } while (result === 'again' && this.running);
     } finally {
       this.running = false;
       window.removeEventListener('resize', this.onResize); window.removeEventListener('keydown', this.onKey);
-      this.text.dispose(); this.img?.remove(); this.roomTex?.dispose(); this.roomMat?.dispose(); this.dots?.dispose();
+      this.disposeRoomLayer(); this.text.dispose(); this.img?.remove(); this.roomTex?.dispose(); this.roomMat?.dispose(); this.dots?.dispose();
     }
     return result;
   }
@@ -456,6 +509,8 @@ export class StoryMode {
       // 流体の絵を消して、合成済みの部屋だけにする（同じ場所に同じ絵がある）
       await this.tween(1.0, (t) => (this.fade = 1 - t));
       landed = true;
+      // 止まった瞬間に、素の部屋 + 絵の層に入れ替える（見た目は同じ。ここから絵をドラッグで動かせる）
+      await this.mountRoomLayer();
     }
     fluid?.setRestore(this.restoreBase);
     hud.ending.style.opacity = '1'; hud.ending.style.pointerEvents = 'auto';
@@ -466,7 +521,8 @@ export class StoryMode {
       await wait(1000);
       if (!this.running || this.stage !== 'T5') return;
       hud.caption.textContent = compare;
-      hud.caption.style.bottom = `calc(${Math.round(hud.ending.getBoundingClientRect().height) + 28 + 18}px + env(safe-area-inset-bottom))`;
+      const lift = this.roomLayer && !this.roomLayer.hint.classList.contains('gone') ? 26 : 0;   // 案内の 1 行の分だけ上へ
+      hud.caption.style.bottom = `calc(${Math.round(hud.ending.getBoundingClientRect().height) + 28 + 18 + lift}px + env(safe-area-inset-bottom))`;
       hud.caption.style.opacity = '1';
     }
   }

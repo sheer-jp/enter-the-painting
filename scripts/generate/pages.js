@@ -5,10 +5,10 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const t = (obj, lang) => (obj && (obj[lang] || obj.ja || obj.en)) || '';
 
 const UI_JA = {
-  enter: '絵の世界をのぞく', enter_vr: 'VR でのぞく', enter_note: '色が動き出し、作家の言葉が流れます（約 2 分）', rooms: '部屋で見る', contact: '作家に連絡', share: '共有', others: '他の作品',
+  enter: '絵の世界をのぞく', enter_vr: 'VR でのぞく', enter_note: '色が動き出し、作家の言葉が流れます（約 2 分）', rooms: '部屋で見る', contact: '作家に連絡', share: '共有', others: '他の作品', cg_all: 'ギャラリー全体を見る',   // 11-07 作家「他の作品の下に、ギャラリー全体を見るボタン」
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
   room_cat_studio: '一人暮らしの部屋', room_cat_house: '広い家のリビング',
-  rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明が見られます',
+  rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明。絵をドラッグして、好きな場所に置けます',
   gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '計測は Cookie なし、IP は保存しません',
   statement: '小さな絵の、奥へ。', statement_en: 'Into the depth of a small painting.',
 };
@@ -108,7 +108,7 @@ ${FONTS}
   </div>
   ${rooms ? `<section class="rooms"><h2 class="eyebrow"><span>Rooms</span><span data-i18n="rooms">${UI_JA.rooms}</span></h2><div class="strip">${rooms}</div><p class="rooms-hint"><span data-i18n="tap_for_size">${UI_JA.tap_for_size}</span><span data-i18n="rooms_note">${UI_JA.rooms_note}</span></p></section>` : ''}
   ${story}
-  ${others ? `<section class="others"><h2 class="eyebrow"><span>Works</span><a class="eyebrow-link" href="../../gallery/" data-i18n="others">${UI_JA.others}</a></h2><div class="strip">${others}</div></section>` : ''}
+  ${others ? `<section class="others"><h2 class="eyebrow"><span>Works</span><a class="eyebrow-link" href="../../gallery/" data-i18n="others">${UI_JA.others}</a></h2><div class="strip">${others}</div><p class="others-all"><a class="btn ghost" href="../../gallery/" data-i18n="cg_all">${UI_JA['cg_all'] || 'ギャラリー全体を見る'}</a></p></section>` : ''}
   <footer><span data-i18n="privacy">${UI_JA.privacy}</span><span>© sheerarts</span></footer>
 </main>
 <div id="stage" hidden></div>

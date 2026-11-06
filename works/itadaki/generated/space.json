@@ -33,7 +33,8 @@
     "#b78b2a",
     "#cdb6a1"
   ],
-  "text_color": "#ebe2d9",
+  "luma": 45,
+  "text_color": "#ffffff",
   "back_color": "#34140c",
   "bright_center": [
     0.4555,
@@ -332,5 +333,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T16:58:08.794Z"
+  "generated_at": "2026-11-06T17:17:04.385Z"
 }
