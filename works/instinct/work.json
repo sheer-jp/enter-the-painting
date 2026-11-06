@@ -29,7 +29,7 @@
     "All sorts of feelings, simply flickering.",
     "These are colors I love, too."
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める",
   "moods": {
     "ja": [
       "本能的に生まれた",
@@ -45,5 +45,20 @@
       "ja": "言葉にならない気持ちを抱えた人に",
       "en": "For someone holding feelings that words cannot reach"
     }
+  },
+  "overrides": {
+    "speed": 0.5,
+    "vorticity": 0.8,
+    "tempo": 0.6,
+    "restore": 0.012,
+    "drive": 0.3,
+    "flow_sigma": 6,
+    "look": {
+      "relief": 0.5,
+      "gloss": 0.15,
+      "vivid": 0.5,
+      "grain": 0.03
+    },
+    "radius_m": 2.5
   }
 }

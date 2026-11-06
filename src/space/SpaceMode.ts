@@ -5,6 +5,9 @@ import { touchStroke, touchVortex, tapStrength, TOUCH_TAP_MAX, type Fluid } from
 import { SHADING, LIGHT_DIR, lookOf, shadingUniforms, updateShading } from '../fluid/shading';
 import { SpaceText } from '../text/FloatingText';
 import { pick } from '../i18n';
+import { Particles } from './Particles';
+import { Surround } from './Surround';
+import { particleVisibility, surroundVisibility, hideRoom, floorRadius, lightWorld, particlePos, particlesInView, whiteRatio, particleCount, type DepthQuality } from './depth';
 
 type Ctx = StoryCtx & { renderer: THREE.WebGLRenderer; fluid: Fluid };
 
@@ -47,6 +50,9 @@ const MORPH_FRAG = /* glsl */ `
 uniform float uMorph;
 uniform float uFade;
 uniform vec3 uLightView;     // 光の向き（ビュー空間で一定 = 頭の向きに対して固定。頭を振ると光沢が走る）
+uniform vec3 uPointLight;    // 世界空間の光の点（VR_DEPTH.md 2 節。頭上やや前）。uPointLightOn = 1 のときこちらを使う
+uniform float uPointLightOn;
+uniform float uEdgeAlpha;    // 球面になったとき、絵の矩形の外側のアルファ（奥の光が透ける。0.85）
 varying vec2 vUv;
 varying float vInside;
 varying vec3 vT; varying vec3 vB; varying vec3 vN; varying vec3 vViewPos;
@@ -56,11 +62,14 @@ void main() {
   if (a < 0.01) discard;
   vec3 T = normalize(vT), B = normalize(vB), N = normalize(vN);
   vec3 V = normalize(-vViewPos);
-  vec3 Lt = vec3(dot(uLightView, T), dot(uLightView, B), dot(uLightView, N));
+  // 光：世界空間の 1 点（頭を動かすと光沢が面の起伏に沿って移る）。目ごとの viewMatrix でビュー空間へ
+  vec3 Lv = uPointLightOn > 0.5 ? normalize((viewMatrix * vec4(uPointLight, 1.0)).xyz - vViewPos) : uLightView;
+  vec3 Lt = vec3(dot(Lv, T), dot(Lv, B), dot(Lv, N));
   vec3 Vt = vec3(dot(V, T), dot(V, B), dot(V, N));
   if (Vt.z < 0.0) { Lt.z = -Lt.z; Vt.z = -Vt.z; }   // 裏から見たとき
   vec3 c = paintShade(vUv, normalize(Lt), normalize(Vt));
-  gl_FragColor = vec4(c * uFade, a);
+  // 絵の矩形の中は不透明のまま、外側だけ球面になるにつれて uEdgeAlpha へ
+  gl_FragColor = vec4(c * uFade, a * mix(1.0, uEdgeAlpha, uMorph * (1.0 - vInside)));
   #include <colorspace_fragment>
 }
 `;
@@ -100,20 +109,32 @@ export class SpaceMode {
   private lastT = 0;
   private look = lookOf();
   private t0 = performance.now();
+  // 立体感の層（VR_DEPTH.md）
+  private particles!: Particles;
+  private surround!: Surround;
+  private roomMeshes: THREE.Mesh[] = [];
+  private head = new THREE.Vector3(0, 1.5, 0);   // 球の中心（S3 で決まる）
+  private lightPoint = new THREE.Vector3();
+  private appearAt = -1;                          // 粒が現れ始めた時刻（ms）
+  private reliefInShading = false;                // shading.ts に uReliefScale の受け口があるか
 
-  constructor(private ctx: Ctx, private session: XRSession | null) {}
+  // flat = 検査モード（?space=flat）：WebXR を使わず平面のカメラで回す（docs/VR_DEPTH.md 5 節、V-4）
+  constructor(private ctx: Ctx, private session: XRSession | null, private flat = false) {}
 
   private build() {
     const { space, fluid, renderer } = this.ctx;
-    this.look = lookOf(space.fluid.look);
+    const look = lookOf(space.fluid.look);
+    // VR では厚みの効きを 1.3 倍（VR_DEPTH.md 2 節）。shading.ts に uReliefScale があればそちらで、無ければ look を 1.3 倍にして渡す
+    this.reliefInShading = 'uReliefScale' in shadingUniforms(fluid, look);
+    this.look = this.reliefInShading ? look : { ...look, relief: look.relief * 1.3 };
     this.paintingW = space.size_cm[0] / 100; this.paintingH = space.size_cm[1] / 100;
     this.paintingCenter.set(0, this.eyeY, this.wallZ);
     this.scene.background = new THREE.Color(space.back_color).multiplyScalar(0.25);
     // 薄暗い部屋：床の淡い円と、壁
     const floor = new THREE.Mesh(new THREE.CircleGeometry(4, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(space.back_color).multiplyScalar(0.5) }));
-    floor.rotation.x = -Math.PI / 2; this.scene.add(floor);
+    floor.rotation.x = -Math.PI / 2; this.scene.add(floor); this.roomMeshes.push(floor);
     const wall = new THREE.Mesh(new THREE.PlaneGeometry(8, 4), new THREE.MeshBasicMaterial({ color: new THREE.Color(space.back_color).multiplyScalar(0.7) }));
-    wall.position.set(0, 2, this.wallZ - 0.01); this.scene.add(wall);
+    wall.position.set(0, 2, this.wallZ - 0.01); this.scene.add(wall); this.roomMeshes.push(wall);
     // 絵（流体の色場を貼った 1 枚のメッシュ。平面 → 球面）
     const geo = new THREE.PlaneGeometry(1, 1, 192, 96);
     this.morphMat = new THREE.ShaderMaterial({
@@ -123,11 +144,20 @@ export class SpaceMode {
         uHead: { value: new THREE.Vector3(0, this.eyeY, 0) }, uRadius: { value: space.space.radius_m },
         uPlaneCenter: { value: this.paintingCenter.clone() }, uPlaneRight: { value: new THREE.Vector3(this.paintingW, 0, 0) }, uPlaneUp: { value: new THREE.Vector3(0, this.paintingH, 0) },
         ...shadingUniforms(fluid, this.look), uFade: { value: 1 }, uLightView: { value: LIGHT_DIR.clone() },
+        uPointLight: { value: this.lightPoint }, uPointLightOn: { value: 1 }, uEdgeAlpha: { value: 0.85 },
       },
     });
+    this.setShadingInputs();
     this.morphMesh = new THREE.Mesh(geo, this.morphMat);
     this.morphMesh.frustumCulled = false;
     this.scene.add(this.morphMesh);
+    // 立体感の層：手前の粒、床、奥の光
+    this.updateLight(this.head.set(0, this.eyeY, 0));
+    this.particles = new Particles(space.palette, this.lightPoint, space.space.radius_m, hashId(space.id));
+    this.scene.add(this.particles.mesh);
+    const blur = new THREE.TextureLoader().load(this.ctx.base + 'generated/' + (space.painting_blur || space.painting));
+    this.surround = new Surround(blur);
+    this.scene.add(this.surround.floor, this.surround.back);
     // 視点のリグ（接近で動かすのはこれ）
     this.rig.add(this.camera);
     this.scene.add(this.rig);
@@ -162,8 +192,41 @@ export class SpaceMode {
       });
       this.rig.add(ctrl);
     }
-    renderer.xr.enabled = true;
-    renderer.xr.setReferenceSpaceType('local-floor');
+    if (this.flat) {
+      // 検査モード：目の高さに置き、立方体の 1 面が収まる画角
+      this.camera.position.y = this.eyeY;
+      this.camera.fov = 90;
+      const c = renderer.domElement; this.camera.aspect = c.width / Math.max(1, c.height); this.camera.updateProjectionMatrix();
+    } else {
+      renderer.xr.enabled = true;
+      renderer.xr.setReferenceSpaceType('local-floor');
+    }
+  }
+
+  // 世界空間の光の点：頭の位置 + (0, 0.8R, −0.3R)
+  private updateLight(head: THREE.Vector3) {
+    const p = lightWorld([head.x, head.y, head.z], this.ctx.space.space.radius_m);
+    this.lightPoint.set(p[0], p[1], p[2]);
+    this.setShadingInputs();
+  }
+
+  // shading.ts の受け口（別の人が足している）。uniforms に無いあいだは渡さない
+  private setShadingInputs() {
+    const u = this.morphMat?.uniforms; if (!u) return;
+    if ('uLightMode' in u) u.uLightMode.value = 1;
+    if ('uLightWorld' in u) { const v = u.uLightWorld.value; if (v instanceof THREE.Vector3) v.copy(this.lightPoint); else u.uLightWorld.value = this.lightPoint.clone(); }
+    if ('uReliefScale' in u) u.uReliefScale.value = 1.3;
+  }
+
+  // 立体感の層の毎フレームの更新
+  private updateDepth(now: number) {
+    const time = (now - this.t0) / 1000;
+    const pv = particleVisibility(this.stage, this.morph, this.appearAt < 0 ? 0 : (now - this.appearAt) / 1000);
+    if (this.appearAt < 0 && (this.stage === 'S4' || (this.stage === 'S3' && this.morph >= 0.5))) this.appearAt = now;
+    this.particles.update(time, this.head, this.ctx.fluid.getQuality() as DepthQuality, pv.alpha, pv.toLayer, this.ctx.fluid);
+    this.surround.update(time, surroundVisibility(this.stage, this.morph));
+    const hide = hideRoom(this.morph);
+    for (const m of this.roomMeshes) m.visible = !hide;
   }
 
   // 視線が絵に乗っているか（画面中央 ±10°）
@@ -271,6 +334,7 @@ export class SpaceMode {
     fluid.step(dt);
     updateShading(this.morphMat.uniforms, fluid, this.look, (now - this.t0) / 1000, Math.min(1, strength));
     this.morphMat.uniforms.uMorph.value = this.morph;
+    this.updateDepth(now);
     // B / Y 長押しで戻る
     const { bHeld } = this.pollButtons();
     if (bHeld) { if (!this.bHoldStart) this.bHoldStart = now; else if (now - this.bHoldStart > 800 && this.stage !== 'S5') this.resolveEnd?.('exit'); } else this.bHoldStart = 0;
@@ -294,14 +358,20 @@ export class SpaceMode {
     this.build();
     // セッション：「VR で入る」の中で作られたものを受け取る。無ければここで要求（ユーザー操作の直後でないと拒否される）
     let session = this.session;
-    try {
-      if (!session) session = await (navigator as Navigator & { xr: XRSystem }).xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor'] });
-      await renderer.xr.setSession(session);
-    } catch (e) {
-      console.warn('XR セッションを開始できない。物語モードへ', e);
-      return 'fallback';
+    if (this.flat) {
+      session = null;
+      this.installProbe();
+      setTimeout(() => { this.selectPressed = true; }, 300);   // 検査モードはすぐ入る
+    } else {
+      try {
+        if (!session) session = await (navigator as Navigator & { xr: XRSystem }).xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor'] });
+        await renderer.xr.setSession(session);
+      } catch (e) {
+        console.warn('XR セッションを開始できない。物語モードへ', e);
+        return 'fallback';
+      }
+      session.addEventListener('end', () => this.resolveEnd?.('exit'));
     }
-    session.addEventListener('end', () => this.resolveEnd?.('exit'));
     renderer.setAnimationLoop(this.onFrame);
     const ended = new Promise<'exit' | 'fallback'>((res) => (this.resolveEnd = res));
     let result: 'exit' | 'fallback' = 'exit';
@@ -310,11 +380,47 @@ export class SpaceMode {
     } finally {
       this.running = false;
       renderer.setAnimationLoop(null);
-      try { await session.end(); } catch {}
+      try { await session?.end(); } catch {}
       renderer.xr.enabled = false;
       this.text.dispose(); this.morphMat.dispose(); this.morphMesh.geometry.dispose();
+      this.particles.dispose(); this.surround.dispose();
+      if (this.flat) delete (window as unknown as { __space?: unknown }).__space;
     }
     return result;
+  }
+
+  // 検査モードの口（tests/longrun.mjs --space から呼ぶ）。6 方向を向く、白飛び率、視界の中の粒の数
+  private installProbe() {
+    const dirs: Record<string, [number, number, number]> = { front: [0, 0, -1], back: [0, 0, 1], left: [-1, 0, 0], right: [1, 0, 0], up: [0, 1, 0], down: [0, -1, 0] };
+    const probe = {
+      stage: () => this.stage,
+      morph: () => this.morph,
+      look: (name: string) => {
+        const d = dirs[name]; if (!d) return false;
+        const pos = this.camera.getWorldPosition(new THREE.Vector3());
+        this.camera.up.set(0, 1, 0);
+        if (name === 'up') this.camera.up.set(0, 0, 1); else if (name === 'down') this.camera.up.set(0, 0, -1);
+        this.camera.lookAt(pos.x + d[0], pos.y + d[1], pos.z + d[2]);
+        return true;
+      },
+      // その場で描いて読む（RGB すべて 250 以上の画素の割合）
+      white: () => {
+        const r = this.ctx.renderer; r.render(this.scene, this.camera);
+        const gl = r.getContext(); const w = gl.drawingBufferWidth, h = gl.drawingBufferHeight;
+        const px = new Uint8Array(w * h * 4); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        return whiteRatio(px);
+      },
+      // 視界の中で見えている粒の数（流体による横ずれは除く。周期の両端の消えている粒は数えない）
+      particlesInView: (name: string) => {
+        const d = dirs[name]; if (!d || !this.particles.mesh.visible) return 0;
+        const time = (performance.now() - this.t0) / 1000;
+        const n = particleCount(this.ctx.fluid.getQuality() as DepthQuality);
+        const pts = this.particles.seeds.slice(0, n).map((p) => ({ p, s: ((time / p.period + p.phase) % 1 + 1) % 1 })).filter((x) => x.s > 0.1 && x.s < 0.9).map((x) => particlePos(x.p, x.s));
+        return particlesInView(pts, d, this.camera.fov);
+      },
+      surround: () => ({ floor: this.surround.floor.visible, back: this.surround.back.visible }),
+    };
+    (window as unknown as { __space: typeof probe }).__space = probe;
   }
 
   private async timeline() {
@@ -356,7 +462,13 @@ export class SpaceMode {
       this.strength = Math.max(this.strength, 0.1 + 0.9 * m);
       // 包まれる：接近の終わりから morph。球の中心はそのときの頭の位置
       if (t >= APPROACH) {
-        if (!headSet) { this.camera.getWorldPosition(this.morphMat.uniforms.uHead.value as THREE.Vector3); headSet = true; this.stage = 'S3'; }
+        if (!headSet) {
+          this.camera.getWorldPosition(this.morphMat.uniforms.uHead.value as THREE.Vector3); headSet = true; this.stage = 'S3';
+          // 立体感の層も同じ中心に（床は本当の床に、絵の層の内側に収まる半径で）
+          this.head.copy(this.morphMat.uniforms.uHead.value as THREE.Vector3);
+          this.updateLight(this.head);
+          this.surround.place(this.head, floorRadius(this.head.y, space.space.radius_m));
+        }
         this.morph = easeInOut(Math.min(1, (t - APPROACH) / (TOTAL - APPROACH)));
       }
       // 渦：絵の中心。強さは山形で morph の終わりに 0、半径は広がる（絵の高さに対して 0.05 → 0.35）
@@ -395,3 +507,6 @@ export class SpaceMode {
     await wait(1500);
   }
 }
+
+// 作品 id → 粒の配置の種（作品ごとに同じ配置）
+function hashId(id: string): number { let h = 2166136261; for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }

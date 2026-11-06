@@ -243,6 +243,7 @@ uniform float uTime;
 uniform float uTempo;     // 速さのむらの振幅 0〜1（0 で均一。docs/EXPERIENCE.md 8.1）
 uniform float uAspect;    // sim の幅 / 高さ
 uniform float uWrapX;     // 1：横に繰り返す（等距離円筒）
+uniform vec2 uDriveDir;   // 一定の向きの成分（正規化済み × 重み。無ければ 0。docs/FLUID_PER_WORK.md F-2）
 ${HASH}
 // 横に per 格子で繰り返す値ノイズ（等距離円筒の継ぎ目で途切れないように）。per <= 0 なら繰り返さない
 float pnoise(vec2 p, float per) {
@@ -280,6 +281,7 @@ void main() {
   float ny = vnoise(q + vec2(0.0, e)) - vnoise(q - vec2(0.0, e));
   vec2 curlDir = vec2(-ny, nx) / (length(vec2(nx, ny)) + 1e-5);
   target += curlDir * 0.18;
+  target += uDriveDir;
   vel = mix(vel, target * uTarget * m, uRate);
   gl_FragColor = vec4(vel, 0.0, 1.0);
 }

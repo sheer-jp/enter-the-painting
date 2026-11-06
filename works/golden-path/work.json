@@ -29,7 +29,7 @@
     "From the maze-like place inside me,",
     "I decide for myself: \"This is my path.\""
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める",
   "moods": {
     "ja": [
       "自分で決める道",
@@ -45,5 +45,20 @@
       "ja": "迷いの中で、進む道を決めたいときに",
       "en": "For when you are lost and want to choose your way"
     }
+  },
+  "overrides": {
+    "speed": 0.55,
+    "vorticity": 0.4,
+    "tempo": 0.9,
+    "restore": 0.016,
+    "drive": 0.35,
+    "flow_sigma": 3,
+    "look": {
+      "relief": 0.45,
+      "gloss": 0.25,
+      "sharpness": 120,
+      "vivid": 0.5
+    },
+    "radius_m": 2.4
   }
 }

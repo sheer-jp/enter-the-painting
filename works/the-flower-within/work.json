@@ -31,7 +31,7 @@
     "It has the strength to bloom even in harsh conditions.",
     "It is one of my own favorites."
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める",
   "moods": {
     "ja": [
       "滲み出る色",
@@ -49,5 +49,21 @@
       "ja": "厳しい時期を越えようとしている人のそばに",
       "en": "For someone making their way through a hard season"
     }
+  },
+  "overrides": {
+    "speed": 0.35,
+    "vorticity": 0.7,
+    "tempo": 0.4,
+    "restore": 0.008,
+    "drive": 0.2,
+    "flow_sigma": 7,
+    "look": {
+      "relief": 0.6,
+      "gloss": 0.1,
+      "bleed": 0.8,
+      "vivid": 0.35,
+      "grain": 0.04
+    },
+    "radius_m": 2.6
   }
 }

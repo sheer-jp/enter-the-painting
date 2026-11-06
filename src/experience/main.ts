@@ -15,6 +15,9 @@ export interface RunOptions {
 const loadTexture = (url: string) => new Promise<THREE.Texture>((res, rej) => new THREE.TextureLoader().load(url, res, undefined, rej));
 
 export async function run(o: RunOptions): Promise<void> {
+  // ?space=flat：空間モードを WebXR 無しの平面カメラで動かす検査モード（docs/VR_DEPTH.md 5 節、V-4）。流体は VR と同じ等距離円筒
+  const flatSpace = new URLSearchParams(location.search).get('space') === 'flat';
+  if (flatSpace) o = { ...o, vr: true, xrSession: null };
   // 作品ページは /w/<id>/ にあるので既定は ../../。別の場所に置くとき（アーティファクトなど）は meta で差し替える
   const assetBase = document.querySelector<HTMLMetaElement>('meta[name="asset-base"]')?.content ?? '../../';
   const base = `${assetBase}works/${o.workId}/`;
@@ -67,7 +70,7 @@ export async function run(o: RunOptions): Promise<void> {
     let fellBack = false;
     if (o.vr && renderer && fluid) {
       const { SpaceMode } = await import('../space/SpaceMode');
-      const r = await new SpaceMode({ ...ctx, renderer, fluid }, o.xrSession ?? null).start();
+      const r = await new SpaceMode({ ...ctx, renderer, fluid }, o.xrSession ?? null, flatSpace).start();
       fellBack = r === 'fallback';
     }
     if (!o.vr || fellBack || !renderer || !fluid) {

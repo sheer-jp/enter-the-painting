@@ -44,6 +44,9 @@ export function catalogText(catalog) {
       `- 気分の言葉：${(w.moods?.ja || []).join('、') || '（なし）'}${differs(w.moods?.en, w.moods?.ja) ? ` / ${w.moods.en.join(', ')}` : ''}`,
     );
     if (w.fit?.ja) lines.push(`- 向く人・時間：${w.fit.ja}${w.fit.en && w.fit.en !== w.fit.ja ? ` / ${w.fit.en}` : ''}`);
+    if (w.voice?.ja) lines.push(`- 作家の語り：${w.voice.ja}`);
+    if (w.scene?.ja) lines.push(`- この絵のある暮らし：${w.scene.ja}`);
+    if (Array.isArray(w.fits?.ja) && w.fits.ja.length) lines.push(`- こんな人・こんなときに：${w.fits.ja.join('。')}。`);
     lines.push(`- 作家のメッセージ（ja）：${(w.messages?.ja || []).join(' ')}`);
     if (differs(w.messages?.en, w.messages?.ja)) lines.push(`- 作家のメッセージ（en）：${w.messages.en.join(' ')}`);
     if (w.story?.en) lines.push(`- 小さな物語（en、作家の下書き）：${w.story.en.replace(/\n+/g, ' ')}`);
@@ -85,8 +88,8 @@ ${intro}
   const rules = `# 出力の決まり
 - おすすめを出すときは、文を書いたあとに必ずツール ${TOOL_NAME} を 1 回呼ぶ。文の中に JSON や id を書かない。
 - recommend と alt はカタログの id（${ids.join(', ') || 'なし'}）から選ぶ。作品が 2 点以上あるときは alt に 2 番目の候補、1 点だけのときは alt を null にして、文で正直に「いまはこの 1 点です」と伝える。
-- 文はその人に向けた言葉で、なぜこの絵なのかを情景でこめる。ツールの reason には、その理由を日本語（ja）と英語（en）で 1 文ずつ書く。
-- おすすめの理由（文と reason）は、その作品の「気分の言葉」か「作家のメッセージ」のことばを 1 つ以上そのまま使って書く。
+- 文はその人に向けた言葉で書く。順番は、まず**その人が話したこと**を 1 つ拾って自分の言葉で返し（「朝の机に向かう前、って言ってたよね」）、そのあとに**この絵の何がそれに応えるか**を「作家の語り」か「この絵のある暮らし」から 1 つだけ、話し言葉で。ことばを並べない。「〜だから。」で終わる説明の型にしない。
+- ツールの reason（ja / en）は、その 2 つを 1〜2 文にしたもの。カジュアルな話し言葉で、相手に向けて。「気分の言葉」をそのまま貼り付けなくてよい（自然に混ざるなら使う）。
 - ツールの matched_moods には、選んだ作品の「気分の言葉」から、この人に合う 1〜3 語をカタログの語のまま入れる。
 - おすすめを出さないときは、文だけを書く（ツールを呼ばない）。
 

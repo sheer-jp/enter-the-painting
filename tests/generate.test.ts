@@ -186,3 +186,26 @@ describe('言語', () => {
     expect(key('海辺の町で描いた。')).not.toBe(key('海辺の町で描いた'));
   });
 });
+
+describe('絵ごとの流体の性格（docs/FLUID_PER_WORK.md）', async () => {
+  const { fluidSpec, normalizeDriveDir } = await import('../scripts/generate/index.js');
+  it('overrides の look.swell / dots / bleed と drive_dir を space.json の fluid に通す', () => {
+    const f = fluidSpec({ speed: 0.8, restore: 0.012, look: { swell: 0.6, dots: 0.8, bleed: 0.5, relief: 0.9 }, drive_dir: [0, 2] }, { vorticity: 0.5, speed: 0.4 });
+    expect(f.speed).toBe(0.8); expect(f.restore).toBe(0.012); expect(f.vorticity).toBe(0.5);
+    expect(f.look.swell).toBe(0.6); expect(f.look.dots).toBe(0.8); expect(f.look.bleed).toBe(0.5); expect(f.look.relief).toBe(0.9);
+    expect(f.look.gloss).toBe(0.18);   // 指定の無い鍵は既定
+    expect(f.drive_dir).toEqual([0, 1]);
+  });
+  it('無ければ swell / dots / bleed は 0、drive_dir は出さない（従来どおり）', () => {
+    const f = fluidSpec({}, { vorticity: 0.3, speed: 0.4 });
+    expect(f.look.swell).toBe(0); expect(f.look.dots).toBe(0); expect(f.look.bleed).toBe(0);
+    expect('drive_dir' in f).toBe(false);
+  });
+  it('drive_dir は正規化。長さ 0・不正は null', () => {
+    const d = normalizeDriveDir([3, 4])!;
+    expect(d[0]).toBeCloseTo(0.6); expect(d[1]).toBeCloseTo(0.8);
+    expect(normalizeDriveDir([0, 0])).toBeNull();
+    expect(normalizeDriveDir(undefined)).toBeNull();
+    expect(normalizeDriveDir(['a', 1])).toBeNull();
+  });
+});

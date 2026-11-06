@@ -41,6 +41,9 @@ enter-the-painting/
 │  ├─ fluid/              GPU 流体シム（移流・渦度・圧力・色、泡の splat）。RenderTarget に描く。両モード共通
 │  ├─ text/               文字の浮上（troika）。空間内 / 画面の奥、の 2 つの置き方
 │  ├─ space/              VR 空間モード：壁の絵、接近、平面 → 球面の変形、S1〜S5 の進行
+│  │  ├─ Particles.ts     手前の粒の層（InstancedMesh 1 つ、docs/VR_DEPTH.md V-1）
+│  │  ├─ Surround.ts      床と奥の光（V-3）
+│  │  └─ depth.ts         立体感の純関数（粒の配置、場面ごとの見え方、白飛び率）
 │  ├─ story/              物語モード：画面への流体描画、拡大、T0〜T5 の進行
 │  ├─ audio/              ナレーション・環境音・泡・ドローン
 │  ├─ i18n/               言語判定、UI 文言（10 言語）

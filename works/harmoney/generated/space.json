@@ -42,7 +42,8 @@
   "flow": {
     "texture": "flow.png",
     "strength": 0.6,
-    "edge_density": 0.311
+    "edge_density": 0.311,
+    "sigma": 6
   },
   "relief": {
     "texture": "relief.png"
@@ -53,14 +54,17 @@
     "quality": "high",
     "restore": 0.014,
     "drive": 0.3,
-    "tempo": 0.6,
+    "tempo": 0.65,
     "look": {
       "relief": 0.5,
       "gloss": 0.18,
       "sharpness": 96,
       "bloom": 0.04,
       "grain": 0.02,
-      "vivid": 0.45
+      "vivid": 0.45,
+      "swell": 0,
+      "dots": 0,
+      "bleed": 0
     }
   },
   "space": {
@@ -315,5 +319,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-04T15:59:11.638Z"
+  "generated_at": "2026-11-06T12:22:25.465Z"
 }

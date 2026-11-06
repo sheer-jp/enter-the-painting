@@ -133,12 +133,12 @@ body.paper {
 /* 受付（C）：上にキャラクター、下に会話、入力欄は下に固定。高さは 100dvh（キーボードが出たら visualViewport の高さ） */
 body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 /* キャラクターの高さ（縦画面）。迎えの状態は大きく 44%、会話の状態（.is-talk）は 20%、キーボードが出たら 16%。0.4 秒で縮む */
-@property --cg-host { syntax: '<percentage>'; inherits: true; initial-value: 44%; }
+@property --cg-host { syntax: '<percentage>'; inherits: true; initial-value: 30%; }
 .cg {
-  --cg-host: 44%;
+  --cg-host: 30%;   /* 迎え。チャットの UI らしく、人は上に小さめ（11-06 作家） */
   transition: --cg-host .4s ease;
   position: fixed; left: 0; right: 0; top: var(--cg-top, 0px); height: var(--cg-h, 100dvh);
-  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto var(--cg-host, 44%) minmax(0, 1fr) auto;
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto var(--cg-host, 30%) minmax(0, 1fr) auto;
   grid-template-areas: "top" "host" "talk" "form";
   max-width: 720px; margin: 0 auto;
   padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
@@ -184,21 +184,17 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 @keyframes cg-in { from { opacity: 0; transform: translateY(6px); } }
 /* 会話が始まったら（最初の選択か「自分のことばで書く」）キャラクターを小さくして文字を読みやすく。キーボードが出たらさらに小さく（11-06 作家）
    おすすめは別の画面 C2（concierge.css） */
-/* 背の低い縦画面（iPhone SE など、高さ 700px 以下）：迎えの状態は 36%（あいさつ 2 文と 4 つのボタンが入りきるように） */
-@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 36%; } }
-.cg.is-talk { --cg-host: 20%; }
-.cg.is-talk.is-kb, .cg.is-kb { --cg-host: 16%; }
-/* 横向き（スマホの横、PC）：キャラクターを左 36%、会話を右に */
-@media (orientation: landscape) and (min-width: 568px) {
-  .cg { max-width: 1080px; grid-template-columns: 36% minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "host top" "host talk" "host form"; column-gap: 28px; }
-  .cg-host { padding: 12px 0 calc(10px + env(safe-area-inset-bottom)); }
-  .cg.is-kb, .cg.is-talk { --cg-host: 100%; }
-}
-/* 全身（*-full）を出す条件（pages.js の FULL_MQ と同じ）：縦いっぱいに。正方形の画像の左右の透明な余白は切れてよい */
-@media (orientation: landscape) and (max-height: 500px), (orientation: landscape) and (min-width: 900px) {
-  .cg-face img { object-fit: cover; }
-}
-@media (min-width: 900px) and (orientation: landscape) {
+/* 背の低い縦画面（iPhone SE など、高さ 700px 以下）：迎えの状態は 26%（あいさつ 2 文と 4 つのボタンが入りきるように） */
+@media (max-height: 700px) and (orientation: portrait) { .cg { --cg-host: 26%; } }
+.cg.is-talk { --cg-host: 15%; }
+.cg.is-talk.is-kb, .cg.is-kb { --cg-host: 12%; }
+/* PC・横向きも同じ「上に人、下に会話」（11-06 作家「パソコンでも同じ感じで」）。幅は 640px に抑えて中央に。人の高さは px で上限 */
+@media (min-width: 640px) {
+  .cg { max-width: 640px; }
+  .cg { --cg-host: 30%; }
+  .cg-host { max-height: 280px; }
+  .cg.is-talk { --cg-host: 15%; }
+  .cg.is-talk .cg-host { max-height: 150px; }
   .cg-title { font-size: 18px; }
   .cg-line { font-size: 16px; }
 }

@@ -6,7 +6,8 @@ import * as S from './shaders';
 export type Quality = 'high' | 'medium' | 'low';
 // equirect：2:1 の等距離円筒（VR。横は繰り返し）。painting：絵だけの領域（物語モード。解像度を絵に全部使う）
 export type Domain = 'equirect' | 'painting';
-export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number; drive?: number; tempo?: number }
+// drive_dir：常時の駆動に足す一定の向き [x, y]（v は下 → 上。space.json の fluid.drive_dir）。無ければ従来どおり
+export interface FluidParams { vorticity: number; speed: number; quality: Quality; restore: number; drive?: number; tempo?: number; drive_dir?: [number, number] | null }
 export interface PaintingRect { x: number; y: number; w: number; h: number }
 
 const EQUIRECT: Record<Quality, { dye: [number, number]; sim: [number, number]; iters: number }> = {
@@ -33,6 +34,17 @@ export function placementFor(aspect: number): PaintingRect {
   let w = (h * aspect) / 2;
   if (w > 0.45) w = 0.45;
   return { x: 0.5 - w / 2, y: 0.5 - h / 2, w, h };
+}
+
+// 駆動の向きの重み（docs/FLUID_PER_WORK.md F-2）。目標の流れ（筆致の向き + うねり 0.18）に足す
+export const DRIVE_DIR_WEIGHT = 0.3;
+// 向きを正規化して重みをかける。無い・長さ 0・数でない → [0, 0]（従来どおり）
+export function driveDirVector(dir?: readonly number[] | null, weight = DRIVE_DIR_WEIGHT): [number, number] {
+  if (!dir || dir.length < 2) return [0, 0];
+  const x = Number(dir[0]), y = Number(dir[1]);
+  const l = Math.hypot(x, y);
+  if (!Number.isFinite(l) || l < 1e-6) return [0, 0];
+  return [(x / l) * weight, (y / l) * weight];
 }
 
 // 渦の強さ：strength 1 を 1 秒続けると、最大の所の速さが「領域の高さ × これ / 秒」増える（解像度と作品の speed によらない）
@@ -205,7 +217,7 @@ export class Fluid {
       gradient: new Pass(S.GRADIENT_SUBTRACT, u({ uPressure: null, uVelocity: null, uTexel: new THREE.Vector2() })),
       splat: new Pass(S.SPLAT, u({ uTarget: null, uPoint: new THREE.Vector2(), uValue: new THREE.Vector3(), uRadius: 0.001, uAspect: this.sizes.dye[0] / this.sizes.dye[1] })),
       fizz: new Pass(S.FIZZ, u({ uVelocity: null, uRect: rect, uProgress: 0, uAmount: 0, uTime: 0 })),
-      drive: new Pass(S.DRIVE, u({ uVelocity: null, uFlow: this.flow, uRect: rect, uRate: 0, uTarget: 0, uTime: 0, uTempo: 0, uAspect: this.sizes.sim[0] / this.sizes.sim[1], uWrapX: wrapX })),
+      drive: new Pass(S.DRIVE, u({ uVelocity: null, uFlow: this.flow, uRect: rect, uRate: 0, uTarget: 0, uTime: 0, uTempo: 0, uAspect: this.sizes.sim[0] / this.sizes.sim[1], uWrapX: wrapX, uDriveDir: new THREE.Vector2() })),
       copy: new Pass(S.DISPLAY, u({ uDye: null, uView: new THREE.Vector4(0, 0, 1, 1) })),
       initThick: new Pass(S.INIT_THICK, u({ uRelief: this.relief, uRect: rect, uHas: this.relief ? 1 : 0 })),
       thick: new Pass(S.THICK_UPDATE, u({
@@ -309,6 +321,8 @@ export class Fluid {
       P.drive.mat.uniforms.uTarget.value = sz.sim[1] * 0.03 * this.strength * b;     // 目標の速さ（sim の高さの 3%/秒）× 呼吸
       P.drive.mat.uniforms.uTime.value = this.time;
       P.drive.mat.uniforms.uTempo.value = tempo;
+      const dd = driveDirVector(this.params.drive_dir);
+      (P.drive.mat.uniforms.uDriveDir.value as THREE.Vector2).set(dd[0], dd[1]);
       this.run(P.drive, this.vel.write); this.vel.swap();
     }
     // 外力

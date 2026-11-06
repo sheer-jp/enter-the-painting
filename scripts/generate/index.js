@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import QRCode from 'qrcode';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync, unlinkSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { kmeans, toHex, textColor, backColor, brightCenter } from './color.js';
 import { structureTensorFlow, flowToRGB, motionFromFlow, reliefFromGray, toGray8 } from './flow.js';
 import { translateAll } from './translate.js';
@@ -15,7 +16,31 @@ if (!process.env.ANTHROPIC_API_KEY && process.env.ENTER_CLAUDE_API_KEY) process.
 const ROOT = resolve(new URL('../..', import.meta.url).pathname);
 const BASE_URL = (process.env.BASE_URL || 'https://sheer-jp.github.io/enter-the-painting').replace(/\/$/, '');
 const FLOW_W = 256;
-const LOOK_DEFAULT = { relief: 0.5, gloss: 0.18, sharpness: 96, bloom: 0.04, grain: 0.02, vivid: 0.45 };
+// swell / dots / bleed：絵ごとの性格（docs/FLUID_PER_WORK.md 1 節）。既定 0
+const LOOK_DEFAULT = { relief: 0.5, gloss: 0.18, sharpness: 96, bloom: 0.04, grain: 0.02, vivid: 0.45, swell: 0, dots: 0, bleed: 0 };
+export const FLOW_SIGMA_DEFAULT = 6;
+
+// 常時の駆動の向き [x, y]（v は下 → 上）を正規化。無い・長さ 0 なら null（従来どおり）
+/** @param {any} d @returns {[number, number] | null} */
+export function normalizeDriveDir(d) {
+  if (!Array.isArray(d) || d.length < 2) return null;
+  const x = Number(d[0]), y = Number(d[1]), l = Math.hypot(x, y);
+  if (!Number.isFinite(l) || l < 1e-6) return null;
+  return [+(x / l).toFixed(4), +(y / l).toFixed(4)];
+}
+
+// space.json の fluid（overrides と色・流れ場からの自動値）。docs/WORK_FORMAT.md の overrides
+/** @param {any} [ov] @param {any} [motion] @returns {any} */
+export function fluidSpec(ov = {}, motion = { vorticity: 0.5, speed: 0.4 }) {
+  const fluid = {
+    vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.014, drive: ov.drive ?? 0.3, tempo: ov.tempo ?? 0.6,
+    // 質感（docs/FLUID_LOOK.md 2 節のパラメータ）。作品ごとに overrides.look で上書き
+    look: { ...LOOK_DEFAULT, ...(ov.look || {}) },
+  };
+  const dir = normalizeDriveDir(ov.drive_dir);
+  if (dir) fluid.drive_dir = dir;
+  return fluid;
+}
 
 async function generateWork(id) {
   const dir = join(ROOT, 'works', id);
@@ -51,7 +76,7 @@ async function generateWork(id) {
   const g = await sharp(src).rotate().resize({ width: FLOW_W, height: flowH, fit: 'fill' }).grayscale().raw().toBuffer({ resolveWithObject: true });
   const gray = new Float32Array(g.data.length);
   for (let i = 0; i < gray.length; i++) gray[i] = g.data[i];
-  const flow = structureTensorFlow(gray, FLOW_W, flowH, work.overrides?.flow_sigma ?? 6);   // 大きめに平滑化：渦が細かくなりすぎない
+  const flow = structureTensorFlow(gray, FLOW_W, flowH, work.overrides?.flow_sigma ?? FLOW_SIGMA_DEFAULT);   // 大きめに平滑化：渦が細かくなりすぎない
   await sharp(Buffer.from(flowToRGB(flow)), { raw: { width: FLOW_W, height: flowH, channels: 3 } }).png().toFile(join(gen, 'flow.png'));
   const motion = motionFromFlow(flow);
   // 絵の具の厚みの初期値（docs/FLUID_LOOK.md 2 節）。flow.png と同じ大きさ
@@ -101,13 +126,9 @@ async function generateWork(id) {
     source_px: [meta.width, meta.height],
     palette: paletteHex, text_color: ov.text_color || textColor(palette), back_color: ov.back_color || backColor(palette),
     bright_center: bright,
-    flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density },
+    flow: { texture: 'flow.png', strength: ov.flow_strength ?? 0.6, edge_density: motion.edge_density, sigma: ov.flow_sigma ?? FLOW_SIGMA_DEFAULT },
     relief: { texture: 'relief.png' },
-    fluid: {
-      vorticity: ov.vorticity ?? motion.vorticity, speed: ov.speed ?? motion.speed, quality: ov.quality || 'high', restore: ov.restore ?? 0.014, drive: ov.drive ?? 0.3, tempo: ov.tempo ?? 0.6,
-      // 質感（docs/FLUID_LOOK.md 2 節のパラメータ）。作品ごとに overrides.look で上書き
-      look: { ...LOOK_DEFAULT, ...(ov.look || {}) },
-    },
+    fluid: fluidSpec(ov, motion),
     space: { radius_m: ov.radius_m ?? 2.5, melt_distance_m: ov.melt_distance_m ?? 1.0 },
     audio: { voice: work.audio?.voice && existsSync(join(dir, work.audio.voice)) ? work.audio.voice : null, ambient: work.audio?.ambient || 'calm' },
     messages: messages.map((m, i) => ({ at: at[i], ...tr(m.ja), ja: m.ja, ...(m.en ? { en: m.en } : {}) })),
@@ -155,4 +176,5 @@ async function main() {
   console.log(`ページ生成：${every.length} 作品、BASE_URL=${BASE_URL}`);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+// テストから fluidSpec などを読むときは実行しない
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main().catch((e) => { console.error(e); process.exit(1); });

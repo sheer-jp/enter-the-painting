@@ -29,7 +29,7 @@
     "It is cute, and this yellow really lifts you up.",
     "A new door, a new chapter. Let's enjoy it."
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める 11-06 夜：180 秒で構図が溶けるため speed/drive を {'speed': 0.7, 'drive': 0.4} → {'speed': 0.55, 'drive': 0.3} に下げた（Fable）。",
   "moods": {
     "ja": [
       "新しい章",
@@ -47,5 +47,21 @@
       "ja": "新しいことを始める朝の机に",
       "en": "For your desk on a morning when you start something new"
     }
+  },
+  "overrides": {
+    "speed": 0.55,
+    "vorticity": 0.45,
+    "tempo": 0.7,
+    "restore": 0.022,
+    "drive": 0.3,
+    "flow_sigma": 4,
+    "look": {
+      "relief": 0.8,
+      "gloss": 0.3,
+      "dots": 0.8,
+      "swell": 0.4,
+      "vivid": 0.6
+    },
+    "radius_m": 2.2
   }
 }

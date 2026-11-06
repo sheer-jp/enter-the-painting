@@ -34,29 +34,33 @@
   "flow": {
     "texture": "flow.png",
     "strength": 0.6,
-    "edge_density": 0.325
+    "edge_density": 0.305,
+    "sigma": 3
   },
   "relief": {
     "texture": "relief.png"
   },
   "fluid": {
-    "vorticity": 0.63,
-    "speed": 0.58,
+    "vorticity": 0.4,
+    "speed": 0.55,
     "quality": "high",
-    "restore": 0.014,
-    "drive": 0.3,
-    "tempo": 0.6,
+    "restore": 0.016,
+    "drive": 0.35,
+    "tempo": 0.9,
     "look": {
-      "relief": 0.5,
-      "gloss": 0.18,
-      "sharpness": 96,
+      "relief": 0.45,
+      "gloss": 0.25,
+      "sharpness": 120,
       "bloom": 0.04,
       "grain": 0.02,
-      "vivid": 0.45
+      "vivid": 0.5,
+      "swell": 0,
+      "dots": 0,
+      "bleed": 0
     }
   },
   "space": {
-    "radius_m": 2.5,
+    "radius_m": 2.4,
     "melt_distance_m": 1
   },
   "audio": {
@@ -198,5 +202,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T10:23:54.744Z"
+  "generated_at": "2026-11-06T12:22:24.775Z"
 }

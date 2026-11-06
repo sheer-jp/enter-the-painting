@@ -82,11 +82,12 @@ describe('functions/_lib/prompt.js', () => {
     expect(s.properties.reason.required).toEqual(['ja', 'en']);
     expect(s.properties.reason.additionalProperties).toBe(false);
   });
-  it('カタログの文に「向く人・時間」の行が出る（fit が無い作品には出さない）。理由に気分の言葉を使う決まりが入る', () => {
+  it('カタログの文に「向く人・時間」の行が出る（fit が無い作品には出さない）。理由は「その人の言葉 → 絵が応えること」の決まりが入る', () => {
     const sys = buildSystem(catalog, 'ja');
     expect(sys[1].text).toContain('- 向く人・時間：音楽が鳴る夜に / For a night with music');
     expect(sys[1].text.match(/向く人・時間/g)).toHaveLength(1);
-    expect(sys[2].text).toContain('「気分の言葉」か「作家のメッセージ」のことばを 1 つ以上そのまま使って書く');
+    expect(sys[2].text).toContain('まず**その人が話したこと**を 1 つ拾って');   // 理由は、その人の言葉 → 絵の何が応えるか（11-06 作家「ロジックが冷たい」）
+    expect(sys[2].text).toContain('ことばを並べない');
   });
   it('作品が無いカタログではツールを付けない（空の enum は不正なスキーマ）', () => {
     expect(buildTool({ works: [] })).toBeNull();

@@ -31,7 +31,7 @@
     "Energy swirls, rising higher and higher.",
     "I'm going to the summit. Just looking gives you power."
   ],
-  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す",
+  "note": "2026年ハイアットハウス金沢展の作品。作品名・制作年・号数・画材は作品台帳、寸法は展示キャプションに基づく。size_cmは幅・高さの順。音声は未登録。messages と moods は 2026-11-06 の作家の口述（docs/WORKS_VOICE.md）から Claude が整えた。作家が直す。流体の性格は 11-06 の語りから Fable が初期値を置いた。作家が実機で詰める 11-06 夜：180 秒で構図が溶けるため speed/drive を {'speed': 0.8, 'drive': 0.5} → {'speed': 0.65, 'drive': 0.4} に下げた（Fable）。",
   "moods": {
     "ja": [
       "火を思わせる赤",
@@ -49,5 +49,24 @@
       "ja": "大きな挑戦を前にした人の仕事場に",
       "en": "For the workspace of someone facing a big challenge"
     }
+  },
+  "overrides": {
+    "speed": 0.65,
+    "vorticity": 0.85,
+    "tempo": 0.7,
+    "restore": 0.02,
+    "drive": 0.4,
+    "flow_sigma": 5,
+    "look": {
+      "relief": 0.9,
+      "gloss": 0.35,
+      "swell": 0.6,
+      "vivid": 0.65
+    },
+    "radius_m": 2.3,
+    "drive_dir": [
+      0,
+      1
+    ]
   }
 }

@@ -5,6 +5,22 @@ import { join } from 'node:path';
 import { luminance } from './color.js';
 import { translateAll, LANGS } from './translate.js';
 
+// 作家の語り・情景・こんな人に（recommend/voice.json。作家が直す）。無ければ省略。訳さない（ja / en のまま）
+let VOICE = null;
+function voiceOf(id) {
+  if (VOICE === null) {
+    try { VOICE = JSON.parse(readFileSync(new URL('../../recommend/voice.json', import.meta.url), 'utf8')); } catch { VOICE = {}; }
+  }
+  const v = VOICE[id];
+  if (!v || typeof v !== 'object') return {};
+  const out = {};
+  if (v.voice?.ja) out.voice = { ja: v.voice.ja, ...(v.voice.en ? { en: v.voice.en } : {}) };
+  if (v.scene?.ja) out.scene = { ja: v.scene.ja, ...(v.scene.en ? { en: v.scene.en } : {}) };
+  if (Array.isArray(v.fits?.ja) && v.fits.ja.length) out.fits = { ja: v.fits.ja, ...(Array.isArray(v.fits.en) ? { en: v.fits.en } : {}) };
+  return out;
+}
+
+
 const LOW_SAT = 0.15;   // これより彩度が低い色は色相を持たないとみなす
 const round2 = (v) => Math.round(v * 100) / 100;
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
@@ -141,6 +157,7 @@ async function catalogWork(root, id, apiKey) {
     axes: axesFromPalette(space.palette || [], space.palette_weights, vort),
     moods,
     ...(fit ? { fit } : {}),
+    ...(voiceOf(work.id)),
     messages: msgs.length ? perLangList(msgs) : { ja: [] },
     story: space.story || null,
     image: `works/${id}/generated/painting_1024.jpg`,
