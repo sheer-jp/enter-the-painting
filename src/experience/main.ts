@@ -40,6 +40,11 @@ export async function run(o: RunOptions): Promise<void> {
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // ?space=flat&spin=1（録画用）：平面カメラを左右に ±40° ゆっくり振る（正弦、周期 16 秒）
+    if (flatSpace && new URLSearchParams(location.search).get('spin') === '1') {
+      const draw = renderer.render.bind(renderer);
+      renderer.render = (scene, cam) => { if ((cam as THREE.PerspectiveCamera).isPerspectiveCamera) cam.rotation.y = (40 * Math.PI / 180) * Math.sin((performance.now() / 16000) * 2 * Math.PI); draw(scene, cam); };
+    }
     if (Fluid.supported(renderer)) {
       // 物語モードは絵だけの領域（解像度を絵に全部使う）、VR は等距離円筒。色場の初期値は写真のフル解像度
       const [painting, flow] = await Promise.all([loadTexture(base + 'generated/' + (space.painting_full || space.painting)), loadTexture(base + 'generated/' + space.flow.texture)]);
