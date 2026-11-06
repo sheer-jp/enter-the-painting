@@ -17,7 +17,7 @@ const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@300;400;500&display=swap">`;
 
 // 二言語併記（美術館の作法）：言語設定に関わらず日本語と英語を並べる
-const brand = (prefix) => `<a class="brand" href="${prefix}"><b>${UI_JA.tagline}</b><span class="latin">Enter the Painting</span></a>`;
+const brand = (prefix) => `<a class="brand" href="${prefix}"><b><span lang="ja" data-lang="ja">SHEER ギャラリー</span><span lang="en" data-lang="en" hidden>SHEER Gallery</span></b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
 const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}"></select></label>`;
 
 // 作品ページ /w/<id>/index.html。絵は JS を待たずに出る。JS は「入る」のためだけ
@@ -64,7 +64,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
 ${FONTS}
 <link rel="stylesheet" href="../../src/ui/page.css">
 </head>
-<body style="--back:${esc(space.back_color)};--text:${esc(space.text_color)};--blur-url:url('${blur}')">
+<body style="--blur-url:url('${blur}')">
 <div class="atmosphere" aria-hidden="true"></div>
 <main class="work">
   <div class="top">${brand('../../')}${langSel()}</div>
@@ -78,7 +78,6 @@ ${FONTS}
   <div class="actions">
     <button class="btn primary" id="enter" data-i18n="enter"${space.audio?.voice ? ` data-voice="../../works/${id}/${esc(space.audio.voice)}"` : ''}>${UI_JA.enter}</button>
     <button class="btn" id="enter-vr" data-i18n="enter_vr" hidden style="display:none">${UI_JA.enter_vr}</button>
-    <button class="btn ghost" id="share" data-i18n="share">${UI_JA.share}</button>
     ${contact}
     <p class="cg-enter-note" data-i18n="enter_note" style="flex-basis:100%;margin:-4px 0 0;font-size:11px;letter-spacing:.1em;color:var(--ink-2)">${UI_JA.enter_note}</p>
   </div>

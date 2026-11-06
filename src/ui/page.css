@@ -1,8 +1,8 @@
 /* トーン＆マナーは docs/DESIGN.md。色は作品ごとに body の --back / --text（space.json）で上書きされる */
 :root {
-  color-scheme: dark;
-  --bg: #0f0e0d; --bg-2: #171513; --ink: #f2ede6; --ink-2: #a9a19a; --line: rgba(242, 237, 230, .14);
-  --back: #0f0e0d; --text: #f2ede6; --glow: var(--text);
+  color-scheme: light;   /* 11-06 深夜：作品ページも紙白に（作家「そのページも白基準に」） */
+  --bg: #f6f4ef; --bg-2: #efece5; --ink: #1c1a17; --ink-2: #6f6a62; --line: rgba(28, 26, 23, .14);
+  --back: #f6f4ef; --text: #1c1a17; --glow: var(--text);
   --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
   --latin: "Cormorant Garamond", "Shippori Mincho", Georgia, serif;
   --sans: "Noto Sans JP", "Hiragino Sans", system-ui, -apple-system, sans-serif;
@@ -17,7 +17,7 @@ button { font-family: inherit; }
 /* 絵の色が滲む背景（作品ページ） */
 .atmosphere { position: fixed; inset: 0; z-index: -1; background: var(--back); overflow: hidden; }
 .atmosphere::before { content: ""; position: absolute; inset: -40%; background: var(--blur-url) center / cover no-repeat; filter: blur(60px) saturate(1.1); opacity: .55; transform: scale(1.1); animation: drift 60s ease-in-out infinite alternate; }
-.atmosphere::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,.55) 100%); }
+.atmosphere::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(246,244,239,.75) 100%); }
 @keyframes drift { from { transform: scale(1.1) translate(-2%, -1%); } to { transform: scale(1.18) translate(2%, 2%); } }
 @media (prefers-reduced-motion: reduce) { .atmosphere::before { animation: none; } }
 
@@ -150,7 +150,10 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-tools .lang { min-height: 32px; }
 .cg-skip { font-size: 11px; letter-spacing: .12em; color: var(--ink-2); min-height: 32px; display: inline-flex; align-items: center; border-bottom: 1px solid var(--line); line-height: 1.4; }
 .cg-skip:hover { color: var(--ink); border-bottom-color: var(--ink); }
-.cg-host { grid-area: host; margin: 0; min-height: 0; display: flex; flex-direction: column; align-items: center; }
+/* 人の部分は「窓」（11-06 深夜、作家「ゲームは下に線や窓があって、ここが人の部分だと分かる」）：薄い紙色のパネルと下のヘアライン。胸で切れた画像がパネルの縁で収まる */
+.cg-host { grid-area: host; margin: 0 0 6px; min-height: 0; display: flex; flex-direction: column; align-items: center; position: relative; }
+.cg-host::before { content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 320px); height: 100%; background: var(--bg-2); border-radius: 18px 18px 6px 6px; border-bottom: 1px solid var(--line); }
+.cg-faces { z-index: 1; }
 /* 表情は重ねて置き、.is-on だけ見せる（300ms のクロスフェードは JS が .is-on を付け替える）
    画像は <picture> の media で選ぶ：縦は上半身（*-bust）、横向き（スマホ横・PC の幅 900px 以上）は全身（*-full）を縦いっぱいに
    待機：ゆっくりした呼吸（±2px、1.00〜1.012 倍、4.5 秒）。画像 1 枚でも動く */
@@ -229,7 +232,7 @@ main.gw { min-height: 100dvh; display: flex; flex-direction: column; padding: en
 .gw footer { max-width: 1180px; width: 100%; margin: 24px auto 16px; }
 @media (max-width: 767.98px) {
   .gw-wall { flex-direction: column; align-items: center; overflow: visible; gap: 64px; padding: 56px 0 72px; margin: 0; background: none; }
-  .gw-item { width: max(40%, calc(var(--rel) * 84%)); scroll-snap-align: none; }
+  .gw-item { width: 100%; scroll-snap-align: none; }   /* スマホは柄を見せる：全部幅いっぱい（11-06 深夜、作家）。実寸比は PC だけ */
   .gw-cap { white-space: normal; }
   .gw-title .latin, .gw-top .lang > span { display: none; }
   .gw-back { white-space: nowrap; }
