@@ -13,7 +13,7 @@
   "golden-path": {
     "voice": { "ja": "デジタルっぽい感じをアナログで表現しているところが、自分でも面白いと思ってる。自分の中の迷路みたいなところから、この道を行く、って自分で決める。そんな絵。", "en": "What I find interesting is that it expresses something digital in an analog way. It's about finding your way out of the maze inside you — deciding, this is the path I'll take." },
     "scene": { "ja": "迷っているときに眺めると、いくつもの筋の中から一本の道が見えてくるような絵。", "en": "When you're unsure, you look at it and one path seems to appear among all the lines." },
-    "fits": { "ja": ["進む道を決めようとしている人", "考えごとをする机や書斎", "デジタルと手仕事の両方が好きな人", "静かに背中を押してほしいとき"], "en": ["Someone deciding which way to go", "A desk or study where you think", "Someone who loves both digital and handmade things", "When you want a quiet push forward"] }
+    "fits": { "ja": ["進む道を決めようとしている人", "考えごとをする机や書斎", "デジタルと手仕事の両方が好きな人", "静かに背中を押してほしいとき", "うまくいかなかったあと、次の一歩を自分で決めたいとき"], "en": ["Someone deciding which way to go", "A desk or study where you think", "Someone who loves both digital and handmade things", "When you want a quiet push forward", "After something went wrong, when you want to choose your next step yourself"] }
   },
   "harmoney": {
     "voice": { "ja": "ハーモニーって何だろう、と好きな音楽を流しながらずっと考えていた。いろんな色が奏で合って、溶け合って、それでいて踊っている。その世界に没頭しながら、どこかで釣り合いが取れている。それが私の思うハーモニー。", "en": "I kept wondering what harmony is, with my favorite music playing. Colors play together, melt together, and still dance. Lost in that world, yet somehow balanced. That's my harmony." },
@@ -28,6 +28,6 @@
   "itadaki": {
     "voice": { "ja": "すごく強気な絵。火を思わせる赤で、エネルギーが渦巻いて、もっともっと上に上がっていく、頂に行くぞ、っていう絵。右上に太陽みたいな赤があって、青や黄色のアクセントも入ってる。20 色くらい、それ以上の色を重ね重ねて描いた。見るだけでパワーが湧いてくると思う。", "en": "A bold painting. Fiery red, energy swirling and climbing higher and higher — heading for the summit. There's a sun-like red at the top right, with touches of blue and yellow. I layered twenty colors or more. I think it gives you power just by looking." },
     "scene": { "ja": "大きな挑戦の前に、目を合わせるとパワーが湧いてくる絵。仕事場や玄関に。", "en": "Before a big challenge, meeting its gaze gives you power. For a workplace or an entrance." },
-    "fits": { "ja": ["大きな挑戦を前にした人", "頑張る活力がほしい朝", "仕事場・事務所・玄関など、気合いを入れる場所", "強い色を正面から受け止めたい人"], "en": ["Someone facing a big challenge", "A morning when you need energy to push on", "A workplace, office or entrance — where you gear up", "Someone who wants a strong color head-on"] }
+    "fits": { "ja": ["大きな挑戦を前にした人", "頑張る活力がほしい朝", "仕事場・事務所・玄関など、気合いを入れる場所", "強い色を正面から受け止めたい人", "落ち込んだあと、もう一度上を向きたいとき"], "en": ["Someone facing a big challenge", "A morning when you need energy to push on", "A workplace, office or entrance — where you gear up", "Someone who wants a strong color head-on", "After a low point, when you want to look up and climb again"] }
   }
 }

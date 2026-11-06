@@ -89,6 +89,15 @@ describe('functions/_lib/prompt.js', () => {
     expect(sys[2].text).toContain('まず**その人が話したこと**を 1 つ拾って');   // 理由は、その人の言葉 → 絵の何が応えるか（11-06 作家「ロジックが冷たい」）
     expect(sys[2].text).toContain('ことばを並べない');
   });
+  it('11-07 会話の評価から：文を書いてからツール、問いは 1 つ、文ごとに改行、reason の言語を混ぜない、全作品を比べる', () => {
+    const sys = buildSystem(catalog, 'ja', 3);
+    expect(sys[2].text).toContain('文を書かずにツールだけを呼ばない');   // 本番の 12 会話のうち 6 会話で文が空だった
+    expect(sys[2].text).toContain('reason.ja は日本語だけ');           // ko の会話で reason.ja に韓国語が混ざった
+    expect(sys[2].text).toContain('出すなら文を書いてからツール');
+    expect(sys[0].text).toContain('問いを 2 つ重ねない');
+    expect(sys[0].text).toContain('1 行に 2 文を並べない');
+    expect(sys[0].text).toContain(`${catalog.works.length} 点すべての`);
+  });
   it('作品が無いカタログではツールを付けない（空の enum は不正なスキーマ）', () => {
     expect(buildTool({ works: [] })).toBeNull();
     const body = buildBody({ works: [] }, 'ja', [{ role: 'user', content: 'x' }], 'claude-sonnet-5-5');
