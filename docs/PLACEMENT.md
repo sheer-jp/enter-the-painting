@@ -57,3 +57,21 @@
 
 - `hang.center_from_floor_cm`：立って見る壁 145、座って見る場所 138。家具の上に掛けるときは **`hang.furniture_top_y_px`（家具の上端の画素）+ `gap_cm`（既定 20）** で下端を決める（11-04 変更：床の線から cm で決めると、家具が壁より手前のときや床の線の読み違いで浮いて見えた。ローボードの部屋で 62 cm 浮いていた）。`bottom_from_floor_cm` も残す
 - `rooms/REFERENCES.json`：`door_interior` 200（枠 202）、`door_interior_old` 185、`ceiling` 240、`ceiling_old` 230、`sofa_2seat` 高さ 80 / 幅 160、`shoe_cabinet` 高さ 90、`sideboard` 高さ 80、`dining_table` 高さ 72、`bed_single` 幅 100 / マットレス上端 50、`headboard` 高さ 90
+
+## 6. 小さな絵は「掛ける」より「置く」（11-07、作家）
+
+作家の指摘：「小さい絵（18 × 14、33 × 24 cm）が壁から変に浮いてる。机の上に置く、イーゼルに置く、みたいな方がいい」。広い壁の高い位置に切手のように小さく貼ると、浮いて見える（`room_studio-desk.jpg` の New Chapter）。原因は 3 つ：(1) 壁に対して絵が小さすぎる（カメラが遠い）、(2) キャンバスの厚み（2〜3 cm の側面）が無く紙のよう、(3) 影が壁に落ちる「掛け」の影で、接地の手がかりが無い。
+
+直し方：
+
+- **場面**：小さな作品向けの部屋を「置く」場面にする。**卓上イーゼル**（机の上、サイドボードの上）と**棚に立てかける**。カメラは壁まで 1.5〜2 m と近く、絵が画面の幅の 10〜20% になる。明るい昼、均一な光。生成は Codex（`_meta/development/enter-the-painting/concept/rooms-placed/BRIEF.md`）
+- **合成の決まり（`place` モード。`rooms/<name>.json` の `hang.place`）**：
+  - `hang.place: "easel"`：絵の**下端**をイーゼルの画板受けの y（`hang.ledge_y_px`）に乗せ、中心 x は `hang.x_px`。面は少し上を向くので、上辺を下辺より **2〜4% 短く**、高さを **0.96 倍**に（台形の射影。`warpOnto` はそのまま使える）
+  - `hang.place: "lean"`：絵の下端を棚の天板 y（`hang.ledge_y_px`）に、壁に寄りかかる。高さ 0.97 倍、上辺はそのまま
+  - **キャンバスの側面**：絵の下辺に厚み 2.5 cm 分の細い帯（絵の下端の色を 35% 暗くしたもの）、`place: "easel"` では右辺にも 1 cm 分。これで紙ではなく物になる
+  - **影**：壁に落とす影（`shadow`）はやめ、**接地の影**（下辺の直下、高さ 1.5 cm 分、中心が濃く端が薄い）に。`lean` は壁にもごく薄い影
+  - 縮尺は従来どおり `references`（机の幅、イーゼルの高さ 28 cm、マグ 9 cm など。`REFERENCES.json` に `tabletop_easel` 高さ 28、`mug` 高さ 9、`laptop` 幅 30 を足す）
+- **拡大表示のドラッグ**（EXPERIENCE 4 節「絵を動かせる」）：`place` の部屋では**横にだけ**動かす（下端は受けに乗ったまま）
+- `suits_cm`：イーゼル・棚は `[15, 45]`。これより大きい作品には出さない
+- 既存の「掛ける」小部屋（studio-desk、studio-shelf、studio-kitchen、studio-entrance）は、置く部屋が揃ったら候補から外す（`disabled`）。玄関（entrance-house、suits 20〜70）は残す
+
