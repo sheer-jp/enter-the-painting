@@ -6,6 +6,32 @@
 
 ---
 
+## 2026-11-06（夜：入口の作り直し V1。受付・ギャラリー・配線・キャラクター。作家は外出中、Fable が進めた）
+
+**やった**
+- 設計 V1 `docs/ENTRANCE.md`（受付 C → ギャラリー G → S0、スマホ基準、表情とコマ、カードの 3 択、S0 の帯、登場の演出、合言葉、配線の鎖、E-1〜E-10、受け入れ 8 項目）。作家の 6 点の語りを `docs/WORKS_VOICE.md` に
+- E-4 配線（Opus）：6 作品に語りからの `messages` / `moods` / `fit`、カタログと system に `fit`、ツール `recommend_work` に `matched_moods`。テスト 78
+- E-7 docs 整合（Opus）：EXPERIENCE、REQUIREMENTS F-59〜F-73、JOURNEY J6、USERS、PLAN、TASKS E、CHANGELOG V3、DECISIONS 51〜58、ARCHITECTURE、SCHEDULE、README、CLAUDE.md
+- E-1/2/5/6/9/10（Opus）：受付 `/`（`src/concierge/`）、白い壁のギャラリー `/gallery/`、合言葉（`/api/recommend/config`、`X-Passphrase`）、キャラクター 2 セット `?chara=artist|cat`、全身と上半身（切り出し）、呼吸とコマ、くるんくるん → ピカーン、「別のにする」「ギャラリー全体を見る」、S0 の帯、上流の 1 回再試行、往復 2〜3。テスト 91、スモーク 74 項目（PC と 375×667）
+- キャラクター画像（Codex CLI、Fable が透過抜き）：第 1 案 4 方向 → 第 2 案（作家のメタファー） → 第 3 案（あーちゃん基準） → 第 4 案（黒髪・水彩イラスト） → 第 5 案（白いロングワンピース・全身）＋ コマ 4 枚。比較用に猫のギャラリスト（元のタッチ・全身）＋ コマ 4 枚。`ai-dev/_meta/development/enter-the-painting/concept/`
+- 配置：Cloudflare Pages（https://enter-the-painting.pages.dev/ ）。本番の API で実際に会話し、2 往復で「今日のあなたへの 1 点：New Chapter」が、作家のことば（「新しい章」「元気が出る黄色」）入りの理由とともに出ることをスマホ幅で確認
+- 課金よけ：Anthropic コンソールの月上限 $200、$10 で通知（Fable が Chrome で設定）
+
+**決めた**
+- 決定 51〜58（`docs/DECISIONS.md`）。U-13（部屋の背景）は取り下げ、U-14 は Cloudflare Pages。URL はいまは pages.dev、サブドメインか `/gallery/` かは QR を刷る前に
+
+**困った・学んだ**
+- strict のツールのスキーマは `minItems` / `maxItems` を受け付けない（本番で 400 → 502 → ルールだけの版に落ちていた）。上流の 4xx はエラー文をログに出すようにした
+- Pages の Secret は次の配置から効く。入れ直したら配置し直す
+- Codex CLI は `-i` の後ろに prompt を置くと stdin 待ちで固まる。prompt は stdin（`-`）で渡す。mac に `timeout` は無い
+- 生成したコマは完全固定にはならない（髪・服に微差）。まばたきと手の角度は使える範囲。揺れが目立つコマは使わない
+- 3 体のエージェントが同じ作業ツリーで並行すると、`generate` の副作用（space.json の時刻、rooms/check の再圧縮）が混ざる。コミットはパス指定で、副作用は `git checkout --` で戻す
+
+**次にやる**
+- 作家：キャラクターを決める（`?chara=artist` と `?chara=cat` で見比べ）、名前と口調（`recommend/config.json` の `persona`）、5 点の `fit` の確認、合言葉を使うなら Secret `PASSPHRASE`
+- 実機（E-8）：iPhone Safari でキーボードを出したときの詰まり、Android Chrome、Quest
+- 8 言語の訳（作家のキー付き `generate`）。`THIRD_PARTY.md` にキャラクター画像の生成手段。`ui.json` の古い `rec_*` の掃除
+
 ## 2026-11-06（夕方：ローカル環境、入口の設計 V0、API と置き場の提案）
 
 **やった**
