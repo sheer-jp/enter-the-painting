@@ -2,11 +2,12 @@
 
 抽象画の中に入れる WebXR ギャラリー。AI ハッカソン（1 週間）の試作。
 
-## まず読む（毎回、この 3 つだけ）
+## まず読む（毎回、この 4 つだけ）
 
 - `docs/LOG.md`：作業ログ。先頭の「次にやる」
 - `docs/TASKS.md`：当日のタスク。ID を挙げて進める
 - `docs/EXPERIENCE.md`：体験仕様。VR の空間モード（S1〜S5）、PC・スマホの物語モード（T0〜T5）、部屋で見る。迷ったらここ
+- `docs/ENTRANCE.md`：入口の設計（正）。受付（C）→ ギャラリー（G）→ 作品ページ（S0）。キャラクター、スマホ、配線、合言葉
 
 ## 必要なときに読む
 
@@ -38,7 +39,7 @@
 ## 作業ルール
 
 - **作家の絵を変えない**。流体にして流しはするが、画像生成 AI で描き足さない。絵の画像を生成モデルに入れない（部屋の画像の生成は可。絵は実物の写真を射影で合成）。拡散 0、色の減衰 0（濁らせない）
-- 実行時は `works/<id>/generated/space.json` だけを読む。解析と翻訳はすべて `npm run generate` に寄せ、実行時に外部 API を呼ばない。**唯一の例外**は「気分から絵をすすめる」（`src/recommend/` → `worker/` の Cloudflare Worker → Claude API。`docs/RECOMMEND.md`）。会話は保存しない。個人情報は聞かない。API が無ければルールだけの版で成立させる
+- 実行時は `works/<id>/generated/space.json` だけを読む。解析と翻訳はすべて `npm run generate` に寄せ、実行時に外部 API を呼ばない。**唯一の例外**は受付の会話（「気分から絵をすすめる」。`src/concierge/`・`src/recommend/` → `functions/` の Cloudflare Pages Functions `/api/recommend` → Claude API。`docs/ENTRANCE.md`、`docs/RECOMMEND.md`。11-06 に `worker/` から移した）。会話は保存しない。個人情報は聞かない。API が無ければルールだけの版で成立させる
 - モードは 2 つ。VR は空間（`space/`）、PC・スマホは物語（`story/`）。流体（`fluid/`）・文字（`text/`）・音（`audio/`）は両モードから同じ API で使い、モードで分岐させない
 - 場面の遷移（S0〜S5、T0〜T5）はそれぞれの状態機械だけが決める。数値は `docs/EXPERIENCE.md` から取り、変えたら docs も変える
 - 部屋のイメージと小さな物語には「AI 生成のイメージ」「物語」と明記し、実在の部屋・出来事と誤認させない
@@ -66,18 +67,22 @@ npm run typecheck            # tsc
 node tests/longrun.mjs <dir> # 流体の長時間の構図の残り方をスクリーンショットで見る
 BASE_URL=https://... npm run generate   # QR と OGP の URL（Actions では vars.BASE_URL）
 ANTHROPIC_API_KEY=... npm run generate  # 翻訳と小さな物語の下書きも生成（既定モデルは claude-sonnet-5-5。CLAUDE_MODEL で変更）。クラウドのセッションでは ANTHROPIC_API_KEY が空にされるので、環境変数 ENTER_CLAUDE_API_KEY に入れる（同じ扱い）
+CLOUDFLARE_ACCOUNT_ID=<アカウント ID> npx wrangler pages deploy   # generate と build のあと。Cloudflare Pages に配置（サイト + functions/）。account_id は環境変数で
+npx wrangler pages secret put ANTHROPIC_API_KEY --project-name enter-the-painting   # 受付の API キー（Pages の Secret。リポジトリに書かない）。合言葉は PASSPHRASE（空なら照合しない）。入れ直したら配置し直す
 ```
 
-生成物は `works/<id>/generated/`（コミットする）、ページは `w/<id>/index.html` と `index.html`（生成物。コミットしない。Actions が作る）。
+生成物は `works/<id>/generated/`（コミットする）、ページは `w/<id>/index.html` と `index.html`（生成物。コミットしない。Actions が作る）。（11-06：ギャラリーは `gallery/index.html` も生成。公開は Actions ではなく `wrangler pages deploy`）
 
 ## コードの場所
 
 - `scripts/generate/`：生成パイプライン（JS）。`color.js` 主要色、`flow.js` 流れ場、`rooms.js` 射影合成、`translate.js` 翻訳キャッシュ、`claude.js` Claude API、`pages.js` HTML
 - `src/page.ts`：作品ページの小さなスクリプト（言語、入る、共有）。`src/experience/main.ts`：「入る」後に読む体験の入口
 - `src/fluid/`：GPU 流体。`src/story/`：物語モード。`src/space/`：VR 空間モード。`src/text/`：文字の浮上。`src/audio/`：音。`src/i18n/`：言語
-- `src/recommend/`：気分から絵をすすめる（ギャラリーの入口、ルールだけの版）。`worker/`：Cloudflare Worker（Claude API の中継。`worker/README.md` に配備手順）。`scripts/generate/catalog.js` → `public/catalog.json`
+- `src/recommend/`：気分から絵をすすめる（ルールだけの版）。`src/concierge/`：受付の画面（11-06〜、E-1）。`functions/`：Cloudflare Pages Functions（`api/recommend.js` が Claude API の中継、`_lib/` が共通。11-06 に `worker/` から移した。`worker/` は使わない）。`scripts/generate/catalog.js` → `public/catalog.json`。キャラクターの画像は `public/concierge/`
 - `tests/`：`generate.test.ts`（単体）、`smoke.mjs`（Playwright）、`longrun.mjs`
 
 ## 状態
 
 2026-11-03：Day 1〜2 相当を実装。生成パイプライン、GPU 流体（等距離円筒、MacCormack、原画回帰、シュワシュワ）、物語モード（T0〜T5、文字、音、一時停止、静止画フォールバック）、VR 空間モード（S1〜S5。実機未確認）、作品ページとギャラリー、10 言語の UI、Playwright のスモーク。GitHub Pages は作家が Settings で有効化する必要あり。サブドメインは `enter.sheerarts.com` を提案中。リモートは https://github.com/sheer-jp/enter-the-painting（public）。
+
+2026-11-06：入口を作り直し中（`docs/ENTRANCE.md`、タスク E）。受付が先、白い壁のギャラリー `/gallery/`、Worker → Pages Functions とツール `recommend_work`（済）。置き場は Cloudflare Pages（https://enter-the-painting.pages.dev/ 、GitHub Pages は使わない）。D5-2 は取り下げ。

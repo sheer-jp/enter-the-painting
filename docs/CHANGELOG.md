@@ -1,5 +1,19 @@
 # 計画の変更履歴
 
+## V3（2026-11-06）入口の作り直し
+
+作家の構想（「一番最初はチャットで始まる。その先に白い背景のギャラリー。絵を選ぶと絵の中に入れる」）を受けて、オンラインの入口を作り直した。正は `docs/ENTRANCE.md`（V1）。作品ごとの作家の語りは `docs/WORKS_VOICE.md`。決定は 51〜58。
+
+- **受付が先**：オンラインの入口は `/` の受付（C）。「ようこそ、SHEER のギャラリーへ」。作家のメタファーの小さなキャラクターと 2〜4 往復話し、会話のあとにおすすめの 1 点が現れる。最初から絵は出さない。入口は「会場の QR」（S0 に直接）と「オンラインの受付」の 2 つ
+- **ギャラリーは白い壁**：`/` から `/gallery/` へ。白い壁に 6 作品が実寸比。PC は横スクロール、スマホは縦。おすすめの 1 点が最初。部屋の写真は置かない
+- **D5-2 取り下げ**：ギャラリーの背景に部屋のイメージを置くのをやめた（U-13）
+- **配線**：6 作品すべてに `moods` / `messages` / `fit` を置き、AI がそのことばで理由を書く。ツールの入力に `matched_moods`
+- **Worker → Pages Functions**：Claude API の中継を、サイトと同じ Cloudflare Pages プロジェクトの Functions（`functions/api/recommend.js`、同じ origin の `/api/recommend`）に移した（E-3）
+- **ツール呼び出し**：おすすめは Messages API のツール `recommend_work`（strict）で受け取る。Managed Agents / Agent SDK は使わない
+- **置き場は Cloudflare Pages**：サイト + Functions を 1 つのプロジェクトに。いまは `https://enter-the-painting.pages.dev/`。GitHub Pages は使わない。サブドメインか `/gallery/` かは QR を刷る前に決める
+- **課金よけ**：Anthropic コンソールの月上限 $200、$10 で通知。IP ごとの回数制限。合言葉（Secret `PASSPHRASE`。空なら照合しない）
+- 要件 F-59〜F-73、ジャーニー J6、仮説 10・11、タスク E-1〜E-8 を追加
+
 ## 実装（2026-11-03）
 
 計画どおりに Day 1〜2 相当（流体、物語モード、作品ページ、言語、部屋の合成、テスト、Actions）と Day 3 のコード（VR 空間モード、実機未確認）を実装。計画からの変更：文字は troika ではなく DOM / Canvas（決定 25）、ページは generate が作る（26）、`base` は相対（27）、VR の接近はどのトリガーでも（28）。詳細は `docs/LOG.md` の 11-03。

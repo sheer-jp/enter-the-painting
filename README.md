@@ -21,19 +21,26 @@
 
 **実装中**（AI ハッカソン 1 週間、Day 1〜2 相当まで）。計画は `docs/`、変更履歴は `docs/CHANGELOG.md`、作業ログは `docs/LOG.md`。
 
+11-06：入口を作り直し中（`docs/ENTRANCE.md`）。オンラインは `/` の受付（キャラクターとの会話 → おすすめの 1 点）から白い壁のギャラリー `/gallery/`、作品ページへ。会場の QR は作品ページに直接。置き場は Cloudflare Pages（いまは https://enter-the-painting.pages.dev/ ）。
+
 ```bash
 npm install
 npm run generate     # works/<id>/ から流れ場・主要色・翻訳・部屋の合成・QR・作品ページを生成
 npm run dev          # https://localhost:5173/w/harmoney/ （LAN の HTTPS。スマホ / Quest から確認）
 npm test && npm run build && npm run smoke
+CLOUDFLARE_ACCOUNT_ID=<アカウント ID> npx wrangler pages deploy   # generate と build のあと。Cloudflare Pages に配置（サイト + functions/）
+npx wrangler pages secret put ANTHROPIC_API_KEY --project-name enter-the-painting   # 受付の API キー（合言葉を使うなら PASSPHRASE も）
 ```
 
 動いているもの：生成パイプライン、GPU 流体、物語モード（PC・スマホ）、静止画フォールバック、作品ページとギャラリー、10 言語の UI、Playwright のスモーク。VR 空間モードは実装済みだが Quest で未確認。
+11-06：Cloudflare Pages（https://enter-the-painting.pages.dev/ ）に配置済み。Pages Functions `/api/recommend` で Claude API と会話し、ツール `recommend_work` で 1 点が返ることを確認。受付画面（`/`）とギャラリー空間（`/gallery/`）は作業中（`docs/TASKS.md` の E-1、E-2）。
 
 | ドキュメント | 内容 |
 | --- | --- |
 | [docs/PLAN.md](docs/PLAN.md) | 何を・誰のために・なぜ作るか、スコープ、完成の定義 |
 | [docs/EXPERIENCE.md](docs/EXPERIENCE.md) | 体験仕様。VR の空間モード、PC・スマホの物語モード、部屋で見る。数値と受け入れ条件 |
+| [docs/ENTRANCE.md](docs/ENTRANCE.md) | 入口の設計（正）。受付の会話 → ギャラリー空間 → 絵の中へ。キャラクター、スマホ、配線、合言葉、受け入れ条件 |
+| [docs/WORKS_VOICE.md](docs/WORKS_VOICE.md) | 作品ごとの作家の語り（11-06 口述、原典）。`work.json` の messages / moods の元 |
 | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) | 要件定義。ID、課題・人・場面との対応、優先度、受け入れ条件 |
 | [docs/JOURNEY.md](docs/JOURNEY.md) | ユーザージャーニー。来場者・オンラインの人・持ち主・海外の人・作家の 5 つの旅 |
 | [docs/TASKS.md](docs/TASKS.md) | タスク分解。日ごとに 2〜4 時間の単位、誰が、依存、完了の条件 |
@@ -54,4 +61,4 @@ npm test && npm run build && npm run smoke
 ## 予定している技術
 
 Vite + TypeScript + three.js（WebXR）。生成パイプラインは Node スクリプト。
-ホスティングは静的（GitHub Pages など、HTTPS 必須）。詳細は `docs/ARCHITECTURE.md`。
+ホスティングは静的（GitHub Pages など、HTTPS 必須）。詳細は `docs/ARCHITECTURE.md`。（11-06 に変更：Cloudflare Pages（サイト + Pages Functions）。GitHub Pages は使わない）

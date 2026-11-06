@@ -16,9 +16,9 @@
 | 部屋の画像 | 画像生成モデルは問わない（作家の好きなツールで可） | 一度だけ 6〜10 枚作り `rooms/` にコミット。全作品で使い回す |
 | QR | `qrcode` npm パッケージ | PNG / SVG を出せる。印刷用に SVG |
 | 音 | three.js `Audio` / `PositionalAudio`（Web Audio） | ナレーションは非位置、環境音は位置付き |
-| ホスティング | 静的（GitHub Pages + 作家所有の独自ドメイン） | HTTPS が必須。サーバーは不要。独自ドメインは印刷 QR の永続性のため（N-14）。Vite の `base` は `/` に固定 |
+| ホスティング | 静的（GitHub Pages + 作家所有の独自ドメイン） | HTTPS が必須。サーバーは不要。独自ドメインは印刷 QR の永続性のため（N-14）。Vite の `base` は `/` に固定（11-06 に変更：**Cloudflare Pages**（サイト + Pages Functions）。いまは `https://enter-the-painting.pages.dev/`。独自ドメインはサブドメインか `/gallery/` かを QR を刷る前に決める。GitHub Pages は使わない。`base` は `./`（決定 27）。決定 55） |
 
-フレームワーク（React など）は使わない。画面は「ギャラリー」「作品ページ」「空間（VR）」「物語（PC・スマホ）」の 4 つ。
+フレームワーク（React など）は使わない。画面は「ギャラリー」「作品ページ」「空間（VR）」「物語（PC・スマホ）」の 4 つ（11-06：入口に「受付」が加わり 5 つ）。
 
 ## 2. ディレクトリ構成（予定）
 
@@ -49,6 +49,24 @@ enter-the-painting/
 ├─ index.html             ギャラリー
 └─ w/<id>/index.html      作品ページ（ビルド時に生成。OGP 付き）
 ```
+
+追記（11-06、入口の作り直し。`docs/ENTRANCE.md`）：
+
+```
+enter-the-painting/
+├─ functions/             Cloudflare Pages Functions（同じ origin の API。旧 worker/ の置き換え）
+│  ├─ api/recommend.js    /api/recommend（Claude API の中継、ツール recommend_work）
+│  ├─ api/recommend/config.js  /api/recommend/config（合言葉の要否。E-5）
+│  └─ _lib/               prompt.js（system と本文）、relay.js（SSE の中継）
+├─ src/concierge/         受付の画面（E-1。src/recommend/ を土台に作り直し）
+├─ src/gallery.ts         ギャラリー空間の小さなスクリプト（E-2）
+├─ public/concierge/      キャラクターの画像（listening / smile / present の 1x・2x）
+├─ index.html             受付（11-06 から。いまのギャラリーは gallery/ へ）
+├─ gallery/index.html     ギャラリー空間（generate が作る。pages.js）
+└─ wrangler.toml          Pages の設定（pages_build_output_dir = "dist"、vars の CLAUDE_MODEL）
+```
+
+`worker/` は E-3 で `functions/` に移した（ディレクトリはまだ残っている。使わない）。
 
 ## 3. 画像 → 空間の生成パイプライン（`npm run generate -- <id>`）
 
@@ -110,10 +128,19 @@ VR 対応端末でも作品ページは 2D。「VR で入る」は `isSessionSup
 
 ## 7. ルーティング、ギャラリー、作品ページ、QR
 
-- ギャラリー：`/`。5 作品を実物の寸法比で並べる。背景に部屋のイメージ 1 枚。選ぶと作品ページへ
+（11-06 に変更：`/` は受付、ギャラリーは `/gallery/`。正は `docs/ENTRANCE.md`）
+
+| URL | 場面 | 中身 |
+| --- | --- | --- |
+| `/` | C 受付 | 見出し、キャラクター、会話、おすすめのカード。見出しとキャラクターは HTML で JS を待たない。ページ用 JS は gzip 25KB 以下、体験バンドルは読まない。「この絵を見に行く」→ `/w/<id>/?via=concierge`、「ギャラリーを歩く」→ `/gallery/?from=<id>` |
+| `/gallery/` | G ギャラリー | 白い壁に 6 作品を実寸比で。PC は横スクロール、スマホは縦。`?from=<id>` の 1 点が最初。選ぶと `/w/<id>/?via=gallery`。`generate` が作る |
+| `/w/<id>/` | S0 作品ページ | 下記のまま。会場の QR は `?from=qr` でここに直接 |
+| `/api/recommend` | （API） | Pages Functions。`GET /api/recommend/config` は `{ passphrase: true｜false }` だけ返す |
+
+- ギャラリー：`/`。5 作品を実物の寸法比で並べる。背景に部屋のイメージ 1 枚。選ぶと作品ページへ（11-06 に変更：上の表の `/gallery/`。背景の部屋は取り下げ（D5-2））
 - 作品ページ：`/w/<id>/`。ビルド時に生成する静的 HTML。絵（1024px JPEG）、タイトル・寸法・技法・年、販売状況、「入る」、部屋で見る（画像 6〜10 枚と物語、横スクロール）、連絡リンク、共有、他の作品、OGP メタ。絵と部屋の画像は HTML に直接あり JS を待たない。JS バンドル（gzip 300KB 以下）は `defer`。流体の 2048px テクスチャとフォントは「入る」を押してから読む
 - 連絡リンク：`work.json` の `contact`（フォームの URL を推奨。`mailto:` は public の HTML に書かない）。無ければ `site.json` の既定値
-- 計測（推奨）：Cookie なしのカウンタ（GoatCounter など）に `enter / finished / contact` の 3 イベントと入口（`from=qr` か否か）を送る。IP は保存しない。作品ページに 1 行明記（N-16）
+- 計測（推奨）：Cookie なしのカウンタ（GoatCounter など）に `enter / finished / contact` の 3 イベントと入口（`from=qr` か否か）を送る。IP は保存しない。作品ページに 1 行明記（N-16）（11-06 追加：受付とギャラリーの `concierge_*`、`gallery_pick`、`enter` の `via`。F-73、U-8 次第）
 - 言語：`navigator.languages` を順に正規化して、10 言語のうち最初に一致するものを選ぶ。無ければ英語。`?lang=ja` で固定。切り替えは `localStorage` に覚える。正規化：`zh-TW | zh-HK | zh-MO | zh-Hant*` → `zh-Hant`、それ以外の `zh*` → `zh-Hans`、`pt*` → `pt`、その他は言語サブタグ（`en-US` → `en`）。単体テストに含める
 - 開発中は `?w=<id>` でも開けるようにし、本番はパス `/w/<id>/`。QR は本番パス + `?from=qr`
 - QR の中身は `BASE_URL/w/<id>/`。`BASE_URL` は `.env` で設定
@@ -135,7 +162,10 @@ VR 対応端末でも作品ページは 2D。「VR で入る」は `isSessionSup
 
 ## 10. 開発とデプロイ
 
-- **Day 1 に公開**。`main` への push で GitHub Pages にビルド・配置（Actions）。独自ドメインを当てる。毎日の実機チェックは本番 URL で行う（Claude のセッションはクラウドで、LAN のサーバーは立てられない）
+- **Day 1 に公開**。`main` への push で GitHub Pages にビルド・配置（Actions）。独自ドメインを当てる。毎日の実機チェックは本番 URL で行う（Claude のセッションはクラウドで、LAN のサーバーは立てられない）（11-06 に変更：GitHub Pages は使わない（決定 37）。下の Cloudflare Pages）
+- **配置（11-06〜）**：Cloudflare Pages プロジェクト `enter-the-painting`（サイト + `functions/`）。`npm run generate && npm run build` のあと `CLOUDFLARE_ACCOUNT_ID=<アカウント ID> npx wrangler pages deploy`（Pages の設定は `account_id` を受け付けないので環境変数で渡す）。公開先はいまは `https://enter-the-painting.pages.dev/`。独自ドメインは QR を刷る前に決める（決定 55）
+- **Secret**：`npx wrangler pages secret put ANTHROPIC_API_KEY --project-name enter-the-painting`。合言葉を使うなら同じく `PASSPHRASE`（空なら照合しない）。Secret はリポジトリに書かない。入れ直したら配置し直して反映する。モデルは `wrangler.toml` の `vars.CLAUDE_MODEL`
+- CI はテストとビルドだけ（`.github/workflows/ci.yml`、決定 37）
 - 作家の手元では `npm run dev -- --host` + basic-ssl で LAN の HTTPS でも確認できる（Quest の自己署名証明書の扱いは要確認）
 - `?debug=1` でアプリ内に fps と品質段階を表示する（Quest のブラウザに性能表示は無い）
 - 生成物（`works/*/generated/`）はコミットする（1 作品あたり部屋の合成を含めて 10MB 程度）。翻訳と物語のキャッシュ（`translations.json`、`stories.json`）もコミットして API 呼び出しを繰り返さない
@@ -208,9 +238,11 @@ type Lang = 'ja' | 'en' | 'zh-Hans' | 'zh-Hant' | 'ko' | 'fr' | 'de' | 'es' | 'i
 
 設計は `docs/RECOMMEND.md`。実行時に外部 API を呼ばない規則の**唯一の例外**。
 
+（11-06：入口はギャラリーではなく受付 `/`。画面は `src/concierge/` に作り直す（E-1）。ツールの入力に `matched_moods`、合言葉の照合と `/api/recommend/config` を足す（E-4、E-5）。`docs/ENTRANCE.md` 3.1、5 節）
+
 | 用途 | 選定 | 理由 |
 | --- | --- | --- |
-| API キーの置き場 | Cloudflare Pages Functions（`functions/api/recommend.js`、共通は `functions/_lib/`。設定はリポジトリ直下の `wrangler.toml`） | サイト本体と同じ Pages プロジェクト・同じ origin（`/api/recommend`）。キーは Pages の Secret（`docs/ENTRANCE.md` 5.2） |
+| API キーの置き場 | Cloudflare Pages Functions（`functions/api/recommend.js`、共通は `functions/_lib/`。設定はリポジトリ直下の `wrangler.toml`） | サイト本体と同じ Pages プロジェクト・同じ origin（`/api/recommend`）。キーは Pages の Secret（`docs/ENTRANCE.md` 6 節） |
 | Claude API の呼び出し | Pages Functions から `fetch` で直接 | SDK を入れない（依存最小）。ストリーミングは SSE を中継。おすすめはツール `recommend_work`（`strict: true`）で受け取る |
 | カタログ | `public/catalog.json`（`npm run generate` が作る） | ブラウザ（ルールだけの版）と Pages Functions（system prompt。同じ配信の `/catalog.json`）が同じものを読む |
 | 落ちどころ | `src/recommend/rules.ts` | API 無し・オフライン・拒否で、3 問の選択肢から 3 軸の距離で選ぶ。会場でも動く |

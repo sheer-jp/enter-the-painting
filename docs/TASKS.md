@@ -82,7 +82,7 @@
 | ID | タスク | 誰 | 時間 | 依存 | 完了の条件 | 要件 |
 | --- | --- | --- | --- | --- | --- | --- |
 | D5-1 ✓ | スマホの物語モード：縦・横、タップで一時停止、右上で閉じる、iOS の消音確認（S-4 本番）。傾きは U-12 次第 | Claude | 2h | D2-3 | iPhone と Android で T0〜T5 | F-52 |
-| D5-2 | ギャラリー `/`：5 作品を実寸比で、背景に部屋のイメージ 1 枚 | Claude | 1.5h | D4-4 | 選んで 2 秒以内に S0 | F-22 |
+| D5-2 | ギャラリー `/`：5 作品を実寸比で、背景に部屋のイメージ 1 枚（**取り下げ（U-13）**、11-06 作家。ギャラリーは E-2 の白い壁で作り直す） | Claude | 1.5h | D4-4 | 選んで 2 秒以内に S0 | F-22 |
 | D5-3 ✓ | QR（`?from=qr`）と印刷用カード（`qr.svg`、`card.svg`、URL も印字）。T5 / S5 の会場向けの一言と共有 | Claude | 1.5h | D4-4 | 5 作品分 | F-23, F-26 |
 | D5-4 ✓ | `LICENSE`（MIT）、`THIRD_PARTY.md`、README の権利表記、計測の 1 行 | Claude | 0.5h | | ファイルがある | N-15, N-16 |
 | D5-5 | 作品カードを印刷。他人のスマホ（iPhone と Android 各 1 台）で QR を読んでもらう | 作家 | 1h | D5-3, D5-4 | 30 秒以内に流体 | 完成の定義 1 |
@@ -112,6 +112,21 @@
 | D7-4 | README を提出用に整える（スクリーンショット、動画リンク、公開 URL、使い方） | Claude | 1h | D7-3 | |
 | D7-5 | 提出（`docs/PITCH.md` の構成で） | 作家 | 1h | D7-4 | 提出済み |
 | D7-6 | `/close`。V2 の振り返りをログに | Claude | 0.5h | | |
+
+## E：入口の作り直し（11-06〜）
+
+正は `docs/ENTRANCE.md`（8 節のタスク、9 節の受け入れ条件）。受付（C）が先、その先に白い壁のギャラリー（G）、そこから S0。
+
+| ID | タスク | 誰 | 完了の条件 | 要件 |
+| --- | --- | --- | --- | --- |
+| E-1 | 受付画面 `src/concierge/`（`src/recommend/` を土台に作り直し）。`docs/ENTRANCE.md` 3.1〜3.3 | Opus | 受け入れ 1〜3、6 | F-59〜F-63、F-65〜F-67 |
+| E-2 | ギャラリー `/gallery/`（`pages.js` で生成、`src/gallery.ts`）。4 節 | Opus（E-1 と同じ人） | 受け入れ 4 | F-68〜F-70 |
+| E-3 ✓ | Worker → Pages Functions、ツール呼び出し | 済（11-06） | — | F-58 |
+| E-4 ✓ | 配線：6 作品の `moods` / `messages`（語りから）、`fit`、`matched_moods`、system の追記。5 節 | Opus（Fable が確認） | 受け入れ 5 | F-71、F-72 |
+| E-5 | 合言葉（Function の照合、`/api/recommend/config`、受付の 1 回の問い）。3.1 | Opus（E-1 と同じ人） | 合言葉なしで API が 403、ルールだけの版に落ちる | F-64 |
+| E-6 | スモーク：受付（ルールだけの版）→ 1 点 → ギャラリー → S0 → 入る。スマホ幅でも | Opus（E-1 と同じ人） | headless で通る | F-63、F-65、F-68 |
+| E-7 | docs の整合（EXPERIENCE 1 節、REQUIREMENTS、JOURNEY J2 / J6、PLAN、DESIGN、TASKS、CHANGELOG V3、CLAUDE.md） | Opus（Fable がレビュー） | 文書間で矛盾なし | — |
+| E-8 | 配置と実機（iPhone Safari、Android Chrome、PC Chrome）。`docs/LOG.md` に記録 | Fable + 作家 | 受け入れ 7 | F-66 |
 
 ## 並行の目安と、現実的な見立て
 
