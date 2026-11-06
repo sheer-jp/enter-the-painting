@@ -171,9 +171,9 @@ V1 でやること（E-4）：
 ## 7. 計測（11-06 深夜に実装。作家「Cookie はあってよい。誰がどの絵を見たか、会話の数を見たい」）
 
 - **数だけを Cloudflare KV に貯める**（個人は追わない。IP・UA・会話の文・Cookie は保存しない）。`POST /api/stat`（`concierge_start` / `concierge_turn` / `concierge_recommend:<id>` / `concierge_other` / `concierge_skip` / `enter:<via>:<id>` / `gallery_pick:<id>`）。日ごと（JST、40 日で消える）と累計
-- **見る**：`https://enter-the-painting.pages.dev/stats.html?key=<STATS_KEY>`（Pages の Secret `STATS_KEY` を作家が登録。合計・絵ごと・直近 30 日の表）
+- **見る**：`https://enter-the-painting.pages.dev/stats.html?key=<STATS_KEY>`（合計・絵ごと・直近 30 日の表）。`STATS_KEY` は 11-06 に Fable が生成して Pages の Secret に登録済み。鍵と URL は `ai-dev/_meta/development/enter-the-painting/stats-key.txt`（git 追跡外、作家だけが読む）
 - KV の無料枠は 1 日 1,000 書き込み（1 出来事 2 書き込み）。来場の多い日は数え漏れる。有料プランか、まとめ書きは後で
-- ページ閲覧の数は Cloudflare Web Analytics（Pages のダッシュボードで作家が有効にする。こちらからは切替できない）
+- ページ閲覧の数は Cloudflare Web Analytics（11-06 に Fable がダッシュボードで有効化。Pages → enter-the-painting → Metrics → Web Analytics「View Web Analytics」で見る）
 - `prefers-reduced-data` の端末には送らない
 
 
