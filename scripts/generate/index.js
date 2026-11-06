@@ -183,6 +183,7 @@ async function main() {
   writeFileSync(join(ROOT, 'gallery', 'index.html'), galleryWallPage({ works: allWorks, baseUrl: BASE_URL }));
   writeFileSync(join(ROOT, 'public', 'works.json'), JSON.stringify(allWorks.map((s) => ({ id: s.id, title: s.title, size_cm: s.size_cm })), null, 2) + '\n');
   await (await import('./catalog.js')).writeCatalog(ROOT);   // 気分から絵をすすめる（docs/RECOMMEND.md 8.3）
+  await (await import('./og.js')).writeOg({ root: ROOT, works: allWorks });   // ファビコンと SNS カード（E-16）
   console.log(`ページ生成：${every.length} 作品、BASE_URL=${BASE_URL}`);
 }
 

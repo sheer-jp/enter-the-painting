@@ -12,4 +12,5 @@
 | qrcode | MIT | QR 生成 | |
 | subset-font | MIT | フォントのサブセット | |
 | Vite / vitest / Playwright | MIT | ビルド、テスト | |
+| Shippori Mincho（`scripts/generate/fonts/ShipporiMincho-subset.ttf`） | SIL OFL 1.1（Copyright 2021 The Shippori Mincho Project Authors） | SNS カード（OGP）の文字を描く。部分集合を同梱 | 11-07 E-16 |
 | 部屋の画像の生成ツール | （ツールごとに確認） | `rooms/` | 商用利用の可否を `rooms/README.md` に書く |

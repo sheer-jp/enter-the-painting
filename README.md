@@ -26,6 +26,7 @@
 ```bash
 npm install
 npm run generate     # works/<id>/ から流れ場・主要色・翻訳・部屋の合成・QR・作品ページを生成
+BASE_URL=https://enter-the-painting.pages.dev npm run generate   # 配置する前はこちら（QR・OGP・SNS カードの URL を配置先に）
 npm run dev          # https://localhost:5173/w/harmoney/ （LAN の HTTPS。スマホ / Quest から確認）
 npm test && npm run build && npm run smoke
 CLOUDFLARE_ACCOUNT_ID=<アカウント ID> npx wrangler pages deploy   # generate と build のあと。Cloudflare Pages に配置（サイト + functions/）

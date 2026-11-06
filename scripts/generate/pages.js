@@ -25,6 +25,30 @@ const asMulti = (v) => typeof v === 'string' ? { ja: v } : v;
 const brand = (prefix) => `<a class="brand" href="${prefix}"><b>SHEER Gallery</b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
 const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}"></select></label>`;
 
+// ja と en が同じ（または en が無い）なら 1 回だけ。違えば「ja / en」（11-07 作家：「SHEER Gallery / SHEER Gallery」と同じ語を 2 回並べない）
+export const jaEnTitle = (ja, en) => (en && en !== ja ? `${ja} / ${en}` : (ja || en || ''));
+export const SITE_NAME = 'SHEER Gallery';
+// ファビコン・マニフェスト（E-16）。prefix は受付 ''、ギャラリー '../'、作品 '../../'（base: './' の相対で、置き場のパスに依存しない）
+const headIcons = (prefix) => `<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+<link rel="icon" href="${prefix}favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="${prefix}apple-touch-icon.png">
+<link rel="manifest" href="${prefix}site.webmanifest">
+<meta name="theme-color" content="#ffffff">`;
+// SNS カード（OGP 1200×630。画像は scripts/generate/og.js が合成）。URL は BASE_URL の絶対
+const headOg = ({ type = 'website', title, description, image, url }) => `<meta property="og:type" content="${type}">
+<meta property="og:site_name" content="${SITE_NAME}">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:image" content="${image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="${url}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:image" content="${image}">`;
+const RECEPTION_DESC = '彩り美しい抽象画の世界を届けます。会話で、今日のあなたへの 1 点を。';
+
 // 作品ページ /w/<id>/index.html。絵は JS を待たずに出る。JS は「入る」のためだけ
 export function workPage({ work, space, baseUrl, allWorks }) {
   const id = work.id;
@@ -33,7 +57,8 @@ export function workPage({ work, space, baseUrl, allWorks }) {
   const url = `${baseUrl}/w/${id}/`;
   const img = `../../works/${id}/generated/painting_1024.jpg`;
   const blur = `../../works/${id}/generated/${space.painting_blur || 'painting_1024.jpg'}`;
-  const ogImg = `${baseUrl}/works/${id}/generated/painting_1024.jpg`;
+  const ogImg = `${baseUrl}/works/${id}/generated/og.png`;
+  const pageTitle = `${jaEnTitle(title, titleEn)} — ${SITE_NAME}`;
   const [w, h] = work.size_cm;
   const avail = work.availability ? `<span class="avail" data-i18n="${esc(work.availability)}">${esc(UI_JA[work.availability] || '')}</span>` : '';
   // 部屋で見る：帯は全景だけ。キャプションは「部屋の種類 ─ 場所」（母語。無ければ en → ja）。比較の一文と寸法は拡大表示（page.ts）
@@ -56,16 +81,11 @@ export function workPage({ work, space, baseUrl, allWorks }) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>${esc(title)}${titleEn && titleEn !== title ? ` / ${esc(titleEn)}` : ''}</title>
+<title>${esc(pageTitle)}</title>
 <meta name="description" content="${esc(title)}（${w} × ${h} cm）。この絵の中に入れます。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="${esc(title)}">
-<meta property="og:description" content="${w} × ${h} cm — この絵の中に入れます / Enter the painting">
-<meta property="og:image" content="${ogImg}">
-<meta property="og:url" content="${url}">
-<meta name="twitter:card" content="summary_large_image">
+${headOg({ type: 'article', title: pageTitle, description: `${w} × ${h} cm — この絵の中に入れます / Enter the painting`, image: ogImg, url })}
 <meta name="work" content="${id}">
-<meta name="theme-color" content="${esc(space.back_color)}">
+${headIcons('../../')}
 ${FONTS}
 <link rel="stylesheet" href="../../src/ui/page.css">
 </head>
@@ -153,13 +173,10 @@ export function galleryPage({ works, baseUrl }) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>${esc(title.ja)}${title.en ? ` / ${esc(title.en)}` : ''}</title>
+<title>${esc(jaEnTitle(title.ja, title.en))}</title>
 <meta name="description" content="${esc(title.ja)}。気分を話すと、あなたへの 1 点をおすすめします。絵の中に入れるギャラリー">
-<meta property="og:title" content="${esc(title.ja)} / ${esc(title.en)}">
-<meta property="og:image" content="${baseUrl}/works/${works[0]?.id}/generated/painting_1024.jpg">
-<meta property="og:url" content="${baseUrl}/">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f6f4ef">
+${headOg({ title: jaEnTitle(title.ja, title.en) || SITE_NAME, description: RECEPTION_DESC, image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/` })}
+${headIcons('')}
 <meta name="recommend-api" content="${esc(process.env.RECOMMEND_API ?? '/api/recommend')}">
 ${FONTS}
 <link rel="stylesheet" href="src/ui/page.css">
@@ -217,13 +234,10 @@ export function galleryWallPage({ works, baseUrl }) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ギャラリー / Gallery</title>
+<title>ギャラリー / Gallery — ${SITE_NAME}</title>
 <meta name="description" content="白い壁に、絵を実物の寸法の比で並べたギャラリー。選ぶと絵の中に入れます">
-<meta property="og:title" content="ギャラリー / Gallery">
-<meta property="og:image" content="${baseUrl}/works/${works[0]?.id}/generated/painting_1024.jpg">
-<meta property="og:url" content="${baseUrl}/gallery/">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f6f4ef">
+${headOg({ title: `ギャラリー — ${SITE_NAME}`, description: '白い壁に、絵を実物の寸法の比で並べたギャラリー。選ぶと絵の中に入れます', image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/gallery/` })}
+${headIcons('../')}
 ${FONTS}
 <link rel="stylesheet" href="../src/ui/page.css">
 </head>
