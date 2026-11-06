@@ -175,14 +175,22 @@ export async function buildCatalog(root, { apiKey = process.env.ANTHROPIC_API_KE
   const cfg = existsSync(cfgPath) ? JSON.parse(readFileSync(cfgPath, 'utf8')) : {};
   const intro = cfg.intro || { ja: '' };
   const openers = cfg.openers || { ja: [] };
+  // 受付の固定文（E-15）：最初の 3 文、おすすめの画面のひとこと、選択肢の上の案内、4 つ目のボタン。ja / en は HTML にも出る
+  const greeting = { ja: (cfg.greeting?.ja || []).slice(0, 3), en: cfg.greeting?.en };
+  /** @type {Record<string, { ja?: string, en?: string }>} */
+  const lines = { present_line: cfg.present_line, ui_hint: cfg.ui_hint, ui_write: cfg.ui_write };
 
-  // 作家の紹介と最初の選択肢を訳す（recommend/translations.json。ja のハッシュがキー、en は作家の訳）
+  // 作家の紹介・最初の選択肢・受付の固定文を訳す（recommend/translations.json。ja のハッシュがキー、en は作家の訳）
   const texts = [];
   if (intro.ja) texts.push({ ja: intro.ja, en: intro.en });
   (openers.ja || []).forEach((ja, i) => texts.push({ ja, en: openers.en?.[i] }));
+  greeting.ja.forEach((ja, i) => texts.push({ ja, en: greeting.en?.[i] }));
+  for (const v of Object.values(lines)) if (v?.ja) texts.push({ ja: v.ja, en: v.en });
   let tr = (/** @type {string} */ _ja) => /** @type {Record<string, string>} */ ({});
   if (texts.length) tr = await translateAll(texts, join(root, 'recommend', 'translations.json'), { apiKey });
   const full = (t) => ({ ...tr(t.ja), ja: t.ja, ...(t.en ? { en: t.en } : {}) });
+  // 1 文を 10 言語に（config に無ければ null。ブラウザは HTML の ja / en のまま）
+  const line = (/** @type {{ ja?: string, en?: string } | undefined} */ v) => v?.ja ? perLangText(full({ ja: v.ja, en: v.en })) : null;
 
   const worksDir = join(root, 'works');
   const ids = existsSync(worksDir) ? readdirSync(worksDir).filter((d) => existsSync(join(worksDir, d, 'generated', 'space.json'))).sort() : [];
@@ -194,6 +202,10 @@ export async function buildCatalog(root, { apiKey = process.env.ANTHROPIC_API_KE
     version: 1,
     artist: { intro: intro.ja ? perLangText(full(intro)) : { ja: '' } },
     openers: perLangList((openers.ja || []).map((ja, i) => full({ ja, en: openers.en?.[i] }))),
+    greeting: perLangList(greeting.ja.map((ja, i) => full({ ja, en: greeting.en?.[i] }))),
+    present_line: line(lines.present_line),
+    ui_hint: line(lines.ui_hint),
+    ui_write: line(lines.ui_write),
     turns: [Math.min(turns[0], turns[1]), Math.max(turns[0], turns[1])],
     works,
   };

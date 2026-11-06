@@ -132,7 +132,27 @@
   "story": null,
   "size_label": {
     "ja": "F4号",
-    "en": "F4"
+    "en": "F4",
+    "zh-Hans": "F4号",
+    "zh-Hant": "F4號",
+    "ko": "F4호",
+    "fr": "F4",
+    "de": "F4",
+    "es": "F4",
+    "it": "F4",
+    "pt": "F4"
+  },
+  "medium": {
+    "ja": "シナベニヤにミクストメディア",
+    "en": "Mixed media on shina plywood",
+    "zh-Hans": "椴木胶合板上综合媒材",
+    "zh-Hant": "椴木合板上綜合媒材",
+    "ko": "피나무 합판에 혼합 매체",
+    "fr": "Technique mixte sur contreplaqué de tilleul",
+    "de": "Mischtechnik auf Lindensperrholz",
+    "es": "Técnica mixta sobre contrachapado de tilo",
+    "it": "Tecnica mista su compensato di tiglio",
+    "pt": "Técnica mista sobre contraplacado de tília"
   },
   "rooms": [
     {
@@ -141,7 +161,15 @@
       "category": "house",
       "label": {
         "ja": "玄関",
-        "en": "Entrance hall"
+        "en": "Entrance hall",
+        "zh-Hans": "玄关",
+        "zh-Hant": "玄關",
+        "ko": "현관",
+        "fr": "L’entrée",
+        "de": "Der Eingangsbereich",
+        "es": "El recibidor",
+        "it": "L’ingresso",
+        "pt": "A entrada"
       },
       "wall_width_cm": 229,
       "image_px": [
@@ -225,7 +253,15 @@
       "category": "house",
       "label": {
         "ja": "ソファの向かいの壁",
-        "en": "The wall facing the sofa"
+        "en": "The wall facing the sofa",
+        "zh-Hans": "沙发对面的墙",
+        "zh-Hant": "沙發對面的牆",
+        "ko": "소파 맞은편 벽",
+        "fr": "Le mur face au canapé",
+        "de": "Die Wand gegenüber dem Sofa",
+        "es": "La pared frente al sofá",
+        "it": "La parete di fronte al divano",
+        "pt": "A parede em frente ao sofá"
       },
       "wall_width_cm": 323,
       "image_px": [
@@ -309,7 +345,15 @@
       "category": "studio",
       "label": {
         "ja": "ベッド脇",
-        "en": "Beside the bed"
+        "en": "Beside the bed",
+        "zh-Hans": "床边",
+        "zh-Hant": "床邊",
+        "ko": "침대 옆",
+        "fr": "À côté du lit",
+        "de": "Neben dem Bett",
+        "es": "Junto a la cama",
+        "it": "Accanto al letto",
+        "pt": "Ao lado da cama"
       },
       "wall_width_cm": 188,
       "image_px": [
@@ -393,7 +437,15 @@
       "category": "studio",
       "label": {
         "ja": "机の上",
-        "en": "Above the desk"
+        "en": "Above the desk",
+        "zh-Hans": "书桌上方",
+        "zh-Hant": "書桌上方",
+        "ko": "책상 위",
+        "fr": "Au-dessus du bureau",
+        "de": "Über dem Schreibtisch",
+        "es": "Sobre el escritorio",
+        "it": "Sopra la scrivania",
+        "pt": "Por cima da secretária"
       },
       "wall_width_cm": 167,
       "image_px": [
@@ -474,5 +526,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T14:03:47.967Z"
+  "generated_at": "2026-11-06T14:13:09.854Z"
 }

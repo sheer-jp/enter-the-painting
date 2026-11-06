@@ -64,6 +64,14 @@ export interface ConciergeOptions {
   stat?: (ev: string, id?: string | null, via?: string | null) => void;   // 計測（E-14。page.ts の stat。数だけ）
 }
 
+// catalog.json の受付の固定文（E-15。scripts/generate/catalog.js）。無い古いカタログでは HTML の ja / en のまま
+type UiCatalog = Catalog & {
+  greeting?: Partial<Record<Lang, string[]>>;
+  present_line?: Partial<Record<Lang, string>>;
+  ui_hint?: Partial<Record<Lang, string>>;
+  ui_write?: Partial<Record<Lang, string>>;
+};
+
 export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void {
   if (root.dataset.mounted) return;
   root.dataset.mounted = '1';
@@ -234,20 +242,40 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     input.setAttribute('aria-label', t(key, lang));
     send.textContent = t('rec_send', lang);
   }
+  // ja と en は HTML の data-lang で出し分ける。他の言語はカタログに本当の訳（en と違う）があれば差し替える。
+  // 差し替えるときも元の HTML（ja / en の span）を data-orig に残し、ja / en に戻したら復元する
+  //（11-06 深夜：外国語にしてから日本語に戻すと英語が残るバグの修正）
+  function swapText(el: HTMLElement, s: string | undefined, en: string | undefined) {
+    if (el.dataset.orig === undefined) el.dataset.orig = el.innerHTML;
+    if (lang !== 'ja' && lang !== 'en' && s && s !== en) { el.textContent = s; return; }
+    el.innerHTML = el.dataset.orig;
+    applyLang(el, lang);
+  }
+  // 受付の固定文（E-15）：最初の 3 文、選択肢、選択肢の上の案内、4 つ目のボタン
   function labelOpeners() {
-    // ja と en は HTML の data-lang で出し分ける。他の言語はカタログに本当の訳があれば差し替える。
-    // 差し替えるときも元の HTML（ja / en の span）を data-orig に残し、ja / en に戻したら復元する
-    //（11-06 深夜：外国語にしてから日本語に戻すと英語が残るバグの修正）
-    const list = (lang === 'ja' || lang === 'en') ? null : catalog?.openers?.[lang];
-    const en = catalog?.openers?.en;
+    const c = catalog as UiCatalog | null;
+    const lists = (k: 'openers' | 'greeting') => [c?.[k]?.[lang], c?.[k]?.en] as const;
+    const [list, en] = lists('openers');
     thread.querySelectorAll<HTMLButtonElement>('button[data-opener-index]:not(.cg-write)').forEach((b) => {
-      if (b.dataset.orig === undefined) b.dataset.orig = b.innerHTML;
       const i = +b.dataset.openerIndex!;
-      const s = list?.[i];
-      if (s && s !== en?.[i]) { b.textContent = s; return; }   // 本当の訳があるときだけ
-      b.innerHTML = b.dataset.orig;
-      applyLang(b, lang);
+      swapText(b, list?.[i], en?.[i]);
     });
+    const [greet, greetEn] = lists('greeting');
+    thread.querySelectorAll<HTMLElement>('[data-greet]').forEach((p) => { const i = +p.dataset.greet!; swapText(p, greet?.[i], greetEn?.[i]); });
+    const cap = thread.querySelector<HTMLElement>('.cg-openers-cap');
+    if (cap) {
+      swapText(cap, c?.ui_hint?.[lang], c?.ui_hint?.en);
+      cap.parentElement?.setAttribute('aria-label', ([...cap.children].find((e) => !(e as HTMLElement).hidden) || cap).textContent?.trim() || '');
+    }
+    const w = thread.querySelector<HTMLElement>('.cg-write');
+    if (w) swapText(w, c?.ui_write?.[lang], c?.ui_write?.en);
+    labelPresent();
+  }
+  // おすすめの画面のひとこと（present_line）。C2 の中で差し替えた後の「では、こちらは」のときは触らない
+  function labelPresent() {
+    if (c2Line.dataset.other) return;
+    const c = catalog as UiCatalog | null;
+    swapText(c2Line, c?.present_line?.[lang], c?.present_line?.en);
   }
   labelUi();
   const langSelect = document.getElementById('lang') as HTMLSelectElement | null;
@@ -300,7 +328,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     hideC2();
     root.classList.remove('is-talk');   // 迎えの状態（キャラクターは大きく）に戻す
     c2.querySelector('.cg-card')?.remove();
-    c2Line.innerHTML = c2LineInit;
+    c2Line.innerHTML = c2LineInit; delete c2Line.dataset.other;
     thread.innerHTML = initialThread;
     applyLang(thread, lang);
     labelOpeners();
@@ -739,8 +767,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     const old = c2.querySelector('.cg-card');
     if (old) old.replaceWith(card); else c2.querySelector('.cg2-in')!.appendChild(card);
     // ひとこと：C2 が立ち上がるときは present_line（作家の 1 文）、C2 の中で差し替えたら「では、こちらはどうでしょう」
-    if (inC2) c2Line.textContent = t('cg_other_line', lang);
-    else { c2Line.innerHTML = c2LineInit; applyLang(c2Line, lang); }
+    if (inC2) { c2Line.textContent = t('cg_other_line', lang); c2Line.dataset.other = '1'; }
+    else { delete c2Line.dataset.other; labelPresent(); }
     if (inC2) c2.scrollTo({ top: 0, behavior: 'smooth' });
     else openC2(true);
   }

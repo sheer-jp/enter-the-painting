@@ -1,5 +1,5 @@
 {
-  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す。greeting は受付の最初の 2 文（API を待たずに出す）、title は受付の見出し。persona は受付のキャラクター：name（ja/en。空なら画面に出さない）、tone（AI の話し方の指示）、intro_line（ja/en。空でなければ最初の 2 文の前にキャラクターが言う 1 文）。present_line（ja/en）はおすすめの画面（C2）でキャラクターが言うひとこと（docs/ENTRANCE.md 3.5）",
+  "_note": "作家が直すファイル。intro は作家の紹介（AI の話し方の土台）、openers は最初の 3 つの選択肢。ja が正で、en は作家が確認した訳。他の言語は npm run generate が訳して recommend/translations.json に残す。greeting は受付の最初の 2 文（API を待たずに出す）、title は受付の見出し。persona は受付のキャラクター：name（ja/en。空なら画面に出さない）、tone（AI の話し方の指示）、intro_line（ja/en。空でなければ最初の 2 文の前にキャラクターが言う 1 文）。present_line（ja/en）はおすすめの画面（C2）でキャラクターが言うひとこと（docs/ENTRANCE.md 3.5）。ui_hint（ja/en）は選択肢の上の案内、ui_write（ja/en）は 4 つ目のボタン。greeting・present_line・ui_hint・ui_write も他の言語は npm run generate が recommend/translations.json に通して public/catalog.json に出す",
   "title": {
     "ja": "SHEER Gallery",
     "en": "SHEER Gallery"
@@ -50,5 +50,13 @@
   "present_line": {
     "ja": "これ、どうかな。",
     "en": "How about this one?"
+  },
+  "ui_hint": {
+    "ja": "近いものがあれば、選んでください",
+    "en": "Pick one if it fits"
+  },
+  "ui_write": {
+    "ja": "自分のことばで書く",
+    "en": "Write in my own words"
   }
 }

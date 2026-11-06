@@ -214,3 +214,28 @@ describe('絵ごとの流体の性格（docs/FLUID_PER_WORK.md）', async () => 
     expect(normalizeDriveDir(['a', 1])).toBeNull();
   });
 });
+
+// E-15：作品ページの技法と部屋の場所の名前は space.json の 10 言語を data-lang の span で出す（applyLang が出し分ける）
+describe('作品ページの技法・部屋の場所（10 言語）', async () => {
+  const { workPage } = await import('../scripts/generate/pages.js');
+  const space = {
+    id: 'w1', title: { ja: '題', en: 'Title' }, back_color: '#000',
+    medium: { ja: 'キャンバスにアクリル', en: 'Acrylic on canvas', ko: '캔버스에 아크릴', fr: 'Acrylique sur toile' },
+    rooms: [{ image: 'room_a.jpg', category: 'house', label: { ja: 'ソファの上の壁', en: 'Above the sofa', fr: 'Le mur au-dessus du canapé' } }],
+  };
+  const work = { id: 'w1', size_cm: [10, 20], medium: { ja: 'キャンバスにアクリル', en: 'Acrylic on canvas' } };
+  const html = workPage({ work, space, baseUrl: 'https://example.com', allWorks: [space] });
+  it('技法：ja は見せ、ほかの言語は hidden の span で並ぶ', () => {
+    expect(html).toContain('<span lang="ja" data-lang="ja">キャンバスにアクリル</span>');
+    expect(html).toContain('<span lang="ko" data-lang="ko" hidden>캔버스에 아크릴</span>');
+    expect(html).toContain('<span lang="fr" data-lang="fr" hidden>Acrylique sur toile</span>');
+  });
+  it('部屋の場所の名前も 10 言語のうちある言語ぶん', () => {
+    expect(html).toContain('<span lang="fr" data-lang="fr" hidden>Le mur au-dessus du canapé</span>');
+  });
+  it('space.json に medium が無い（古い生成物）ときは work.json の ja / en', () => {
+    const old = workPage({ work, space: { ...space, medium: undefined }, baseUrl: 'https://example.com', allWorks: [space] });
+    expect(old).toContain('<span lang="en" data-lang="en" hidden>Acrylic on canvas</span>');
+    expect(old).not.toContain('data-lang="ko"');
+  });
+});

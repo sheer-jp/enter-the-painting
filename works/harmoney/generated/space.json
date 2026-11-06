@@ -156,7 +156,27 @@
   },
   "size_label": {
     "ja": "F15 号",
-    "en": "F15"
+    "en": "F15",
+    "zh-Hans": "F15号",
+    "zh-Hant": "F15號",
+    "ko": "F15호",
+    "fr": "F15",
+    "de": "F15",
+    "es": "F15",
+    "it": "F15",
+    "pt": "F15"
+  },
+  "medium": {
+    "ja": "キャンバスにアクリル",
+    "en": "Acrylic on canvas",
+    "zh-Hans": "布面丙烯",
+    "zh-Hant": "畫布壓克力",
+    "ko": "캔버스에 아크릴",
+    "fr": "Acrylique sur toile",
+    "de": "Acryl auf Leinwand",
+    "es": "Acrílico sobre lienzo",
+    "it": "Acrilico su tela",
+    "pt": "Acrílico sobre tela"
   },
   "rooms": [
     {
@@ -165,7 +185,15 @@
       "category": "house",
       "label": {
         "ja": "ソファの上の壁",
-        "en": "Above the sofa"
+        "en": "Above the sofa",
+        "zh-Hans": "沙发上方的墙",
+        "zh-Hant": "沙發上方的牆",
+        "ko": "소파 위 벽",
+        "fr": "Le mur au-dessus du canapé",
+        "de": "Die Wand über dem Sofa",
+        "es": "La pared sobre el sofá",
+        "it": "La parete sopra il divano",
+        "pt": "A parede por cima do sofá"
       },
       "wall_width_cm": 253,
       "image_px": [
@@ -238,7 +266,15 @@
       "category": "house",
       "label": {
         "ja": "ローボードの上",
-        "en": "Above the low board"
+        "en": "Above the low board",
+        "zh-Hans": "矮柜上方",
+        "zh-Hant": "矮櫃上方",
+        "ko": "낮은 수납장 위",
+        "fr": "Au-dessus du meuble bas",
+        "de": "Über dem Lowboard",
+        "es": "Sobre el mueble bajo",
+        "it": "Sopra il mobile basso",
+        "pt": "Por cima do móvel baixo"
       },
       "wall_width_cm": 256,
       "image_px": [
@@ -322,7 +358,15 @@
       "category": "house",
       "label": {
         "ja": "ダイニングの壁（寄り）",
-        "en": "The dining wall, close"
+        "en": "The dining wall, close",
+        "zh-Hans": "餐厅的墙（近景）",
+        "zh-Hant": "餐廳的牆（近景）",
+        "ko": "다이닝 벽 (가까이)",
+        "fr": "Le mur de la salle à manger, de près",
+        "de": "Die Esszimmerwand, nah",
+        "es": "La pared del comedor, de cerca",
+        "it": "La parete della sala da pranzo, da vicino",
+        "pt": "A parede da sala de jantar, de perto"
       },
       "wall_width_cm": 242,
       "image_px": [
@@ -406,7 +450,15 @@
       "category": "house",
       "label": {
         "ja": "寝室のヘッドボードの上",
-        "en": "Above the headboard"
+        "en": "Above the headboard",
+        "zh-Hans": "卧室床头板上方",
+        "zh-Hant": "臥室床頭板上方",
+        "ko": "침실 헤드보드 위",
+        "fr": "Au-dessus de la tête de lit",
+        "de": "Über dem Kopfteil des Betts",
+        "es": "Sobre el cabecero",
+        "it": "Sopra la testiera del letto",
+        "pt": "Por cima da cabeceira da cama"
       },
       "wall_width_cm": 241,
       "image_px": [
@@ -487,5 +539,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-06T14:03:47.137Z"
+  "generated_at": "2026-11-06T14:13:09.024Z"
 }

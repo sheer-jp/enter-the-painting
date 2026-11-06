@@ -109,8 +109,14 @@ async function generateWork(id) {
   }
   if (stories.ja) texts.push({ ja: stories.ja, en: stories.en });
   texts.push(...roomTexts);
+  // 技法・号数・部屋の場所の名前（E-15）。work.json / rooms/*.json の { ja, en } を 10 言語に。文字列（古い形）は訳さずそのまま
+  const isMulti = (v) => v && typeof v === 'object' && typeof v.ja === 'string' && v.ja;
+  const labels = [work.medium, work.size_label, ...rooms.map((r) => r.label)].filter(isMulti);
+  texts.push(...new Map(labels.map((x) => [x.ja, { ja: x.ja, en: x.en }])).values());
   const tr = await translateAll(texts, join(gen, 'translations.json'));
+  const multi = (v) => isMulti(v) ? { ...tr(v.ja), ja: v.ja, ...(v.en ? { en: v.en } : {}) } : (v ?? null);
   for (const r of rooms) for (const k of ROOM_TEXTS) if (r[k]) r[k] = { ...tr(r[k].ja), ja: r[k].ja, en: r[k].en };
+  for (const r of rooms) if (isMulti(r.label)) r.label = multi(r.label);
 
   // 声の各文の開始秒。無ければ等間隔（文字数に比例）
   const at = [];
@@ -136,7 +142,8 @@ async function generateWork(id) {
     audio: { voice: work.audio?.voice && existsSync(join(dir, work.audio.voice)) ? work.audio.voice : null, ambient: work.audio?.ambient || 'calm' },
     messages: messages.map((m, i) => ({ at: at[i], ...tr(m.ja), ja: m.ja, ...(m.en ? { en: m.en } : {}) })),
     story: stories.ja ? { ...tr(stories.ja), ja: stories.ja } : null,
-    size_label: work.size_label || null,
+    size_label: multi(work.size_label || null),
+    medium: multi(work.medium || null),
     rooms, availability: work.availability || null, contact: work.contact || null,
     generated_at: new Date().toISOString(),
   };

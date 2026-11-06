@@ -206,5 +206,53 @@
     "es": "Disfrutemos juntos del nuevo capítulo.",
     "it": "Godiamoci insieme il nuovo capitolo.",
     "pt": "Vamos aproveitar juntos o novo capítulo."
+  },
+  "b6491a8339a3": {
+    "ja": "シナベニヤにミクストメディア",
+    "en": "Mixed media on shina plywood",
+    "zh-Hans": "椴木胶合板上综合媒材",
+    "zh-Hant": "椴木合板上綜合媒材",
+    "ko": "피나무 합판에 혼합 매체",
+    "fr": "Technique mixte sur contreplaqué de tilleul",
+    "de": "Mischtechnik auf Lindensperrholz",
+    "es": "Técnica mixta sobre contrachapado de tilo",
+    "it": "Tecnica mista su compensato di tiglio",
+    "pt": "Técnica mista sobre contraplacado de tília"
+  },
+  "65c6bf01c27e": {
+    "ja": "F0号",
+    "en": "F0",
+    "zh-Hans": "F0号",
+    "zh-Hant": "F0號",
+    "ko": "F0호",
+    "fr": "F0",
+    "de": "F0",
+    "es": "F0",
+    "it": "F0",
+    "pt": "F0"
+  },
+  "24914d7740fb": {
+    "ja": "ベッド脇",
+    "en": "Beside the bed",
+    "zh-Hans": "床边",
+    "zh-Hant": "床邊",
+    "ko": "침대 옆",
+    "fr": "À côté du lit",
+    "de": "Neben dem Bett",
+    "es": "Junto a la cama",
+    "it": "Accanto al letto",
+    "pt": "Ao lado da cama"
+  },
+  "0cb17a6a9af5": {
+    "ja": "机の上",
+    "en": "Above the desk",
+    "zh-Hans": "书桌上方",
+    "zh-Hant": "書桌上方",
+    "ko": "책상 위",
+    "fr": "Au-dessus du bureau",
+    "de": "Über dem Schreibtisch",
+    "es": "Sobre el escritorio",
+    "it": "Sopra la scrivania",
+    "pt": "Por cima da secretária"
   }
 }

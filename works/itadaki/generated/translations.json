@@ -270,5 +270,77 @@
     "es": "Ojalá te dé fuerza con solo mirarlo.",
     "it": "Spero che basti guardarlo per sentire nascere la forza.",
     "pt": "Que te dê força só de olhar para ele."
+  },
+  "b6491a8339a3": {
+    "ja": "シナベニヤにミクストメディア",
+    "en": "Mixed media on shina plywood",
+    "zh-Hans": "椴木胶合板上综合媒材",
+    "zh-Hant": "椴木合板上綜合媒材",
+    "ko": "피나무 합판에 혼합 매체",
+    "fr": "Technique mixte sur contreplaqué de tilleul",
+    "de": "Mischtechnik auf Lindensperrholz",
+    "es": "Técnica mixta sobre contrachapado de tilo",
+    "it": "Tecnica mista su compensato di tiglio",
+    "pt": "Técnica mista sobre contraplacado de tília"
+  },
+  "44045f4f803a": {
+    "ja": "F10号",
+    "en": "F10",
+    "zh-Hans": "F10号",
+    "zh-Hant": "F10號",
+    "ko": "F10호",
+    "fr": "F10",
+    "de": "F10",
+    "es": "F10",
+    "it": "F10",
+    "pt": "F10"
+  },
+  "bcded40b3472": {
+    "ja": "玄関",
+    "en": "Entrance hall",
+    "zh-Hans": "玄关",
+    "zh-Hant": "玄關",
+    "ko": "현관",
+    "fr": "L’entrée",
+    "de": "Der Eingangsbereich",
+    "es": "El recibidor",
+    "it": "L’ingresso",
+    "pt": "A entrada"
+  },
+  "c412f3eb8a80": {
+    "ja": "ソファの向かいの壁",
+    "en": "The wall facing the sofa",
+    "zh-Hans": "沙发对面的墙",
+    "zh-Hant": "沙發對面的牆",
+    "ko": "소파 맞은편 벽",
+    "fr": "Le mur face au canapé",
+    "de": "Die Wand gegenüber dem Sofa",
+    "es": "La pared frente al sofá",
+    "it": "La parete di fronte al divano",
+    "pt": "A parede em frente ao sofá"
+  },
+  "24914d7740fb": {
+    "ja": "ベッド脇",
+    "en": "Beside the bed",
+    "zh-Hans": "床边",
+    "zh-Hant": "床邊",
+    "ko": "침대 옆",
+    "fr": "À côté du lit",
+    "de": "Neben dem Bett",
+    "es": "Junto a la cama",
+    "it": "Accanto al letto",
+    "pt": "Ao lado da cama"
+  },
+  "0cb17a6a9af5": {
+    "ja": "机の上",
+    "en": "Above the desk",
+    "zh-Hans": "书桌上方",
+    "zh-Hant": "書桌上方",
+    "ko": "책상 위",
+    "fr": "Au-dessus du bureau",
+    "de": "Über dem Schreibtisch",
+    "es": "Sobre el escritorio",
+    "it": "Sopra la scrivania",
+    "pt": "Por cima da secretária"
   }
 }

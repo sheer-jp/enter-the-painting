@@ -153,6 +153,11 @@ describe('受付の最初の画面はボタンだけ（11-06 作家）', () => {
     expect(html).toContain('Write in my own words');
     expect(html).toContain('近いものがあれば、選んでください');
   });
+  it('最初の 3 文は data-greet で catalog の greeting の何番目かを持つ（他の言語の差し替え用。E-15）', () => {
+    const idx = [...html.matchAll(/<p class="cg-line cg-ai cg-greet" data-greet="(\d)"/g)].map((m) => m[1]);
+    expect(idx).toEqual(['0', '1', '2']);
+    expect(html).toContain('<span class="cg-openers-cap"><span lang="ja" data-lang="ja">近いものがあれば、選んでください</span><span lang="en" data-lang="en" hidden>Pick one if it fits</span></span>');
+  });
   it('おすすめの画面 C2 の枠とひとこと（present_line）が HTML にある', () => {
     expect(html).toMatch(/<section class="cg2"[^>]*hidden>/);
     expect(html).toContain('これ、どうかな。');

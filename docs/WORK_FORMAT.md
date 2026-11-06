@@ -109,6 +109,8 @@ works/<id>/
   "id": "blue-tide-2025",
   "title": { "ja": "青い潮", "en": "Blue Tide", "fr": "Marée bleue", "...": "..." },
   "size_cm": [18, 14],
+  "size_label": { "ja": "F0号", "en": "F0", "ko": "F0호", "...": "..." },   // 号数・技法・部屋の場所の名前（rooms[].label）は work.json / rooms/*.json の ja / en を翻訳キャッシュに通した 10 言語（E-15）
+  "medium": { "ja": "キャンバスに油彩", "en": "Oil on canvas", "fr": "Huile sur toile", "...": "..." },
   "painting": "painting_1024.jpg",
   "palette": ["#0b1a2a", "#1f5f7a", "#5fa8b8", "#e8f0ff", "#c9a86a", "#2f3d2a"],
   "text_color": "#e8f0ff",
@@ -121,7 +123,7 @@ works/<id>/
   "contact": "https://forms.example/...",
   "story": { "ja": "朝、コーヒーを淹れながらこの絵の前を通る。…", "en": "...", "...": "..." },
   "rooms": [
-    { "name": "living-apartment", "image": "rooms/living-apartment.jpg", "wall_width_cm": 320 }
+    { "name": "living-apartment", "image": "rooms/living-apartment.jpg", "wall_width_cm": 320, "label": { "ja": "マンションのリビング", "en": "Apartment living room", "...": "..." } }
   ],
   "messages": [
     { "at": 0,    "ja": "海辺の町で描いた。", "en": "I painted this in a town by the sea.", "fr": "...", "...": "..." },

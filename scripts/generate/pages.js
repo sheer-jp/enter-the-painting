@@ -16,6 +16,11 @@ const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+JP:wght@300;400;500&display=swap">`;
 
+// 10 言語ぶんの data-lang の span（ja だけ最初から見せる。page.ts の applyLang が端末の言語で出し分け、無い言語は en → ja に落ちる）
+const multi = (m) => m ? LANGS.filter((l) => m[l]).map((l) => `<span lang="${l}" data-lang="${l}"${l === 'ja' ? '' : ' hidden'}>${esc(m[l])}</span>`).join('') : '';
+// size_label・medium は文字列のこともある（古い形）。そのときは ja として出す
+const asMulti = (v) => typeof v === 'string' ? { ja: v } : v;
+
 // 二言語併記（美術館の作法）：言語設定に関わらず日本語と英語を並べる
 const brand = (prefix) => `<a class="brand" href="${prefix}"><b>SHEER Gallery</b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
 const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}"></select></label>`;
@@ -32,7 +37,7 @@ export function workPage({ work, space, baseUrl, allWorks }) {
   const [w, h] = work.size_cm;
   const avail = work.availability ? `<span class="avail" data-i18n="${esc(work.availability)}">${esc(UI_JA[work.availability] || '')}</span>` : '';
   // 部屋で見る：帯は全景だけ。キャプションは「部屋の種類 ─ 場所」（母語。無ければ en → ja）。比較の一文と寸法は拡大表示（page.ts）
-  const caption = (m) => m ? LANGS.filter((l) => m[l]).map((l) => `<span lang="${l}" data-lang="${l}"${l === 'ja' ? '' : ' hidden'}>${esc(m[l])}</span>`).join('') : '';
+  const caption = multi;
   const rooms = (space.rooms || []).map((r, i) => `
       <figure class="room" data-room-index="${i}">
         <img src="../../works/${id}/generated/${esc(r.image)}" alt="${esc(title)} を${esc(t(r.label, 'ja'))}に置いたイメージ（AI 生成の部屋）" loading="lazy">
@@ -73,7 +78,7 @@ ${FONTS}
   </figure>
   <header class="titling">
     <h1>${esc(title)}${titleEn && titleEn !== title ? `<span class="latin">${esc(titleEn)}</span>` : ''}</h1>
-    <p class="meta">${work.year ? `<span>${esc(work.year)}</span>` : ''}<span>${w} × ${h} cm</span><span>${LANGS.map((l) => work.medium?.[l] ? `<span data-lang="${l}" hidden>${esc(work.medium[l])}</span>` : '').join('')}</span>${avail}</p>
+    <p class="meta">${work.year ? `<span>${esc(work.year)}</span>` : ''}<span>${w} × ${h} cm</span>${(space.medium || work.medium) ? `<span>${multi(asMulti(space.medium || work.medium))}</span>` : ''}${avail}</p>
   </header>
   <div class="actions">
     <button class="btn primary" id="enter" data-i18n="enter"${space.audio?.voice ? ` data-voice="../../works/${id}/${esc(space.audio.voice)}"` : ''}>${UI_JA.enter}</button>
@@ -94,14 +99,17 @@ ${FONTS}
 }
 
 // 受付の設定（recommend/config.json）。読めなければ最小の既定値
+const CONFIG_FALLBACK = {
+  title: { ja: 'SHEER Gallery', en: 'SHEER Gallery' },
+  greeting: { ja: ['ようこそ、SHEER のギャラリーへ。', '彩り美しい抽象画の世界を届けます。', '今日は、どんな絵を探してる？'], en: ['Welcome to SHEER\'s gallery.', 'A world of vivid abstract paintings awaits.', 'What kind of painting are you looking for today?'] },
+  openers: { ja: ['頑張る活力がほしい', '寂しい夜によりそってほしい', '明るい気持ちになれる絵を'] },
+  persona: { name: { ja: '', en: '' }, intro_line: { ja: '', en: '' } },
+  present_line: { ja: 'これ、どうかな。', en: 'How about this one?' },
+  ui_hint: { ja: '近いものがあれば、選んでください', en: 'Pick one if it fits' },
+  ui_write: { ja: '自分のことばで書く', en: 'Write in my own words' },
+};
 function readConfig() {
-  const fallback = {
-    title: { ja: 'SHEER Gallery', en: 'SHEER Gallery' },
-    greeting: { ja: ['ようこそ、SHEER のギャラリーへ。', '彩り美しい抽象画の世界を届けます。', '今日は、どんな絵を探してる？'], en: ['Welcome to SHEER\'s gallery.', 'A world of vivid abstract paintings awaits.', 'What kind of painting are you looking for today?'] },
-    openers: { ja: ['頑張る活力がほしい', '寂しい夜によりそってほしい', '明るい気持ちになれる絵を'] },
-    persona: { name: { ja: '', en: '' }, intro_line: { ja: '', en: '' } },
-    present_line: { ja: 'これ、どうかな。', en: 'How about this one?' },
-  };
+  const fallback = CONFIG_FALLBACK;
   try { return { ...fallback, ...JSON.parse(readFileSync(new URL('../../recommend/config.json', import.meta.url), 'utf8')) }; } catch { return fallback; }
 }
 
@@ -127,17 +135,19 @@ export function galleryPage({ works, baseUrl }) {
   const name = cfg.persona?.name || {};
   const intro = cfg.persona?.intro_line || {};
   const lines = [];
-  if (intro.ja) lines.push([intro.ja, intro.en]);
-  (greet.ja || []).slice(0, 3).forEach((ja, i) => lines.push([ja, greet.en?.[i]]));   // 3 文まで（11-06 深夜：ようこそ／彩り／どんな絵）
-  // 最初の文は 0.4 秒ずつ間を置いて現れる（CSS の animation-delay）
-  const greeting = lines.map(([ja, en], i) => `<p class="cg-line cg-ai cg-greet" style="--d:${(0.3 + i * 0.4).toFixed(1)}s">${jaEn(ja, en)}</p>`).join('\n        ');
+  if (intro.ja) lines.push([intro.ja, intro.en, null]);
+  (greet.ja || []).slice(0, 3).forEach((ja, i) => lines.push([ja, greet.en?.[i], i]));   // 3 文まで（11-06 深夜：ようこそ／彩り／どんな絵）
+  // 最初の文は 0.4 秒ずつ間を置いて現れる（CSS の animation-delay）。data-greet は catalog.json の greeting の何番目か（他の言語の差し替え用）
+  const greeting = lines.map(([ja, en, gi], i) => `<p class="cg-line cg-ai cg-greet"${gi === null ? '' : ` data-greet="${gi}"`} style="--d:${(0.3 + i * 0.4).toFixed(1)}s">${jaEn(ja, en)}</p>`).join('\n        ');
+  const hint = cfg.ui_hint?.ja ? cfg.ui_hint : CONFIG_FALLBACK.ui_hint;
+  const write = cfg.ui_write?.ja ? cfg.ui_write : CONFIG_FALLBACK.ui_write;
   const openers = (cfg.openers?.ja || []).slice(0, 3).map((ja, i) =>
     `<button type="button" class="cg-opt" data-opener-index="${i}">${jaEn(ja, cfg.openers?.en?.[i])}</button>`).join('\n          ')
     // 4 つ目：自分のことばで書く（押すと入力欄が出る。11-06 作家「最初の画面はボタンだけ」）。data-opener-index="write" は、
     // JS を読み込む前に押されたとき page.ts が預かって読み込み後に押し直すため（選択肢と同じ扱い）
-    + `\n          <button type="button" class="cg-opt cg-write" data-opener-index="write">${jaEn('自分のことばで書く', 'Write in my own words')}</button>`;
+    + `\n          <button type="button" class="cg-opt cg-write" data-opener-index="write">${jaEn(write.ja, write.en)}</button>`;
   const host = name.ja ? `<figcaption class="cg-name">${jaEn(name.ja, name.en)}</figcaption>` : '';
-  const present = cfg.present_line?.ja ? cfg.present_line : { ja: 'これ、どうかな。', en: 'How about this one?' };
+  const present = cfg.present_line?.ja ? cfg.present_line : CONFIG_FALLBACK.present_line;
   return `<!doctype html>
 <html lang="ja">
 <head>
@@ -167,8 +177,8 @@ ${FONTS}
   <section class="cg-talk" aria-label="受付の会話">
     <div class="cg-thread" aria-live="polite">
         ${greeting}
-        <div class="cg-openers cg-greet" style="--d:${(0.3 + lines.length * 0.4).toFixed(1)}s" role="group" aria-label="近いものがあれば、選んでください">
-          <span class="cg-openers-cap">${jaEn('近いものがあれば、選んでください', 'Pick one if it fits')}</span>
+        <div class="cg-openers cg-greet" style="--d:${(0.3 + lines.length * 0.4).toFixed(1)}s" role="group" aria-label="${esc(hint.ja)}">
+          <span class="cg-openers-cap">${jaEn(hint.ja, hint.en)}</span>
           ${openers}
         </div>
     </div>

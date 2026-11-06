@@ -80,7 +80,7 @@ V0（11-06 夕方）に、作家の判断を反映した版。この文書が入
 - タップの的は 44px 以上。送信は Enter（PC）とボタン（スマホ）。`enterkeyhint="send"`。iOS で入力欄に寄ると拡大しないよう `font-size` は 16px 以上
 - フォントの拡大（iOS の文字サイズ）で崩れない。`100dvh` を使い、`100vh` は使わない。`viewport-fit=cover` と `env(safe-area-inset-*)`
 - 画像は `public/concierge/*.png` を 2 枚ずつ（1x 512px、2x 1024px）。`<picture>` で出し分け。合計 600KB 以下
-- 受付のページ用 JS は gzip 25KB 以下（いまの 13.5KB + 受付の分）。体験バンドルは読まない
+- 受付のページ用 JS は gzip 27KB 以下（11-06 深夜：`page.js` 17KB + 受付の chunk 9KB = 26.2KB。最初に読むのは `page.js` だけ）。体験バンドルは読まない
 
 ### 3.3 キャラクター（11-06 夜の判断を反映）
 

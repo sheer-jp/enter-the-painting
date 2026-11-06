@@ -97,4 +97,34 @@ describe('buildCatalog', () => {
     expect(Object.keys(w.axes).sort()).toEqual(['brightness', 'energy', 'warmth']);
     expect(w.story.en).toBe('Story');
   });
+
+  it('受付の固定文（greeting・present_line・ui_hint・ui_write）を翻訳キャッシュに通して 10 言語で出す（E-15）', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'catalog-ui-'));
+    mkdirSync(join(root, 'recommend'));
+    writeFileSync(join(root, 'recommend', 'config.json'), JSON.stringify({
+      greeting: { ja: ['いらっしゃい。', 'どんな絵？', '三文目', '四文目は出さない'], en: ['Hi.', 'What painting?', 'Third', 'Fourth'] },
+      present_line: { ja: 'これ、どう？', en: 'This one?' },
+      ui_hint: { ja: '選んで', en: 'Pick one' },
+      ui_write: { ja: '書く', en: 'Write' },
+    }));
+    // キャッシュに ko の訳を先に入れておく（あれば使う。無い言語は en に落ちる）
+    const { key } = await import('../scripts/generate/translate.js');
+    writeFileSync(join(root, 'recommend', 'translations.json'), JSON.stringify({
+      [key('いらっしゃい。')]: { ja: 'いらっしゃい。', ko: '어서 와.' },
+      [key('どんな絵？')]: { ja: 'どんな絵？', ko: '어떤 그림?' },
+      [key('三文目')]: { ja: '三文目', ko: '세 번째' },
+      [key('これ、どう？')]: { ja: 'これ、どう？', ko: '이건 어때?' },
+      [key('書く')]: { ja: '書く', fr: 'Écrire' },
+    }));
+    const c = await buildCatalog(root, { apiKey: '' });
+    expect(c.greeting.ja).toEqual(['いらっしゃい。', 'どんな絵？', '三文目']);
+    expect(c.greeting.ko).toEqual(['어서 와.', '어떤 그림?', '세 번째']);
+    expect(c.greeting.fr).toEqual(['Hi.', 'What painting?', 'Third']);
+    expect(c.present_line?.ko).toBe('이건 어때?');
+    expect(c.present_line?.de).toBe('This one?');
+    expect(c.ui_hint?.ja).toBe('選んで');
+    expect(c.ui_hint?.it).toBe('Pick one');
+    expect(c.ui_write?.fr).toBe('Écrire');
+    expect(Object.keys(c.ui_write ?? {})).toHaveLength(10);
+  });
 });

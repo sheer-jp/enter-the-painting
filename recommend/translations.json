@@ -58,5 +58,77 @@
     "es": "Un cuadro que me levante el ánimo",
     "it": "Un quadro che mi metta di buon umore",
     "pt": "Um quadro que me anime"
+  },
+  "ebdb6604ba72": {
+    "ja": "ようこそ、SHEER のギャラリーへ。",
+    "en": "Welcome to SHEER's gallery.",
+    "zh-Hans": "欢迎来到 SHEER 的画廊。",
+    "zh-Hant": "歡迎來到 SHEER 的畫廊。",
+    "ko": "SHEER의 갤러리에 온 걸 환영해.",
+    "fr": "Bienvenue dans la galerie de SHEER.",
+    "de": "Willkommen in der Galerie von SHEER.",
+    "es": "Bienvenido a la galería de SHEER.",
+    "it": "Benvenuto nella galleria di SHEER.",
+    "pt": "Bem-vindo à galeria da SHEER."
+  },
+  "df64b1ca487d": {
+    "ja": "彩り美しい抽象画の世界を届けます。",
+    "en": "A world of vivid abstract paintings awaits.",
+    "zh-Hans": "这里有色彩缤纷的抽象画世界。",
+    "zh-Hant": "這裡有色彩繽紛的抽象畫世界。",
+    "ko": "색이 아름다운 추상화의 세계를 전해 줄게.",
+    "fr": "Un monde de peintures abstraites aux couleurs vives t’attend.",
+    "de": "Hier wartet eine Welt farbenfroher abstrakter Bilder auf dich.",
+    "es": "Te espera un mundo de pinturas abstractas llenas de color.",
+    "it": "Ti aspetta un mondo di quadri astratti pieni di colore.",
+    "pt": "Espera-te um mundo de pinturas abstratas cheias de cor."
+  },
+  "4dc96d540801": {
+    "ja": "今日は、どんな絵を探してる？",
+    "en": "What kind of painting are you looking for today?",
+    "zh-Hans": "今天想找什么样的画？",
+    "zh-Hant": "今天想找什麼樣的畫？",
+    "ko": "오늘은 어떤 그림을 찾고 있어?",
+    "fr": "Quel genre de tableau cherches-tu aujourd’hui ?",
+    "de": "Was für ein Bild suchst du heute?",
+    "es": "¿Qué tipo de cuadro buscas hoy?",
+    "it": "Che tipo di quadro cerchi oggi?",
+    "pt": "Que tipo de quadro procuras hoje?"
+  },
+  "83f544b99e10": {
+    "ja": "これ、どうかな。",
+    "en": "How about this one?",
+    "zh-Hans": "这幅怎么样？",
+    "zh-Hant": "這幅怎麼樣？",
+    "ko": "이건 어때?",
+    "fr": "Et celui-ci, qu’en dis-tu ?",
+    "de": "Wie wär’s mit diesem?",
+    "es": "¿Qué te parece este?",
+    "it": "Che ne dici di questo?",
+    "pt": "Que tal este?"
+  },
+  "8aeedf2eaac7": {
+    "ja": "近いものがあれば、選んでください",
+    "en": "Pick one if it fits",
+    "zh-Hans": "有接近的就选一个吧",
+    "zh-Hant": "有接近的就選一個吧",
+    "ko": "비슷한 게 있으면 골라 줘",
+    "fr": "Choisis-en un s’il te parle",
+    "de": "Such dir eins aus, wenn etwas passt",
+    "es": "Elige uno si te encaja",
+    "it": "Scegline uno, se ti somiglia",
+    "pt": "Escolhe um, se combinar contigo"
+  },
+  "5e23d8e9f58c": {
+    "ja": "自分のことばで書く",
+    "en": "Write in my own words",
+    "zh-Hans": "用自己的话来写",
+    "zh-Hant": "用自己的話來寫",
+    "ko": "내 말로 쓰기",
+    "fr": "Écrire avec mes mots",
+    "de": "Mit eigenen Worten schreiben",
+    "es": "Escribir con mis palabras",
+    "it": "Scrivere con parole mie",
+    "pt": "Escrever com as minhas palavras"
   }
 }
