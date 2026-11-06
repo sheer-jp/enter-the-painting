@@ -140,3 +140,54 @@ export function mountRoomArt(o: RoomArtOptions): RoomArt {
     dispose() { art.remove(); sides.remove(); },
   };
 }
+
+// ---- 「絵を動かせる」の小さなポップ（P-12、11-07 作家）----
+// 置く場面（イーゼル・立てかけ）と、動かせる幅（move_px）が絵の幅の 1.2 倍より狭い部屋では出さない（実質動かない）
+export function popWorthy(room: Room | null | undefined): boolean {
+  if (!room || room.place || !room.quad_px) return false;
+  const b = room.move_px;
+  if (!b || !(b[2] > b[0])) return true;   // 範囲が無ければ画像全体を動ける
+  const r = quadRect(room.quad_px);
+  return b[2] - b[0] >= (r.x1 - r.x0) * 1.2;
+}
+
+const POP_DELAY = 400;     // 開いてから出るまで
+const POP_DIM = 3000;      // 出てから薄くなるまで
+const POP_GAP = 8;         // 絵の上辺（下辺）とポップの間
+const POP_EDGE = 8;        // 画面の端からの余白
+
+export interface DragPop { hide(): void; dispose(): void }
+// 絵の層（art）のすぐ上・中央に吹き出しを出す。位置は出たときに決め、絵と一緒には動かない（ドラッグで hide）。
+// 上に入らない（絵が上端に近い）ときは絵の下に出す。parent は position: fixed の層を置ける要素（拡大表示・HUD）
+export function mountDragPop(parent: HTMLElement, art: HTMLElement, text: string, minTop = POP_EDGE): DragPop {
+  const pop = document.createElement('div'); pop.className = 'drag-pop'; pop.setAttribute('aria-hidden', 'true'); pop.textContent = text;
+  let t1 = 0, t2 = 0, t3 = 0, gone = false;
+  const placePop = () => {
+    const r = art.getBoundingClientRect();
+    if (!r.width) return false;
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    let top = r.top - POP_GAP - h, below = false;
+    if (top < minTop) { top = r.bottom + POP_GAP; below = true; }
+    const cx = r.left + r.width / 2;
+    const left = Math.min(innerWidth - POP_EDGE - w, Math.max(POP_EDGE, cx - w / 2));
+    pop.classList.toggle('below', below);
+    pop.style.left = `${Math.round(left)}px`; pop.style.top = `${Math.round(top)}px`;
+    pop.style.setProperty('--ax', `${Math.round(Math.min(w - 12, Math.max(12, cx - left)))}px`);   // 三角は絵の中央を指す
+    return true;
+  };
+  t1 = window.setTimeout(() => {
+    if (gone) return;
+    parent.appendChild(pop);
+    if (!placePop()) { pop.remove(); return; }
+    requestAnimationFrame(() => pop.classList.add('on'));
+    t2 = window.setTimeout(() => pop.classList.add('dim'), POP_DIM);
+  }, POP_DELAY);
+  return {
+    hide() {
+      if (gone) return; gone = true; clearTimeout(t1); clearTimeout(t2);
+      pop.classList.remove('on'); pop.classList.add('gone');
+      t3 = window.setTimeout(() => pop.remove(), 400);
+    },
+    dispose() { gone = true; clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); pop.remove(); },
+  };
+}

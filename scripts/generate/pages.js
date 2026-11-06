@@ -9,7 +9,7 @@ const UI_JA = {
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
   room_cat_studio: '一人暮らしの部屋', room_cat_house: '広い家のリビング',
   rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明。絵をドラッグして、好きな場所に置けます',
-  gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '計測は Cookie なし、IP は保存しません',
+  gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '匿名の閲覧数だけを数えています',   // 11-07 P-7：来場者に唐突でない言い方に
   statement: '小さな絵の、奥へ。', statement_en: 'Into the depth of a small painting.',
 };
 const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +23,8 @@ const asMulti = (v) => typeof v === 'string' ? { ja: v } : v;
 
 // 二言語併記（美術館の作法）：言語設定に関わらず日本語と英語を並べる
 const brand = (prefix) => `<a class="brand" href="${prefix}"><b>SHEER Gallery</b></a>`;   // 11-06 深夜：受付と同じギャラリー名に統一
+// フッター（P-7）：「© SHEER　匿名の閲覧数だけを数えています」1 行
+const footer = () => `<footer><span>© SHEER</span><span data-i18n="privacy">${UI_JA.privacy}</span></footer>`;
 const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.language}</span> <select id="lang" aria-label="${UI_JA.language}"></select></label>`;
 
 // ja と en が同じ（または en が無い）なら 1 回だけ。違えば「ja / en」（11-07 作家：「SHEER Gallery / SHEER Gallery」と同じ語を 2 回並べない）
@@ -92,7 +94,7 @@ ${FONTS}
 <body style="--blur-url:url('${blur}')">
 <div class="atmosphere" aria-hidden="true"></div>
 <main class="work">
-  <div class="top">${brand('../../')}${langSel()}</div>
+  <div class="top">${brand('../../')}<div class="top-tools"><a class="top-gallery" href="../../gallery/" data-i18n="gallery_title">${UI_JA.gallery_title}</a>${langSel()}</div></div>
   <figure class="painting" style="aspect-ratio:${w}/${h}">
     <img src="${img}" alt="${esc(title)}" fetchpriority="high">
   </figure>
@@ -104,12 +106,12 @@ ${FONTS}
     <button class="btn primary" id="enter" data-i18n="enter"${space.audio?.voice ? ` data-voice="../../works/${id}/${esc(space.audio.voice)}"` : ''}>${UI_JA.enter}</button>
     <button class="btn" id="enter-vr" data-i18n="enter_vr" hidden style="display:none">${UI_JA.enter_vr}</button>
     ${contact}
-    <p class="cg-enter-note" data-i18n="enter_note" style="flex-basis:100%;margin:-4px 0 0;font-size:11px;letter-spacing:.1em;color:var(--ink-2)">${UI_JA.enter_note}</p>
+    <p class="cg-enter-note" data-i18n="enter_note">${UI_JA.enter_note}</p>
   </div>
-  ${rooms ? `<section class="rooms"><h2 class="eyebrow"><span>Rooms</span><span data-i18n="rooms">${UI_JA.rooms}</span></h2><div class="strip">${rooms}</div><p class="rooms-hint"><span data-i18n="tap_for_size">${UI_JA.tap_for_size}</span><span data-i18n="rooms_note">${UI_JA.rooms_note}</span></p></section>` : ''}
+  ${rooms ? `<section class="rooms"><h2 class="eyebrow"><span>Rooms</span><span data-i18n="rooms">${UI_JA.rooms}</span></h2><div class="strip">${rooms}</div><p class="rooms-hint"><span class="rooms-hint-do" data-i18n="tap_for_size">${UI_JA.tap_for_size}</span><span class="rooms-hint-note" data-i18n="rooms_note">${UI_JA.rooms_note}</span></p></section>` : ''}
   ${story}
   ${others ? `<section class="others"><h2 class="eyebrow"><span>Works</span><a class="eyebrow-link" href="../../gallery/" data-i18n="others">${UI_JA.others}</a></h2><div class="strip">${others}</div><p class="others-all"><a class="btn ghost" href="../../gallery/" data-i18n="cg_all">${UI_JA['cg_all'] || 'ギャラリー全体を見る'}</a></p></section>` : ''}
-  <footer><span data-i18n="privacy">${UI_JA.privacy}</span><span>© sheerarts</span></footer>
+  ${footer()}
 </main>
 <div id="stage" hidden></div>
 <script type="module" src="../../src/page.ts"></script>
@@ -185,7 +187,7 @@ ${FONTS}
 <main class="cg" id="concierge">
   <header class="cg-top">
     <h1 class="cg-title">${jaEn(title.ja, title.en)}</h1>
-    <div class="cg-tools">${langSel()}<a class="cg-skip" href="gallery/" data-i18n="cg_skip">受付を飛ばしてギャラリーへ</a></div>
+    <div class="cg-tools">${langSel()}</div>
   </header>
   <figure class="cg-host">
     <div class="cg-faces" role="img" aria-label="受付のキャラクター">${facePicture('smile', '', { on: true, priority: true })}</div>
@@ -199,6 +201,7 @@ ${FONTS}
           ${openers}
         </div>
     </div>
+    <a class="cg-skip" href="gallery/" data-i18n="cg_skip" style="--d:${(0.5 + lines.length * 0.4).toFixed(1)}s">受付を飛ばして、ギャラリー全体を見る</a>
   </section>
   <form class="cg-form" action="#concierge" hidden><input name="q" type="text" maxlength="600" autocomplete="off" enterkeyhint="send" placeholder="こんな気分のときに、こうしたい" aria-label="こんな気分のときに、こうしたい" data-i18n-ph="cg_placeholder"><button type="submit" data-i18n="rec_send">送る</button></form>
   <section class="cg2" tabindex="-1" aria-label="今日のあなたへの 1 点" hidden>
@@ -218,6 +221,8 @@ ${FONTS}
 export function galleryWallPage({ works, baseUrl }) {
   const maxW = Math.max(...works.map((w) => w.size_cm[0]), 1);
   const maxH = Math.max(...works.map((w) => w.size_cm[1]), 1);
+  // P-4：PC は一列が必ず収まるように、全作品の幅 cm の合計と点数を CSS に渡す
+  const sumW = works.reduce((a, w) => a + w.size_cm[0], 0) || 1;
   const items = works.map((w) => {
     const [cw, ch] = w.size_cm;
     const title = t(w.title, 'ja');
@@ -228,7 +233,8 @@ export function galleryWallPage({ works, baseUrl }) {
       <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" alt="${esc(title)}" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
       <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${cw} × ${ch} cm</span></span>
     </a>`;
-  }).join('');
+  }).join('') + `
+    <p class="gw-tap" data-i18n="gw_tap">絵をタップすると、絵の中に入れます</p>`;
   return `<!doctype html>
 <html lang="ja">
 <head>
@@ -248,9 +254,11 @@ ${FONTS}
     <h1 class="gw-title"><span>ギャラリー</span><span class="latin">Gallery</span></h1>
     ${langSel()}
   </div>
-  <div class="gw-wall" style="--maxh:${maxH}" tabindex="0" aria-label="作品">${items}
+  <div class="gw-wall" style="--maxh:${maxH};--sumcm:${+sumW.toFixed(2)};--n:${works.length}" tabindex="0" aria-label="作品">${items}
   </div>
-  <footer><span data-i18n="privacy">${UI_JA.privacy}</span><span>© sheerarts</span></footer>
+  <span class="gw-more" aria-hidden="true">→</span>
+  <p class="gw-scroll" data-i18n="gw_scroll">横にスクロール</p>
+  ${footer()}
 </main>
 <script type="module" src="../src/page.ts"></script>
 </body>

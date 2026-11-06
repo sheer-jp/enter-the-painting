@@ -22,26 +22,31 @@ button { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) { .atmosphere::before { animation: none; } }
 
 /* 共通の上端 */
-.top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 22px 0 0; }
-.brand { font-size: 11px; letter-spacing: .22em; color: var(--ink-2); line-height: 1.6; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0 0; }
+.brand { font-size: 11px; letter-spacing: .22em; color: var(--ink-2); line-height: 1.6; min-height: 44px; display: inline-flex; align-items: center; }   /* P-9：44px */
+/* P-3：作品ページのヘッダー右に「ギャラリー」（言語の左。静かな文字、矢印なし） */
+.top-tools { display: flex; align-items: center; gap: 20px; }
+.top-gallery { font-size: 12px; letter-spacing: .14em; color: var(--ink-2); min-height: 44px; display: inline-flex; align-items: center; white-space: nowrap; }
+.top-gallery:hover { color: var(--ink); }
 .brand b { display: block; font-weight: 400; color: var(--ink); letter-spacing: .3em; }
 .brand .latin { font-family: var(--latin); font-size: 13px; letter-spacing: .12em; font-style: italic; }
-.lang { font-size: 11px; letter-spacing: .14em; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
-.lang select { background: transparent; color: var(--ink); border: 0; border-bottom: 1px solid var(--line); padding: 4px 2px; font-size: 12px; font-family: inherit; letter-spacing: .06em; }
+.lang { font-size: 11px; letter-spacing: .14em; color: var(--ink-2); display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.lang select { background: transparent; color: var(--ink); border: 0; border-bottom: 1px solid var(--line); padding: 4px 2px; min-height: 44px; font-size: 12px; font-family: inherit; letter-spacing: .06em; }   /* P-9：44px */
+@media (max-width: 420px) { .top .lang > span { display: none; } }   /* 狭い画面は「言語」の字を省く（選択欄は aria-label で読める） */
 
 /* ラベル（小さな大文字 + 日本語） */
-.eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 14px; display: flex; gap: 12px; align-items: baseline; }
+.eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 16px; display: flex; gap: 12px; align-items: baseline; }
 .eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .eyebrow-link { min-height: 44px; display: inline-flex; align-items: center; border-bottom: 1px solid transparent; }
 .eyebrow-link:hover { color: var(--ink); }
 
 /* 作品ページ */
 main.work { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 calc(48px + env(safe-area-inset-bottom)); }
-.painting { position: relative; margin: 48px auto 0; display: flex; justify-content: center; max-height: 72vh; }
+.painting { position: relative; margin: 24px auto 0; display: flex; justify-content: center; max-height: 72vh; }
 .painting::before { content: none; }   /* 絵の外の色のにじみは無し。背景はしっかり白（11-06 深夜、作家） */
 .painting img { cursor: pointer; transition: transform .8s cubic-bezier(.2,.7,.3,1); max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; box-shadow: 0 18px 50px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.12); }   /* 白地なので影は薄く */
 .painting img:hover { transform: scale(1.01); }
-.titling { margin: 36px 0 0; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
+.titling { margin: 40px 0 0; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
 .titling h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 4vw, 38px); letter-spacing: .08em; margin: 0; line-height: 1.3; text-wrap: balance; }
 .titling h1 .t-sub { font-size: .85em; color: var(--ink-2); margin-left: .6em; }
 .titling h1 .t-sub.latin { font-family: var(--latin); font-weight: 300; font-style: italic; letter-spacing: .06em; }
@@ -49,24 +54,33 @@ main.work { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-a
 .meta { margin: 10px 0 0; font-size: 12.5px; letter-spacing: .12em; color: var(--ink-2); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 6px 0; }
 .meta > *:not(:last-child)::after { content: "·"; margin: 0 .7em; color: var(--line); }
 .avail { color: var(--ink); }
-.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 28px 0 56px; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 28px 0 var(--sec); }
 .btn { appearance: none; border: 1px solid var(--line); background: transparent; color: var(--ink); min-height: 46px; padding: 0 26px; border-radius: 999px; font-size: 13px; letter-spacing: .2em; cursor: pointer; transition: border-color .3s, background .3s, color .3s; display: inline-flex; align-items: center; }
 .btn:hover { border-color: var(--ink); }
-.btn.primary { border-color: var(--ink); padding: 0 40px; font-size: 14px; }
-.btn.primary:hover { background: var(--ink); color: var(--bg); }
+.btn.primary { border-color: var(--ink); background: var(--ink); color: var(--bg); padding: 0 40px; font-size: 14px; transition: opacity .2s, transform .1s; }
+.btn.primary:hover { opacity: .92; }
+.btn.primary:active { transform: translateY(1px); }
+/* P-2：作品ページの主ボタンは墨で塗る（高さ 52px、角 26px）。スマホは幅いっぱい、PC は最小 280px */
+.actions .btn.primary { min-height: 52px; border-radius: 26px; letter-spacing: .14em; justify-content: center; width: 100%; }
+@media (min-width: 640px) { .actions .btn.primary { width: auto; min-width: 280px; } }
+.actions .cg-enter-note { flex-basis: 100%; margin: -4px 0 0; font-size: 12px; letter-spacing: .1em; color: var(--ink-2); }
 .btn.ghost { color: var(--ink-2); }
 .btn:disabled { opacity: .5; cursor: default; }
 .actions .lang { margin-left: auto; }
-section { margin: 0 0 56px; }
+/* P-8：節の間はスマホ 40px／PC 56px */
+:root { --sec: 40px; }
+@media (min-width: 640px) { :root { --sec: 56px; } }
+section { margin: 0 0 var(--sec); }
 .strip { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 0 10px; scrollbar-width: thin; }
 /* 部屋は正方形（スマホでも PC でも同じ見え方。作家の決定 11-04）。横長の画像が混ざっても中央を正方形に切る */
-.room { flex: 0 0 min(78%, 420px); margin: 0; scroll-snap-align: start; min-width: 0; }
+.room { flex: 0 0 min(calc(100% - 40px), 420px); margin: 0; scroll-snap-align: start; min-width: 0; }   /* P-5：2 枚目が 24px だけ見える（間 16px） */
 .room img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
 .story p { font-family: var(--serif); font-size: 17px; line-height: 2.1; letter-spacing: .04em; white-space: pre-line; max-width: 36em; margin: 0; }
 .other { flex: 0 0 132px; scroll-snap-align: start; font-size: 11px; letter-spacing: .08em; color: var(--ink-2); min-width: 0; }
 .other img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; margin-bottom: 8px; }
 .other b { display: block; font-family: var(--serif); font-weight: 400; color: var(--ink); font-size: 13px; }
-footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 11px; letter-spacing: .1em; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+/* P-7：「© SHEER　匿名の閲覧数だけを数えています」1 行 */
+footer { margin-top: var(--sec); padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 11px; letter-spacing: .1em; display: flex; flex-wrap: wrap; gap: 4px 1.4em; }
 
 /* 体験の舞台 */
 #stage { position: fixed; inset: 0; background: #ffffff; z-index: 50; }   /* 白の中に絵が浮く（11-06 作家。受付と同じ紙白） */
@@ -83,14 +97,19 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 .hud .ending .btn.primary { background: var(--ink); color: #f6f4ef; border-color: var(--ink); }
 .hud .once { position: absolute; left: 0; right: 0; bottom: 30%; text-align: center; color: var(--ink); text-shadow: 0 0 8px rgba(246,244,239,.9), 0 0 2px rgba(246,244,239,.9); font-family: var(--serif); font-size: 16px; letter-spacing: .12em; opacity: 0; transition: opacity 1.2s; padding: 0 24px; }
 .hud .caption { position: absolute; left: 0; right: 0; bottom: calc(96px + env(safe-area-inset-bottom)); text-align: center; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .08em; line-height: 1.6; padding: 0 24px; opacity: 0; transition: opacity 1.2s; text-shadow: 0 0 8px rgba(246,244,239,.95), 0 0 2px rgba(246,244,239,.95); }
-.hud .room-art-hint { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-family: var(--serif); font-size: 12px; letter-spacing: .12em; line-height: 1.6; padding: 0 24px; text-shadow: 0 0 8px rgba(255,255,255,.95), 0 0 2px rgba(255,255,255,.95); animation: room-art-hint-in 1.2s ease-out; transition: opacity .6s; }
-.hud .room-art-hint.gone { opacity: 0; }
-@keyframes room-art-hint-in { from { opacity: 0; } }
+/* P-11：終わりの画面の下の白い帯。比較の一文 → ボタン列。高さは内容ぶん + 余白 16px、上辺にだけ 24px のフェード。帯の外では絵の層を動かせる */
+.hud .end-band { pointer-events: none; position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: rgba(255,255,255,.92); opacity: 0; transition: opacity 1.2s; }
+.hud .end-band::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 24px; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.92)); pointer-events: none; }
+.hud .end-band.on { opacity: 1; pointer-events: auto; }
+.hud .end-band:not(.on) .ending { pointer-events: none !important; }
+.hud .end-band .caption { position: static; padding: 0 8px; text-shadow: none; }
+.hud .end-band .caption:empty { display: none; }
+.hud .end-band .ending { position: static; padding: 0; }
 .hud .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(246,244,239,.85) 100%); opacity: 0; transition: opacity .3s; }
 .hud .debug { position: absolute; left: 8px; top: 8px; font: 11px/1.4 monospace; color: #0f0; background: rgba(0,0,0,.5); padding: 4px 6px; white-space: pre; }
 /* 絵の中の作家の言葉（物語モード T3。11-07 T-1：太く・大きく。docs/EXPERIENCE.md 3 節 T3 の数値） */
 .float-text { font-family: var(--serif); font-weight: 600; font-size: clamp(26px, calc(4.4vmin + 10px), 48px); line-height: 1.75; letter-spacing: .04em; padding: 0 7vw; color: var(--ft-ink, var(--ink)); text-shadow: var(--ft-glow, 0 0 10px rgba(255,255,255,.95), 0 0 2px rgba(255,255,255,.95)); }
-@media (prefers-reduced-motion: reduce) { .hud .title, .hud .ending, .hud .once, .hud .caption, .hud .room-art-hint { transition: none; animation: none; } }
+@media (prefers-reduced-motion: reduce) { .hud .title, .hud .ending, .hud .once, .hud .caption, .hud .end-band { transition: none; animation: none; } }
 /* T5 の終わりの画面：素の部屋 + 絵の層（roomArt.ts）。枠は WebGL の部屋と同じ cover の位置。絵の層だけ触れる */
 .room-art { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .room-art-frame { position: absolute; }
@@ -99,8 +118,11 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 
 /* 部屋で見る：キャプションは比較の一文だけ（明朝）。帯の下に 1 行の案内 */
 .room img[role="button"] { cursor: zoom-in; }
-.room figcaption { font-family: var(--serif); font-size: 15px; letter-spacing: .06em; color: var(--ink); margin-top: 10px; line-height: 1.7; }
-.rooms-hint { margin: 10px 0 0; font-size: 11px; letter-spacing: .1em; color: var(--ink-2); line-height: 1.7; display: flex; flex-wrap: wrap; gap: 0 1.2em; }
+.room figcaption { font-family: var(--serif); font-size: 15px; letter-spacing: .06em; color: var(--ink); margin-top: 10px; line-height: 1.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }   /* P-5：札は 1 行 */
+/* P-6：1 文目（操作）は墨 12px、2 文目（断り）は --ink-2 11px、間 4px。帯の下 12px（P-8） */
+.rooms-hint { margin: 12px 0 0; letter-spacing: .1em; line-height: 1.7; display: flex; flex-direction: column; gap: 4px; }
+.rooms-hint-do { font-size: 12px; color: var(--ink); }
+.rooms-hint-note { font-size: 11px; color: var(--ink-2); }
 
 /* 拡大表示（ライトボックス）。docs/SIZE_UX.md 5 節 */
 .lb { position: fixed; inset: 0; z-index: 80; background: rgba(255, 255, 255, .97);   /* 11-07：サイト全体の「しっかり白」に合わせ、拡大表示も白 */ -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); display: grid; grid-template-rows: minmax(0, 1fr) auto; padding: calc(56px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); animation: lb-in .3s ease-out; }
@@ -122,24 +144,28 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 .lb-close:hover { border-color: var(--ink); }
 .lb-text { max-height: 38vh; overflow-y: auto; padding: 18px 4px 22px; max-width: 36em; width: 100%; justify-self: center; }
 .lb-head { margin: 0 0 10px; font-size: 11px; letter-spacing: .18em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-/* 案内の 1 行（「絵をドラッグして、好きな場所へ」）。最初に開いたときだけ 3 秒ほど濃く、そのあと薄く */
-.lb-hint { margin: -4px 0 10px; font-family: var(--serif); font-size: 12px; letter-spacing: .12em; line-height: 1.6; color: var(--ink-2); transition: color 1.2s; }
-.lb-hint.strong { color: var(--ink); }
-.lb-hint.gone { opacity: 0; visibility: hidden; transition: opacity .6s, visibility 0s .6s; }
-.lb-hint[hidden] { display: none; }
+/* P-12：「絵をドラッグして、好きな場所へ」の小さなポップ（roomArt.ts の mountDragPop）。絵の上辺の 8px 上、中央。下向きの小さな三角。
+   0.4 秒後にふわっと出て、3 秒で薄く（.6）、ドラッグで消える。絵が上端に近いときは絵の下（.below、三角は上向き） */
+.drag-pop { position: fixed; z-index: 90; width: max-content; max-width: min(300px, calc(100vw - 16px)); padding: 6px 12px; background: rgba(255,255,255,.96); border: 1px solid var(--ink); border-radius: 8px; font-family: var(--serif); font-size: 12px; letter-spacing: .1em; line-height: 1.5; color: var(--ink); text-align: center; pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .4s ease, transform .4s ease; }
+.drag-pop::after { content: ""; position: absolute; left: calc(var(--ax, 50%) - 5px); bottom: -6px; width: 10px; height: 10px; background: #fff; border: solid var(--ink); border-width: 0 1px 1px 0; transform: rotate(45deg); }
+.drag-pop.below { transform: translateY(-4px); }
+.drag-pop.below::after { bottom: auto; top: -6px; border-width: 1px 0 0 1px; }
+.drag-pop.on { opacity: 1; transform: none; }
+.drag-pop.on.dim { opacity: .6; transition: opacity 1.2s ease; }
+.drag-pop.gone { opacity: 0; transition: opacity .3s ease; }
 .lb-body p { margin: 0; font-family: var(--serif); font-size: 14px; line-height: 2.0; letter-spacing: .05em; color: var(--ink-2); }
 .lb-body .lb-lead { font-size: 15px; color: var(--ink); }
 .lb-body .lb-size { color: var(--ink); font-variant-numeric: tabular-nums; }
 .lb-body .lb-note { font-size: 13px; }
 .lb-body .lb-note:first-child { margin-bottom: 6px; }
 .lb-tools { display: flex; gap: 10px; margin-top: 16px; }
-.lb-tool { appearance: none; border: 1px solid var(--line); background: transparent; color: var(--ink-2); min-height: 34px; padding: 0 16px; border-radius: 999px; font-size: 11px; letter-spacing: .14em; cursor: pointer; font-family: var(--sans); }
+.lb-tool { appearance: none; border: 1px solid var(--line); background: transparent; color: var(--ink-2); min-height: 44px; padding: 0 16px; border-radius: 999px; font-size: 11px; letter-spacing: .14em; cursor: pointer; font-family: var(--sans); }
 .lb-tool:hover, .lb-tool[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); }
 @media (orientation: landscape) and (min-width: 640px) {
   .lb { grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: 28px; padding-top: calc(24px + env(safe-area-inset-top)); padding-bottom: calc(24px + env(safe-area-inset-bottom)); padding-right: max(64px, env(safe-area-inset-right)); }
   .lb-text { max-height: none; align-self: center; padding: 0; }
 }
-@media (prefers-reduced-motion: reduce) { .lb { animation: none; } .lb-dims, .lb-hint { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .lb { animation: none; } .lb-dims { transition: none; } .drag-pop { transform: none; transition: opacity .2s; } }
 
 /* ───────── 紙白のページ（受付 / とギャラリー /gallery/。docs/ENTRANCE.md、docs/DESIGN.md「レイアウト」） ───────── */
 body.paper {
@@ -163,13 +189,17 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
   max-width: 720px; margin: 0 auto;
   padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
 }
-.cg-top { grid-area: top; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding-top: 12px; }
+.cg-top { grid-area: top; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 4px; margin-bottom: 12px; }   /* P-1：ヘッダーは「SHEER Gallery ／ 言語」の 1 行。窓の上は 12px 以上空ける */
 .cg-title { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 15px; letter-spacing: .14em; line-height: 1.5; }
 .cg-title .latin { display: block; font-family: var(--latin); font-style: italic; font-weight: 300; font-size: 12.5px; letter-spacing: .08em; color: var(--ink-2); }
 .cg-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 0; flex: none; }
-.cg-tools .lang { min-height: 32px; }
-.cg-skip { font-size: 11px; letter-spacing: .12em; color: var(--ink-2); min-height: 32px; display: inline-flex; align-items: center; border-bottom: 1px solid var(--line); line-height: 1.4; }
-.cg-skip:hover { color: var(--ink); border-bottom-color: var(--ink); }
+/* P-1：スキップはボタン列の下に静かな文字リンク（中央、12px、--ink-2、下線なし、高さ 44px）。会話中も下に残る（キーボードが出たら隠す） */
+.cg-skip { flex: none; align-self: center; font-size: 12px; letter-spacing: .1em; color: var(--ink-2); min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px; line-height: 1.4; text-align: center; animation: cg-in .6s ease both; animation-delay: var(--d, 0s); }
+.cg-skip::after { content: "→"; margin-left: .5em; }
+.cg-skip:hover { color: var(--ink); }
+.cg.is-kb .cg-skip { display: none; }
+/* 迎えの状態はボタン列のすぐ下にリンクが来るよう、会話の欄を内容の高さに（あふれたら会話の欄がスクロール） */
+.cg:not(.is-talk) .cg-thread { flex: 0 1 auto; }
 /* 人の部分は「窓」（11-06 深夜、作家「ゲームは下に線や窓があって、ここが人の部分だと分かる」）：薄い紙色のパネルと下のヘアライン。胸で切れた画像がパネルの縁で収まる */
 /* 窓そのものが .cg-host（11-07 作家「キャラクターを奥側に置かないと、動いたとき枠をはみ出る」）：枠で切り抜く（overflow hidden）。人は窓の中の層 */
 .cg-host { grid-area: host; margin: 0 auto 6px; min-height: 0; width: min(100%, 360px); display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6); isolation: isolate; }
@@ -181,12 +211,13 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 /* 表情は重ねて置き、.is-on だけ見せる（300ms のクロスフェードは JS が .is-on を付け替える）
    画像は <picture> の media で選ぶ：縦は上半身（*-bust）、横向き（スマホ横・PC の幅 900px 以上）は全身（*-full）を縦いっぱいに
    待機：ゆっくりした呼吸（±2px、1.00〜1.012 倍、4.5 秒）。画像 1 枚でも動く */
-.cg-faces { position: relative; flex: 1; min-height: 0; width: 100%; transform-origin: 50% 100%; animation: cg-breathe 4.5s ease-in-out infinite; }
+.cg-faces { position: relative; flex: 1; min-height: 0; width: 100%; margin-bottom: -10px; transform-origin: 50% 100%; animation: cg-breathe 4.5s ease-in-out infinite; }   /* P-13：窓の下端より 10px 下まで伸ばし、画像の切れた端を窓の外（overflow: hidden）に */
 .cg-face { position: absolute; inset: 0; opacity: 0; transition: opacity .3s ease; }
 .cg-face.is-on { opacity: 1; }
 .cg-face img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; pointer-events: none; }   /* 11-07 作家「長押しすると横にのびる」：iOS の長押しプレビューを出さない */
 .cg-host { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
-@keyframes cg-breathe { 0%, 100% { transform: translateY(2px) scale(1); } 50% { transform: translateY(-2px) scale(1.012); } }
+/* P-13：上下には動かさない（下端が持ち上がってお腹が浮いて見えた）。下端を軸に拡大だけ */
+@keyframes cg-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.012); } }
 .cg-name { font-size: 11px; letter-spacing: .2em; color: var(--ink-2); padding-top: 4px; }
 .cg-talk { grid-area: talk; min-height: 0; height: 100%; display: flex; flex-direction: column; }   /* 行いっぱいに（stretch だけでは下に隙間が残った） */
 .cg-thread { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding: 10px 2px 10px; scrollbar-width: thin; }
@@ -228,7 +259,7 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
   .cg-host { max-height: 220px; }
   .cg.is-talk .cg-host { max-height: 150px; }
 }
-@media (prefers-reduced-motion: reduce) { .cg { transition: none; } .cg-face { transition: none; } .cg-faces { animation: none; } .cg-greet { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .cg { transition: none; } .cg-face { transition: none; } .cg-faces { animation: none; } .cg-greet, .cg-skip { animation: none; } }
 
 /* ギャラリー（G）：白い壁。PC は横に長い 1 枚の壁（スクロール）、スマホは縦に並べる */
 main.gw { min-height: 100dvh; display: flex; flex-direction: column; padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); }
@@ -239,17 +270,19 @@ main.gw { min-height: 100dvh; display: flex; flex-direction: column; padding: en
 .gw-title { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 15px; letter-spacing: .2em; display: flex; gap: .8em; align-items: baseline; }
 .gw-title .latin { font-family: var(--latin); font-style: italic; font-weight: 300; font-size: 13px; letter-spacing: .08em; color: var(--ink-2); }
 .gw-wall {
-  --k: calc(min(48dvh, 460px) / var(--maxh));   /* 1 cm あたりの長さ。いちばん背の高い絵が壁の高さに収まる */
-  position: relative; flex: 1; display: flex; align-items: center; gap: clamp(56px, 8vw, 120px);
+  --gap: clamp(32px, 4vw, 72px);
+  position: relative; flex: 1; display: flex; align-items: center; gap: var(--gap);
   overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: thin;
-  padding: 40px max(8vw, 48px) 64px; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left)));
+  padding: 40px max(4vw, 32px) 64px; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left)));
   background: linear-gradient(to bottom, transparent calc(100% - 28px), var(--line) calc(100% - 28px), var(--line) calc(100% - 27px), transparent calc(100% - 27px));   /* 床線 1 本 */
 }
 .gw-wall:focus-visible { outline-offset: -4px; }
-.gw-item { position: relative; flex: none; display: flex; flex-direction: column; scroll-snap-align: center; color: var(--ink-2); width: max(calc(var(--wcm) * var(--k)), 96px); transition: transform .6s cubic-bezier(.2,.7,.3,1); }
+/* P-4：一列が必ず収まる。1 cm あたりの長さ = min(（壁の幅 − 間隔の合計）÷ 幅 cm の合計, 壁の縦 min(62vh, 560px) ÷ いちばん高い絵の cm)。
+   最小 72px を下回る幅（〜1000px）では 72px に止まり、壁は横スクロールになる（page.ts が .is-scroll を付けて「→」と 1 行を出す） */
+.gw-item { position: relative; flex: none; display: flex; flex-direction: column; scroll-snap-align: center; color: var(--ink-2); width: max(72px, calc(var(--wcm) * min((100% - (var(--n) - 1) * var(--gap)) / var(--sumcm), min(62vh, 560px) / var(--maxh)))); transition: transform .6s cubic-bezier(.2,.7,.3,1); }
 .gw-item:hover { transform: translateY(-4px); }
 .gw-item img { display: block; width: 100%; height: auto; box-shadow: 0 1px 2px rgba(35, 32, 29, .18), 0 14px 30px rgba(35, 32, 29, .14); background: var(--bg-2); }
-.gw-cap { display: block; margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11px; letter-spacing: .12em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gw-cap { display: block; margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11px; letter-spacing: .12em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }   /* 小さな絵の幅で折り返す（隣にはみ出さない） */
 .gw-cap b { display: block; font-family: var(--serif); font-weight: 400; font-size: 14px; letter-spacing: .1em; color: var(--ink); }
 .gw-cap i { display: block; font-size: 12px; font-style: normal; font-family: var(--serif); letter-spacing: .1em; }
 .gw-cap i.latin { font-family: var(--latin); font-weight: 300; font-style: italic; letter-spacing: .06em; }
@@ -258,12 +291,22 @@ main.gw { min-height: 100dvh; display: flex; flex-direction: column; padding: en
 /* おすすめの 1 点：ほんの少し明るい（背後の光） */
 .gw-item.is-for-you::before { content: ""; position: absolute; inset: -38% -42% -20%; z-index: -1; background: radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0)); pointer-events: none; }
 .gw footer { max-width: 1180px; width: 100%; margin: 24px auto 16px; }
+/* P-4：横スクロールのときだけ、右端に「→」の薄い印と「横にスクロール」の 1 行 */
+main.gw { position: relative; }
+.gw-more, .gw-scroll { display: none; }
+.gw.is-scroll .gw-more { display: block; position: absolute; right: max(12px, env(safe-area-inset-right)); top: 50%; font-family: var(--latin); font-size: 28px; font-weight: 300; color: var(--ink-2); opacity: .45; pointer-events: none; }
+.gw.is-scroll .gw-scroll { display: block; max-width: 1180px; width: 100%; margin: -40px auto 0; text-align: right; font-size: 11px; letter-spacing: .14em; color: var(--ink-2); }
+.gw-tap { display: none; }
 @media (max-width: 767.98px) {
   .gw-wall { flex-direction: column; align-items: center; overflow: visible; gap: 64px; padding: 56px 0 72px; margin: 0; background: none; }
   .gw-item { width: 100%; scroll-snap-align: none; }   /* スマホは柄を見せる：全部幅いっぱい（11-06 深夜、作家）。実寸比は PC だけ */
   .gw-cap { white-space: normal; }
   .gw-title .latin, .gw-top .lang > span { display: none; }
   .gw-back { white-space: nowrap; }
+  .gw.is-scroll .gw-more, .gw.is-scroll .gw-scroll { display: none; }
+  /* P-10：最初の作品の下に 1 回だけ「絵をタップすると、絵の中に入れます」。?from= で先頭が入れ替わっても order で最初の作品の下 */
+  .gw-item:first-child { order: -2; }
+  .gw-tap { display: block; order: -1; margin: -48px 0 0; font-size: 12px; letter-spacing: .1em; color: var(--ink-2); text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) { .gw-item { transition: none; } }
 

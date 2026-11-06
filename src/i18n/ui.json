@@ -324,16 +324,16 @@
     "pt": "Guardar / Partilhar"
   },
   "privacy": {
-    "ja": "計測は Cookie なし、IP は保存しません",
-    "en": "No cookies, no IP stored",
-    "zh-Hans": "不使用 Cookie，不保存 IP",
-    "zh-Hant": "不使用 Cookie，不儲存 IP",
-    "ko": "쿠키 없음, IP 저장 안 함",
-    "fr": "Pas de cookies, pas d'IP conservée",
-    "de": "Keine Cookies, keine IP gespeichert",
-    "es": "Sin cookies, sin guardar IP",
-    "it": "Niente cookie, nessun IP salvato",
-    "pt": "Sem cookies, sem guardar IP"
+    "ja": "匿名の閲覧数だけを数えています",
+    "en": "We only count anonymous visits",
+    "zh-Hans": "仅统计匿名浏览次数",
+    "zh-Hant": "僅統計匿名瀏覽次數",
+    "ko": "익명 방문 수만 집계합니다",
+    "fr": "Nous comptons seulement les visites anonymes",
+    "de": "Wir zählen nur anonyme Aufrufe",
+    "es": "Solo contamos las visitas anónimas",
+    "it": "Contiamo solo le visite anonime",
+    "pt": "Contamos apenas as visitas anónimas"
   },
   "gallery_title": {
     "ja": "ギャラリー",
@@ -720,16 +720,16 @@
     "pt": "Quando me sinto assim, gostava de…"
   },
   "cg_skip": {
-    "ja": "受付を飛ばしてギャラリーへ",
-    "en": "Skip to the gallery",
-    "zh-Hans": "跳过接待，直接去画廊",
-    "zh-Hant": "跳過接待，直接去畫廊",
-    "ko": "안내를 건너뛰고 갤러리로",
-    "fr": "Passer l'accueil, aller à la galerie",
-    "de": "Empfang überspringen, zur Galerie",
-    "es": "Saltar la recepción e ir a la galería",
-    "it": "Salta l'accoglienza, vai alla galleria",
-    "pt": "Saltar a receção e ir para a galeria"
+    "ja": "受付を飛ばして、ギャラリー全体を見る",
+    "en": "Skip the welcome and see the whole gallery",
+    "zh-Hans": "跳过接待，看看整个画廊",
+    "zh-Hant": "跳過接待，看看整個畫廊",
+    "ko": "안내를 건너뛰고 갤러리 전체 보기",
+    "fr": "Passer l’accueil et voir toute la galerie",
+    "de": "Empfang überspringen und die ganze Galerie sehen",
+    "es": "Saltar la recepción y ver toda la galería",
+    "it": "Salta l’accoglienza e guarda tutta la galleria",
+    "pt": "Saltar a receção e ver toda a galeria"
   },
   "cg_again": {
     "ja": "もう一度、話す",
@@ -1042,5 +1042,29 @@
     "es": "Arrastra el cuadro para moverlo hacia los lados",
     "it": "Trascina il quadro per spostarlo di lato",
     "pt": "Arraste o quadro para o mover para os lados"
+  },
+  "gw_scroll": {
+    "ja": "横にスクロール",
+    "en": "Scroll sideways",
+    "zh-Hans": "横向滚动",
+    "zh-Hant": "橫向捲動",
+    "ko": "옆으로 스크롤",
+    "fr": "Faites défiler sur le côté",
+    "de": "Seitlich scrollen",
+    "es": "Desliza hacia el lado",
+    "it": "Scorri di lato",
+    "pt": "Deslize para o lado"
+  },
+  "gw_tap": {
+    "ja": "絵をタップすると、絵の中に入れます",
+    "en": "Tap a painting to step inside it",
+    "zh-Hans": "点击画作，即可走进画中",
+    "zh-Hant": "點擊畫作，即可走進畫中",
+    "ko": "그림을 탭하면 그림 속으로 들어갈 수 있어요",
+    "fr": "Touchez un tableau pour y entrer",
+    "de": "Tippen Sie auf ein Bild, um hineinzugehen",
+    "es": "Toca un cuadro para entrar en él",
+    "it": "Tocca un quadro per entrarci",
+    "pt": "Toque num quadro para entrar nele"
   }
 }

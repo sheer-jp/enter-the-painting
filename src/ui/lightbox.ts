@@ -2,7 +2,7 @@
 // 作品ページで帯の画像を初めてタップしたときに import() で読む（ページ用 JS を小さく保つ）
 import { t, pick, type Lang } from '../i18n';
 import type { Multi, Room } from '../experience/types';
-import { mountRoomArt, quadRect, canMove, type Rect } from './roomArt';
+import { mountRoomArt, quadRect, canMove, popWorthy, mountDragPop, type Rect, type DragPop } from './roomArt';
 export { quadRect, clampOffset, type Rect } from './roomArt';   // テストと既存の呼び出し元のため
 
 export interface LightboxSpace { size_cm: [number, number]; size_label?: Multi | null; rooms: Room[] }
@@ -15,9 +15,7 @@ const GAP = 12;         // 寸法線と絵の間（画面の px）
 const TICK = 5;         // 目盛りの半分の長さ
 const FONT = 12;        // ラベルの文字の大きさ
 const SMALL = 60;       // 絵がこれより小さい（画面の px）ときはラベルを 1 行にまとめる
-const HINT_STRONG_MS = 3000;   // 案内の 1 行を濃く出す時間（最初に開いたときだけ）
-let hintSeen = false;          // このページで一度でも案内を濃く出したか
-let hintDone = false;          // このページで一度でも絵を動かしたか（以後は案内を出さない）
+let hintDone = false;          // このページで一度でも絵を動かしたか（以後は「動かせる」のポップを出さない）
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, parent?: HTMLElement) => {
   const e = document.createElement(tag); e.className = cls; parent?.appendChild(e); return e;
@@ -37,7 +35,7 @@ export function openLightbox(o: LightboxOptions): () => void {
   let fit = { w: 0, h: 0, k: 1 };   // 画像を画面に収めた大きさと倍率（画面 px / 画像 px）
   let dimsTimer = 0;
   let movable = false;                  // いまの部屋で絵を別の層にして動かせるか
-  let hintTimer = 0;
+  let pop: DragPop | null = null;     // 「絵をドラッグして、好きな場所へ」の小さなポップ（P-12）
 
   const root = el('div', 'lb');
   root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true');
@@ -57,8 +55,6 @@ export function openLightbox(o: LightboxOptions): () => void {
   const next = el('button', 'lb-nav lb-next', media); next.type = 'button'; next.textContent = '›'; next.setAttribute('aria-label', t('next_room', lang));
   const text = el('div', 'lb-text', root);
   const head = el('p', 'lb-head', text);
-  // 案内の 1 行（「絵をドラッグして、好きな場所へ」）。動かせる部屋だけ。動かしたら消す
-  const hint = el('p', 'lb-hint', text); hint.hidden = true;
   const body = el('div', 'lb-body', text);
   const tools = el('div', 'lb-tools', text);
   const toggle = el('button', 'lb-tool', tools); toggle.type = 'button';
@@ -137,17 +133,13 @@ export function openLightbox(o: LightboxOptions): () => void {
     const r = quadRect(room.quad_px); const off = movable ? ra.offset() : [0, 0];
     return { x0: r.x0 + off[0], y0: r.y0 + off[1], x1: r.x1 + off[0], y1: r.y1 + off[1] };
   }
+  // 「動かせる」の案内は絵のすぐ上の小さなポップ（P-12）。置く場面・ほとんど動かない部屋・一度動かしたあとは出さない
   function showHint(room: Room) {
-    clearTimeout(hintTimer);
-    // 動かしたあとは見えなくするだけで場所は残す（文章の高さが変わって部屋の画像が跳ねないように）
-    hint.hidden = !movable; hint.classList.toggle('gone', hintDone);
-    hint.textContent = t(room.place ? 'drag_hint_place' : 'drag_hint', lang);
-    if (hint.hidden || hintDone) return;
-    // 最初に開いたときだけ 3 秒ほど濃く、そのあと薄く残す
-    hint.classList.toggle('strong', !hintSeen);
-    if (!hintSeen) { hintSeen = true; hintTimer = window.setTimeout(() => hint.classList.remove('strong'), HINT_STRONG_MS); }
+    pop?.dispose(); pop = null;
+    if (!movable || hintDone || !popWorthy(room)) return;
+    pop = mountDragPop(root, art, t('drag_hint', lang));
   }
-  function hideHint() { hintDone = true; clearTimeout(hintTimer); hint.classList.remove('strong'); hint.classList.add('gone'); }
+  function hideHint() { hintDone = true; pop?.hide(); }
 
   function setDimsVisible(animateIn: boolean) {
     clearTimeout(dimsTimer);
@@ -178,6 +170,7 @@ export function openLightbox(o: LightboxOptions): () => void {
     frame.style.transform = zoom === 1 && !tx && !ty ? '' : `translate(${tx}px, ${ty}px) scale(${zoom})`;
     zoomBtn.setAttribute('aria-pressed', String(zoom > 1));
     media.classList.toggle('zoomed', zoom > 1);
+    if (zoom > 1 || tx || ty) { pop?.dispose(); pop = null; }   // 拡大・パンで絵が動いたら、ポップは指す先を失うので外す
   }
   // 画面の点 (px, py) を動かさずに拡大率を変える
   function zoomAt(z: number, px: number, py: number) {
@@ -219,7 +212,7 @@ export function openLightbox(o: LightboxOptions): () => void {
   // 素の部屋が読めなければ合成画像に戻す
   img.addEventListener('error', () => {
     if (!movable || !srcs[index]) return;
-    movable = false; ra.set(null); resetBtn.hidden = true; hint.hidden = true;
+    movable = false; ra.set(null); resetBtn.hidden = true; pop?.dispose(); pop = null;
     img.src = srcs[index]; drawDims(rooms[index]);
   });
 
@@ -299,7 +292,7 @@ export function openLightbox(o: LightboxOptions): () => void {
   let disposed = false;
   function dispose() {
     if (disposed) return; disposed = true;
-    clearTimeout(dimsTimer); clearTimeout(hintTimer);
+    clearTimeout(dimsTimer); pop?.dispose();
     document.removeEventListener('keydown', onKey);
     window.removeEventListener('resize', onResize);
     document.documentElement.style.overflow = prevOverflow;

@@ -62,7 +62,27 @@ export function catalogText(catalog) {
  * @param {number} [userTurns] いまの user の件数（buildBody が数える）
  * @returns {Array<{ type: 'text', text: string, cache_control?: { type: 'ephemeral' } }>}
  */
-export function buildSystem(catalog, lang, userTurns) {
+// 会話ごとに違う問いを 4 つ選ぶ（11-07 作家「毎回こっちから投げる質問が変わると面白い」）。seed は会話の間は同じ（system のキャッシュも会話の間は効く）。kind が偏らないよう、種類ごとに 1 つずつ
+export function pickQuestions(catalog, seed, n = 4) {
+  const qs = Array.isArray(catalog?.questions) ? catalog.questions.filter((/** @type {any}  * @param {string} [seed]
+ */ q) => q && typeof q.ja === 'string') : [];
+  if (!qs.length) return [];
+  let s = 2166136261;
+  for (const ch of String(seed ?? '')) { s ^= ch.charCodeAt(0); s = Math.imul(s, 16777619) >>> 0; }
+  const rand = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  const byKind = new Map();
+  for (const q of qs) { const k = q.kind || ''; if (!byKind.has(k)) byKind.set(k, []); byKind.get(k).push(q); }
+  const kinds = [...byKind.keys()].sort(() => rand() - 0.5);
+  const out = [];
+  for (let i = 0; out.length < Math.min(n, qs.length) && i < kinds.length * 3; i++) {
+    const list = byKind.get(kinds[i % kinds.length]);
+    const q = list[Math.floor(rand() * list.length)];
+    if (!out.includes(q.ja)) out.push(q.ja);
+  }
+  return out;
+}
+
+export function buildSystem(catalog, lang, userTurns, seed) {
   const [minT, maxT] = turnsOf(catalog);
   const ids = (catalog?.works || []).map((/** @type {any} */ w) => w.id);
   const intro = catalog?.artist?.intro?.ja || '';
@@ -83,7 +103,9 @@ ${intro}
 # 進め方
 - 往復 ${minT} 回以上、${maxT} 回以下で、必ずおすすめに至る。
 - いまが何往復目かは、user の発言の数で数える。${maxT} 往復目の応答では、必ずおすすめを出す。
-- 最初は相手の気分や、絵を置きたい時間・場所を 1 つだけ聞く。`;
+- 最初は相手の気分や、絵を置きたい時間・場所を 1 つだけ聞く。${(() => { const qs = pickQuestions(catalog, seed); return qs.length ? `
+- 問いは毎回違うものに。今回の問いの候補（流れに合うものを 1 往復に 1 つ。言い換えてよい。相手の最初の言葉に直接つながる問いがあればそちらを優先）：
+${qs.map((q) => `  - ${q}`).join('\n')}` : ''; })()}`;
 
   const rules = `# 出力の決まり
 - おすすめを出すときは、文を書いたあとに必ずツール ${TOOL_NAME} を 1 回呼ぶ。文の中に JSON や id を書かない。
@@ -162,8 +184,9 @@ export function sanitizeMessages(messages) {
  * @param {string} lang
  * @param {any} messages
  * @param {string} model
+  * @param {string} [seed] 会話ごとの問いの種
  */
-export function buildBody(catalog, lang, messages, model) {
+export function buildBody(catalog, lang, messages, model, seed) {
   const msgs = sanitizeMessages(messages);
   const userTurns = msgs.filter((m) => m.role === 'user').length;
   /** @type {Record<string, any>} */
@@ -173,7 +196,7 @@ export function buildBody(catalog, lang, messages, model) {
     stream: true,
     // 短い接客の会話なので考える量は少なく（max_tokens を思考で使い切らないように）
     output_config: { effort: 'low' },
-    system: buildSystem(catalog, lang, userTurns),
+    system: buildSystem(catalog, lang, userTurns, seed),
     messages: msgs,
   };
   const tool = buildTool(catalog);
@@ -198,6 +221,7 @@ export const LIMITS = { messages: 10, chars: 600, assistantChars: 2000 };
 export function validateRequest(body, turns = [2, 4]) {
   if (!body || typeof body !== 'object') return 'body';
   if (typeof body.lang !== 'string' || !(body.lang in LANG_NAMES)) return 'lang';
+  if (body.seed != null && !(typeof body.seed === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(body.seed))) return 'seed';   // 会話ごとの問いの選び方の種
   const ms = body.messages;
   if (!Array.isArray(ms) || ms.length === 0 || ms.length > LIMITS.messages) return 'messages';
   for (const m of ms) {

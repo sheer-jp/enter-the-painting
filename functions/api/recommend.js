@@ -139,7 +139,7 @@ async function handle(req, env) {
   const model = env.CLAUDE_MODEL || 'claude-sonnet-5-5';
   const headers = { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' };
   if (supportsFallbacks(model)) headers['anthropic-beta'] = FALLBACK_BETA;
-  const upBody = JSON.stringify(buildBody(catalog, body.lang, body.messages, model));
+  const upBody = JSON.stringify(buildBody(catalog, body.lang, body.messages, model, body.seed));
   const up = await fetchUpstream(() => fetch(API_URL, { method: 'POST', headers, body: upBody }));
   if (!up || !up.ok || !up.body) {   // 状態コードは fetchUpstream がログに出す（本文は出さない）
     return json(502, { error: 'upstream' }, cors);

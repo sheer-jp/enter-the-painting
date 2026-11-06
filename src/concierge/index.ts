@@ -66,6 +66,7 @@ export interface ConciergeOptions {
 
 // catalog.json の受付の固定文（E-15。scripts/generate/catalog.js）。無い古いカタログでは HTML の ja / en のまま
 type UiCatalog = Catalog & {
+  openers_pool?: Partial<Record<Lang, string[]>>;   // 選択肢のプール（11-07）
   greeting?: Partial<Record<Lang, string[]>>;
   present_line?: Partial<Record<Lang, string>>;
   ui_hint?: Partial<Record<Lang, string>>;
@@ -110,6 +111,11 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   let current: { id: string; alt: string | null } | null = null;
   let shown = new Set<string>();
   let otherPresses = 0;
+  // 会話ごとの種（AI が投げる問いの選び方に使う。「もう一度」で引き直す）
+  let seed = newSeed();
+  function newSeed() { return Math.random().toString(36).slice(2, 10); }
+  // 選択肢のプールから 3 つ（読み込みごと・「もう一度」ごとにシャッフル。11-07 作家）。最初の 3 つ（従来の選択肢）も候補に入る
+  let openerPick: number[] = [];
   let extraUsed = false;            // AI への「別の絵を」の 1 往復を使った
   let rulesRank: string[] | null = null;   // ルールだけの版：近い順の作品
 
@@ -255,7 +261,13 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   function labelOpeners() {
     const c = catalog as UiCatalog | null;
     const lists = (k: 'openers' | 'greeting') => [c?.[k]?.[lang], c?.[k]?.en] as const;
-    const [list, en] = lists('openers');
+    let [list, en] = lists('openers');
+    const pool = c?.openers_pool;
+    if (pool && (pool.ja?.length ?? 0) >= 3) {
+      if (openerPick.length !== 3) { const n = pool.ja!.length; const idx = [...Array(n).keys()].sort(() => Math.random() - 0.5); openerPick = idx.slice(0, 3); }
+      list = openerPick.map((i) => pool[lang]?.[i] ?? pool.en?.[i] ?? pool.ja?.[i] ?? '');
+      en = openerPick.map((i) => pool.en?.[i] ?? pool.ja?.[i] ?? '');
+    }
     thread.querySelectorAll<HTMLButtonElement>('button[data-opener-index]:not(.cg-write)').forEach((b) => {
       const i = +b.dataset.openerIndex!;
       swapText(b, list?.[i], en?.[i]);
@@ -321,7 +333,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   function reset() {
     sess++;
     messages = []; busy = false; pending = null; mode = 'talk'; statStarted = false;
-    current = null; shown = new Set(); otherPresses = 0; extraUsed = false; rulesRank = null;
+    current = null; shown = new Set(); otherPresses = 0; extraUsed = false; rulesRank = null; seed = newSeed(); openerPick = [];
     if (c2Pushed && history.state?.cg2) history.back();   // C2 の履歴を下ろす（popstate は stage が talk なので何もしない）
     c2Pushed = false;
     stage = nextStage(stage, 'again');
@@ -450,7 +462,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     try {
       const headers: Record<string, string> = { 'content-type': 'application/json' };
       if (usedPass) headers['X-Passphrase'] = usedPass;
-      const res = await fetch(opts.api!, { method: 'POST', headers, body: JSON.stringify({ lang, messages }), signal: ctrl.signal });
+      const res = await fetch(opts.api!, { method: 'POST', headers, body: JSON.stringify({ lang, messages, seed }), signal: ctrl.signal });
       if (res.status === 403) {
         const e = await res.json().catch(() => null) as { error?: string } | null;
         // 違う合言葉は覚えない（覚えていたものも消す）
@@ -836,7 +848,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (!c || !current || busy) return;
     otherPresses++;
     const altFree = current.alt && !shown.has(current.alt) && c.works.some((w) => w.id === current!.alt) ? current.alt : null;
-    if (!rulesMode && !extraUsed && (otherPresses >= 2 || !altFree)) { aiOther(!quiet); return; }
+    // 11-07 作家「2 回目の『別のにする』の反応が遅い」：ボタンからはいつも即座に次の絵（alt → 近い順）。AI にもう 1 往復聞くのは、作品ページから戻ってきたとき（quiet）だけ
+    if (!rulesMode && !extraUsed && quiet && !altFree) { aiOther(false); return; }
     const next = rulesMode && rulesRank ? rulesRank.find((id) => !shown.has(id)) ?? nearest(c, current.id) : altFree ?? nearest(c, current.id);
     if (!next) return;
     if (!quiet) line('ai', t('cg_other_line', lang));   // 会話の記録にも残す（「会話に戻る」で読める）

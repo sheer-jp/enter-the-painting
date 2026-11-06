@@ -184,6 +184,12 @@ export async function buildCatalog(root, { apiKey = process.env.ANTHROPIC_API_KE
   const texts = [];
   if (intro.ja) texts.push({ ja: intro.ja, en: intro.en });
   (openers.ja || []).forEach((ja, i) => texts.push({ ja, en: openers.en?.[i] }));
+  // 選択肢のプール（11-07 作家「問いが 3 つだけでなく、シャッフルで 100 種類くらい」）。ブラウザが毎回 3 つ選ぶ
+  const pool = cfg.openers_pool || { ja: [] };
+  (pool.ja || []).forEach((ja, i) => texts.push({ ja, en: pool.en?.[i] }));
+  // AI が会話の途中で投げる問いのストック（recommend/questions.json）。日本語のまま system に渡す（応答の言語に AI が訳す）
+  const qPath = join(root, 'recommend', 'questions.json');
+  const questions = existsSync(qPath) ? (JSON.parse(readFileSync(qPath, 'utf8')).questions || []).filter((q) => q && typeof q.ja === 'string').map((q) => ({ kind: q.kind || '', ja: q.ja })) : [];
   greeting.ja.forEach((ja, i) => texts.push({ ja, en: greeting.en?.[i] }));
   for (const v of Object.values(lines)) if (v?.ja) texts.push({ ja: v.ja, en: v.en });
   let tr = (/** @type {string} */ _ja) => /** @type {Record<string, string>} */ ({});
@@ -202,6 +208,8 @@ export async function buildCatalog(root, { apiKey = process.env.ANTHROPIC_API_KE
     version: 1,
     artist: { intro: intro.ja ? perLangText(full(intro)) : { ja: '' } },
     openers: perLangList((openers.ja || []).map((ja, i) => full({ ja, en: openers.en?.[i] }))),
+    openers_pool: perLangList((pool.ja || []).map((ja, i) => full({ ja, en: pool.en?.[i] }))),
+    questions,
     greeting: perLangList(greeting.ja.map((ja, i) => full({ ja, en: greeting.en?.[i] }))),
     present_line: line(lines.present_line),
     ui_hint: line(lines.ui_hint),

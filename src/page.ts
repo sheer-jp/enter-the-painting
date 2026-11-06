@@ -83,6 +83,10 @@ if (wall) {
     item.classList.add('is-for-you');
     item.querySelector<HTMLElement>('.gw-foryou')!.hidden = false;
   }
+  // P-4：壁が横にあふれるとき（狭い PC）だけ、右端の「→」と「横にスクロール」を出す
+  const gw = wall.closest<HTMLElement>('.gw');
+  const fit = () => gw?.classList.toggle('is-scroll', wall.scrollWidth > wall.clientWidth + 1);
+  fit(); new ResizeObserver(fit).observe(wall);
   wall.addEventListener('click', (e) => { const id = (e.target as Element).closest<HTMLElement>('.gw-item')?.dataset.id; if (id) stat('gallery_pick', id); });
   wall.addEventListener('wheel', (e) => {
     if (!matchMedia('(min-width: 768px)').matches || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;

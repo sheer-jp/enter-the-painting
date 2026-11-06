@@ -391,7 +391,7 @@ try {
   const items = await page.locator('.gw-item').count();
   check(items === 6, `gallery: 作品 ${items} 点`);
   const footText = await page.locator('footer [data-i18n="privacy"]').textContent();
-  check(footText?.includes('cookies'), `gallery: フランス語設定でフランス語（${footText}）`);
+  check(footText?.includes('visites anonymes'), `gallery: フランス語設定でフランス語（${footText}）`);
   check(errors.length === 0, `gallery: エラー ${errors.length}`);
   await browser.close();
   await entranceCase('pc', { width: 1280, height: 800 });

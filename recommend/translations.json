@@ -25,7 +25,7 @@
   },
   "07e4f88feea9": {
     "ja": "頑張る活力がほしい",
-    "en": "I need energy to keep going",
+    "en": "I want energy to keep going",
     "zh-Hans": "我想要继续加油的活力",
     "zh-Hant": "我想要繼續加油的活力",
     "ko": "힘낼 활력이 필요해",
@@ -130,5 +130,153 @@
     "es": "Acompáñame en las noches solitarias",
     "it": "Stammi vicino nelle notti di solitudine",
     "pt": "Fica comigo nas noites solitárias"
+  },
+  "a89fb14730bf": {
+    "ja": "色で探したい",
+    "en": "Find by color"
+  },
+  "25f671cca881": {
+    "ja": "今の気持ちに合う絵を選びたい",
+    "en": "A painting that fits how I feel today"
+  },
+  "7bec87a75985": {
+    "ja": "あなたのおすすめを教えて",
+    "en": "Just give me your recommendation"
+  },
+  "5d7dace759ce": {
+    "ja": "デスクに飾る絵を探してる",
+    "en": "Looking for a painting for my desk"
+  },
+  "1cc5f6ea8780": {
+    "ja": "玄関に置く小さな絵がほしい",
+    "en": "A small painting for the entrance"
+  },
+  "5ae644150602": {
+    "ja": "リビングの壁に合う絵を",
+    "en": "Something for the living-room wall"
+  },
+  "84832e9a6eb1": {
+    "ja": "寝室に静かな絵を",
+    "en": "A quiet painting for the bedroom"
+  },
+  "03d7f58d3e91": {
+    "ja": "仕事場に力の出る絵を",
+    "en": "A painting that gives power at work"
+  },
+  "5f546e4293a4": {
+    "ja": "誰かへの贈りものを探してる",
+    "en": "Looking for a gift for someone"
+  },
+  "31a4c58b75e2": {
+    "ja": "自分へのごほうびに",
+    "en": "A treat for myself"
+  },
+  "0609ddb80e61": {
+    "ja": "初めて絵を買おうと思ってる",
+    "en": "Thinking of buying art for the first time"
+  },
+  "e9653d0ab6fe": {
+    "ja": "小さくて手に取れる絵がいい",
+    "en": "Something small I can hold"
+  },
+  "96aff988fcc1": {
+    "ja": "大きくて部屋の主役になる絵を",
+    "en": "Something big that owns the room"
+  },
+  "42b8509c003a": {
+    "ja": "赤やオレンジの元気な色が好き",
+    "en": "I love lively reds and oranges"
+  },
+  "6a2cda388203": {
+    "ja": "青や緑の落ち着く色が好き",
+    "en": "I love calming blues and greens"
+  },
+  "aca457275e00": {
+    "ja": "金色のきらめきが好き",
+    "en": "I love a golden shimmer"
+  },
+  "73e34f0b3415": {
+    "ja": "黄色で部屋を明るくしたい",
+    "en": "Brighten the room with yellow"
+  },
+  "e8f48c7fd99f": {
+    "ja": "派手すぎない絵がいい",
+    "en": "Nothing too loud"
+  },
+  "bb6f75d8947d": {
+    "ja": "勢いのある絵が見たい",
+    "en": "Show me something with momentum"
+  },
+  "6b5fd2828097": {
+    "ja": "じっと眺めていられる絵を",
+    "en": "Something I can gaze at for a long time"
+  },
+  "61d250e51278": {
+    "ja": "毎朝目に入る絵を",
+    "en": "A painting I see every morning"
+  },
+  "535ecfa02a32": {
+    "ja": "疲れた夜にほっとしたい",
+    "en": "Comfort after a tiring night"
+  },
+  "3f8e2aeb419d": {
+    "ja": "新しいことを始める自分に",
+    "en": "For the me starting something new"
+  },
+  "16cf735397b5": {
+    "ja": "迷いを抜けたい",
+    "en": "I want to get past my doubts"
+  },
+  "c83fcc9857b6": {
+    "ja": "音楽みたいに色が重なる絵を",
+    "en": "Colors layered like music"
+  },
+  "bcbb6526377c": {
+    "ja": "花のような絵を",
+    "en": "Something like a flower"
+  },
+  "68a49214a2ab": {
+    "ja": "火や光を感じる絵を",
+    "en": "Something with fire and light"
+  },
+  "feaa4b0f8440": {
+    "ja": "渦巻くエネルギーがほしい",
+    "en": "I want swirling energy"
+  },
+  "524caabb6ad5": {
+    "ja": "やわらかく滲む絵が好き",
+    "en": "I love soft, bleeding colors"
+  },
+  "bc2fe70db35c": {
+    "ja": "とにかく気分を上げたい",
+    "en": "Just lift my spirits"
+  },
+  "1050eba1e0df": {
+    "ja": "静かに泣きたい夜に",
+    "en": "For a night of quiet tears"
+  },
+  "488654d2ba49": {
+    "ja": "朝の光に合う絵を",
+    "en": "Something for morning light"
+  },
+  "6c5a88edc261": {
+    "ja": "夕方の時間に合う絵を",
+    "en": "Something for the evening hours"
+  },
+  "d8c469fb9f7e": {
+    "ja": "子ども部屋に飾りたい",
+    "en": "For a child's room"
+  },
+  "6656bdc92bb3": {
+    "ja": "カフェみたいな空間にしたい",
+    "en": "Make my place feel like a café"
+  },
+  "05df80e7667a": {
+    "ja": "旅の思い出みたいな絵を",
+    "en": "Like a memory from a trip"
+  },
+  "9a7ecb7196ed": {
+    "ja": "作家の思いを聞きたい",
+    "en": "I want to hear the artist's thoughts"
   }
 }
