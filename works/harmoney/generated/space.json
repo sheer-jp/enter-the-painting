@@ -182,6 +182,7 @@
     {
       "name": "sq-sofa",
       "image": "room_sq-sofa.jpg",
+      "base": "rooms/sq-sofa.jpg",
       "category": "house",
       "label": {
         "ja": "ソファの上の壁",
@@ -263,6 +264,7 @@
     {
       "name": "sq-sideboard",
       "image": "room_sq-sideboard.jpg",
+      "base": "rooms/sq-sideboard.jpg",
       "category": "house",
       "label": {
         "ja": "ローボードの上",
@@ -355,6 +357,7 @@
     {
       "name": "sq-dining-close",
       "image": "room_sq-dining-close.jpg",
+      "base": "rooms/sq-dining-close.jpg",
       "category": "house",
       "label": {
         "ja": "ダイニングの壁（寄り）",
@@ -443,101 +446,9 @@
         "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "dining_table"
-    },
-    {
-      "name": "sq-bedroom",
-      "image": "room_sq-bedroom.jpg",
-      "category": "house",
-      "label": {
-        "ja": "寝室のヘッドボードの上",
-        "en": "Above the headboard",
-        "zh-Hans": "卧室床头板上方",
-        "zh-Hant": "臥室床頭板上方",
-        "ko": "침실 헤드보드 위",
-        "fr": "Au-dessus de la tête de lit",
-        "de": "Über dem Kopfteil des Betts",
-        "es": "Sobre el cabecero",
-        "it": "Sopra la testiera del letto",
-        "pt": "Por cima da cabeceira da cama"
-      },
-      "wall_width_cm": 241,
-      "image_px": [
-        1024,
-        1024
-      ],
-      "quad_px": [
-        [
-          399,
-          178
-        ],
-        [
-          625,
-          178
-        ],
-        [
-          625,
-          455
-        ],
-        [
-          399,
-          455
-        ]
-      ],
-      "px_per_cm": 4.25,
-      "confidence": "high",
-      "occlusion": false,
-      "compare": {
-        "ja": "このダブルベッドの約 3 分の 1 の幅。",
-        "en": "About one third the width of the bed.",
-        "zh-Hans": "约为这张双人床宽度的三分之一。",
-        "zh-Hant": "約為這張雙人床寬度的三分之一。",
-        "ko": "이 더블 침대 폭의 약 3분의 1.",
-        "fr": "Environ un tiers de la largeur de ce lit double.",
-        "de": "Etwa ein Drittel so breit wie dieses Doppelbett.",
-        "es": "Aproximadamente un tercio de la anchura de esta cama de matrimonio.",
-        "it": "Circa un terzo della larghezza di questo letto matrimoniale.",
-        "pt": "Cerca de um terço da largura desta cama de casal."
-      },
-      "compare2": {
-        "ja": "この枕（約 70 cm）の約 0.8 倍の幅。",
-        "en": "About 0.8 times the width of the pillow (about 70 cm).",
-        "zh-Hans": "约为这个枕头（约 70 cm）宽度的 0.8 倍。",
-        "zh-Hant": "約為這個枕頭（約 70 cm）寬度的 0.8 倍。",
-        "ko": "이 베개(약 70 cm) 폭의 약 0.8배.",
-        "fr": "Environ 0,8 fois la largeur de cet oreiller (environ 70 cm).",
-        "de": "Etwa 0,8-mal so breit wie dieses Kopfkissen (ca. 70 cm).",
-        "es": "Aproximadamente 0,8 veces la anchura de esta almohada (unos 70 cm).",
-        "it": "Circa 0,8 volte la larghezza di questo cuscino (circa 70 cm).",
-        "pt": "Cerca de 0,8 vezes a largura desta almofada (cerca de 70 cm)."
-      },
-      "about": {
-        "ja": "壁の幅は約 2.4 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 140 cm）。",
-        "en": "The wall is about 2.4 m wide. The painting hangs about 20 cm above the furniture (center about 140 cm from the floor).",
-        "zh-Hans": "墙宽约 2.4 m。挂在离家具上沿约 20 cm 的位置（画的中心离地约 140 cm）。",
-        "zh-Hant": "牆寬約 2.4 m。掛在離家具上緣約 20 cm 的位置（畫的中心離地約 140 cm）。",
-        "ko": "벽의 폭은 약 2.4 m. 가구 윗면에서 20 cm 정도 띄워 걸었습니다(그림의 중심은 바닥에서 약 140 cm).",
-        "fr": "Le mur fait environ 2,4 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 140 cm du sol).",
-        "de": "Die Wand ist etwa 2,4 m breit. Das Bild hängt etwa 20 cm über dem Möbelstück (Bildmitte etwa 140 cm über dem Boden).",
-        "es": "La pared mide unos 2,4 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 140 cm del suelo).",
-        "it": "La parete è larga circa 2,4 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 140 cm dal pavimento).",
-        "pt": "A parede tem cerca de 2,4 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 140 cm do chão)."
-      },
-      "note": {
-        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
-        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
-        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
-        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
-        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
-        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
-        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
-        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
-        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
-      },
-      "primary_ref": "bed_double"
     }
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-06T15:18:57.726Z"
+  "generated_at": "2026-11-06T15:59:16.855Z"
 }

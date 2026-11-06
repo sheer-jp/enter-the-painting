@@ -326,5 +326,17 @@
     "es": "Sobre el escritorio",
     "it": "Sopra la scrivania",
     "pt": "Por cima da secretária"
+  },
+  "87e7d712fc4a": {
+    "ja": "この玄関のドアの約 0.1 倍の高さ（寸法は目安）。",
+    "en": "About 0.1 times the height of the front door (size is approximate)."
+  },
+  "a9356c6d6f1f": {
+    "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
+    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide."
+  },
+  "5a6425eabf5a": {
+    "ja": "小さな玄関",
+    "en": "Entrance"
   }
 }

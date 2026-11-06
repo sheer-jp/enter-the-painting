@@ -468,6 +468,10 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       for (let y = Math.max(0, Math.floor(qb.y0)); y < Math.min(H, Math.ceil(qb.y1)); y++) for (let x = Math.max(0, Math.floor(qb.x0)); x < Math.min(W, Math.ceil(qb.x1)); x++) if (fgAlpha[y * W + x] >= 0.5) frontPx++;
     }
     const raw = { raw: { width: W, height: H, channels: 3 } };
+    // 絵の無い素の部屋（拡大表示で絵を別の層にしてドラッグで動かすため。docs/EXPERIENCE.md 4 節）。合成と同じリサイズの画素を書く
+    const baseDir = join(root, 'public', 'rooms');
+    mkdirSync(baseDir, { recursive: true });
+    await sharp(room.data, raw).jpeg({ quality: 82 }).toFile(join(baseDir, `${name}.jpg`));
     const outName = `room_${name}.jpg`;
     await sharp(buf, raw).jpeg({ quality: 85 }).toFile(join(outDir, outName));
 
@@ -503,7 +507,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       : { compare: null, compare2: null, about: null, note: null, primary_ref: null };
 
     results.push({
-      name, image: outName, ...(def.category ? { category: def.category } : {}), label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
+      name, image: outName, base: `rooms/${name}.jpg`, ...(def.category ? { category: def.category } : {}), label: def.label || { ja: name }, wall_width_cm: wallWidthCm,
       image_px: [W, H], quad_px: quad.map(([x, y]) => [Math.round(x), Math.round(y)]),
       ...(sc ? { px_per_cm: +pxPerCm.toFixed(3), confidence: sc.confidence || null } : {}),
       occlusion: frontPx > 0,

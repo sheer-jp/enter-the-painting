@@ -92,15 +92,19 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 .rooms-hint { margin: 10px 0 0; font-size: 11px; letter-spacing: .1em; color: var(--ink-2); line-height: 1.7; display: flex; flex-wrap: wrap; gap: 0 1.2em; }
 
 /* 拡大表示（ライトボックス）。docs/SIZE_UX.md 5 節 */
-.lb { position: fixed; inset: 0; z-index: 80; background: rgba(15, 14, 13, .94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); display: grid; grid-template-rows: minmax(0, 1fr) auto; padding: calc(56px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); animation: lb-in .3s ease-out; }
+.lb { position: fixed; inset: 0; z-index: 80; background: rgba(255, 255, 255, .97);   /* 11-07：サイト全体の「しっかり白」に合わせ、拡大表示も白 */ -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); display: grid; grid-template-rows: minmax(0, 1fr) auto; padding: calc(56px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); animation: lb-in .3s ease-out; }
 @keyframes lb-in { from { opacity: 0; } }
 .lb-media { position: relative; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
 .lb-frame { position: relative; flex: none; transform-origin: center; cursor: zoom-in; }
 .lb-media.zoomed .lb-frame { cursor: grab; }
 .lb-img { display: block; width: 100%; height: 100%; -webkit-user-drag: none; }
-.lb-dims { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; color: var(--ink); opacity: 0; transition: opacity .8s ease; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .55)); font-family: var(--sans); font-weight: 400; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.lb-art { position: absolute; display: block; max-width: none; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; box-shadow: 0 2px 6px rgba(0, 0, 0, .28), 0 1px 2px rgba(0, 0, 0, .2); outline: none; }
+.lb-art[hidden] { display: none; }
+.lb-art.dragging { cursor: grabbing; }
+.lb-art:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+.lb-dims { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; color: var(--ink); opacity: 0; transition: opacity .8s ease; filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, .9)); font-family: var(--sans); font-weight: 400; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
 .lb-dims.on { opacity: .8; }
-.lb-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 64px; border: 0; background: transparent; color: var(--ink); font-size: 30px; font-family: var(--latin); font-weight: 300; opacity: .7; cursor: pointer; text-shadow: 0 1px 4px rgba(0, 0, 0, .6); }
+.lb-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 64px; border: 0; background: transparent; color: var(--ink); font-size: 30px; font-family: var(--latin); font-weight: 300; opacity: .7; cursor: pointer; text-shadow: 0 0 4px rgba(255, 255, 255, .9); }
 .lb-nav:hover { opacity: 1; }
 .lb-prev { left: 0; } .lb-next { right: 0; }
 .lb-close { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: 20px; font-weight: 300; cursor: pointer; }

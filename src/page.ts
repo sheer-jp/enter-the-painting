@@ -173,7 +173,11 @@ if (workId) {
     const open = async (i: number) => {
       try {
         const [space, mod] = await load();
-        mod.openLightbox({ space: space as import('./ui/lightbox').LightboxSpace, srcs: imgs.map((im) => im.currentSrc || im.src), index: i, lang, returnFocus: imgs[i] });
+        const sp = space as import('./ui/lightbox').LightboxSpace & { painting?: string };
+        // 素の部屋と絵の写真（絵を別の層にしてドラッグで動かす。base が無い古い space.json は合成画像のまま）
+        const bases = sp.rooms.map((r) => (r.base ? `${assetBase}${r.base}` : null));
+        const painting = sp.painting ? `${assetBase}works/${workId}/generated/${sp.painting}` : undefined;
+        mod.openLightbox({ space: sp, srcs: imgs.map((im) => im.currentSrc || im.src), bases, painting, index: i, lang, returnFocus: imgs[i] });
       } catch (e) { console.warn('拡大表示を開けない', e); }
     };
     imgs.forEach((im, i) => {

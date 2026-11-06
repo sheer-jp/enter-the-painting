@@ -994,5 +994,29 @@
     "es": "Los colores empiezan a moverse y las palabras de la artista van pasando (unos 2 min)",
     "it": "I colori iniziano a muoversi e scorrono le parole dell'artista (circa 2 min)",
     "pt": "As cores começam a mexer-se e as palavras da artista vão passando (cerca de 2 min)"
+  },
+  "reset_position": {
+    "ja": "元の位置に戻す",
+    "en": "Reset position",
+    "zh-Hans": "恢复原位",
+    "zh-Hant": "恢復原位",
+    "ko": "원래 위치로",
+    "fr": "Position d'origine",
+    "de": "Ursprüngliche Position",
+    "es": "Posición original",
+    "it": "Posizione originale",
+    "pt": "Posição original"
+  },
+  "move_painting": {
+    "ja": "絵の位置。ドラッグか矢印キーで動かせます",
+    "en": "Painting position. Drag or use the arrow keys to move it",
+    "zh-Hans": "画的位置。可拖动或用方向键移动",
+    "zh-Hant": "畫的位置。可拖曳或用方向鍵移動",
+    "ko": "그림 위치. 드래그하거나 화살표 키로 옮길 수 있습니다",
+    "fr": "Position du tableau. Faites-le glisser ou utilisez les flèches",
+    "de": "Position des Bildes. Ziehen oder mit den Pfeiltasten verschieben",
+    "es": "Posición del cuadro. Arrástrelo o use las flechas",
+    "it": "Posizione del quadro. Trascinalo o usa i tasti freccia",
+    "pt": "Posição do quadro. Arraste ou use as setas"
   }
 }

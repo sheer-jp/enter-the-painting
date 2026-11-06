@@ -21,6 +21,8 @@ export interface Space {
 export interface Room {
   name: string; image: string; label: Multi; category?: 'studio' | 'house'; wall_width_cm: number;
   image_px?: [number, number]; quad_px?: [number, number][];
+  base?: string;             // 絵の無い素の部屋（サイトのルートからの相対。例 rooms/<name>.jpg）。無ければ拡大表示も合成画像
+  occlusion?: boolean;       // 絵の前に手前の物がある（true なら拡大表示は合成画像のままで、絵を動かせない）
   px_per_cm?: number; confidence?: 'high' | 'mid' | 'low' | null; primary_ref?: string | null;
   compare?: Multi | null;    // 比較の一文（数字なし）
   compare2?: Multi | null;   // 2 つ目の比較（基準物の実寸つき）
