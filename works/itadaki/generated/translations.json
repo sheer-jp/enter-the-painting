@@ -349,7 +349,15 @@
   },
   "a9356c6d6f1f": {
     "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
-    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide."
+    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide.",
+    "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。这个房间的比例线索不太确定，所以尺寸只能当作更粗略的参考。",
+    "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。這個房間的比例線索不太確定，所以尺寸只能當作更粗略的參考。",
+    "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다. 이 방은 크기를 가늠할 단서가 불확실해서, 특히 대략적인 기준입니다.",
+    "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo. Les repères d'échelle de cette pièce sont incertains : c'est donc un ordre de grandeur encore plus approximatif.",
+    "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto. Die Maßstabshinweise in diesem Raum sind unsicher, daher ist es hier ein besonders grober Anhaltspunkt.",
+    "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real. Las pistas de escala de esta habitación son poco fiables, así que tómalo como una referencia especialmente aproximada.",
+    "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale. In questa stanza i riferimenti di scala sono incerti, quindi è un'indicazione ancora più approssimativa.",
+    "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real. As pistas de escala deste espaço são incertas, por isso é uma referência ainda mais aproximada."
   },
   "5a6425eabf5a": {
     "ja": "小さな玄関",
@@ -357,18 +365,50 @@
   },
   "4e741f15c3b8": {
     "ja": "壁の幅は約 2.3 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 65 cm）。",
-    "en": "The wall is about 2.3 m wide. The painting hangs about 20 cm above the furniture (center about 65 cm from the floor)."
+    "en": "The wall is about 2.3 m wide. The painting hangs about 20 cm above the furniture (center about 65 cm from the floor).",
+    "zh-Hans": "墙宽约 2.3 m。挂在家具上沿往上约 20 cm 处（画的中心离地约 65 cm）。",
+    "zh-Hant": "牆寬約 2.3 m。掛在家具上緣往上約 20 cm 處（畫的中心離地約 65 cm）。",
+    "ko": "벽의 폭은 약 2.3 m. 가구 윗면에서 20 cm쯤 띄워 걸었습니다(그림 중심은 바닥에서 약 65 cm).",
+    "fr": "Le mur fait environ 2,3 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 65 cm du sol).",
+    "de": "Die Wand ist etwa 2,3 m breit. Das Bild hängt etwa 20 cm über der Oberkante des Möbels (Mitte etwa 65 cm über dem Boden).",
+    "es": "La pared mide unos 2,3 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 65 cm del suelo).",
+    "it": "La parete è larga circa 2,3 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 65 cm dal pavimento).",
+    "pt": "A parede tem cerca de 2,3 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 65 cm do chão)."
   },
   "d869143bab87": {
     "ja": "壁の幅は約 3.2 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 100 cm）。",
-    "en": "The wall is about 3.2 m wide. The painting hangs about 20 cm above the furniture (center about 100 cm from the floor)."
+    "en": "The wall is about 3.2 m wide. The painting hangs about 20 cm above the furniture (center about 100 cm from the floor).",
+    "zh-Hans": "墙宽约 3.2 m。挂在家具上沿往上约 20 cm 处（画的中心离地约 100 cm）。",
+    "zh-Hant": "牆寬約 3.2 m。掛在家具上緣往上約 20 cm 處（畫的中心離地約 100 cm）。",
+    "ko": "벽의 폭은 약 3.2 m. 가구 윗면에서 20 cm쯤 띄워 걸었습니다(그림 중심은 바닥에서 약 100 cm).",
+    "fr": "Le mur fait environ 3,2 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 100 cm du sol).",
+    "de": "Die Wand ist etwa 3,2 m breit. Das Bild hängt etwa 20 cm über der Oberkante des Möbels (Mitte etwa 100 cm über dem Boden).",
+    "es": "La pared mide unos 3,2 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 100 cm del suelo).",
+    "it": "La parete è larga circa 3,2 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 100 cm dal pavimento).",
+    "pt": "A parede tem cerca de 3,2 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 100 cm do chão)."
   },
   "0befe252701c": {
     "ja": "この玄関の天井（約 230 cm）の約 5 分の 1 の高さ。",
-    "en": "About a fifth the height of the ceiling (about 230 cm)."
+    "en": "About a fifth the height of the ceiling (about 230 cm).",
+    "zh-Hans": "约为这个玄关的天花板（约 230 cm）高度的五分之一。",
+    "zh-Hant": "約為這個玄關的天花板（約 230 cm）高度的五分之一。",
+    "ko": "이 현관 천장(약 230 cm) 높이의 약 5분의 1.",
+    "fr": "Environ un cinquième de la hauteur du plafond de cette entrée (environ 230 cm).",
+    "de": "Etwa ein Fünftel so hoch wie die Decke dieses Eingangs (ca. 230 cm).",
+    "es": "Aproximadamente una quinta parte de la altura del techo de esta entrada (unos 230 cm).",
+    "it": "Circa un quinto dell'altezza del soffitto di questo ingresso (circa 230 cm).",
+    "pt": "Cerca de um quinto da altura do teto desta entrada (cerca de 230 cm)."
   },
   "e314b501172f": {
     "ja": "この部屋の天井（約 240 cm）の約 5 分の 1 の高さ。",
-    "en": "About a fifth the height of the ceiling (about 240 cm)."
+    "en": "About a fifth the height of the ceiling (about 240 cm).",
+    "zh-Hans": "约为这个房间的天花板（约 240 cm）高度的五分之一。",
+    "zh-Hant": "約為這個房間的天花板（約 240 cm）高度的五分之一。",
+    "ko": "이 방 천장(약 240 cm) 높이의 약 5분의 1.",
+    "fr": "Environ un cinquième de la hauteur du plafond de cette pièce (environ 240 cm).",
+    "de": "Etwa ein Fünftel so hoch wie die Decke dieses Zimmers (ca. 240 cm).",
+    "es": "Aproximadamente una quinta parte de la altura del techo de esta habitación (unos 240 cm).",
+    "it": "Circa un quinto dell'altezza del soffitto di questa stanza (circa 240 cm).",
+    "pt": "Cerca de um quinto da altura do teto deste espaço (cerca de 240 cm)."
   }
 }

@@ -137,7 +137,15 @@
   },
   "a9356c6d6f1f": {
     "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
-    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide."
+    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide.",
+    "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。这个房间的比例线索不太确定，所以尺寸只能当作更粗略的参考。",
+    "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。這個房間的比例線索不太確定，所以尺寸只能當作更粗略的參考。",
+    "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다. 이 방은 크기를 가늠할 단서가 불확실해서, 특히 대략적인 기준입니다.",
+    "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo. Les repères d'échelle de cette pièce sont incertains : c'est donc un ordre de grandeur encore plus approximatif.",
+    "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto. Die Maßstabshinweise in diesem Raum sind unsicher, daher ist es hier ein besonders grober Anhaltspunkt.",
+    "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real. Las pistas de escala de esta habitación son poco fiables, así que tómalo como una referencia especialmente aproximada.",
+    "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale. In questa stanza i riferimenti di scala sono incerti, quindi è un'indicazione ancora più approssimativa.",
+    "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real. As pistas de escala deste espaço são incertas, por isso é uma referência ainda mais aproximada."
   },
   "ac149893dd8c": {
     "ja": "このナイトテーブルの約 1.2 倍の高さ。",

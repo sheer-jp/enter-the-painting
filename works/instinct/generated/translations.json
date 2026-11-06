@@ -333,7 +333,15 @@
   },
   "a9356c6d6f1f": {
     "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。この部屋は縮尺の手がかりが不確かなので、特に大まかな目安です。",
-    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide."
+    "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo. The scale cues in this room are uncertain, so treat it as an especially rough guide.",
+    "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。这个房间的比例线索不太确定，所以尺寸只能当作更粗略的参考。",
+    "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。這個房間的比例線索不太確定，所以尺寸只能當作更粗略的參考。",
+    "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다. 이 방은 크기를 가늠할 단서가 불확실해서, 특히 대략적인 기준입니다.",
+    "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo. Les repères d'échelle de cette pièce sont incertains : c'est donc un ordre de grandeur encore plus approximatif.",
+    "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto. Die Maßstabshinweise in diesem Raum sind unsicher, daher ist es hier ein besonders grober Anhaltspunkt.",
+    "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real. Las pistas de escala de esta habitación son poco fiables, así que tómalo como una referencia especialmente aproximada.",
+    "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale. In questa stanza i riferimenti di scala sono incerti, quindi è un'indicazione ancora più approssimativa.",
+    "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real. As pistas de escala deste espaço são incertas, por isso é uma referência ainda mais aproximada."
   },
   "5a6425eabf5a": {
     "ja": "小さな玄関",
@@ -341,15 +349,39 @@
   },
   "7f228dec3247": {
     "ja": "この卓上イーゼルの約 0.9 倍の高さ。",
-    "en": "About 0.9 times the height of the tabletop easel."
+    "en": "About 0.9 times the height of the tabletop easel.",
+    "zh-Hans": "约为这个桌上画架高度的 0.9 倍。",
+    "zh-Hant": "約為這個桌上畫架高度的 0.9 倍。",
+    "ko": "이 탁상 이젤 높이의 약 0.9배.",
+    "fr": "Environ 0,9 fois la hauteur de ce chevalet de table.",
+    "de": "Etwa 0,9-mal so hoch wie diese Tischstaffelei.",
+    "es": "Aproximadamente 0,9 veces la altura de este caballete de mesa.",
+    "it": "Circa 0,9 volte l'altezza di questo cavalletto da tavolo.",
+    "pt": "Cerca de 0,9 vezes a altura deste cavalete de mesa."
   },
   "40c6fd20dc19": {
     "ja": "このノート PC（約 30 cm）の約 1.1 倍の幅。",
-    "en": "About 1.1 times the width of the laptop (about 30 cm)."
+    "en": "About 1.1 times the width of the laptop (about 30 cm).",
+    "zh-Hans": "约为这台笔记本电脑（约 30 cm）宽度的 1.1 倍。",
+    "zh-Hant": "約為這台筆電（約 30 cm）寬度的 1.1 倍。",
+    "ko": "이 노트북(약 30 cm) 폭의 약 1.1배.",
+    "fr": "Environ 1,1 fois la largeur de cet ordinateur portable (environ 30 cm).",
+    "de": "Etwa 1,1-mal so breit wie dieser Laptop (ca. 30 cm).",
+    "es": "Aproximadamente 1,1 veces el ancho de este portátil (unos 30 cm).",
+    "it": "Circa 1,1 volte la larghezza di questo portatile (circa 30 cm).",
+    "pt": "Cerca de 1,1 vezes a largura deste portátil (cerca de 30 cm)."
   },
   "19198c9bfd29": {
     "ja": "小さな卓上イーゼル（高さ約 28 cm）の受けに、絵の底を乗せて置いています。",
-    "en": "The painting stands on a small tabletop easel (about 28 cm tall), resting on its ledge."
+    "en": "The painting stands on a small tabletop easel (about 28 cm tall), resting on its ledge.",
+    "zh-Hans": "画的底边架在一个小桌上画架（高约 28 cm）的托板上。",
+    "zh-Hant": "畫的底邊架在一個小桌上畫架（高約 28 cm）的托板上。",
+    "ko": "작은 탁상 이젤(높이 약 28 cm)의 받침에 그림 아랫변을 올려 두었습니다.",
+    "fr": "Le tableau repose par sa base sur le rebord d'un petit chevalet de table (environ 28 cm de haut).",
+    "de": "Das Bild steht mit der Unterkante auf der Ablage einer kleinen Tischstaffelei (ca. 28 cm hoch).",
+    "es": "El cuadro apoya su base en el soporte de un pequeño caballete de mesa (de unos 28 cm de alto).",
+    "it": "Il quadro poggia con il lato inferiore sul supporto di un piccolo cavalletto da tavolo (alto circa 28 cm).",
+    "pt": "O quadro assenta a base no apoio de um pequeno cavalete de mesa (com cerca de 28 cm de altura)."
   },
   "356b85cdd4ec": {
     "ja": "この本棚の約 3 分の 1 の高さ（寸法は目安）。",
@@ -357,27 +389,75 @@
   },
   "44c9ec66e7be": {
     "ja": "棚の天板に絵の底を乗せ、壁に立てかけています。",
-    "en": "The painting rests on the top of the shelf, leaning against the wall."
+    "en": "The painting rests on the top of the shelf, leaning against the wall.",
+    "zh-Hans": "画的底边放在架子的顶板上，靠墙立着。",
+    "zh-Hant": "畫的底邊放在架子的頂板上，靠牆立著。",
+    "ko": "선반 상판에 그림 아랫변을 올리고 벽에 기대어 두었습니다.",
+    "fr": "Le tableau est posé sur le dessus de l'étagère, appuyé contre le mur.",
+    "de": "Das Bild steht auf der Oberseite des Regals und lehnt an der Wand.",
+    "es": "El cuadro está apoyado sobre la parte superior de la estantería, recostado contra la pared.",
+    "it": "Il quadro è appoggiato sul piano della mensola, inclinato contro la parete.",
+    "pt": "O quadro assenta no tampo da estante, encostado à parede."
   },
   "d20a49ec3188": {
     "ja": "このサイドボード（約 80 cm）の約 3 分の 1 の高さ。",
-    "en": "About one third the height of the sideboard (about 80 cm)."
+    "en": "About one third the height of the sideboard (about 80 cm).",
+    "zh-Hans": "约为这个餐边柜（约 80 cm）高度的三分之一。",
+    "zh-Hant": "約為這個餐櫃（約 80 cm）高度的三分之一。",
+    "ko": "이 사이드보드(약 80 cm) 높이의 약 3분의 1.",
+    "fr": "Environ un tiers de la hauteur de ce buffet (environ 80 cm).",
+    "de": "Etwa ein Drittel so hoch wie dieses Sideboard (ca. 80 cm).",
+    "es": "Aproximadamente un tercio de la altura de este aparador (unos 80 cm).",
+    "it": "Circa un terzo dell'altezza di questa credenza (circa 80 cm).",
+    "pt": "Cerca de um terço da altura deste aparador (cerca de 80 cm)."
   },
   "1d2da4f33afa": {
     "ja": "机の上のイーゼル",
-    "en": "On the desk easel"
+    "en": "On the desk easel",
+    "zh-Hans": "书桌上的画架",
+    "zh-Hant": "書桌上的畫架",
+    "ko": "책상 위 이젤",
+    "fr": "Sur un chevalet, au bureau",
+    "de": "Auf der Staffelei am Schreibtisch",
+    "es": "En un caballete sobre el escritorio",
+    "it": "Sul cavalletto della scrivania",
+    "pt": "No cavalete da secretária"
   },
   "14406ba0fb98": {
     "ja": "棚に立てかけて",
-    "en": "Leaning on the shelf"
+    "en": "Leaning on the shelf",
+    "zh-Hans": "靠在架子上",
+    "zh-Hant": "靠在架子上",
+    "ko": "선반에 기대어",
+    "fr": "Posé contre l'étagère",
+    "de": "An das Regal gelehnt",
+    "es": "Apoyado en la estantería",
+    "it": "Appoggiato sulla mensola",
+    "pt": "Encostado na estante"
   },
   "c19abdb32279": {
     "ja": "サイドボードのイーゼル",
-    "en": "On the sideboard easel"
+    "en": "On the sideboard easel",
+    "zh-Hans": "餐边柜上的画架",
+    "zh-Hant": "餐櫃上的畫架",
+    "ko": "사이드보드 위 이젤",
+    "fr": "Sur un chevalet, sur le buffet",
+    "de": "Auf der Staffelei auf dem Sideboard",
+    "es": "En un caballete sobre el aparador",
+    "it": "Sul cavalletto della credenza",
+    "pt": "No cavalete do aparador"
   },
   "593e2d2cd04b": {
     "ja": "壁の幅は約 2.3 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 55 cm）。",
-    "en": "The wall is about 2.3 m wide. The painting hangs about 20 cm above the furniture (center about 55 cm from the floor)."
+    "en": "The wall is about 2.3 m wide. The painting hangs about 20 cm above the furniture (center about 55 cm from the floor).",
+    "zh-Hans": "墙宽约 2.3 m。挂在家具上沿往上约 20 cm 处（画的中心离地约 55 cm）。",
+    "zh-Hant": "牆寬約 2.3 m。掛在家具上緣往上約 20 cm 處（畫的中心離地約 55 cm）。",
+    "ko": "벽의 폭은 약 2.3 m. 가구 윗면에서 20 cm쯤 띄워 걸었습니다(그림 중심은 바닥에서 약 55 cm).",
+    "fr": "Le mur fait environ 2,3 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 55 cm du sol).",
+    "de": "Die Wand ist etwa 2,3 m breit. Das Bild hängt etwa 20 cm über der Oberkante des Möbels (Mitte etwa 55 cm über dem Boden).",
+    "es": "La pared mide unos 2,3 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 55 cm del suelo).",
+    "it": "La parete è larga circa 2,3 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 55 cm dal pavimento).",
+    "pt": "A parede tem cerca de 2,3 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 55 cm do chão)."
   },
   "ee1155b43540": {
     "ja": "この靴箱（約 90 cm）の約 4 分の 1 の高さ。",
@@ -385,14 +465,38 @@
   },
   "50139d476cce": {
     "ja": "玄関の靴箱の上",
-    "en": "On the entrance cabinet"
+    "en": "On the entrance cabinet",
+    "zh-Hans": "玄关鞋柜上",
+    "zh-Hant": "玄關鞋櫃上",
+    "ko": "현관 신발장 위",
+    "fr": "Sur le meuble de l'entrée",
+    "de": "Auf dem Schuhschrank im Eingang",
+    "es": "Sobre el zapatero de la entrada",
+    "it": "Sulla scarpiera dell'ingresso",
+    "pt": "Em cima da sapateira da entrada"
   },
   "405eb5f78f1e": {
     "ja": "この靴箱（約 90 cm）の約 3 分の 1 の幅。",
-    "en": "About one third the width of the shoe cabinet (about 90 cm)."
+    "en": "About one third the width of the shoe cabinet (about 90 cm).",
+    "zh-Hans": "约为这个鞋柜（约 90 cm）宽度的三分之一。",
+    "zh-Hant": "約為這個鞋櫃（約 90 cm）寬度的三分之一。",
+    "ko": "이 신발장(약 90 cm) 폭의 약 3분의 1.",
+    "fr": "Environ un tiers de la largeur de ce meuble à chaussures (environ 90 cm).",
+    "de": "Etwa ein Drittel so breit wie dieser Schuhschrank (ca. 90 cm).",
+    "es": "Aproximadamente un tercio del ancho de este zapatero (unos 90 cm).",
+    "it": "Circa un terzo della larghezza di questa scarpiera (circa 90 cm).",
+    "pt": "Cerca de um terço da largura desta sapateira (cerca de 90 cm)."
   },
   "593398599c55": {
     "ja": "この本棚の約 3 分の 1 の幅（寸法は目安）。",
-    "en": "About one third the width of the bookshelf (size is approximate)."
+    "en": "About one third the width of the bookshelf (size is approximate).",
+    "zh-Hans": "约为这个书架宽度的三分之一（尺寸仅供参考）。",
+    "zh-Hant": "約為這個書架寬度的三分之一（尺寸僅供參考）。",
+    "ko": "이 책장 폭의 약 3분의 1(크기는 대략적인 기준).",
+    "fr": "Environ un tiers de la largeur de cette bibliothèque (dimensions approximatives).",
+    "de": "Etwa ein Drittel so breit wie dieses Bücherregal (Maße ungefähr).",
+    "es": "Aproximadamente un tercio del ancho de esta estantería (medidas aproximadas).",
+    "it": "Circa un terzo della larghezza di questa libreria (misure indicative).",
+    "pt": "Cerca de um terço da largura desta estante (medidas aproximadas)."
   }
 }
