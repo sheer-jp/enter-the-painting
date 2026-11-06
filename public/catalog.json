@@ -4,14 +4,14 @@
     "intro": {
       "ja": "sheer は、色がぶつかってほどける瞬間を描く抽象画の作家です。小さな絵を、誰かの日々の中に置くことを考えて描いています。",
       "en": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "zh-Hans": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "zh-Hant": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "ko": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "fr": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "de": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "es": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "it": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
-      "pt": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday."
+      "zh-Hans": "sheer 是一位抽象画家，描绘色彩相撞又散开的瞬间。她画小幅作品，想着把它们放进某个人的日常里。",
+      "zh-Hant": "sheer 是一位抽象畫家，描繪色彩相撞又散開的瞬間。她畫小幅作品，想著把它們放進某個人的日常裡。",
+      "ko": "sheer는 색이 부딪히고 풀리는 순간을 그리는 추상화 작가입니다. 작은 그림을 누군가의 일상 속에 두는 것을 생각하며 그립니다.",
+      "fr": "sheer est une peintre abstraite qui peint l'instant où les couleurs se heurtent et se dénouent. Ses petits tableaux sont pensés pour trouver leur place dans le quotidien de quelqu'un.",
+      "de": "sheer ist eine abstrakte Malerin, die den Moment malt, in dem Farben aufeinanderprallen und sich lösen. Ihre kleinen Bilder sind dafür gedacht, im Alltag eines Menschen zu leben.",
+      "es": "sheer es una pintora abstracta que pinta el instante en que los colores chocan y se deshacen. Sus pequeños cuadros están pensados para vivir en el día a día de alguien.",
+      "it": "sheer è una pittrice astratta che dipinge l'istante in cui i colori si scontrano e si sciolgono. I suoi piccoli quadri sono pensati per vivere nella quotidianità di qualcuno.",
+      "pt": "sheer é uma pintora abstrata que pinta o instante em que as cores colidem e se desfazem. Os seus pequenos quadros são pensados para viver no dia a dia de alguém."
     }
   },
   "openers": {
@@ -26,44 +26,44 @@
       "A painting that lifts my mood"
     ],
     "zh-Hans": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "我想要继续加油的活力",
+      "陪我度过寂寞的夜晚",
+      "一幅让心情明亮起来的画"
     ],
     "zh-Hant": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "我想要繼續加油的活力",
+      "陪我度過寂寞的夜晚",
+      "一幅讓心情明亮起來的畫"
     ],
     "ko": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "힘낼 활력이 필요해",
+      "외로운 밤, 곁에 있어 줘",
+      "마음이 밝아지는 그림을"
     ],
     "fr": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "J'ai besoin d'énergie pour continuer",
+      "Reste avec moi les soirs de solitude",
+      "Un tableau qui me remonte le moral"
     ],
     "de": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "Ich brauche Kraft, um weiterzumachen",
+      "Sei bei mir in einsamen Nächten",
+      "Ein Bild, das mich aufheitert"
     ],
     "es": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "Necesito energía para seguir",
+      "Acompáñame en las noches solitarias",
+      "Un cuadro que me levante el ánimo"
     ],
     "it": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "Ho bisogno di energia per andare avanti",
+      "Stammi vicino nelle notti di solitudine",
+      "Un quadro che mi metta di buon umore"
     ],
     "pt": [
-      "I need energy to keep going",
-      "Stay with me on a lonely night",
-      "A painting that lifts my mood"
+      "Preciso de energia para continuar",
+      "Fica comigo nas noites solitárias",
+      "Um quadro que me anime"
     ]
   },
   "turns": [
@@ -75,7 +75,15 @@
       "id": "golden-path",
       "title": {
         "ja": "Golden Path",
-        "en": "Golden Path"
+        "en": "Golden Path",
+        "zh-Hans": "Golden Path",
+        "zh-Hant": "Golden Path",
+        "ko": "Golden Path",
+        "fr": "Golden Path",
+        "de": "Golden Path",
+        "es": "Golden Path",
+        "it": "Golden Path",
+        "pt": "Golden Path"
       },
       "size_cm": [
         18,
@@ -112,44 +120,44 @@
           "Digital, made by hand"
         ],
         "zh-Hans": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "自己决定的路",
+          "走出迷宫",
+          "用手绘表现数码感"
         ],
         "zh-Hant": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "自己決定的路",
+          "走出迷宮",
+          "用手繪表現數位感"
         ],
         "ko": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "스스로 정하는 길",
+          "미로에서 빠져나오기",
+          "디지털을 아날로그로"
         ],
         "fr": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "Le chemin qu'on choisit",
+          "Sortir du labyrinthe",
+          "Le numérique, fait à la main"
         ],
         "de": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "Der selbst gewählte Weg",
+          "Raus aus dem Labyrinth",
+          "Digitales, von Hand gemacht"
         ],
         "es": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "El camino que eliges",
+          "Salir del laberinto",
+          "Lo digital, hecho a mano"
         ],
         "it": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "La strada che scegli tu",
+          "Uscire dal labirinto",
+          "Il digitale, fatto a mano"
         ],
         "pt": [
-          "A path you choose yourself",
-          "Out of the maze",
-          "Digital, made by hand"
+          "O caminho que escolhes",
+          "Sair do labirinto",
+          "O digital, feito à mão"
         ]
       },
       "fit": {
@@ -192,52 +200,52 @@
           "Take that first step with this painting."
         ],
         "zh-Hans": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "迷茫的时候，路看起来好像不止一条。",
+          "但就在你自己决定“走这条路”的那一刻，它会变成一条发光的路。",
+          "做决定的，永远是自己。",
+          "那一步，和这幅画一起。"
         ],
         "zh-Hant": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "迷惘的時候，路看起來好像不只一條。",
+          "但就在你自己決定「走這條路」的那一刻，它會變成一條發光的路。",
+          "做決定的，永遠是自己。",
+          "那一步，和這幅畫一起。"
         ],
         "ko": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "헤매고 있을 때는, 길이 하나가 아닌 것처럼 보인다.",
+          "하지만 스스로 '이 길로 가겠다'고 정한 순간, 빛나는 길이 된다.",
+          "정하는 건, 언제나 자기 자신.",
+          "그 한 걸음을, 이 그림과 함께."
         ],
         "fr": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "Quand on hésite, on dirait qu'il n'y a pas qu'un seul chemin.",
+          "Mais dès l'instant où l'on décide soi-même « je prends ce chemin », il devient un chemin qui brille.",
+          "C'est toujours soi-même qui décide.",
+          "Ce pas-là, avec ce tableau."
         ],
         "de": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "Wenn man nicht weiterweiß, scheint es mehr als einen Weg zu geben.",
+          "Aber in dem Moment, in dem du selbst entscheidest: „Diesen Weg gehe ich“, wird er zu einem leuchtenden Weg.",
+          "Entscheiden tust immer du selbst.",
+          "Diesen Schritt – mit diesem Bild."
         ],
         "es": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "Cuando dudas, parece que el camino no es uno solo.",
+          "Pero en el momento en que decides «voy por este camino», se convierte en un camino que brilla.",
+          "Quien decide eres siempre tú.",
+          "Ese paso, con este cuadro."
         ],
         "it": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "Quando sei incerto, sembra che la strada non sia una sola.",
+          "Ma nel momento in cui decidi tu «prendo questa strada», diventa una strada che brilla.",
+          "A decidere sei sempre tu.",
+          "Quel passo, insieme a questo quadro."
         ],
         "pt": [
-          "When you're lost, the paths all look alike.",
-          "But the moment you decide, this is the way, it begins to shine.",
-          "You are always the one who decides.",
-          "Take that first step with this painting."
+          "Quando hesitamos, parece que o caminho não é só um.",
+          "Mas no momento em que decides «vou por este caminho», ele torna-se um caminho que brilha.",
+          "Quem decide és sempre tu.",
+          "Esse passo, com este quadro."
         ]
       },
       "story": null,
@@ -293,44 +301,44 @@
           "Immersed, yet balanced"
         ],
         "zh-Hans": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "流淌着音乐的房间",
+          "交融，起舞",
+          "沉浸其中，又保持平衡"
         ],
         "zh-Hant": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "流淌著音樂的房間",
+          "交融，起舞",
+          "沉浸其中，又保持平衡"
         ],
         "ko": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "음악이 흐르는 방",
+          "녹아들며, 춤추다",
+          "몰입하면서도, 균형을 이루다"
         ],
         "fr": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "Une pièce où joue la musique",
+          "Se fondre, danser",
+          "Absorbé, mais en équilibre"
         ],
         "de": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "Ein Raum voller Musik",
+          "Verschmelzen, tanzen",
+          "Versunken und doch im Gleichgewicht"
         ],
         "es": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "Una habitación con música",
+          "Fundirse y bailar",
+          "Inmerso, pero en equilibrio"
         ],
         "it": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "Una stanza piena di musica",
+          "Fondersi e danzare",
+          "Assorto, ma in equilibrio"
         ],
         "pt": [
-          "A room with music playing",
-          "Melting, dancing",
-          "Immersed, yet balanced"
+          "Uma sala com música a tocar",
+          "Fundir-se e dançar",
+          "Imerso, mas em equilíbrio"
         ]
       },
       "fit": {
@@ -375,65 +383,73 @@
           "That, to me, is harmony."
         ],
         "zh-Hans": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "和谐，到底是什么呢。",
+          "放着喜欢的音乐，我一直在想。",
+          "各种颜色彼此合奏、彼此交融，却又在跳舞。",
+          "沉浸在那个世界里，却在某处保持着平衡。",
+          "这，就是我心中的和谐。"
         ],
         "zh-Hant": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "和諧，到底是什麼呢。",
+          "放著喜歡的音樂，我一直在想。",
+          "各種顏色彼此合奏、彼此交融，卻又在跳舞。",
+          "沉浸在那個世界裡，卻在某處保持著平衡。",
+          "這，就是我心中的和諧。"
         ],
         "ko": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "하모니란, 뭘까.",
+          "좋아하는 음악을 틀어 놓고, 계속 생각했다.",
+          "여러 색이 서로 연주하고, 서로 녹아들면서도, 춤추고 있다.",
+          "그 세계에 빠져들면서도, 어딘가에서 균형이 잡혀 있다.",
+          "그것이 내가 생각하는 하모니."
         ],
         "fr": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "L'harmonie, qu'est-ce que c'est, au fond ?",
+          "J'y ai longtemps réfléchi, en écoutant la musique que j'aime.",
+          "Les couleurs jouent ensemble, se fondent les unes dans les autres, et pourtant elles dansent.",
+          "Absorbées dans ce monde, et pourtant, quelque part, en équilibre.",
+          "Voilà, pour moi, ce qu'est l'harmonie."
         ],
         "de": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "Was ist Harmonie eigentlich?",
+          "Ich habe lange darüber nachgedacht, während meine Lieblingsmusik lief.",
+          "Viele Farben spielen miteinander, verschmelzen ineinander und tanzen trotzdem.",
+          "Ganz in diese Welt versunken – und doch irgendwo im Gleichgewicht.",
+          "Das ist für mich Harmonie."
         ],
         "es": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "¿Qué es la armonía, en realidad?",
+          "Lo estuve pensando mucho tiempo, con mi música favorita sonando.",
+          "Muchos colores suenan juntos, se funden entre sí y, aun así, bailan.",
+          "Inmersos en ese mundo y, aun así, de algún modo en equilibrio.",
+          "Eso es, para mí, la armonía."
         ],
         "it": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "Che cos'è, davvero, l'armonia?",
+          "Ci ho pensato a lungo, con la mia musica preferita in sottofondo.",
+          "Tanti colori suonano insieme, si fondono l'uno nell'altro, eppure danzano.",
+          "Immersi in quel mondo, eppure in qualche modo in equilibrio.",
+          "Questa, per me, è l'armonia."
         ],
         "pt": [
-          "What is harmony, really?",
-          "I kept wondering, with my favorite music playing.",
-          "Colors play together, melt into each other, and still they dance.",
-          "Lost in that world, and yet somehow in balance.",
-          "That, to me, is harmony."
+          "O que é, afinal, a harmonia?",
+          "Fiquei muito tempo a pensar nisso, com a minha música preferida a tocar.",
+          "Muitas cores tocam juntas, fundem-se umas nas outras e, mesmo assim, dançam.",
+          "Mergulhadas nesse mundo e, ainda assim, de algum modo em equilíbrio.",
+          "É isso, para mim, a harmonia."
         ]
       },
       "story": {
         "ja": "朝、カーテンを開けると、この絵の赤がいちばん先に目を覚ます。\n忙しい日は通り過ぎるだけで、それでも帰ってくると、青がまだそこにいる。\nぶつかった色が、夜にはほどけて、ひとつの調和になっている。\n（下書き。作家が自分の言葉に直す）",
-        "en": "In the morning, when the curtains open, the reds in this painting wake up first.\nOn busy days you only pass by, and still, when you come home, the blue is waiting there.\nBy night, the colors that collided have come undone into a single harmony.\n(Draft, to be rewritten by the artist in her own words)"
+        "en": "In the morning, when the curtains open, the reds in this painting wake up first.\nOn busy days you only pass by, and still, when you come home, the blue is waiting there.\nBy night, the colors that collided have come undone into a single harmony.\n(Draft, to be rewritten by the artist in her own words)",
+        "zh-Hans": "早晨拉开窗帘，这幅画里的红色总是最先醒来。\n忙碌的日子里只是匆匆经过，可回到家时，蓝色仍然在那里。\n相撞的色彩到了夜里慢慢松开，成为一种和谐。\n（草稿，艺术家将用自己的话改写）",
+        "zh-Hant": "早晨拉開窗簾，這幅畫裡的紅色總是最先醒來。\n忙碌的日子裡只是匆匆經過，可回到家時，藍色仍然在那裡。\n相撞的色彩到了夜裡慢慢鬆開，成為一種和諧。\n（草稿，藝術家將用自己的話改寫）",
+        "ko": "아침에 커튼을 열면, 이 그림의 빨강이 가장 먼저 눈을 뜬다.\n바쁜 날엔 그냥 지나칠 뿐이지만, 그래도 돌아오면 파랑이 아직 그곳에 있다.\n부딪힌 색들은 밤이 되면 풀려서, 하나의 조화가 되어 있다.\n(초고. 작가가 자신의 말로 고쳐 씁니다)",
+        "fr": "Le matin, quand on ouvre les rideaux, c'est le rouge de ce tableau qui se réveille en premier.\nLes jours chargés, on ne fait que passer devant, et pourtant, en rentrant, le bleu est toujours là.\nLes couleurs qui se sont heurtées se dénouent la nuit et deviennent une seule harmonie.\n(Brouillon, à réécrire par l'artiste avec ses propres mots)",
+        "de": "Morgens, wenn man die Vorhänge öffnet, wacht das Rot dieses Bildes als Erstes auf.\nAn vollen Tagen geht man nur daran vorbei, und doch: Kommt man nach Hause, ist das Blau noch da.\nDie Farben, die aufeinandergeprallt sind, lösen sich in der Nacht und werden zu einer einzigen Harmonie.\n(Entwurf, wird von der Künstlerin in eigenen Worten neu geschrieben)",
+        "es": "Por la mañana, al abrir las cortinas, el rojo de este cuadro es el primero en despertar.\nLos días ajetreados solo pasas por delante, y aun así, cuando vuelves a casa, el azul sigue ahí.\nLos colores que chocaron se deshacen por la noche y se convierten en una sola armonía.\n(Borrador, la artista lo reescribirá con sus propias palabras)",
+        "it": "Al mattino, quando apri le tende, il rosso di questo quadro è il primo a svegliarsi.\nNei giorni pieni ci passi solo davanti, eppure, quando torni a casa, il blu è ancora lì.\nI colori che si sono scontrati, di notte si sciolgono e diventano un'unica armonia.\n(Bozza, l'artista la riscriverà con parole sue)",
+        "pt": "De manhã, quando abres as cortinas, o vermelho deste quadro é o primeiro a acordar.\nNos dias atarefados limitas-te a passar por ele, e mesmo assim, quando voltas para casa, o azul ainda lá está.\nAs cores que colidiram desfazem-se à noite e tornam-se uma só harmonia.\n(Rascunho, a artista vai reescrever com as suas próprias palavras)"
       },
       "image": "works/harmoney/generated/painting_1024.jpg",
       "url": "w/harmoney/"
@@ -442,7 +458,15 @@
       "id": "instinct",
       "title": {
         "ja": "本能",
-        "en": "Instinct"
+        "en": "Instinct",
+        "zh-Hans": "本能",
+        "zh-Hant": "本能",
+        "ko": "본능",
+        "fr": "Instinct",
+        "de": "Instinkt",
+        "es": "Instinto",
+        "it": "Istinto",
+        "pt": "Instinto"
       },
       "size_cm": [
         33.3,
@@ -479,44 +503,44 @@
           "No motif, only feeling"
         ],
         "zh-Hans": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "源于本能",
+          "摇曳的情感",
+          "没有主题的画"
         ],
         "zh-Hant": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "源於本能",
+          "搖曳的情感",
+          "沒有主題的畫"
         ],
         "ko": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "본능적으로 태어난",
+          "일렁이는 감정",
+          "모티프 없는 그림"
         ],
         "fr": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "Né de l'instinct",
+          "Des émotions qui vacillent",
+          "Un tableau sans motif"
         ],
         "de": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "Aus dem Instinkt geboren",
+          "Flackernde Gefühle",
+          "Ein Bild ohne Motiv"
         ],
         "es": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "Nacido del instinto",
+          "Emociones titilantes",
+          "Un cuadro sin motivo"
         ],
         "it": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "Nato dall'istinto",
+          "Emozioni che tremolano",
+          "Un quadro senza soggetto"
         ],
         "pt": [
-          "Born of instinct",
-          "Flickering feelings",
-          "No motif, only feeling"
+          "Nascido do instinto",
+          "Emoções tremeluzentes",
+          "Um quadro sem motivo"
         ]
       },
       "fit": {
@@ -559,52 +583,52 @@
           "You can stay here, just as you are."
         ],
         "zh-Hans": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "我并不是想画什么。",
+          "任由各种情感摇曳，凭本能诞生的画。",
+          "有说不出口的心情，也没关系。",
+          "就这样，待在这里就好。"
         ],
         "zh-Hant": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "我並不是想畫什麼。",
+          "任由各種情感搖曳，憑本能誕生的畫。",
+          "有說不出口的心情，也沒關係。",
+          "就這樣，待在這裡就好。"
         ],
         "ko": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "무언가를 그리려고 했던 건 아니다.",
+          "여러 감정이 일렁이는 그대로, 본능으로 태어난 그림.",
+          "말로 할 수 없는 마음이 있어도 괜찮다.",
+          "그대로, 여기 있어도 된다."
         ],
         "fr": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "Je ne cherchais pas à peindre quelque chose en particulier.",
+          "Un tableau né de l'instinct, en laissant vaciller toutes sortes d'émotions.",
+          "Il peut y avoir des sentiments que les mots ne savent pas dire.",
+          "Vous pouvez rester ici, comme vous êtes."
         ],
         "de": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "Ich wollte nichts Bestimmtes malen.",
+          "Ein Bild, aus dem Instinkt geboren, während viele Gefühle einfach flackern durften.",
+          "Es darf Gefühle geben, für die es keine Worte gibt.",
+          "Du darfst hier bleiben, so wie du bist."
         ],
         "es": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "No intentaba pintar nada en concreto.",
+          "Un cuadro nacido del instinto, dejando titilar muchas emociones tal como eran.",
+          "Está bien tener sentimientos que no caben en palabras.",
+          "Puedes quedarte aquí, tal como eres."
         ],
         "it": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "Non cercavo di dipingere qualcosa in particolare.",
+          "Un quadro nato d'istinto, lasciando tremolare tante emozioni così com'erano.",
+          "Va bene avere sentimenti che non si possono dire a parole.",
+          "Puoi restare qui, così come sei."
         ],
         "pt": [
-          "I wasn't trying to paint anything in particular.",
-          "It was born by instinct, with feelings flickering as they were.",
-          "It's all right to have feelings you can't put into words.",
-          "You can stay here, just as you are."
+          "Não estava a tentar pintar nada em especial.",
+          "Um quadro nascido do instinto, deixando tremeluzir muitas emoções tal como eram.",
+          "Não faz mal ter sentimentos que não cabem em palavras.",
+          "Podes ficar aqui, tal como és."
         ]
       },
       "story": null,
@@ -615,7 +639,15 @@
       "id": "itadaki",
       "title": {
         "ja": "頂",
-        "en": "itadaki"
+        "en": "itadaki",
+        "zh-Hans": "顶",
+        "zh-Hant": "頂",
+        "ko": "이타다키 (정상)",
+        "fr": "itadaki (le sommet)",
+        "de": "itadaki (der Gipfel)",
+        "es": "itadaki (la cima)",
+        "it": "itadaki (la vetta)",
+        "pt": "itadaki (o cume)"
       },
       "size_cm": [
         53,
@@ -654,52 +686,52 @@
           "Power welling up"
         ],
         "zh-Hans": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "如火般的红",
+          "向顶峰出发",
+          "漩涡般的能量",
+          "涌现的力量"
         ],
         "zh-Hant": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "如火般的紅",
+          "向頂峰出發",
+          "漩渦般的能量",
+          "湧現的力量"
         ],
         "ko": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "불을 떠올리게 하는 빨강",
+          "정상을 향해 가자",
+          "소용돌이치는 에너지",
+          "솟아나는 힘"
         ],
         "fr": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "Un rouge qui évoque le feu",
+          "En route vers le sommet",
+          "Une énergie tourbillonnante",
+          "Une force qui jaillit"
         ],
         "de": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "Ein Rot wie Feuer",
+          "Auf zum Gipfel",
+          "Wirbelnde Energie",
+          "Aufsteigende Kraft"
         ],
         "es": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "Un rojo que recuerda al fuego",
+          "Rumbo a la cima",
+          "Energía en remolino",
+          "Fuerza que brota"
         ],
         "it": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "Un rosso che ricorda il fuoco",
+          "Verso la vetta",
+          "Energia vorticosa",
+          "Forza che sgorga"
         ],
         "pt": [
-          "A red like fire",
-          "Off to the summit",
-          "Swirling energy",
-          "Power welling up"
+          "Um vermelho que lembra o fogo",
+          "Rumo ao cume",
+          "Energia em remoinho",
+          "Força que brota"
         ]
       },
       "fit": {
@@ -742,52 +774,52 @@
           "May it give you power just by looking."
         ],
         "zh-Hans": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "再往上，再更高。",
+          "我把“要登上顶峰”的心情，倾注在如火的红色里。",
+          "即使是不顺利的日子，能量也没有消失。",
+          "愿你只是看着它，就能涌出力量。"
         ],
         "zh-Hant": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "再往上，再更高。",
+          "我把「要登上頂峰」的心情，傾注在如火的紅色裡。",
+          "即使是不順利的日子，能量也沒有消失。",
+          "願你只是看著它，就能湧出力量。"
         ],
         "ko": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "더 위로, 더 높이.",
+          "정상에 가겠다는 마음을, 불 같은 빨강에 담았다.",
+          "잘 풀리지 않는 날에도, 에너지는 사라지지 않았다.",
+          "보기만 해도 힘이 솟아나기를."
         ],
         "fr": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "Plus haut, encore plus haut.",
+          "J'ai mis dans un rouge de feu l'envie d'atteindre le sommet.",
+          "Même les jours où rien ne va, l'énergie n'a pas disparu.",
+          "Que sa seule vue vous donne de la force."
         ],
         "de": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "Weiter hinauf, noch höher.",
+          "Das Gefühl „Ich will auf den Gipfel“ habe ich in ein feuriges Rot gelegt.",
+          "Auch an Tagen, an denen es nicht läuft, ist die Energie nicht verschwunden.",
+          "Möge dir schon der Anblick Kraft geben."
         ],
         "es": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "Más arriba, más alto aún.",
+          "Puse en un rojo como el fuego las ganas de llegar a la cima.",
+          "Incluso los días en que nada sale bien, la energía no se ha apagado.",
+          "Ojalá te dé fuerza con solo mirarlo."
         ],
         "it": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "Più su, ancora più in alto.",
+          "Ho messo in un rosso di fuoco la voglia di arrivare in vetta.",
+          "Anche nei giorni in cui le cose non vanno, l'energia non si è spenta.",
+          "Spero che basti guardarlo per sentire nascere la forza."
         ],
         "pt": [
-          "Higher, and higher still.",
-          "I put the feeling of heading for the summit into a fiery red.",
-          "Even on the days it doesn't go well, the energy hasn't gone anywhere.",
-          "May it give you power just by looking."
+          "Mais acima, ainda mais alto.",
+          "Pus num vermelho de fogo a vontade de chegar ao cume.",
+          "Mesmo nos dias em que nada corre bem, a energia não desapareceu.",
+          "Que te dê força só de olhar para ele."
         ]
       },
       "story": null,
@@ -798,7 +830,15 @@
       "id": "new-chapter",
       "title": {
         "ja": "New Chapter",
-        "en": "New Chapter"
+        "en": "New Chapter",
+        "zh-Hans": "New Chapter",
+        "zh-Hant": "New Chapter",
+        "ko": "New Chapter",
+        "fr": "New Chapter",
+        "de": "New Chapter",
+        "es": "New Chapter",
+        "it": "New Chapter",
+        "pt": "New Chapter"
       },
       "size_cm": [
         18,
@@ -837,52 +877,52 @@
           "A new door"
         ],
         "zh-Hans": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "新的篇章",
+          "让人打起精神的黄色",
+          "半立体的圆点",
+          "新的大门"
         ],
         "zh-Hant": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "新的篇章",
+          "讓人打起精神的黃色",
+          "半立體的圓點",
+          "新的大門"
         ],
         "ko": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "새로운 장",
+          "기운이 나는 노랑",
+          "반입체 도트",
+          "새로운 문"
         ],
         "fr": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "Un nouveau chapitre",
+          "Un jaune qui donne de l'énergie",
+          "Des points en demi-relief",
+          "Une nouvelle porte"
         ],
         "de": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "Ein neues Kapitel",
+          "Ein Gelb, das Kraft gibt",
+          "Halbplastische Punkte",
+          "Eine neue Tür"
         ],
         "es": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "Un nuevo capítulo",
+          "Un amarillo que da energía",
+          "Puntos en semirrelieve",
+          "Una nueva puerta"
         ],
         "it": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "Un nuovo capitolo",
+          "Un giallo che dà energia",
+          "Punti in semirilievo",
+          "Una nuova porta"
         ],
         "pt": [
-          "A new chapter",
-          "A yellow that lifts you up",
-          "Raised, bubbly dots",
-          "A new door"
+          "Um novo capítulo",
+          "Um amarelo que dá energia",
+          "Pontos em meio-relevo",
+          "Uma nova porta"
         ]
       },
       "fit": {
@@ -925,52 +965,52 @@
           "Let's enjoy the new chapter together."
         ],
         "zh-Hans": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "迈向新事物的时候，有点害怕，却又很兴奋。",
+          "我把那份心情，变成了让人打起精神的黄色。",
+          "愿我能轻轻推一推正要打开新大门的你。",
+          "让我们一起享受新的篇章吧。"
         ],
         "zh-Hant": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "邁向新事物的時候，有點害怕，卻又很興奮。",
+          "我把那份心情，變成了讓人打起精神的黃色。",
+          "願我能輕輕推一推正要打開新大門的你。",
+          "讓我們一起享受新的篇章吧。"
         ],
         "ko": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "새로운 일에 발을 내디딜 때, 조금 무섭지만 그래도 설렌다.",
+          "그 마음을, 기운이 나는 노랑으로 만들었다.",
+          "새로운 문을 여는 당신의 등을, 살며시 밀어 줄 수 있으면 좋겠다.",
+          "새로운 장을, 함께 즐기자."
         ],
         "fr": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "Se lancer dans quelque chose de nouveau, ça fait un peu peur, et pourtant c'est exaltant.",
+          "J'ai fait de ce sentiment un jaune qui donne de l'énergie.",
+          "J'aimerais vous pousser doucement, au moment où vous ouvrez une nouvelle porte.",
+          "Profitons ensemble de ce nouveau chapitre."
         ],
         "de": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "Wenn man etwas Neues wagt, ist es ein bisschen beängstigend – und doch aufregend.",
+          "Aus diesem Gefühl habe ich ein Gelb gemacht, das Kraft gibt.",
+          "Ich hoffe, ich kann dich sanft anschubsen, wenn du eine neue Tür öffnest.",
+          "Lass uns das neue Kapitel gemeinsam genießen."
         ],
         "es": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "Cuando te lanzas a algo nuevo, da un poco de miedo, pero también ilusión.",
+          "Convertí ese sentimiento en un amarillo que da energía.",
+          "Ojalá pueda darte un empujoncito cuando abras una nueva puerta.",
+          "Disfrutemos juntos del nuevo capítulo."
         ],
         "it": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "Quando ci si lancia in qualcosa di nuovo, fa un po' paura, ma emoziona anche.",
+          "Ho trasformato quella sensazione in un giallo che dà energia.",
+          "Vorrei poterti dare una piccola spinta mentre apri una nuova porta.",
+          "Godiamoci insieme il nuovo capitolo."
         ],
         "pt": [
-          "Stepping into something new is a little scary, and exciting.",
-          "I turned that feeling into a yellow that gives you energy.",
-          "I hope it gently pushes you as you open a new door.",
-          "Let's enjoy the new chapter together."
+          "Quando damos o passo para algo novo, dá um pouco de medo, mas também entusiasmo.",
+          "Transformei esse sentimento num amarelo que dá energia.",
+          "Gostava de te dar um pequeno empurrão enquanto abres uma nova porta.",
+          "Vamos aproveitar juntos o novo capítulo."
         ]
       },
       "story": null,
@@ -981,7 +1021,15 @@
       "id": "the-flower-within",
       "title": {
         "ja": "内なる心に咲く花よ",
-        "en": "The Flower Within"
+        "en": "The Flower Within",
+        "zh-Hans": "内心绽放的花啊",
+        "zh-Hant": "內心綻放的花啊",
+        "ko": "내 안에 피는 꽃이여",
+        "fr": "La fleur intérieure",
+        "de": "Die Blume im Inneren",
+        "es": "La flor interior",
+        "it": "Il fiore interiore",
+        "pt": "A flor interior"
       },
       "size_cm": [
         18,
@@ -1020,52 +1068,52 @@
           "The strength to bloom"
         ],
         "zh-Hans": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "渗出的色彩",
+          "和风",
+          "小巧却厚重",
+          "盛放的力量"
         ],
         "zh-Hant": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "滲出的色彩",
+          "和風",
+          "小巧卻厚重",
+          "盛放的力量"
         ],
         "ko": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "배어 나오는 색",
+          "일본풍",
+          "작지만 묵직함",
+          "활짝 피어나는 강인함"
         ],
         "fr": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "Des couleurs qui transparaissent",
+          "Une touche japonaise",
+          "Petit mais imposant",
+          "La force de s'épanouir"
         ],
         "de": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "Durchscheinende Farben",
+          "Ein japanischer Hauch",
+          "Klein, aber gewichtig",
+          "Die Kraft zu blühen"
         ],
         "es": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "Colores que se filtran",
+          "Un aire japonés",
+          "Pequeño, pero con peso",
+          "La fuerza de florecer"
         ],
         "it": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "Colori che affiorano",
+          "Un tocco giapponese",
+          "Piccolo, ma intenso",
+          "La forza di fiorire"
         ],
         "pt": [
-          "Colors seeping through",
-          "A Japanese feel",
-          "Small, yet weighty",
-          "The strength to bloom"
+          "Cores que transparecem",
+          "Um toque japonês",
+          "Pequeno, mas com peso",
+          "A força de florescer"
         ]
       },
       "fit": {
@@ -1108,52 +1156,52 @@
           "On a quiet night, I hope this reminds you of it."
         ],
         "zh-Hans": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "花，不只是美丽而已。",
+          "即使在严酷的地方，它也有开到最后的力量。",
+          "你的心里，也有这样一朵花。",
+          "在安静的夜里，希望你能想起这件事。"
         ],
         "zh-Hant": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "花，不只是美麗而已。",
+          "即使在嚴酷的地方，它也有開到最後的力量。",
+          "你的心裡，也有這樣一朵花。",
+          "在安靜的夜裡，希望你能想起這件事。"
         ],
         "ko": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "꽃은, 아름답기만 한 게 아니다.",
+          "혹독한 곳에서도, 끝까지 피어나는 강인함을 지니고 있다.",
+          "당신 안에도, 그런 꽃이 있다.",
+          "조용한 밤에, 그걸 떠올려 주면 좋겠다."
         ],
         "fr": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "Une fleur n'est pas seulement belle.",
+          "Même dans les endroits les plus rudes, elle a la force de s'épanouir pleinement.",
+          "Il y a une fleur comme celle-là en vous aussi.",
+          "Par une nuit calme, j'aimerais que vous vous en souveniez."
         ],
         "de": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "Eine Blume ist nicht nur schön.",
+          "Selbst an rauen Orten hat sie die Kraft, ganz aufzublühen.",
+          "Auch in dir gibt es so eine Blume.",
+          "In einer stillen Nacht wünsche ich mir, dass du dich daran erinnerst."
         ],
         "es": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "Una flor no es solo bonita.",
+          "Incluso en lugares duros, tiene la fuerza de florecer por completo.",
+          "Dentro de ti también hay una flor así.",
+          "En una noche tranquila, me gustaría que lo recordaras."
         ],
         "it": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "Un fiore non è solo bello.",
+          "Anche nei luoghi più duri, ha la forza di fiorire fino in fondo.",
+          "Anche dentro di te c'è un fiore così.",
+          "In una notte quieta, vorrei che te ne ricordassi."
         ],
         "pt": [
-          "A flower isn't only beautiful.",
-          "It has the strength to bloom fully, even in harsh places.",
-          "There is a flower like that inside you too.",
-          "On a quiet night, I hope this reminds you of it."
+          "Uma flor não é só bonita.",
+          "Mesmo em lugares difíceis, tem a força de florescer por inteiro.",
+          "Dentro de ti também há uma flor assim.",
+          "Numa noite tranquila, gostava que te lembrasses disso."
         ]
       },
       "story": null,

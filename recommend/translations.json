@@ -1,7 +1,15 @@
 {
   "5ee05dd57e0f": {
     "ja": "sheer は、色がぶつかってほどける瞬間を描く抽象画の作家です。小さな絵を、誰かの日々の中に置くことを考えて描いています。",
-    "en": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday."
+    "en": "sheer is an abstract painter who paints the moment colors collide and come undone. The small paintings are made to live in someone's everyday.",
+    "zh-Hans": "sheer 是一位抽象画家，描绘色彩相撞又散开的瞬间。她画小幅作品，想着把它们放进某个人的日常里。",
+    "zh-Hant": "sheer 是一位抽象畫家，描繪色彩相撞又散開的瞬間。她畫小幅作品，想著把它們放進某個人的日常裡。",
+    "ko": "sheer는 색이 부딪히고 풀리는 순간을 그리는 추상화 작가입니다. 작은 그림을 누군가의 일상 속에 두는 것을 생각하며 그립니다.",
+    "fr": "sheer est une peintre abstraite qui peint l'instant où les couleurs se heurtent et se dénouent. Ses petits tableaux sont pensés pour trouver leur place dans le quotidien de quelqu'un.",
+    "de": "sheer ist eine abstrakte Malerin, die den Moment malt, in dem Farben aufeinanderprallen und sich lösen. Ihre kleinen Bilder sind dafür gedacht, im Alltag eines Menschen zu leben.",
+    "es": "sheer es una pintora abstracta que pinta el instante en que los colores chocan y se deshacen. Sus pequeños cuadros están pensados para vivir en el día a día de alguien.",
+    "it": "sheer è una pittrice astratta che dipinge l'istante in cui i colori si scontrano e si sciolgono. I suoi piccoli quadri sono pensati per vivere nella quotidianità di qualcuno.",
+    "pt": "sheer é uma pintora abstrata que pinta o instante em que as cores colidem e se desfazem. Os seus pequenos quadros são pensados para viver no dia a dia de alguém."
   },
   "03f900a39119": {
     "ja": "朝、静かに始めたい",
@@ -17,14 +25,38 @@
   },
   "07e4f88feea9": {
     "ja": "頑張る活力がほしい",
-    "en": "I need energy to keep going"
+    "en": "I need energy to keep going",
+    "zh-Hans": "我想要继续加油的活力",
+    "zh-Hant": "我想要繼續加油的活力",
+    "ko": "힘낼 활력이 필요해",
+    "fr": "J'ai besoin d'énergie pour continuer",
+    "de": "Ich brauche Kraft, um weiterzumachen",
+    "es": "Necesito energía para seguir",
+    "it": "Ho bisogno di energia per andare avanti",
+    "pt": "Preciso de energia para continuar"
   },
   "c2dfb235c805": {
     "ja": "寂しい夜によりそってほしい",
-    "en": "Stay with me on a lonely night"
+    "en": "Stay with me on a lonely night",
+    "zh-Hans": "陪我度过寂寞的夜晚",
+    "zh-Hant": "陪我度過寂寞的夜晚",
+    "ko": "외로운 밤, 곁에 있어 줘",
+    "fr": "Reste avec moi les soirs de solitude",
+    "de": "Sei bei mir in einsamen Nächten",
+    "es": "Acompáñame en las noches solitarias",
+    "it": "Stammi vicino nelle notti di solitudine",
+    "pt": "Fica comigo nas noites solitárias"
   },
   "5a17910eb0c8": {
     "ja": "明るい気持ちになれる絵を",
-    "en": "A painting that lifts my mood"
+    "en": "A painting that lifts my mood",
+    "zh-Hans": "一幅让心情明亮起来的画",
+    "zh-Hant": "一幅讓心情明亮起來的畫",
+    "ko": "마음이 밝아지는 그림을",
+    "fr": "Un tableau qui me remonte le moral",
+    "de": "Ein Bild, das mich aufheitert",
+    "es": "Un cuadro que me levante el ánimo",
+    "it": "Un quadro che mi metta di buon umore",
+    "pt": "Um quadro que me anime"
   }
 }

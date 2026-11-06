@@ -79,32 +79,80 @@
     {
       "at": 0,
       "ja": "ハーモニーって、何だろう。",
-      "en": "What is harmony, really?"
+      "en": "What is harmony, really?",
+      "zh-Hans": "和谐，到底是什么呢。",
+      "zh-Hant": "和諧，到底是什麼呢。",
+      "ko": "하모니란, 뭘까.",
+      "fr": "L'harmonie, qu'est-ce que c'est, au fond ?",
+      "de": "Was ist Harmonie eigentlich?",
+      "es": "¿Qué es la armonía, en realidad?",
+      "it": "Che cos'è, davvero, l'armonia?",
+      "pt": "O que é, afinal, a harmonia?"
     },
     {
       "at": 7,
       "ja": "好きな音楽を流しながら、ずっと考えていた。",
-      "en": "I kept wondering, with my favorite music playing."
+      "en": "I kept wondering, with my favorite music playing.",
+      "zh-Hans": "放着喜欢的音乐，我一直在想。",
+      "zh-Hant": "放著喜歡的音樂，我一直在想。",
+      "ko": "좋아하는 음악을 틀어 놓고, 계속 생각했다.",
+      "fr": "J'y ai longtemps réfléchi, en écoutant la musique que j'aime.",
+      "de": "Ich habe lange darüber nachgedacht, während meine Lieblingsmusik lief.",
+      "es": "Lo estuve pensando mucho tiempo, con mi música favorita sonando.",
+      "it": "Ci ho pensato a lungo, con la mia musica preferita in sottofondo.",
+      "pt": "Fiquei muito tempo a pensar nisso, com a minha música preferida a tocar."
     },
     {
       "at": 15.3,
       "ja": "いろんな色が奏で合って、溶け合って、それでいて踊っている。",
-      "en": "Colors play together, melt into each other, and still they dance."
+      "en": "Colors play together, melt into each other, and still they dance.",
+      "zh-Hans": "各种颜色彼此合奏、彼此交融，却又在跳舞。",
+      "zh-Hant": "各種顏色彼此合奏、彼此交融，卻又在跳舞。",
+      "ko": "여러 색이 서로 연주하고, 서로 녹아들면서도, 춤추고 있다.",
+      "fr": "Les couleurs jouent ensemble, se fondent les unes dans les autres, et pourtant elles dansent.",
+      "de": "Viele Farben spielen miteinander, verschmelzen ineinander und tanzen trotzdem.",
+      "es": "Muchos colores suenan juntos, se funden entre sí y, aun así, bailan.",
+      "it": "Tanti colori suonano insieme, si fondono l'uno nell'altro, eppure danzano.",
+      "pt": "Muitas cores tocam juntas, fundem-se umas nas outras e, mesmo assim, dançam."
     },
     {
       "at": 25.5,
       "ja": "その世界に没頭しながら、どこかで釣り合いが取れている。",
-      "en": "Lost in that world, and yet somehow in balance."
+      "en": "Lost in that world, and yet somehow in balance.",
+      "zh-Hans": "沉浸在那个世界里，却在某处保持着平衡。",
+      "zh-Hant": "沉浸在那個世界裡，卻在某處保持著平衡。",
+      "ko": "그 세계에 빠져들면서도, 어딘가에서 균형이 잡혀 있다.",
+      "fr": "Absorbées dans ce monde, et pourtant, quelque part, en équilibre.",
+      "de": "Ganz in diese Welt versunken – und doch irgendwo im Gleichgewicht.",
+      "es": "Inmersos en ese mundo y, aun así, de algún modo en equilibrio.",
+      "it": "Immersi in quel mondo, eppure in qualche modo in equilibrio.",
+      "pt": "Mergulhadas nesse mundo e, ainda assim, de algum modo em equilíbrio."
     },
     {
       "at": 35.3,
       "ja": "それが、私の思うハーモニー。",
-      "en": "That, to me, is harmony."
+      "en": "That, to me, is harmony.",
+      "zh-Hans": "这，就是我心中的和谐。",
+      "zh-Hant": "這，就是我心中的和諧。",
+      "ko": "그것이 내가 생각하는 하모니.",
+      "fr": "Voilà, pour moi, ce qu'est l'harmonie.",
+      "de": "Das ist für mich Harmonie.",
+      "es": "Eso es, para mí, la armonía.",
+      "it": "Questa, per me, è l'armonia.",
+      "pt": "É isso, para mim, a harmonia."
     }
   ],
   "story": {
     "ja": "朝、カーテンを開けると、この絵の赤がいちばん先に目を覚ます。\n忙しい日は通り過ぎるだけで、それでも帰ってくると、青がまだそこにいる。\nぶつかった色が、夜にはほどけて、ひとつの調和になっている。\n（下書き。作家が自分の言葉に直す）",
-    "en": "In the morning, when the curtains open, the reds in this painting wake up first.\nOn busy days you only pass by, and still, when you come home, the blue is waiting there.\nBy night, the colors that collided have come undone into a single harmony.\n(Draft, to be rewritten by the artist in her own words)"
+    "en": "In the morning, when the curtains open, the reds in this painting wake up first.\nOn busy days you only pass by, and still, when you come home, the blue is waiting there.\nBy night, the colors that collided have come undone into a single harmony.\n(Draft, to be rewritten by the artist in her own words)",
+    "zh-Hans": "早晨拉开窗帘，这幅画里的红色总是最先醒来。\n忙碌的日子里只是匆匆经过，可回到家时，蓝色仍然在那里。\n相撞的色彩到了夜里慢慢松开，成为一种和谐。\n（草稿，艺术家将用自己的话改写）",
+    "zh-Hant": "早晨拉開窗簾，這幅畫裡的紅色總是最先醒來。\n忙碌的日子裡只是匆匆經過，可回到家時，藍色仍然在那裡。\n相撞的色彩到了夜裡慢慢鬆開，成為一種和諧。\n（草稿，藝術家將用自己的話改寫）",
+    "ko": "아침에 커튼을 열면, 이 그림의 빨강이 가장 먼저 눈을 뜬다.\n바쁜 날엔 그냥 지나칠 뿐이지만, 그래도 돌아오면 파랑이 아직 그곳에 있다.\n부딪힌 색들은 밤이 되면 풀려서, 하나의 조화가 되어 있다.\n(초고. 작가가 자신의 말로 고쳐 씁니다)",
+    "fr": "Le matin, quand on ouvre les rideaux, c'est le rouge de ce tableau qui se réveille en premier.\nLes jours chargés, on ne fait que passer devant, et pourtant, en rentrant, le bleu est toujours là.\nLes couleurs qui se sont heurtées se dénouent la nuit et deviennent une seule harmonie.\n(Brouillon, à réécrire par l'artiste avec ses propres mots)",
+    "de": "Morgens, wenn man die Vorhänge öffnet, wacht das Rot dieses Bildes als Erstes auf.\nAn vollen Tagen geht man nur daran vorbei, und doch: Kommt man nach Hause, ist das Blau noch da.\nDie Farben, die aufeinandergeprallt sind, lösen sich in der Nacht und werden zu einer einzigen Harmonie.\n(Entwurf, wird von der Künstlerin in eigenen Worten neu geschrieben)",
+    "es": "Por la mañana, al abrir las cortinas, el rojo de este cuadro es el primero en despertar.\nLos días ajetreados solo pasas por delante, y aun así, cuando vuelves a casa, el azul sigue ahí.\nLos colores que chocaron se deshacen por la noche y se convierten en una sola armonía.\n(Borrador, la artista lo reescribirá con sus propias palabras)",
+    "it": "Al mattino, quando apri le tende, il rosso di questo quadro è il primo a svegliarsi.\nNei giorni pieni ci passi solo davanti, eppure, quando torni a casa, il blu è ancora lì.\nI colori che si sono scontrati, di notte si sciolgono e diventano un'unica armonia.\n(Bozza, l'artista la riscriverà con parole sue)",
+    "pt": "De manhã, quando abres as cortinas, o vermelho deste quadro é o primeiro a acordar.\nNos dias atarefados limitas-te a passar por ele, e mesmo assim, quando voltas para casa, o azul ainda lá está.\nAs cores que colidiram desfazem-se à noite e tornam-se uma só harmonia.\n(Rascunho, a artista vai reescrever com as suas próprias palavras)"
   },
   "size_label": {
     "ja": "F15 号",
@@ -147,16 +195,40 @@
       "occlusion": false,
       "compare": {
         "ja": "このソファの約 0.8 倍の高さ。",
-        "en": "About 0.8 times the height of the sofa."
+        "en": "About 0.8 times the height of the sofa.",
+        "zh-Hans": "约为这张沙发高度的 0.8 倍。",
+        "zh-Hant": "約為這張沙發高度的 0.8 倍。",
+        "ko": "이 소파 높이의 약 0.8배.",
+        "fr": "Environ 0,8 fois la hauteur de ce canapé.",
+        "de": "Etwa 0,8-mal so hoch wie dieses Sofa.",
+        "es": "Aproximadamente 0,8 veces la altura de este sofá.",
+        "it": "Circa 0,8 volte l'altezza di questo divano.",
+        "pt": "Cerca de 0,8 vezes a altura deste sofá."
       },
       "compare2": null,
       "about": {
         "ja": "壁の幅は約 2.5 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 130 cm）。",
-        "en": "The wall is about 2.5 m wide. The painting hangs about 20 cm above the furniture (center about 130 cm from the floor)."
+        "en": "The wall is about 2.5 m wide. The painting hangs about 20 cm above the furniture (center about 130 cm from the floor).",
+        "zh-Hans": "墙宽约 2.5 m。挂在离家具上沿约 20 cm 的位置（画的中心离地约 130 cm）。",
+        "zh-Hant": "牆寬約 2.5 m。掛在離家具上緣約 20 cm 的位置（畫的中心離地約 130 cm）。",
+        "ko": "벽의 폭은 약 2.5 m. 가구 윗면에서 20 cm 정도 띄워 걸었습니다(그림의 중심은 바닥에서 약 130 cm).",
+        "fr": "Le mur fait environ 2,5 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 130 cm du sol).",
+        "de": "Die Wand ist etwa 2,5 m breit. Das Bild hängt etwa 20 cm über dem Möbelstück (Bildmitte etwa 130 cm über dem Boden).",
+        "es": "La pared mide unos 2,5 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 130 cm del suelo).",
+        "it": "La parete è larga circa 2,5 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 130 cm dal pavimento).",
+        "pt": "A parede tem cerca de 2,5 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 130 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "sofa_3seat"
     },
@@ -196,19 +268,51 @@
       "occlusion": false,
       "compare": {
         "ja": "この花瓶の約 2.2 倍の高さ。",
-        "en": "About 2.2 times the height of the vase."
+        "en": "About 2.2 times the height of the vase.",
+        "zh-Hans": "约为这个花瓶高度的 2.2 倍。",
+        "zh-Hant": "約為這個花瓶高度的 2.2 倍。",
+        "ko": "이 꽃병 높이의 약 2.2배.",
+        "fr": "Environ 2,2 fois la hauteur de ce vase.",
+        "de": "Etwa 2,2-mal so hoch wie diese Vase.",
+        "es": "Aproximadamente 2,2 veces la altura de este jarrón.",
+        "it": "Circa 2,2 volte l'altezza di questo vaso.",
+        "pt": "Cerca de 2,2 vezes a altura deste vaso."
       },
       "compare2": {
         "ja": "このテレビボード（約 42 cm）の約 1.6 倍の高さ。",
-        "en": "About 1.6 times the height of the low board (about 42 cm)."
+        "en": "About 1.6 times the height of the low board (about 42 cm).",
+        "zh-Hans": "约为这个电视柜（约 42 cm）高度的 1.6 倍。",
+        "zh-Hant": "約為這個電視櫃（約 42 cm）高度的 1.6 倍。",
+        "ko": "이 거실장(약 42 cm) 높이의 약 1.6배.",
+        "fr": "Environ 1,6 fois la hauteur de ce meuble télé (environ 42 cm).",
+        "de": "Etwa 1,6-mal so hoch wie dieser Fernsehschrank (ca. 42 cm).",
+        "es": "Aproximadamente 1,6 veces la altura de este mueble de televisión (unos 42 cm).",
+        "it": "Circa 1,6 volte l'altezza di questo mobile porta TV (circa 42 cm).",
+        "pt": "Cerca de 1,6 vezes a altura deste móvel de televisão (cerca de 42 cm)."
       },
       "about": {
         "ja": "壁の幅は約 2.6 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 95 cm）。",
-        "en": "The wall is about 2.6 m wide. The painting hangs about 20 cm above the furniture (center about 95 cm from the floor)."
+        "en": "The wall is about 2.6 m wide. The painting hangs about 20 cm above the furniture (center about 95 cm from the floor).",
+        "zh-Hans": "墙宽约 2.6 m。挂在离家具上沿约 20 cm 的位置（画的中心离地约 95 cm）。",
+        "zh-Hant": "牆寬約 2.6 m。掛在離家具上緣約 20 cm 的位置（畫的中心離地約 95 cm）。",
+        "ko": "벽의 폭은 약 2.6 m. 가구 윗면에서 20 cm 정도 띄워 걸었습니다(그림의 중심은 바닥에서 약 95 cm).",
+        "fr": "Le mur fait environ 2,6 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 95 cm du sol).",
+        "de": "Die Wand ist etwa 2,6 m breit. Das Bild hängt etwa 20 cm über dem Möbelstück (Bildmitte etwa 95 cm über dem Boden).",
+        "es": "La pared mide unos 2,6 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 95 cm del suelo).",
+        "it": "La parete è larga circa 2,6 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 95 cm dal pavimento).",
+        "pt": "A parede tem cerca de 2,6 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 95 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "vase"
     },
@@ -248,19 +352,51 @@
       "occlusion": true,
       "compare": {
         "ja": "このダイニングテーブルとほぼ同じ高さ。",
-        "en": "About the same height as the dining table."
+        "en": "About the same height as the dining table.",
+        "zh-Hans": "与这张餐桌高度大致相同。",
+        "zh-Hant": "與這張餐桌高度大致相同。",
+        "ko": "이 식탁과 거의 같은 높이.",
+        "fr": "À peu près la même hauteur que cette table à manger.",
+        "de": "Etwa so hoch wie dieser Esstisch.",
+        "es": "Más o menos la misma altura que esta mesa de comedor.",
+        "it": "Più o meno la stessa altezza di questo tavolo da pranzo.",
+        "pt": "Mais ou menos a mesma altura desta mesa de jantar."
       },
       "compare2": {
         "ja": "この花瓶（約 30 cm）の約 2.2 倍の高さ。",
-        "en": "About 2.2 times the height of the vase (about 30 cm)."
+        "en": "About 2.2 times the height of the vase (about 30 cm).",
+        "zh-Hans": "约为这个花瓶（约 30 cm）高度的 2.2 倍。",
+        "zh-Hant": "約為這個花瓶（約 30 cm）高度的 2.2 倍。",
+        "ko": "이 꽃병(약 30 cm) 높이의 약 2.2배.",
+        "fr": "Environ 2,2 fois la hauteur de ce vase (environ 30 cm).",
+        "de": "Etwa 2,2-mal so hoch wie diese Vase (ca. 30 cm).",
+        "es": "Aproximadamente 2,2 veces la altura de este jarrón (unos 30 cm).",
+        "it": "Circa 2,2 volte l'altezza di questo vaso (circa 30 cm).",
+        "pt": "Cerca de 2,2 vezes a altura deste vaso (cerca de 30 cm)."
       },
       "about": {
         "ja": "壁の幅は約 2.4 m。座ったときの目の高さ（床から約 140 cm）に掛けています。",
-        "en": "The wall is about 2.4 m wide. The painting hangs at seated eye level (about 140 cm from the floor)."
+        "en": "The wall is about 2.4 m wide. The painting hangs at seated eye level (about 140 cm from the floor).",
+        "zh-Hans": "墙宽约 2.4 m。挂在坐着时的视线高度（离地约 140 cm）。",
+        "zh-Hant": "牆寬約 2.4 m。掛在坐著時的視線高度（離地約 140 cm）。",
+        "ko": "벽의 폭은 약 2.4 m. 앉았을 때의 눈높이(바닥에서 약 140 cm)에 걸었습니다.",
+        "fr": "Le mur fait environ 2,4 m de large. Le tableau est accroché à hauteur des yeux en position assise (à environ 140 cm du sol).",
+        "de": "Die Wand ist etwa 2,4 m breit. Das Bild hängt auf Augenhöhe im Sitzen (etwa 140 cm über dem Boden).",
+        "es": "La pared mide unos 2,4 m de ancho. El cuadro está colgado a la altura de los ojos estando sentado (a unos 140 cm del suelo).",
+        "it": "La parete è larga circa 2,4 m. Il quadro è appeso all'altezza degli occhi da seduti (a circa 140 cm dal pavimento).",
+        "pt": "A parede tem cerca de 2,4 m de largura. O quadro está pendurado à altura dos olhos de quem está sentado (a cerca de 140 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "dining_table"
     },
@@ -300,24 +436,56 @@
       "occlusion": false,
       "compare": {
         "ja": "このダブルベッドの約 3 分の 1 の幅。",
-        "en": "About one third the width of the bed."
+        "en": "About one third the width of the bed.",
+        "zh-Hans": "约为这张双人床宽度的三分之一。",
+        "zh-Hant": "約為這張雙人床寬度的三分之一。",
+        "ko": "이 더블 침대 폭의 약 3분의 1.",
+        "fr": "Environ un tiers de la largeur de ce lit double.",
+        "de": "Etwa ein Drittel so breit wie dieses Doppelbett.",
+        "es": "Aproximadamente un tercio de la anchura de esta cama de matrimonio.",
+        "it": "Circa un terzo della larghezza di questo letto matrimoniale.",
+        "pt": "Cerca de um terço da largura desta cama de casal."
       },
       "compare2": {
         "ja": "この枕（約 70 cm）の約 0.8 倍の幅。",
-        "en": "About 0.8 times the width of the pillow (about 70 cm)."
+        "en": "About 0.8 times the width of the pillow (about 70 cm).",
+        "zh-Hans": "约为这个枕头（约 70 cm）宽度的 0.8 倍。",
+        "zh-Hant": "約為這個枕頭（約 70 cm）寬度的 0.8 倍。",
+        "ko": "이 베개(약 70 cm) 폭의 약 0.8배.",
+        "fr": "Environ 0,8 fois la largeur de cet oreiller (environ 70 cm).",
+        "de": "Etwa 0,8-mal so breit wie dieses Kopfkissen (ca. 70 cm).",
+        "es": "Aproximadamente 0,8 veces la anchura de esta almohada (unos 70 cm).",
+        "it": "Circa 0,8 volte la larghezza di questo cuscino (circa 70 cm).",
+        "pt": "Cerca de 0,8 vezes a largura desta almofada (cerca de 70 cm)."
       },
       "about": {
         "ja": "壁の幅は約 2.4 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 140 cm）。",
-        "en": "The wall is about 2.4 m wide. The painting hangs about 20 cm above the furniture (center about 140 cm from the floor)."
+        "en": "The wall is about 2.4 m wide. The painting hangs about 20 cm above the furniture (center about 140 cm from the floor).",
+        "zh-Hans": "墙宽约 2.4 m。挂在离家具上沿约 20 cm 的位置（画的中心离地约 140 cm）。",
+        "zh-Hant": "牆寬約 2.4 m。掛在離家具上緣約 20 cm 的位置（畫的中心離地約 140 cm）。",
+        "ko": "벽의 폭은 약 2.4 m. 가구 윗면에서 20 cm 정도 띄워 걸었습니다(그림의 중심은 바닥에서 약 140 cm).",
+        "fr": "Le mur fait environ 2,4 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 140 cm du sol).",
+        "de": "Die Wand ist etwa 2,4 m breit. Das Bild hängt etwa 20 cm über dem Möbelstück (Bildmitte etwa 140 cm über dem Boden).",
+        "es": "La pared mide unos 2,4 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 140 cm del suelo).",
+        "it": "La parete è larga circa 2,4 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 140 cm dal pavimento).",
+        "pt": "A parede tem cerca de 2,4 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 140 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "bed_double"
     }
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-06T13:13:57.063Z"
+  "generated_at": "2026-11-06T14:03:47.137Z"
 }

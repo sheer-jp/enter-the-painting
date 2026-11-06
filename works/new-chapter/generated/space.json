@@ -2,7 +2,15 @@
   "id": "new-chapter",
   "title": {
     "ja": "New Chapter",
-    "en": "New Chapter"
+    "en": "New Chapter",
+    "zh-Hans": "New Chapter",
+    "zh-Hant": "New Chapter",
+    "ko": "New Chapter",
+    "fr": "New Chapter",
+    "de": "New Chapter",
+    "es": "New Chapter",
+    "it": "New Chapter",
+    "pt": "New Chapter"
   },
   "size_cm": [
     18,
@@ -71,22 +79,54 @@
     {
       "at": 0,
       "ja": "新しいことに踏み出すとき、ちょっと怖くて、でもわくわくする。",
-      "en": "Stepping into something new is a little scary, and exciting."
+      "en": "Stepping into something new is a little scary, and exciting.",
+      "zh-Hans": "迈向新事物的时候，有点害怕，却又很兴奋。",
+      "zh-Hant": "邁向新事物的時候，有點害怕，卻又很興奮。",
+      "ko": "새로운 일에 발을 내디딜 때, 조금 무섭지만 그래도 설렌다.",
+      "fr": "Se lancer dans quelque chose de nouveau, ça fait un peu peur, et pourtant c'est exaltant.",
+      "de": "Wenn man etwas Neues wagt, ist es ein bisschen beängstigend – und doch aufregend.",
+      "es": "Cuando te lanzas a algo nuevo, da un poco de miedo, pero también ilusión.",
+      "it": "Quando ci si lancia in qualcosa di nuovo, fa un po' paura, ma emoziona anche.",
+      "pt": "Quando damos o passo para algo novo, dá um pouco de medo, mas também entusiasmo."
     },
     {
       "at": 10.5,
       "ja": "その気持ちを、元気の出る黄色にした。",
-      "en": "I turned that feeling into a yellow that gives you energy."
+      "en": "I turned that feeling into a yellow that gives you energy.",
+      "zh-Hans": "我把那份心情，变成了让人打起精神的黄色。",
+      "zh-Hant": "我把那份心情，變成了讓人打起精神的黃色。",
+      "ko": "그 마음을, 기운이 나는 노랑으로 만들었다.",
+      "fr": "J'ai fait de ce sentiment un jaune qui donne de l'énergie.",
+      "de": "Aus diesem Gefühl habe ich ein Gelb gemacht, das Kraft gibt.",
+      "es": "Convertí ese sentimiento en un amarillo que da energía.",
+      "it": "Ho trasformato quella sensazione in un giallo che dà energia.",
+      "pt": "Transformei esse sentimento num amarelo que dá energia."
     },
     {
       "at": 18,
       "ja": "新しい扉を開けるあなたの背中を、そっと押せたらいい。",
-      "en": "I hope it gently pushes you as you open a new door."
+      "en": "I hope it gently pushes you as you open a new door.",
+      "zh-Hans": "愿我能轻轻推一推正要打开新大门的你。",
+      "zh-Hant": "願我能輕輕推一推正要打開新大門的你。",
+      "ko": "새로운 문을 여는 당신의 등을, 살며시 밀어 줄 수 있으면 좋겠다.",
+      "fr": "J'aimerais vous pousser doucement, au moment où vous ouvrez une nouvelle porte.",
+      "de": "Ich hoffe, ich kann dich sanft anschubsen, wenn du eine neue Tür öffnest.",
+      "es": "Ojalá pueda darte un empujoncito cuando abras una nueva puerta.",
+      "it": "Vorrei poterti dare una piccola spinta mentre apri una nuova porta.",
+      "pt": "Gostava de te dar um pequeno empurrão enquanto abres uma nova porta."
     },
     {
       "at": 27.5,
       "ja": "新しい章を、いっしょに楽しもう。",
-      "en": "Let's enjoy the new chapter together."
+      "en": "Let's enjoy the new chapter together.",
+      "zh-Hans": "让我们一起享受新的篇章吧。",
+      "zh-Hant": "讓我們一起享受新的篇章吧。",
+      "ko": "새로운 장을, 함께 즐기자.",
+      "fr": "Profitons ensemble de ce nouveau chapitre.",
+      "de": "Lass uns das neue Kapitel gemeinsam genießen.",
+      "es": "Disfrutemos juntos del nuevo capítulo.",
+      "it": "Godiamoci insieme il nuovo capitolo.",
+      "pt": "Vamos aproveitar juntos o novo capítulo."
     }
   ],
   "story": null,
@@ -131,19 +171,51 @@
       "occlusion": false,
       "compare": {
         "ja": "このナイトテーブルの約 4 分の 1 の高さ。",
-        "en": "About a quarter the height of the nightstand."
+        "en": "About a quarter the height of the nightstand.",
+        "zh-Hans": "约为这张床头柜高度的四分之一。",
+        "zh-Hant": "約為這張床頭櫃高度的四分之一。",
+        "ko": "이 협탁 높이의 약 4분의 1.",
+        "fr": "Environ un quart de la hauteur de cette table de chevet.",
+        "de": "Etwa ein Viertel so hoch wie dieser Nachttisch.",
+        "es": "Aproximadamente un cuarto de la altura de esta mesita de noche.",
+        "it": "Circa un quarto dell'altezza di questo comodino.",
+        "pt": "Cerca de um quarto da altura desta mesa de cabeceira."
       },
       "compare2": {
         "ja": "このランプ（約 45 cm）の約 3 分の 1 の高さ。",
-        "en": "About one third the height of the lamp (about 45 cm)."
+        "en": "About one third the height of the lamp (about 45 cm).",
+        "zh-Hans": "约为这盏灯（约 45 cm）高度的三分之一。",
+        "zh-Hant": "約為這盞燈（約 45 cm）高度的三分之一。",
+        "ko": "이 램프(약 45 cm) 높이의 약 3분의 1.",
+        "fr": "Environ un tiers de la hauteur de cette lampe (environ 45 cm).",
+        "de": "Etwa ein Drittel so hoch wie diese Lampe (ca. 45 cm).",
+        "es": "Aproximadamente un tercio de la altura de esta lámpara (unos 45 cm).",
+        "it": "Circa un terzo dell'altezza di questa lampada (circa 45 cm).",
+        "pt": "Cerca de um terço da altura deste candeeiro (cerca de 45 cm)."
       },
       "about": {
         "ja": "壁の幅は約 1.9 m。座ったときの目の高さ（床から約 125 cm）に掛けています。",
-        "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor)."
+        "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor).",
+        "zh-Hans": "墙宽约 1.9 m。挂在坐着时的视线高度（离地约 125 cm）。",
+        "zh-Hant": "牆寬約 1.9 m。掛在坐著時的視線高度（離地約 125 cm）。",
+        "ko": "벽의 폭은 약 1.9 m. 앉았을 때의 눈높이(바닥에서 약 125 cm)에 걸었습니다.",
+        "fr": "Le mur fait environ 1,9 m de large. Le tableau est accroché à hauteur des yeux en position assise (à environ 125 cm du sol).",
+        "de": "Die Wand ist etwa 1,9 m breit. Das Bild hängt auf Augenhöhe im Sitzen (etwa 125 cm über dem Boden).",
+        "es": "La pared mide unos 1,9 m de ancho. El cuadro está colgado a la altura de los ojos estando sentado (a unos 125 cm del suelo).",
+        "it": "La parete è larga circa 1,9 m. Il quadro è appeso all'altezza degli occhi da seduti (a circa 125 cm dal pavimento).",
+        "pt": "A parede tem cerca de 1,9 m de largura. O quadro está pendurado à altura dos olhos de quem está sentado (a cerca de 125 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "nightstand"
     },
@@ -183,24 +255,56 @@
       "occlusion": false,
       "compare": {
         "ja": "この机の約 0.2 倍の高さ。",
-        "en": "About 0.2 times the height of the desk."
+        "en": "About 0.2 times the height of the desk.",
+        "zh-Hans": "约为这张书桌高度的 0.2 倍。",
+        "zh-Hant": "約為這張書桌高度的 0.2 倍。",
+        "ko": "이 책상 높이의 약 0.2배.",
+        "fr": "Environ 0,2 fois la hauteur de ce bureau.",
+        "de": "Etwa 0,2-mal so hoch wie dieser Schreibtisch.",
+        "es": "Aproximadamente 0,2 veces la altura de este escritorio.",
+        "it": "Circa 0,2 volte l'altezza di questa scrivania.",
+        "pt": "Cerca de 0,2 vezes a altura desta secretária."
       },
       "compare2": {
         "ja": "このデスクランプ（約 40 cm）の約 3 分の 1 の高さ。",
-        "en": "About one third the height of the desk lamp (about 40 cm)."
+        "en": "About one third the height of the desk lamp (about 40 cm).",
+        "zh-Hans": "约为这盏台灯（约 40 cm）高度的三分之一。",
+        "zh-Hant": "約為這盞檯燈（約 40 cm）高度的三分之一。",
+        "ko": "이 스탠드(약 40 cm) 높이의 약 3분의 1.",
+        "fr": "Environ un tiers de la hauteur de cette lampe de bureau (environ 40 cm).",
+        "de": "Etwa ein Drittel so hoch wie diese Schreibtischlampe (ca. 40 cm).",
+        "es": "Aproximadamente un tercio de la altura de esta lámpara de escritorio (unos 40 cm).",
+        "it": "Circa un terzo dell'altezza di questa lampada da scrivania (circa 40 cm).",
+        "pt": "Cerca de um terço da altura deste candeeiro de secretária (cerca de 40 cm)."
       },
       "about": {
         "ja": "壁の幅は約 1.7 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 100 cm）。",
-        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 100 cm from the floor)."
+        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 100 cm from the floor).",
+        "zh-Hans": "墙宽约 1.7 m。挂在离家具上沿约 20 cm 的位置（画的中心离地约 100 cm）。",
+        "zh-Hant": "牆寬約 1.7 m。掛在離家具上緣約 20 cm 的位置（畫的中心離地約 100 cm）。",
+        "ko": "벽의 폭은 약 1.7 m. 가구 윗면에서 20 cm 정도 띄워 걸었습니다(그림의 중심은 바닥에서 약 100 cm).",
+        "fr": "Le mur fait environ 1,7 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 100 cm du sol).",
+        "de": "Die Wand ist etwa 1,7 m breit. Das Bild hängt etwa 20 cm über dem Möbelstück (Bildmitte etwa 100 cm über dem Boden).",
+        "es": "La pared mide unos 1,7 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 100 cm del suelo).",
+        "it": "La parete è larga circa 1,7 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 100 cm dal pavimento).",
+        "pt": "A parede tem cerca de 1,7 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 100 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "desk"
     }
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T13:13:59.383Z"
+  "generated_at": "2026-11-06T14:03:49.473Z"
 }

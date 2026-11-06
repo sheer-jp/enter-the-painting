@@ -2,7 +2,15 @@
   "id": "instinct",
   "title": {
     "ja": "本能",
-    "en": "Instinct"
+    "en": "Instinct",
+    "zh-Hans": "本能",
+    "zh-Hant": "本能",
+    "ko": "본능",
+    "fr": "Instinct",
+    "de": "Instinkt",
+    "es": "Instinto",
+    "it": "Istinto",
+    "pt": "Instinto"
   },
   "size_cm": [
     33.3,
@@ -71,22 +79,54 @@
     {
       "at": 0,
       "ja": "何かを描こうとしたわけじゃない。",
-      "en": "I wasn't trying to paint anything in particular."
+      "en": "I wasn't trying to paint anything in particular.",
+      "zh-Hans": "我并不是想画什么。",
+      "zh-Hant": "我並不是想畫什麼。",
+      "ko": "무언가를 그리려고 했던 건 아니다.",
+      "fr": "Je ne cherchais pas à peindre quelque chose en particulier.",
+      "de": "Ich wollte nichts Bestimmtes malen.",
+      "es": "No intentaba pintar nada en concreto.",
+      "it": "Non cercavo di dipingere qualcosa in particolare.",
+      "pt": "Não estava a tentar pintar nada em especial."
     },
     {
       "at": 7,
       "ja": "いろんな感情が揺らめくまま、本能で生まれた絵。",
-      "en": "It was born by instinct, with feelings flickering as they were."
+      "en": "It was born by instinct, with feelings flickering as they were.",
+      "zh-Hans": "任由各种情感摇曳，凭本能诞生的画。",
+      "zh-Hant": "任由各種情感搖曳，憑本能誕生的畫。",
+      "ko": "여러 감정이 일렁이는 그대로, 본능으로 태어난 그림.",
+      "fr": "Un tableau né de l'instinct, en laissant vaciller toutes sortes d'émotions.",
+      "de": "Ein Bild, aus dem Instinkt geboren, während viele Gefühle einfach flackern durften.",
+      "es": "Un cuadro nacido del instinto, dejando titilar muchas emociones tal como eran.",
+      "it": "Un quadro nato d'istinto, lasciando tremolare tante emozioni così com'erano.",
+      "pt": "Um quadro nascido do instinto, deixando tremeluzir muitas emoções tal como eram."
     },
     {
       "at": 15.8,
       "ja": "言葉にならない気持ちがあってもいい。",
-      "en": "It's all right to have feelings you can't put into words."
+      "en": "It's all right to have feelings you can't put into words.",
+      "zh-Hans": "有说不出口的心情，也没关系。",
+      "zh-Hant": "有說不出口的心情，也沒關係。",
+      "ko": "말로 할 수 없는 마음이 있어도 괜찮다.",
+      "fr": "Il peut y avoir des sentiments que les mots ne savent pas dire.",
+      "de": "Es darf Gefühle geben, für die es keine Worte gibt.",
+      "es": "Está bien tener sentimientos que no caben en palabras.",
+      "it": "Va bene avere sentimenti che non si possono dire a parole.",
+      "pt": "Não faz mal ter sentimentos que não cabem em palavras."
     },
     {
       "at": 23.3,
       "ja": "そのまま、ここにいていい。",
-      "en": "You can stay here, just as you are."
+      "en": "You can stay here, just as you are.",
+      "zh-Hans": "就这样，待在这里就好。",
+      "zh-Hant": "就這樣，待在這裡就好。",
+      "ko": "그대로, 여기 있어도 된다.",
+      "fr": "Vous pouvez rester ici, comme vous êtes.",
+      "de": "Du darfst hier bleiben, so wie du bist.",
+      "es": "Puedes quedarte aquí, tal como eres.",
+      "it": "Puoi restare qui, così come sei.",
+      "pt": "Podes ficar aqui, tal como és."
     }
   ],
   "story": null,
@@ -131,19 +171,51 @@
       "occlusion": false,
       "compare": {
         "ja": "このドアの約 0.1 倍の高さ。",
-        "en": "About 0.1 times the height of the door."
+        "en": "About 0.1 times the height of the door.",
+        "zh-Hans": "约为这扇门高度的 0.1 倍。",
+        "zh-Hant": "約為這扇門高度的 0.1 倍。",
+        "ko": "이 문 높이의 약 0.1배.",
+        "fr": "Environ 0,1 fois la hauteur de cette porte.",
+        "de": "Etwa 0,1-mal so hoch wie diese Tür.",
+        "es": "Aproximadamente 0,1 veces la altura de esta puerta.",
+        "it": "Circa 0,1 volte l'altezza di questa porta.",
+        "pt": "Cerca de 0,1 vezes a altura desta porta."
       },
       "compare2": {
         "ja": "この玄関の天井（約 230 cm）の約 0.1 倍の高さ。",
-        "en": "About 0.1 times the height of the ceiling (about 230 cm)."
+        "en": "About 0.1 times the height of the ceiling (about 230 cm).",
+        "zh-Hans": "约为这个玄关的天花板（约 230 cm）高度的 0.1 倍。",
+        "zh-Hant": "約為這個玄關的天花板（約 230 cm）高度的 0.1 倍。",
+        "ko": "이 현관 천장(약 230 cm) 높이의 약 0.1배.",
+        "fr": "Environ 0,1 fois la hauteur du plafond de cette entrée (environ 230 cm).",
+        "de": "Etwa 0,1-mal so hoch wie die Decke dieses Eingangs (ca. 230 cm).",
+        "es": "Aproximadamente 0,1 veces la altura del techo de esta entrada (unos 230 cm).",
+        "it": "Circa 0,1 volte l'altezza del soffitto di questo ingresso (circa 230 cm).",
+        "pt": "Cerca de 0,1 vezes a altura do teto desta entrada (cerca de 230 cm)."
       },
       "about": {
         "ja": "壁の幅は約 2.3 m。目の高さ（床から約 145 cm）に掛けています。",
-        "en": "The wall is about 2.3 m wide. The painting hangs at eye level (about 145 cm from the floor)."
+        "en": "The wall is about 2.3 m wide. The painting hangs at eye level (about 145 cm from the floor).",
+        "zh-Hans": "墙宽约 2.3 m。挂在视线高度（离地约 145 cm）。",
+        "zh-Hant": "牆寬約 2.3 m。掛在視線高度（離地約 145 cm）。",
+        "ko": "벽의 폭은 약 2.3 m. 눈높이(바닥에서 약 145 cm)에 걸었습니다.",
+        "fr": "Le mur fait environ 2,3 m de large. Le tableau est accroché à hauteur des yeux (à environ 145 cm du sol).",
+        "de": "Die Wand ist etwa 2,3 m breit. Das Bild hängt auf Augenhöhe (etwa 145 cm über dem Boden).",
+        "es": "La pared mide unos 2,3 m de ancho. El cuadro está colgado a la altura de los ojos (a unos 145 cm del suelo).",
+        "it": "La parete è larga circa 2,3 m. Il quadro è appeso all'altezza degli occhi (a circa 145 cm dal pavimento).",
+        "pt": "A parede tem cerca de 2,3 m de largura. O quadro está pendurado à altura dos olhos (a cerca de 145 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "door_interior"
     },
@@ -183,19 +255,51 @@
       "occlusion": false,
       "compare": {
         "ja": "このドアの約 0.1 倍の高さ。",
-        "en": "About 0.1 times the height of the door."
+        "en": "About 0.1 times the height of the door.",
+        "zh-Hans": "约为这扇门高度的 0.1 倍。",
+        "zh-Hant": "約為這扇門高度的 0.1 倍。",
+        "ko": "이 문 높이의 약 0.1배.",
+        "fr": "Environ 0,1 fois la hauteur de cette porte.",
+        "de": "Etwa 0,1-mal so hoch wie diese Tür.",
+        "es": "Aproximadamente 0,1 veces la altura de esta puerta.",
+        "it": "Circa 0,1 volte l'altezza di questa porta.",
+        "pt": "Cerca de 0,1 vezes a altura desta porta."
       },
       "compare2": {
         "ja": "この部屋の天井（約 240 cm）の約 0.1 倍の高さ。",
-        "en": "About 0.1 times the height of the ceiling (about 240 cm)."
+        "en": "About 0.1 times the height of the ceiling (about 240 cm).",
+        "zh-Hans": "约为这个房间的天花板（约 240 cm）高度的 0.1 倍。",
+        "zh-Hant": "約為這個房間的天花板（約 240 cm）高度的 0.1 倍。",
+        "ko": "이 방 천장(약 240 cm) 높이의 약 0.1배.",
+        "fr": "Environ 0,1 fois la hauteur du plafond de cette pièce (environ 240 cm).",
+        "de": "Etwa 0,1-mal so hoch wie die Decke dieses Zimmers (ca. 240 cm).",
+        "es": "Aproximadamente 0,1 veces la altura del techo de esta habitación (unos 240 cm).",
+        "it": "Circa 0,1 volte l'altezza del soffitto di questa stanza (circa 240 cm).",
+        "pt": "Cerca de 0,1 vezes a altura do teto deste espaço (cerca de 240 cm)."
       },
       "about": {
         "ja": "壁の幅は約 3.2 m。座ったときの目の高さ（床から約 140 cm）に掛けています。",
-        "en": "The wall is about 3.2 m wide. The painting hangs at seated eye level (about 140 cm from the floor)."
+        "en": "The wall is about 3.2 m wide. The painting hangs at seated eye level (about 140 cm from the floor).",
+        "zh-Hans": "墙宽约 3.2 m。挂在坐着时的视线高度（离地约 140 cm）。",
+        "zh-Hant": "牆寬約 3.2 m。掛在坐著時的視線高度（離地約 140 cm）。",
+        "ko": "벽의 폭은 약 3.2 m. 앉았을 때의 눈높이(바닥에서 약 140 cm)에 걸었습니다.",
+        "fr": "Le mur fait environ 3,2 m de large. Le tableau est accroché à hauteur des yeux en position assise (à environ 140 cm du sol).",
+        "de": "Die Wand ist etwa 3,2 m breit. Das Bild hängt auf Augenhöhe im Sitzen (etwa 140 cm über dem Boden).",
+        "es": "La pared mide unos 3,2 m de ancho. El cuadro está colgado a la altura de los ojos estando sentado (a unos 140 cm del suelo).",
+        "it": "La parete è larga circa 3,2 m. Il quadro è appeso all'altezza degli occhi da seduti (a circa 140 cm dal pavimento).",
+        "pt": "A parede tem cerca de 3,2 m de largura. O quadro está pendurado à altura dos olhos de quem está sentado (a cerca de 140 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "door_interior"
     },
@@ -235,19 +339,51 @@
       "occlusion": false,
       "compare": {
         "ja": "このナイトテーブルの約 0.4 倍の高さ。",
-        "en": "About 0.4 times the height of the nightstand."
+        "en": "About 0.4 times the height of the nightstand.",
+        "zh-Hans": "约为这张床头柜高度的 0.4 倍。",
+        "zh-Hant": "約為這張床頭櫃高度的 0.4 倍。",
+        "ko": "이 협탁 높이의 약 0.4배.",
+        "fr": "Environ 0,4 fois la hauteur de cette table de chevet.",
+        "de": "Etwa 0,4-mal so hoch wie dieser Nachttisch.",
+        "es": "Aproximadamente 0,4 veces la altura de esta mesita de noche.",
+        "it": "Circa 0,4 volte l'altezza di questo comodino.",
+        "pt": "Cerca de 0,4 vezes a altura desta mesa de cabeceira."
       },
       "compare2": {
         "ja": "このランプ（約 45 cm）の約半分の高さ。",
-        "en": "About half the height of the lamp (about 45 cm)."
+        "en": "About half the height of the lamp (about 45 cm).",
+        "zh-Hans": "约为这盏灯（约 45 cm）高度的一半。",
+        "zh-Hant": "約為這盞燈（約 45 cm）高度的一半。",
+        "ko": "이 램프(약 45 cm) 높이의 약 절반.",
+        "fr": "Environ la moitié de la hauteur de cette lampe (environ 45 cm).",
+        "de": "Etwa halb so hoch wie diese Lampe (ca. 45 cm).",
+        "es": "Aproximadamente la mitad de la altura de esta lámpara (unos 45 cm).",
+        "it": "Circa la metà dell'altezza di questa lampada (circa 45 cm).",
+        "pt": "Cerca de metade da altura deste candeeiro (cerca de 45 cm)."
       },
       "about": {
         "ja": "壁の幅は約 1.9 m。座ったときの目の高さ（床から約 125 cm）に掛けています。",
-        "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor)."
+        "en": "The wall is about 1.9 m wide. The painting hangs at seated eye level (about 125 cm from the floor).",
+        "zh-Hans": "墙宽约 1.9 m。挂在坐着时的视线高度（离地约 125 cm）。",
+        "zh-Hant": "牆寬約 1.9 m。掛在坐著時的視線高度（離地約 125 cm）。",
+        "ko": "벽의 폭은 약 1.9 m. 앉았을 때의 눈높이(바닥에서 약 125 cm)에 걸었습니다.",
+        "fr": "Le mur fait environ 1,9 m de large. Le tableau est accroché à hauteur des yeux en position assise (à environ 125 cm du sol).",
+        "de": "Die Wand ist etwa 1,9 m breit. Das Bild hängt auf Augenhöhe im Sitzen (etwa 125 cm über dem Boden).",
+        "es": "La pared mide unos 1,9 m de ancho. El cuadro está colgado a la altura de los ojos estando sentado (a unos 125 cm del suelo).",
+        "it": "La parete è larga circa 1,9 m. Il quadro è appeso all'altezza degli occhi da seduti (a circa 125 cm dal pavimento).",
+        "pt": "A parede tem cerca de 1,9 m de largura. O quadro está pendurado à altura dos olhos de quem está sentado (a cerca de 125 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "nightstand"
     },
@@ -287,24 +423,56 @@
       "occlusion": false,
       "compare": {
         "ja": "この机の約 3 分の 1 の高さ。",
-        "en": "About one third the height of the desk."
+        "en": "About one third the height of the desk.",
+        "zh-Hans": "约为这张书桌高度的三分之一。",
+        "zh-Hant": "約為這張書桌高度的三分之一。",
+        "ko": "이 책상 높이의 약 3분의 1.",
+        "fr": "Environ un tiers de la hauteur de ce bureau.",
+        "de": "Etwa ein Drittel so hoch wie dieser Schreibtisch.",
+        "es": "Aproximadamente un tercio de la altura de este escritorio.",
+        "it": "Circa un terzo dell'altezza di questa scrivania.",
+        "pt": "Cerca de um terço da altura desta secretária."
       },
       "compare2": {
         "ja": "このデスクランプ（約 40 cm）の約 3 分の 2 の高さ。",
-        "en": "About two thirds the height of the desk lamp (about 40 cm)."
+        "en": "About two thirds the height of the desk lamp (about 40 cm).",
+        "zh-Hans": "约为这盏台灯（约 40 cm）高度的三分之二。",
+        "zh-Hant": "約為這盞檯燈（約 40 cm）高度的三分之二。",
+        "ko": "이 스탠드(약 40 cm) 높이의 약 3분의 2.",
+        "fr": "Environ deux tiers de la hauteur de cette lampe de bureau (environ 40 cm).",
+        "de": "Etwa zwei Drittel so hoch wie diese Schreibtischlampe (ca. 40 cm).",
+        "es": "Aproximadamente dos tercios de la altura de esta lámpara de escritorio (unos 40 cm).",
+        "it": "Circa due terzi dell'altezza di questa lampada da scrivania (circa 40 cm).",
+        "pt": "Cerca de dois terços da altura deste candeeiro de secretária (cerca de 40 cm)."
       },
       "about": {
         "ja": "壁の幅は約 1.7 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 105 cm）。",
-        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 105 cm from the floor)."
+        "en": "The wall is about 1.7 m wide. The painting hangs about 20 cm above the furniture (center about 105 cm from the floor).",
+        "zh-Hans": "墙宽约 1.7 m。挂在离家具上沿约 20 cm 的位置（画的中心离地约 105 cm）。",
+        "zh-Hant": "牆寬約 1.7 m。掛在離家具上緣約 20 cm 的位置（畫的中心離地約 105 cm）。",
+        "ko": "벽의 폭은 약 1.7 m. 가구 윗면에서 20 cm 정도 띄워 걸었습니다(그림의 중심은 바닥에서 약 105 cm).",
+        "fr": "Le mur fait environ 1,7 m de large. Le tableau est accroché à environ 20 cm au-dessus du meuble (centre à environ 105 cm du sol).",
+        "de": "Die Wand ist etwa 1,7 m breit. Das Bild hängt etwa 20 cm über dem Möbelstück (Bildmitte etwa 105 cm über dem Boden).",
+        "es": "La pared mide unos 1,7 m de ancho. El cuadro está colgado unos 20 cm por encima del mueble (centro a unos 105 cm del suelo).",
+        "it": "La parete è larga circa 1,7 m. Il quadro è appeso circa 20 cm sopra il mobile (centro a circa 105 cm dal pavimento).",
+        "pt": "A parede tem cerca de 1,7 m de largura. O quadro está pendurado cerca de 20 cm acima do móvel (centro a cerca de 105 cm do chão)."
       },
       "note": {
         "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
-        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo."
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
       },
       "primary_ref": "desk"
     }
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T13:13:57.979Z"
+  "generated_at": "2026-11-06T14:03:47.967Z"
 }

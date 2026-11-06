@@ -2,26 +2,26 @@
   "enter": {
     "ja": "絵の世界をのぞく",
     "en": "Step into the painting",
-    "zh-Hans": "进入",
-    "zh-Hant": "進入",
-    "ko": "들어가기",
-    "fr": "Entrer",
-    "de": "Eintreten",
-    "es": "Entrar",
-    "it": "Entra",
-    "pt": "Entrar"
+    "zh-Hans": "走进画的世界",
+    "zh-Hant": "走進畫的世界",
+    "ko": "그림의 세계 들여다보기",
+    "fr": "Entrer dans le tableau",
+    "de": "Ins Bild eintreten",
+    "es": "Entrar en el cuadro",
+    "it": "Entra nel quadro",
+    "pt": "Entrar no quadro"
   },
   "enter_vr": {
     "ja": "VR でのぞく",
     "en": "Step in with VR",
-    "zh-Hans": "以 VR 进入",
-    "zh-Hant": "以 VR 進入",
-    "ko": "VR로 들어가기",
+    "zh-Hans": "用 VR 走进去",
+    "zh-Hant": "用 VR 走進去",
+    "ko": "VR로 들여다보기",
     "fr": "Entrer en VR",
-    "de": "In VR eintreten",
-    "es": "Entrar en VR",
+    "de": "Mit VR eintreten",
+    "es": "Entrar con VR",
     "it": "Entra in VR",
-    "pt": "Entrar em VR"
+    "pt": "Entrar com VR"
   },
   "close": {
     "ja": "閉じる",
@@ -479,30 +479,6 @@
     "it": "Italiano",
     "pt": "Português"
   },
-  "rec_title": {
-    "ja": "どんな気分のときに、絵を見たいですか",
-    "en": "In what mood would you like to see a painting?",
-    "zh-Hans": "你想在什么样的心情下看一幅画？",
-    "zh-Hant": "你想在什麼樣的心情下看一幅畫？",
-    "ko": "어떤 기분일 때 그림을 보고 싶으세요?",
-    "fr": "Dans quel état d’esprit aimeriez-vous regarder un tableau ?",
-    "de": "In welcher Stimmung möchten Sie ein Bild ansehen?",
-    "es": "¿Con qué ánimo le gustaría mirar un cuadro?",
-    "it": "Con quale stato d’animo vorresti guardare un quadro?",
-    "pt": "Com que ânimo gostaria de ver um quadro?"
-  },
-  "rec_placeholder": {
-    "ja": "いまの気分を、ひとことで",
-    "en": "Your mood, in a few words",
-    "zh-Hans": "用一句话说说此刻的心情",
-    "zh-Hant": "用一句話說說此刻的心情",
-    "ko": "지금의 기분을 한마디로",
-    "fr": "Votre humeur, en quelques mots",
-    "de": "Ihre Stimmung, in wenigen Worten",
-    "es": "Su ánimo, en pocas palabras",
-    "it": "Il tuo umore, in poche parole",
-    "pt": "O seu estado de espírito, em poucas palavras"
-  },
   "rec_send": {
     "ja": "送る",
     "en": "Send",
@@ -518,38 +494,26 @@
   "rec_thinking": {
     "ja": "考え中",
     "en": "Thinking…",
-    "zh-Hans": "正在思考",
-    "zh-Hant": "正在思考",
-    "ko": "생각하고 있어요",
-    "fr": "Réflexion en cours",
-    "de": "Einen Moment",
-    "es": "Pensando",
-    "it": "Sto pensando",
-    "pt": "A pensar"
+    "zh-Hans": "正在想…",
+    "zh-Hant": "正在想…",
+    "ko": "생각 중…",
+    "fr": "Je réfléchis…",
+    "de": "Ich überlege …",
+    "es": "Pensando…",
+    "it": "Ci penso…",
+    "pt": "A pensar…"
   },
   "rec_enter": {
     "ja": "絵の世界をのぞく",
     "en": "Step into the painting",
-    "zh-Hans": "进入这幅画",
-    "zh-Hant": "進入這幅畫",
-    "ko": "이 그림 속으로 들어가기",
-    "fr": "Entrer dans ce tableau",
-    "de": "In dieses Bild eintreten",
-    "es": "Entrar en este cuadro",
-    "it": "Entra in questo quadro",
-    "pt": "Entrar neste quadro"
-  },
-  "rec_others": {
-    "ja": "他の作品も見る",
-    "en": "See the other works",
-    "zh-Hans": "看看其他作品",
-    "zh-Hant": "看看其他作品",
-    "ko": "다른 작품도 보기",
-    "fr": "Voir les autres œuvres",
-    "de": "Die anderen Werke ansehen",
-    "es": "Ver las demás obras",
-    "it": "Vedi le altre opere",
-    "pt": "Ver as outras obras"
+    "zh-Hans": "走进画的世界",
+    "zh-Hant": "走進畫的世界",
+    "ko": "그림의 세계 들여다보기",
+    "fr": "Entrer dans le tableau",
+    "de": "Ins Bild eintreten",
+    "es": "Entrar en el cuadro",
+    "it": "Entra nel quadro",
+    "pt": "Entrar no quadro"
   },
   "rec_or": {
     "ja": "あるいは",
@@ -563,18 +527,6 @@
     "it": "O forse",
     "pt": "Ou talvez"
   },
-  "rec_again": {
-    "ja": "もう一度",
-    "en": "Once more",
-    "zh-Hans": "再来一次",
-    "zh-Hant": "再來一次",
-    "ko": "다시 한 번",
-    "fr": "Encore une fois",
-    "de": "Noch einmal",
-    "es": "Otra vez",
-    "it": "Ancora",
-    "pt": "Mais uma vez"
-  },
   "rec_note": {
     "ja": "このおすすめは AI が作家の言葉をもとに選んだものです",
     "en": "This suggestion was chosen by AI, based on the artist’s words.",
@@ -587,29 +539,17 @@
     "it": "Questo suggerimento è stato scelto da un’IA a partire dalle parole dell’artista.",
     "pt": "Esta sugestão foi escolhida por uma IA com base nas palavras do artista."
   },
-  "rec_offline": {
-    "ja": "いまはおすすめを出せません。下の作品からご覧ください。",
-    "en": "I can’t suggest a painting right now. Please browse the works below.",
-    "zh-Hans": "现在无法推荐。请从下方的作品中浏览。",
-    "zh-Hant": "現在無法推薦。請從下方的作品中瀏覽。",
-    "ko": "지금은 추천해 드릴 수 없어요. 아래 작품을 둘러봐 주세요.",
-    "fr": "Je ne peux pas suggérer de tableau pour l’instant. Parcourez les œuvres ci-dessous.",
-    "de": "Gerade kann ich kein Bild empfehlen. Bitte sehen Sie sich die Werke unten an.",
-    "es": "Ahora no puedo sugerir un cuadro. Vea las obras de abajo.",
-    "it": "Ora non posso suggerire un quadro. Guarda le opere qui sotto.",
-    "pt": "Agora não consigo sugerir um quadro. Veja as obras abaixo."
-  },
   "rec_q_time": {
     "ja": "絵と過ごすのは、どの時間が長そう？",
     "en": "When will you spend the most time with it?",
-    "zh-Hans": "你会在哪个时段和画相处最久？",
-    "zh-Hant": "你會在哪個時段和畫相處最久？",
-    "ko": "그림과 가장 오래 함께할 시간은 언제인가요?",
-    "fr": "À quel moment passerez-vous le plus de temps avec lui ?",
-    "de": "Zu welcher Tageszeit werden Sie am meisten mit dem Bild verbringen?",
-    "es": "¿En qué momento pasará más tiempo con él?",
+    "zh-Hans": "你和画待在一起最久的，会是哪个时段？",
+    "zh-Hant": "你和畫待在一起最久的，會是哪個時段？",
+    "ko": "그림과 함께하는 시간, 언제가 제일 길 것 같아?",
+    "fr": "Tu passeras le plus de temps avec lui à quel moment ?",
+    "de": "Wann wirst du wohl die meiste Zeit mit dem Bild verbringen?",
+    "es": "¿En qué momento pasarás más tiempo con él?",
     "it": "In quale momento passerai più tempo con il quadro?",
-    "pt": "Em que momento passará mais tempo com ele?"
+    "pt": "Em que altura vais passar mais tempo com ele?"
   },
   "rec_time_morning": {
     "ja": "朝",
@@ -650,14 +590,14 @@
   "rec_q_color": {
     "ja": "その時間に、どんな色があると落ち着く？",
     "en": "What colors would put you at ease then?",
-    "zh-Hans": "那时，什么样的颜色让你安心？",
-    "zh-Hant": "那時，什麼樣的顏色讓你安心？",
-    "ko": "그 시간에는 어떤 색이 있으면 편안할까요?",
-    "fr": "Quelles couleurs vous apaiseraient à ce moment-là ?",
-    "de": "Welche Farben würden Sie dann zur Ruhe bringen?",
-    "es": "¿Qué colores le darían calma en ese momento?",
+    "zh-Hans": "那个时候，有什么颜色会让你安心？",
+    "zh-Hant": "那個時候，有什麼顏色會讓你安心？",
+    "ko": "그 시간에 어떤 색이 있으면 마음이 편할까?",
+    "fr": "À ce moment-là, quelles couleurs t'apaiseraient ?",
+    "de": "Welche Farben würden dich dann zur Ruhe bringen?",
+    "es": "¿Qué colores te darían calma en ese momento?",
     "it": "Quali colori ti darebbero calma in quel momento?",
-    "pt": "Que cores lhe trariam calma nesse momento?"
+    "pt": "Que cores te trariam calma nesse momento?"
   },
   "rec_color_warm": {
     "ja": "あたたかい",
@@ -710,14 +650,14 @@
   "rec_q_mood": {
     "ja": "部屋は、静かなほうがいい？ それとも、にぎやかなほう？",
     "en": "Should the room feel quiet, or lively?",
-    "zh-Hans": "房间要安静一些，还是热闹一些？",
-    "zh-Hant": "房間要安靜一些，還是熱鬧一些？",
-    "ko": "방은 조용한 편이 좋을까요, 활기찬 편이 좋을까요?",
-    "fr": "La pièce, plutôt calme ou plutôt animée ?",
-    "de": "Soll der Raum eher still oder lebhaft wirken?",
-    "es": "¿Prefiere una habitación tranquila o animada?",
-    "it": "Preferisci una stanza quieta o vivace?",
-    "pt": "Prefere um ambiente calmo ou animado?"
+    "zh-Hans": "房间要安静一点？还是热闹一点？",
+    "zh-Hant": "房間要安靜一點？還是熱鬧一點？",
+    "ko": "방은 조용한 게 좋아? 아니면 북적한 게 좋아?",
+    "fr": "La pièce, tu la préfères calme ? Ou plutôt animée ?",
+    "de": "Soll der Raum eher still sein? Oder lieber lebhaft?",
+    "es": "¿Prefieres una habitación tranquila? ¿O más animada?",
+    "it": "Preferisci una stanza quieta? O più vivace?",
+    "pt": "Preferes um espaço calmo? Ou mais animado?"
   },
   "rec_mood_quiet": {
     "ja": "静か",
@@ -769,98 +709,290 @@
   },
   "cg_placeholder": {
     "ja": "こんな気分のときに、こうしたい",
-    "en": "When I feel like this, I'd like to…"
+    "en": "When I feel like this, I'd like to…",
+    "zh-Hans": "这种心情的时候，我想……",
+    "zh-Hant": "這種心情的時候，我想……",
+    "ko": "이런 기분일 때, 이렇게 하고 싶어",
+    "fr": "Quand je me sens comme ça, j'aimerais…",
+    "de": "Wenn ich mich so fühle, möchte ich …",
+    "es": "Cuando me siento así, me gustaría…",
+    "it": "Quando mi sento così, vorrei…",
+    "pt": "Quando me sinto assim, gostava de…"
   },
   "cg_skip": {
     "ja": "受付を飛ばしてギャラリーへ",
-    "en": "Skip to the gallery"
+    "en": "Skip to the gallery",
+    "zh-Hans": "跳过接待，直接去画廊",
+    "zh-Hant": "跳過接待，直接去畫廊",
+    "ko": "안내를 건너뛰고 갤러리로",
+    "fr": "Passer l'accueil, aller à la galerie",
+    "de": "Empfang überspringen, zur Galerie",
+    "es": "Saltar la recepción e ir a la galería",
+    "it": "Salta l'accoglienza, vai alla galleria",
+    "pt": "Saltar a receção e ir para a galeria"
   },
   "cg_again": {
     "ja": "もう一度、話す",
-    "en": "Talk once more"
+    "en": "Talk once more",
+    "zh-Hans": "再聊一次",
+    "zh-Hant": "再聊一次",
+    "ko": "다시 이야기하기",
+    "fr": "Reparler ensemble",
+    "de": "Noch einmal reden",
+    "es": "Hablar otra vez",
+    "it": "Parliamone ancora",
+    "pt": "Falar outra vez"
   },
   "cg_wait": {
     "ja": "ちょっと待ってね",
-    "en": "Hang on a sec."
+    "en": "Hang on a sec.",
+    "zh-Hans": "稍等一下哦",
+    "zh-Hant": "稍等一下喔",
+    "ko": "잠깐만 기다려 줘",
+    "fr": "Une petite seconde.",
+    "de": "Einen Moment.",
+    "es": "Un segundito.",
+    "it": "Un attimo.",
+    "pt": "Só um instante."
   },
   "cg_pass_ask": {
     "ja": "ここはまだ準備中の部屋なんだ。合言葉、教えてもらえる？",
-    "en": "This room is still being prepared. May I have the passphrase?"
+    "en": "This room is still being prepared. May I have the passphrase?",
+    "zh-Hans": "这里还是准备中的房间哦。可以告诉我暗号吗？",
+    "zh-Hant": "這裡還是準備中的房間喔。可以告訴我暗號嗎？",
+    "ko": "여긴 아직 준비 중인 방이야. 암호를 알려 줄래?",
+    "fr": "Cette salle est encore en préparation. Tu peux me donner le mot de passe ?",
+    "de": "Dieser Raum wird noch vorbereitet. Verrätst du mir das Losungswort?",
+    "es": "Esta sala todavía se está preparando. ¿Me dices la contraseña?",
+    "it": "Questa stanza è ancora in preparazione. Mi dici la parola d'ordine?",
+    "pt": "Esta sala ainda está a ser preparada. Dizes-me a palavra-passe?"
   },
   "cg_pass_placeholder": {
     "ja": "合言葉",
-    "en": "Passphrase"
+    "en": "Passphrase",
+    "zh-Hans": "暗号",
+    "zh-Hant": "暗號",
+    "ko": "암호",
+    "fr": "Mot de passe",
+    "de": "Losungswort",
+    "es": "Contraseña",
+    "it": "Parola d'ordine",
+    "pt": "Palavra-passe"
   },
   "cg_pass_none": {
     "ja": "合言葉がない",
-    "en": "I don't have one"
+    "en": "I don't have one",
+    "zh-Hans": "我没有暗号",
+    "zh-Hant": "我沒有暗號",
+    "ko": "암호가 없어",
+    "fr": "Je n'en ai pas",
+    "de": "Ich habe keins",
+    "es": "No tengo",
+    "it": "Non ce l'ho",
+    "pt": "Não tenho"
   },
   "cg_moods": {
     "ja": "ことば",
-    "en": "Words"
+    "en": "Words",
+    "zh-Hans": "话语",
+    "zh-Hant": "話語",
+    "ko": "말",
+    "fr": "Mots",
+    "de": "Worte",
+    "es": "Palabras",
+    "it": "Parole",
+    "pt": "Palavras"
   },
   "cg_offline": {
     "ja": "いまはおすすめを出せません。ギャラリーからご覧ください。",
-    "en": "I can't suggest a painting right now. Please walk the gallery."
+    "en": "I can't suggest a painting right now. Please walk the gallery.",
+    "zh-Hans": "现在暂时无法推荐。请到画廊里看看。",
+    "zh-Hant": "現在暫時無法推薦。請到畫廊裡看看。",
+    "ko": "지금은 추천을 드릴 수 없어요. 갤러리에서 둘러봐 주세요.",
+    "fr": "Je ne peux pas faire de suggestion pour le moment. Parcourez la galerie.",
+    "de": "Gerade kann ich nichts empfehlen. Schau dich bitte in der Galerie um.",
+    "es": "Ahora mismo no puedo recomendar nada. Echa un vistazo a la galería.",
+    "it": "Al momento non posso consigliarti nulla. Dai un'occhiata alla galleria.",
+    "pt": "De momento não consigo fazer sugestões. Espreita a galeria."
   },
   "gw_for_you": {
     "ja": "あなたへの 1 点",
-    "en": "One for you"
+    "en": "One for you",
+    "zh-Hans": "给你的一幅",
+    "zh-Hant": "給你的一幅",
+    "ko": "당신을 위한 한 점",
+    "fr": "Un tableau pour vous",
+    "de": "Ein Bild für dich",
+    "es": "Uno para ti",
+    "it": "Uno per te",
+    "pt": "Um para ti"
   },
   "gw_back": {
     "ja": "受付に戻る",
-    "en": "Back to the reception"
+    "en": "Back to the reception",
+    "zh-Hans": "返回接待处",
+    "zh-Hant": "返回接待處",
+    "ko": "안내로 돌아가기",
+    "fr": "Retour à l'accueil",
+    "de": "Zurück zum Empfang",
+    "es": "Volver a la recepción",
+    "it": "Torna all'accoglienza",
+    "pt": "Voltar à receção"
   },
   "cg_card_head": {
     "ja": "今日のあなたへの 1 点",
-    "en": "Today's painting for you"
+    "en": "Today's painting for you",
+    "zh-Hans": "今天给你的一幅",
+    "zh-Hant": "今天給你的一幅",
+    "ko": "오늘 당신을 위한 한 점",
+    "fr": "Le tableau du jour, pour vous",
+    "de": "Dein Bild für heute",
+    "es": "Tu cuadro de hoy",
+    "it": "Il tuo quadro di oggi",
+    "pt": "O teu quadro de hoje"
   },
   "cg_other": {
     "ja": "別のにする",
-    "en": "Show me another"
+    "en": "Show me another",
+    "zh-Hans": "换一幅",
+    "zh-Hant": "換一幅",
+    "ko": "다른 걸로",
+    "fr": "Un autre",
+    "de": "Ein anderes",
+    "es": "Otro distinto",
+    "it": "Un altro",
+    "pt": "Outro"
   },
   "cg_all": {
     "ja": "ギャラリー全体を見る",
-    "en": "See the whole gallery"
+    "en": "See the whole gallery",
+    "zh-Hans": "看看整个画廊",
+    "zh-Hant": "看看整個畫廊",
+    "ko": "갤러리 전체 보기",
+    "fr": "Voir toute la galerie",
+    "de": "Die ganze Galerie ansehen",
+    "es": "Ver toda la galería",
+    "it": "Vedi tutta la galleria",
+    "pt": "Ver a galeria toda"
   },
   "cg_other_line": {
     "ja": "じゃあ、こっちはどうかな",
-    "en": "Then, how about this one?"
+    "en": "Then, how about this one?",
+    "zh-Hans": "那，这幅怎么样？",
+    "zh-Hant": "那，這幅怎麼樣？",
+    "ko": "그럼, 이건 어때?",
+    "fr": "Alors, et celui-ci ?",
+    "de": "Und wie wär's mit diesem hier?",
+    "es": "Entonces, ¿qué tal este?",
+    "it": "Allora, che ne dici di questo?",
+    "pt": "Então, e este?"
   },
   "cg_other_req": {
     "ja": "別の絵をすすめてください",
-    "en": "Please suggest a different painting"
+    "en": "Please suggest a different painting",
+    "zh-Hans": "请推荐另一幅画",
+    "zh-Hant": "請推薦另一幅畫",
+    "ko": "다른 그림을 추천해 주세요",
+    "fr": "Suggérez-moi un autre tableau, s'il vous plaît",
+    "de": "Bitte empfiehl mir ein anderes Bild",
+    "es": "Recomiéndame otro cuadro, por favor",
+    "it": "Consigliami un altro quadro, per favore",
+    "pt": "Recomenda-me outro quadro, por favor"
   },
   "cg_other_req_not": {
     "ja": "別の絵をすすめてください（「{title}」以外で）",
-    "en": "Please suggest a different painting (not \"{title}\")"
+    "en": "Please suggest a different painting (not \"{title}\")",
+    "zh-Hans": "请推荐另一幅画（“{title}”以外的）",
+    "zh-Hant": "請推薦另一幅畫（「{title}」以外的）",
+    "ko": "다른 그림을 추천해 주세요('{title}' 말고)",
+    "fr": "Suggérez-moi un autre tableau, s'il vous plaît (pas « {title} »)",
+    "de": "Bitte empfiehl mir ein anderes Bild (nicht „{title}“)",
+    "es": "Recomiéndame otro cuadro, por favor (que no sea «{title}»)",
+    "it": "Consigliami un altro quadro, per favore (non «{title}»)",
+    "pt": "Recomenda-me outro quadro, por favor (que não seja «{title}»)"
   },
   "cg_retry": {
     "ja": "別の絵、考えてみるね",
-    "en": "Let me think of another one."
+    "en": "Let me think of another one.",
+    "zh-Hans": "我再想想别的画哦。",
+    "zh-Hant": "我再想想別的畫喔。",
+    "ko": "다른 그림, 생각해 볼게.",
+    "fr": "Je cherche un autre tableau.",
+    "de": "Ich überlege mir ein anderes Bild.",
+    "es": "Voy a pensar en otro cuadro.",
+    "it": "Ci penso, a un altro quadro.",
+    "pt": "Vou pensar noutro quadro."
   },
   "cg_back": {
     "ja": "会話に戻る",
-    "en": "Back to the conversation"
+    "en": "Back to the conversation",
+    "zh-Hans": "返回对话",
+    "zh-Hant": "返回對話",
+    "ko": "대화로 돌아가기",
+    "fr": "Retour à la conversation",
+    "de": "Zurück zum Gespräch",
+    "es": "Volver a la conversación",
+    "it": "Torna alla conversazione",
+    "pt": "Voltar à conversa"
   },
   "cg_reopen": {
     "ja": "おすすめをもう一度見る",
-    "en": "See the suggestion again"
+    "en": "See the suggestion again",
+    "zh-Hans": "再看一次推荐",
+    "zh-Hant": "再看一次推薦",
+    "ko": "추천 다시 보기",
+    "fr": "Revoir la suggestion",
+    "de": "Den Vorschlag noch einmal ansehen",
+    "es": "Ver otra vez la recomendación",
+    "it": "Rivedi il consiglio",
+    "pt": "Ver outra vez a sugestão"
   },
   "cg_after_head": {
     "ja": "絵の中から戻ってきました",
-    "en": "Back from inside the painting"
+    "en": "Back from inside the painting",
+    "zh-Hans": "从画中回来了",
+    "zh-Hant": "從畫中回來了",
+    "ko": "그림 속에서 돌아왔어요",
+    "fr": "De retour du tableau",
+    "de": "Zurück aus dem Bild",
+    "es": "De vuelta del cuadro",
+    "it": "Di ritorno dal quadro",
+    "pt": "De volta de dentro do quadro"
   },
   "cg_after_again": {
     "ja": "もう一度のぞく",
-    "en": "Step in again"
+    "en": "Step in again",
+    "zh-Hans": "再走进去一次",
+    "zh-Hant": "再走進去一次",
+    "ko": "다시 들여다보기",
+    "fr": "Y retourner",
+    "de": "Noch einmal eintreten",
+    "es": "Entrar otra vez",
+    "it": "Entra di nuovo",
+    "pt": "Entrar outra vez"
   },
   "cg_after_rooms": {
     "ja": "部屋で見る",
-    "en": "See it in a room"
+    "en": "See it in a room",
+    "zh-Hans": "放进房间看看",
+    "zh-Hant": "放進房間看看",
+    "ko": "방에 걸어 보기",
+    "fr": "La voir dans une pièce",
+    "de": "Im Raum sehen",
+    "es": "Verla en una habitación",
+    "it": "Vederla in una stanza",
+    "pt": "Ver num ambiente"
   },
   "enter_note": {
     "ja": "色が動き出し、作家の言葉が流れます（約 2 分）",
-    "en": "The colors begin to move and the artist's words drift by (about 2 min)"
+    "en": "The colors begin to move and the artist's words drift by (about 2 min)",
+    "zh-Hans": "色彩开始流动，作家的话语缓缓流过（约 2 分钟）",
+    "zh-Hant": "色彩開始流動，作家的話語緩緩流過（約 2 分鐘）",
+    "ko": "색이 움직이기 시작하고, 작가의 말이 흘러갑니다(약 2분)",
+    "fr": "Les couleurs se mettent à bouger et les mots de l'artiste défilent (environ 2 min)",
+    "de": "Die Farben beginnen sich zu bewegen, und die Worte der Künstlerin ziehen vorbei (ca. 2 Min.)",
+    "es": "Los colores empiezan a moverse y las palabras de la artista van pasando (unos 2 min)",
+    "it": "I colori iniziano a muoversi e scorrono le parole dell'artista (circa 2 min)",
+    "pt": "As cores começam a mexer-se e as palavras da artista vão passando (cerca de 2 min)"
   }
 }
