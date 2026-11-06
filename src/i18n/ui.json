@@ -984,16 +984,16 @@
     "pt": "Ver num ambiente"
   },
   "enter_note": {
-    "ja": "色が動き出し、作家の言葉が流れます（約 2 分）",
-    "en": "The colors begin to move and the artist's words drift by (about 2 min)",
-    "zh-Hans": "色彩开始流动，作家的话语缓缓流过（约 2 分钟）",
-    "zh-Hant": "色彩開始流動，作家的話語緩緩流過（約 2 分鐘）",
-    "ko": "색이 움직이기 시작하고, 작가의 말이 흘러갑니다(약 2분)",
-    "fr": "Les couleurs se mettent à bouger et les mots de l'artiste défilent (environ 2 min)",
-    "de": "Die Farben beginnen sich zu bewegen, und die Worte der Künstlerin ziehen vorbei (ca. 2 Min.)",
-    "es": "Los colores empiezan a moverse y las palabras de la artista van pasando (unos 2 min)",
-    "it": "I colori iniziano a muoversi e scorrono le parole dell'artista (circa 2 min)",
-    "pt": "As cores começam a mexer-se e as palavras da artista vão passando (cerca de 2 min)"
+    "ja": "色が動き出し、作家の言葉が流れます（約 1 分）",
+    "en": "The colors begin to move and the artist's words drift by (about 1 min)",
+    "zh-Hans": "色彩开始流动，作家的话语缓缓流过（约 1 分钟）",
+    "zh-Hant": "色彩開始流動，作家的話語緩緩流過（約 1 分鐘）",
+    "ko": "색이 움직이기 시작하고, 작가의 말이 흘러갑니다(약 1분)",
+    "fr": "Les couleurs se mettent à bouger et les mots de l'artiste défilent (environ 1 min)",
+    "de": "Die Farben beginnen sich zu bewegen, und die Worte der Künstlerin ziehen vorbei (ca. 1 Min.)",
+    "es": "Los colores empiezan a moverse y las palabras de la artista van pasando (1 min aprox.)",
+    "it": "I colori iniziano a muoversi e scorrono le parole dell'artista (circa 1 min)",
+    "pt": "As cores começam a mexer-se e as palavras da artista vão passando (cerca de 1 min)"
   },
   "reset_position": {
     "ja": "元の位置に戻す",

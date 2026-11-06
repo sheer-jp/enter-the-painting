@@ -85,7 +85,8 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 .hud .caption { position: absolute; left: 0; right: 0; bottom: calc(96px + env(safe-area-inset-bottom)); text-align: center; color: var(--ink); font-family: var(--serif); font-size: 15px; letter-spacing: .08em; line-height: 1.6; padding: 0 24px; opacity: 0; transition: opacity 1.2s; text-shadow: 0 0 8px rgba(246,244,239,.95), 0 0 2px rgba(246,244,239,.95); }
 .hud .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(246,244,239,.85) 100%); opacity: 0; transition: opacity .3s; }
 .hud .debug { position: absolute; left: 8px; top: 8px; font: 11px/1.4 monospace; color: #0f0; background: rgba(0,0,0,.5); padding: 4px 6px; white-space: pre; }
-.float-text { font-family: var(--serif) !important; }
+/* 絵の中の作家の言葉（物語モード T3。11-07 T-1：太く・大きく。docs/EXPERIENCE.md 3 節 T3 の数値） */
+.float-text { font-family: var(--serif); font-weight: 600; font-size: clamp(26px, calc(4.4vmin + 10px), 48px); line-height: 1.75; letter-spacing: .04em; padding: 0 7vw; color: var(--ink); text-shadow: 0 0 10px rgba(255,255,255,.95), 0 0 2px rgba(255,255,255,.95); }
 @media (prefers-reduced-motion: reduce) { .hud .title, .hud .ending, .hud .once, .hud .caption { transition: none; } }
 
 /* 部屋で見る：キャプションは比較の一文だけ（明朝）。帯の下に 1 行の案内 */

@@ -164,44 +164,44 @@
         "ja": "机の上のイーゼル",
         "en": "On the desk easel"
       },
-      "wall_width_cm": 121,
+      "wall_width_cm": 126,
       "image_px": [
         1600,
         1600
       ],
       "quad_px": [
         [
-          871,
-          641
+          697,
+          623
         ],
         [
-          1083,
-          641
+          903,
+          623
         ],
         [
-          1086,
-          804
+          906,
+          781
         ],
         [
-          868,
-          804
+          694,
+          781
         ]
       ],
-      "px_per_cm": 12.143,
+      "px_per_cm": 11.75,
       "confidence": "high",
       "occlusion": false,
       "move_px": [
-        853,
+        672,
         0,
-        1102,
+        927,
         880
       ],
       "place": "easel",
       "side_color": "#786009",
       "sides_px": {
-        "bottom": 12.1,
-        "right": 12.1,
-        "shadow": 18.2
+        "bottom": 11.8,
+        "right": 11.8,
+        "shadow": 17.6
       },
       "compare": {
         "ja": "この卓上イーゼルの約半分の高さ。",
@@ -210,6 +210,80 @@
       "compare2": {
         "ja": "このノート PC（約 30 cm）の約 3 分の 2 の幅。",
         "en": "About two thirds the width of the laptop (about 30 cm)."
+      },
+      "about": {
+        "ja": "小さな卓上イーゼル（高さ約 28 cm）の受けに、絵の底を乗せて置いています。",
+        "en": "The painting stands on a small tabletop easel (about 28 cm tall), resting on its ledge."
+      },
+      "note": {
+        "ja": "部屋は AI で作ったイメージで、寸法はだいたいこのくらい、という目安です。絵は実物の写真です。",
+        "en": "The room is an AI-generated image, and the size is a rough guide to how it might look. The painting is a real photo.",
+        "zh-Hans": "房间是用 AI 生成的示意图，尺寸只是大致的参考。画作是实物照片。",
+        "zh-Hant": "房間是用 AI 生成的示意圖，尺寸只是大致的參考。畫作是實物照片。",
+        "ko": "방은 AI로 만든 이미지이며, 크기는 대략 이 정도라는 기준입니다. 그림은 실물 사진입니다.",
+        "fr": "La pièce est une image créée par IA, et les dimensions ne sont qu'un ordre de grandeur. Le tableau est une vraie photo.",
+        "de": "Der Raum ist ein mit KI erstelltes Bild, die Größen sind nur ein ungefährer Anhaltspunkt. Das Gemälde ist ein echtes Foto.",
+        "es": "La habitación es una imagen creada con IA y las medidas son solo una referencia aproximada. El cuadro es una foto real.",
+        "it": "La stanza è un'immagine creata con l'IA e le misure sono solo un riferimento indicativo. Il quadro è una foto reale.",
+        "pt": "O espaço é uma imagem criada com IA e as medidas são apenas uma referência aproximada. O quadro é uma fotografia real."
+      },
+      "primary_ref": "tabletop_easel"
+    },
+    {
+      "name": "entrance-console",
+      "image": "room_entrance-console.jpg",
+      "base": "rooms/entrance-console.jpg",
+      "category": "studio",
+      "label": {
+        "ja": "玄関の靴箱の上",
+        "en": "On the entrance cabinet"
+      },
+      "wall_width_cm": 95,
+      "image_px": [
+        1600,
+        1600
+      ],
+      "quad_px": [
+        [
+          657,
+          463
+        ],
+        [
+          953,
+          463
+        ],
+        [
+          957,
+          690
+        ],
+        [
+          653,
+          690
+        ]
+      ],
+      "px_per_cm": 16.929,
+      "confidence": "mid",
+      "occlusion": false,
+      "move_px": [
+        635,
+        0,
+        975,
+        766
+      ],
+      "place": "easel",
+      "side_color": "#786009",
+      "sides_px": {
+        "bottom": 16.9,
+        "right": 16.9,
+        "shadow": 25.4
+      },
+      "compare": {
+        "ja": "この卓上イーゼルの約半分の高さ。",
+        "en": "About half the height of the tabletop easel."
+      },
+      "compare2": {
+        "ja": "この靴箱（約 90 cm）の約 5 分の 1 の幅。",
+        "en": "About a fifth the width of the shoe cabinet (about 90 cm)."
       },
       "about": {
         "ja": "小さな卓上イーゼル（高さ約 28 cm）の受けに、絵の底を乗せて置いています。",
@@ -278,8 +352,8 @@
         "shadow": 16.9
       },
       "compare": {
-        "ja": "この本棚の約 0.2 倍の高さ（寸法は目安）。",
-        "en": "About 0.2 times the height of the bookshelf (size is approximate)."
+        "ja": "この本棚の約 6 分の 1 の高さ（寸法は目安）。",
+        "en": "About a sixth the height of the bookshelf (size is approximate)."
       },
       "compare2": null,
       "about": {
@@ -345,8 +419,8 @@
         "en": "About half the height of the tabletop easel."
       },
       "compare2": {
-        "ja": "このサイドボード（約 80 cm）の約 0.2 倍の高さ。",
-        "en": "About 0.2 times the height of the sideboard (about 80 cm)."
+        "ja": "このサイドボード（約 80 cm）の約 5 分の 1 の高さ。",
+        "en": "About a fifth the height of the sideboard (about 80 cm)."
       },
       "about": {
         "ja": "小さな卓上イーゼル（高さ約 28 cm）の受けに、絵の底を乗せて置いています。",
@@ -369,5 +443,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T16:35:20.901Z"
+  "generated_at": "2026-11-06T16:58:09.439Z"
 }

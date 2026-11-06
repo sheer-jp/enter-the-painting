@@ -1,8 +1,10 @@
 // 文字の浮上。screen：DOM で画面の奥から（物語モード）。space：Canvas のスプライトで空間内（VR）
 import * as THREE from 'three';
+import { screenTextTiming } from './timing';
 
 export interface FloatOptions { rise?: number; hold?: number; dissolve?: number; reduced?: boolean }
 
+// 空間（VR）の滞在：docs/EXPERIENCE.md S4（1 文字 0.25 秒、最短 4 秒）。物語モードは ./timing.ts
 const holdFor = (s: string, min = 4) => Math.max(min, s.length * 0.25);
 
 export class ScreenText {
@@ -13,15 +15,20 @@ export class ScreenText {
   constructor(parent: HTMLElement, color: string) {
     this.el = document.createElement('div');
     this.el.className = 'float-text';
-    this.el.style.cssText = `position:absolute;left:0;right:0;top:50%;transform:translateY(-50%) scale(.3);padding:0 8vw;text-align:center;color:${color};font-size:min(5vmin,34px);line-height:1.7;letter-spacing:.04em;opacity:0;filter:blur(6px);pointer-events:none;text-shadow:0 0 24px rgba(0,0,0,.9),0 0 60px rgba(0,0,0,.7),0 2px 4px rgba(0,0,0,.8);word-break:keep-all;overflow-wrap:anywhere;`;
+    // 書体・大きさ・太さ・色・にじみは page.css の .float-text（11-07 T-1：--ink の 600、白のにじみ）。ここは位置と動きだけ。
+    // color（作品の text_color）は物語モードでは使わない（白い流体の上で読めるよう --ink に統一）。呼び出し側を変えないため引数は残す
+    this.el.style.cssText = 'position:absolute;left:0;right:0;top:50%;transform:translateY(-50%) scale(.3);text-align:center;opacity:0;filter:blur(6px);pointer-events:none;word-break:keep-all;overflow-wrap:anywhere;';
     parent.appendChild(this.el);
+    // 最初の文が代わりの書体で出ないよう、600 を先に読んでおく（失敗しても続ける）
+    document.fonts?.load('600 40px "Shippori Mincho"').catch(() => {});
   }
   setPaused(p: boolean) { this.paused = p; this.el.getAnimations().forEach((a) => (p ? a.pause() : a.play())); }
   skip() { this.resolveSkip?.(); }
   // 浮上 → 滞在 → 溶ける。resolve で終わり
   async show(sentence: string, opt: FloatOptions = {}): Promise<void> {
     const my = ++this.token;
-    const rise = opt.reduced ? 1.5 : (opt.rise ?? 6), hold = opt.hold ?? holdFor(sentence), dissolve = opt.reduced ? 1 : (opt.dissolve ?? 3);
+    const t = screenTextTiming(sentence);
+    const rise = opt.rise ?? t.rise, hold = opt.hold ?? t.hold, dissolve = opt.dissolve ?? t.dissolve;
     this.el.textContent = sentence;
     const anim = (frames: Keyframe[], ms: number) => new Promise<void>((res) => {
       const a = this.el.animate(frames, { duration: ms, fill: 'forwards', easing: 'cubic-bezier(.2,.7,.3,1)' });
@@ -35,6 +42,9 @@ export class ScreenText {
     if (my !== this.token) return;
     this.resolveSkip = null;
     await anim([{ opacity: 1, transform: 'translateY(-50%) scale(1)', filter: 'blur(0px)' }, { opacity: 0, transform: 'translateY(-50%) scale(1.15)', filter: 'blur(10px)' }], dissolve * 1000);
+    if (my !== this.token) return;
+    // 次の文までの間（一時停止中は進まない）
+    await this.wait(t.gap * 1000);
   }
   private wait(ms: number) {
     return new Promise<void>((res) => {
@@ -73,7 +83,7 @@ export class SpaceText {
   private draw(text: string) {
     const c = this.canvas.getContext('2d')!;
     c.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    c.font = `500 110px ${this.font}`;
+    c.font = `600 110px ${this.font}`;
     c.textAlign = 'center'; c.textBaseline = 'middle';
     // 2 行まで（40 文字で折り返し）
     const lines: string[] = [];

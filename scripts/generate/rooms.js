@@ -458,7 +458,9 @@ export function fractionOf(r) {
   if (r >= 0.6 && r <= 0.75) return { kind: 'frac', ja: '約 3 分の 2', en: 'about two thirds' };
   if (r >= 0.45 && r <= 0.55) return { kind: 'frac', ja: '約半分', en: 'about half' };
   if (r >= 0.28 && r <= 0.38) return { kind: 'frac', ja: '約 3 分の 1', en: 'about one third' };
-  if (r >= 0.2 && r < 0.28) return { kind: 'frac', ja: '約 4 分の 1', en: 'about a quarter' };
+  if (r >= 0.22 && r < 0.28) return { kind: 'frac', ja: '約 4 分の 1', en: 'about a quarter' };
+  if (r >= 0.17 && r < 0.22) return { kind: 'frac', ja: '約 5 分の 1', en: 'about a fifth' };   // 11-07：「約 0.2 倍の高さ」が不自然だった
+  if (r >= 0.14 && r < 0.17) return { kind: 'frac', ja: '約 6 分の 1', en: 'about a sixth' };
   const v = Math.max(0.1, Math.round(r * 10) / 10).toFixed(1);
   return { kind: 'times', ja: `約 ${v} 倍`, en: `about ${v} times` };
 }
@@ -466,7 +468,7 @@ export function fractionOf(r) {
 // 顧客に馴染みがある順（ドア > ソファ > 机 > 棚 > カウンター > ナイトテーブル > 天井 > その他）
 export const FAMILIAR = ['door_interior', 'door_entrance', 'sofa_2seat', 'armchair', 'bench', 'desk', 'low_shelf', 'tabletop_easel', 'sideboard', 'bookshelf_low', 'kitchen_counter', 'nightstand', 'ceiling', 'ceiling_entrance', 'window', 'kettle', 'table_lamp', 'laptop', 'mug'];
 // 幅で比べてよい物（横長の絵と、横に長い家具）
-const WIDE = new Set(['sofa_2seat', 'bench', 'desk', 'low_shelf', 'window']);
+const WIDE = new Set(['sofa_2seat', 'bench', 'desk', 'low_shelf', 'window', 'shoe_cabinet', 'sideboard', 'bookshelf_low']);   // 11-07：靴箱・サイドボード・本棚は幅で比べる（「約 0.2 倍の高さ」が不自然だった）
 const rankOf = (k) => { const i = FAMILIAR.indexOf(k); return i < 0 ? FAMILIAR.length : i; };
 
 // 1 つの基準物との比べ方：基本は高さ。横長の絵と横に長い物で、幅の方が 1 に近ければ幅。高さの無い物は幅
@@ -566,7 +568,7 @@ export async function compositeRooms({ root, work, paintingPath, outDir }) {
       if (d.suits_cm && !(longSide >= d.suits_cm[0] && longSide <= d.suits_cm[1])) return false;
       const c = d.category || '';
       perCat[c] = (perCat[c] || 0) + 1;
-      return perCat[c] <= 2;
+      return perCat[c] <= (d.hang?.place ? 3 : 2);   // 置く部屋は種類ごとに 3 枚まで（小さな絵で desk-easel・entrance-console・shelf-lean。docs/PLACEMENT.md 6 節）
     });
   }
   const painting = await sharp(paintingPath).resize({ width: 800 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });

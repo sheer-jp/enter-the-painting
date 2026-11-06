@@ -74,5 +74,6 @@
   - 縮尺は従来どおり `references`（机の幅、イーゼルの高さ 28 cm、マグ 9 cm など。`REFERENCES.json` に `tabletop_easel` 高さ 28、`mug` 高さ 9、`laptop` 幅 30 を足す）
 - **拡大表示のドラッグ**（EXPERIENCE 4 節「絵を動かせる」）：`place` の部屋では**横にだけ**動かす（下端は受けに乗ったまま）
 - `suits_cm`：イーゼル・棚は `[15, 45]`。これより大きい作品には出さない
+- 選ばれ方（11-07）：部屋の指定が無い作品では、種類（`category`）ごとの枠を、掛ける部屋は 2 枚、**置く部屋は 3 枚まで**（小さな作品で desk-easel・entrance-console・shelf-lean の 3 つが揃って出る。`rooms.js` の `perCat`）
 - 既存の「掛ける」小部屋（studio-desk、studio-shelf、studio-kitchen、studio-entrance）は、置く部屋が揃ったら候補から外す（`disabled`）。玄関（entrance-house、suits 20〜70）は残す
 

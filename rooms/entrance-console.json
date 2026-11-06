@@ -1,0 +1,40 @@
+{
+  "name": "entrance-console",
+  "image_width_px": 1600,
+  "image_height_px": 1600,
+  "label": {
+    "ja": "玄関の靴箱の上",
+    "en": "On the entrance cabinet"
+  },
+  "category": "studio",
+  "scene": "小さな玄関の靴箱（オーク、幅 90 cm・高さ 90 cm）の天板のアップ。中央に卓上イーゼル（28 cm）、右端に鍵のトレイ、左下に靴が 1 足。明るい昼の光。AI 生成のイメージ（Codex）。",
+  "references": [
+    {
+      "ref": "tabletop_easel.height",
+      "px": 474,
+      "primary": true,
+      "note": "芯棒の頂点 y385 〜 前脚の先 y859（1600px の原画を画素で走査）"
+    },
+    {
+      "ref": "shoe_cabinet.width",
+      "px": 1389,
+      "note": "天板の幅をイーゼルの前脚と同じ奥行き（y858）で測った x153〜1541。手前の前縁（y928）では x106〜1591 = 1486px、奥の縁（y767）では 1254px"
+    }
+  ],
+  "wall": {
+    "corners_px": [
+      [0, 0],
+      [1600, 0],
+      [1600, 766],
+      [0, 766]
+    ]
+  },
+  "hang": {
+    "place": "easel",
+    "ledge_y_px": 707,
+    "ledge_x_px": [635, 975],
+    "x_px": 805,
+    "note": "受け桟の上端 y707（前面の下端 y740）、桟 x635〜975、中心 x805（芯棒の中心は 809）。壁の下端は天板の奥の縁 y766。絵の底（側面の帯の下端）をここに乗せる。docs/PLACEMENT.md 6 節"
+  },
+  "suits_cm": [15, 45]
+}

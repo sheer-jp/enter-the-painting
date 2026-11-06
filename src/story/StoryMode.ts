@@ -9,6 +9,9 @@ import { ScreenText } from '../text/FloatingText';
 import { pick, type Lang } from '../i18n';
 import { Particles } from '../space/Particles';
 
+// T3 の最短の長さ（秒）。docs/EXPERIENCE.md 3 節 T3「数値」。声があるときは声の長さが優先
+const T3_MIN_S = 40;
+
 export interface StoryCtx {
   renderer: THREE.WebGLRenderer | null; fluid: Fluid | null; space: Space; sound: Soundscape; hud: Hud; lang: Lang;
   reduced: boolean; fromQr: boolean; base: string; debug: boolean; canvas: HTMLCanvasElement;
@@ -401,6 +404,7 @@ export class StoryMode {
     await this.enter();
     // T3 流れと語り
     this.stage = 'T3';
+    const t3Start = performance.now();   // 文が先に終わっても、流れは最短 T3_MIN_S 続ける（11-07 T-1 で文が速くなり、絵の中の時間が短くなりすぎたため）
     setTimeout(() => sound.drone(-22, 3), 4000);
     const roomReady = this.loadRoom();
     const voiceUrl = space.audio.voice ? this.ctx.base + space.audio.voice : null;
@@ -421,6 +425,7 @@ export class StoryMode {
       await this.text.show(pick(m, lang), { reduced });
     }
     if (voiceOk) await voiceEnded;
+    while (this.running && !voiceOk && performance.now() - t3Start < T3_MIN_S * 1000) await wait(100);   // 「次へ」で文を飛ばしても、ここで流れを見せる
     // T4 余韻：最後の文字が終わると同時に、シューッと引きながら流れが止まり、元の絵へ戻る
     this.stage = 'T4';
     hud.skip.hidden = true;

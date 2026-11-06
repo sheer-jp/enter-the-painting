@@ -84,6 +84,39 @@ describe('置く部屋（rooms/*.json）', () => {
   });
 });
 
+describe('置く部屋 v2（11-07：机のイーゼルを PC の真後ろに、玄関の靴箱の上を追加）', () => {
+  it('entrance-console：玄関の靴箱の上。卓上イーゼルが主、靴箱の幅 90 cm が副で、絵の底が受けに乗り壁に収まる', () => {
+    const def = readRoom('entrance-console');
+    expect(def.category).toBe('studio');
+    expect(def.hang.place).toBe('easel');
+    expect(def.suits_cm).toEqual([15, 45]);
+    expect(def.references.find((r: { primary?: boolean }) => r.primary).ref).toBe('tabletop_easel.height');
+    expect(table.shoe_cabinet.width_cm).toBe(90);
+    const sc = scaleFromReferences(def.references, table);
+    expect(sc.deviation).toBeLessThan(0.15);
+    const xs = def.wall.corners_px.map((p: number[]) => p[0]), ys = def.wall.corners_px.map((p: number[]) => p[1]);
+    for (const size of [[18, 14], [33.3, 24.2]] as [number, number][]) {
+      const q = paintingRectFromScale({ ...def, scale: { px_per_cm: sc.px_per_cm } }, size, def.image_width_px);
+      expect(q[3][1] + placeSidesPx('easel', sc.px_per_cm).bottom).toBeCloseTo(def.hang.ledge_y_px);
+      for (const [x, y] of q) {
+        expect(x).toBeGreaterThanOrEqual(Math.min(...xs)); expect(x).toBeLessThanOrEqual(Math.max(...xs));
+        expect(y).toBeGreaterThanOrEqual(Math.min(...ys)); expect(y).toBeLessThanOrEqual(Math.max(...ys));
+      }
+    }
+  });
+  it('desk-easel・entrance-console：絵の中心 x は受け桟の中心（±6px）、絵の底は受けの左右の端の中、壁の下端より上', () => {
+    for (const n of ['desk-easel', 'entrance-console']) {
+      const def = readRoom(n);
+      const [l, r] = def.hang.ledge_x_px;
+      expect(Math.abs(def.hang.x_px - (l + r) / 2)).toBeLessThanOrEqual(6);
+      const sc = scaleFromReferences(def.references, table);
+      const q = paintingRectFromScale({ ...def, scale: { px_per_cm: sc.px_per_cm } }, [18, 14], def.image_width_px);
+      expect(q[3][0]).toBeGreaterThanOrEqual(l); expect(q[2][0]).toBeLessThanOrEqual(r);
+      expect(def.hang.ledge_y_px).toBeLessThan(Math.max(...def.wall.corners_px.map((p: number[]) => p[1])));
+    }
+  });
+});
+
 describe('側面の帯と接地の影の描画', () => {
   // 白い壁 200×200 に、赤い絵（下端だけ青）を easel で置く
   const W = 200, H = 200;

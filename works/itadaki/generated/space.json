@@ -225,16 +225,8 @@
         "pt": "Cerca de um quarto da altura desta porta."
       },
       "compare2": {
-        "ja": "この玄関の天井（約 230 cm）の約 0.2 倍の高さ。",
-        "en": "About 0.2 times the height of the ceiling (about 230 cm).",
-        "zh-Hans": "约为这个玄关的天花板（约 230 cm）高度的 0.2 倍。",
-        "zh-Hant": "約為這個玄關的天花板（約 230 cm）高度的 0.2 倍。",
-        "ko": "이 현관 천장(약 230 cm) 높이의 약 0.2배.",
-        "fr": "Environ 0,2 fois la hauteur du plafond de cette entrée (environ 230 cm).",
-        "de": "Etwa 0,2-mal so hoch wie die Decke dieses Eingangs (ca. 230 cm).",
-        "es": "Aproximadamente 0,2 veces la altura del techo de esta entrada (unos 230 cm).",
-        "it": "Circa 0,2 volte l'altezza del soffitto di questo ingresso (circa 230 cm).",
-        "pt": "Cerca de 0,2 vezes a altura do teto desta entrada (cerca de 230 cm)."
+        "ja": "この玄関の天井（約 230 cm）の約 5 分の 1 の高さ。",
+        "en": "About a fifth the height of the ceiling (about 230 cm)."
       },
       "about": {
         "ja": "壁の幅は約 2.3 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 65 cm）。",
@@ -316,16 +308,8 @@
         "pt": "Cerca de um quarto da altura desta porta."
       },
       "compare2": {
-        "ja": "この部屋の天井（約 240 cm）の約 0.2 倍の高さ。",
-        "en": "About 0.2 times the height of the ceiling (about 240 cm).",
-        "zh-Hans": "约为这个房间的天花板（约 240 cm）高度的 0.2 倍。",
-        "zh-Hant": "約為這個房間的天花板（約 240 cm）高度的 0.2 倍。",
-        "ko": "이 방 천장(약 240 cm) 높이의 약 0.2배.",
-        "fr": "Environ 0,2 fois la hauteur du plafond de cette pièce (environ 240 cm).",
-        "de": "Etwa 0,2-mal so hoch wie die Decke dieses Zimmers (ca. 240 cm).",
-        "es": "Aproximadamente 0,2 veces la altura del techo de esta habitación (unos 240 cm).",
-        "it": "Circa 0,2 volte l'altezza del soffitto di questa stanza (circa 240 cm).",
-        "pt": "Cerca de 0,2 vezes a altura do teto deste espaço (cerca de 240 cm)."
+        "ja": "この部屋の天井（約 240 cm）の約 5 分の 1 の高さ。",
+        "en": "About a fifth the height of the ceiling (about 240 cm)."
       },
       "about": {
         "ja": "壁の幅は約 3.2 m。家具の上端から 20 cm ほど空けて掛けています（絵の中心は床から約 100 cm）。",
@@ -348,5 +332,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T16:35:20.240Z"
+  "generated_at": "2026-11-06T16:58:08.794Z"
 }

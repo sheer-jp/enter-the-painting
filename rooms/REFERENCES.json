@@ -145,10 +145,12 @@
   },
   "shoe_cabinet": {
     "height_cm": 90,
+    "width_cm": 90,
     "label": {
       "ja": "靴箱",
       "en": "the shoe cabinet"
-    }
+    },
+    "note": "玄関の靴箱。幅 90 cm は置く場面 entrance-console の基準（11-07）"
   },
   "sideboard": {
     "height_cm": 80,
