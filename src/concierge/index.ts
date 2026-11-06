@@ -6,6 +6,8 @@ import { recommendByRules, targetAxes, axisDistance, pickMoods, buildReason, typ
 import { splitRecommendation, resolveRecommendation, parseRecommendEvent, reasonText, type RecJson } from '../recommend/parse';
 import { LAST_REC_KEY, type LastRec } from './last';
 import { nextStage, stageMs, type Stage } from './stages';
+import { vrAvailable, afterUrl } from './enter';
+import { Soundscape } from '../audio/Soundscape';
 import './concierge.css';
 
 declare global { interface Window { __ETP_FAST?: boolean } }   // テストで 3 段の待ち時間を縮める
@@ -687,9 +689,26 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       for (const s of info.moods.slice(0, 3)) m.append(h('span', 'cg-mood', s));
       rise(m);
     }
+    // 「絵の世界をのぞく」（11-06 まで「この絵の中に入る」）：ページは移らず、その場で体験（物語モード）を始める。終わったら作品ページへ（E-12）
+    // href は残す（JS が動かないとき・新しいタブで開くときの逃げ道）
     const enter = h('a', 'cg-btn primary cg-enter', t('rec_enter', lang));
     enter.href = withQuery(w.url, 'via', 'concierge');
+    enter.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault();
+      enterHere(w, false);
+    });
     rise(enter);
+    // ボタンの直下に、何が起きるかを 1 行（初めての人に「のぞく」の中身を伝える。11-06 作家）
+    rise(h('p', 'cg-enter-note', t('enter_note', lang)));
+    // 「VR でのぞく」：VR が使える端末（Quest のブラウザ）のときだけ、その下に小さく
+    const enterVr = h('button', 'cg-enter-vr', t('enter_vr', lang));
+    enterVr.type = 'button';
+    enterVr.hidden = true;
+    enterVr.addEventListener('click', () => enterHere(w, true));
+    rise(enterVr);
+    vrReady.then((ok) => { if (ok) enterVr.hidden = false; });
+    prefetchSpace(w);
     rise(smallButton('cg-btn cg-other', 'cg_other', () => other()));
     const all = h('a', 'cg-btn cg-all', t('cg_all', lang));
     all.href = withQuery('gallery/', 'from', w.id);
@@ -708,6 +727,55 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     else { c2Line.innerHTML = c2LineInit; applyLang(c2Line, lang); }
     if (inC2) c2.scrollTo({ top: 0, behavior: 'smooth' });
     else openC2(true);
+  }
+
+  // ───── C2 から一気に絵の中へ（E-12）。作品ページの「入る」（page.ts の start）と同じ組み立て ─────
+  // VR が使えるか（作品ページと同じ条件。?vr=1 で強制）。カードを出すたびに聞かないよう 1 回だけ
+  const vrReady = vrAvailable(new URLSearchParams(location.search).get('vr') === '1');
+  // 声のファイル（space.json の audio.voice）。押した操作の中で先に鳴らしておく（iOS）ため、カードを出したときに読んでおく
+  const voiceOf = new Map<string, string | null>();
+  function prefetchSpace(w: CatalogWork) {
+    if (voiceOf.has(w.id)) return;
+    voiceOf.set(w.id, null);
+    fetch(abs(`works/${w.id}/generated/space.json`))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((sp: { audio?: { voice?: string } } | null) => { if (sp?.audio?.voice) voiceOf.set(w.id, abs(`works/${w.id}/${sp.audio.voice}`)); })
+      .catch(() => {});
+  }
+  let entering = false;
+  // 体験のあいだ、C2 と会話の DOM は触らない（戻ってこないので消さない）。history も積まない
+  // 体験の画面（#stage、page.css で全画面）は受付の HTML に無いので、ここで body の末尾に足す（C2 の上に重なる）
+  async function enterHere(w: CatalogWork, vr: boolean) {
+    if (entering) return;
+    entering = true;
+    // 押した操作の中で：音の許可、声の準備、XR セッションの要求（CLAUDE.md の作業ルール）
+    const sound = new Soundscape();
+    const unlocking = sound.unlock();
+    const voiceUrl = voiceOf.get(w.id);
+    if (voiceUrl) { const a = new Audio(voiceUrl); a.muted = true; a.play().then(() => { a.pause(); a.muted = false; }).catch(() => {}); }
+    let xrSession: XRSession | null = null;
+    if (vr) {
+      try { xrSession = await (navigator as Navigator & { xr: XRSystem }).xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor'] }); }
+      catch (e) { console.warn('XR セッションを要求できない', e); }
+    }
+    if (!document.getElementById('stage')) {
+      const stageEl = h('div');
+      stageEl.id = 'stage';
+      stageEl.hidden = true;
+      document.body.appendChild(stageEl);
+    }
+    // 終わったら（T5 のあと閉じた / 途中で閉じた / Esc）作品ページへ。「部屋で見る」「他の作品」はそこにある
+    const done = afterUrl(w.url, catalogHref);
+    try {
+      await unlocking;
+      const { run } = await import('../experience/main');
+      await run({ workId: w.id, lang, vr, fromQr: false, debug: false, sound, xrSession });
+      location.assign(done);
+    } catch (e) {
+      // 体験を始められなかった：作品ページ（帯は「今日のあなたへの 1 点」）へ。そこからもう一度「入る」を押せる
+      console.warn('体験を始められない。作品ページへ', e);
+      location.assign(withQuery(w.url, 'via', 'concierge'));
+    }
   }
 
   // 「別のにする」：alt → AI に「別の絵を」の 1 往復 → 近い作品の順（API は呼ばない）

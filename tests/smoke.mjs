@@ -97,7 +97,7 @@ async function inView(page, locator, clip = null) {
 }
 
 // 受付（ルールだけの版。API 無し）→ 3 問 →「…考え中」→ おすすめの画面 C2（会話の中にカードは無い）→ 別のにする → 会話に戻る → もう一度見る
-// → 戻るボタン → もう一度見る →「この絵の中に入る」→ S0 の帯 →「別のにする」→ 受付の再提案（C2）→ ギャラリー全体 → 1 点 → S0 → 入る → T0 →「もう一度、話す」
+// → 戻るボタン → もう一度見る →「絵の世界をのぞく」→ S0 の帯 →「別のにする」→ 受付の再提案（C2）→ ギャラリー全体 → 1 点 → S0 → 入る → T0 →「もう一度、話す」
 // docs/ENTRANCE.md 9 節の受け入れ 1、3、4、6、9。3 段の待ち時間は window.__ETP_FAST で各 100ms に縮める（時間そのものは単体テスト）
 async function entranceCase(name, viewport) {
   const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
@@ -191,7 +191,9 @@ async function entranceCase(name, viewport) {
     const firstId = await c2Card.getAttribute('data-work');
     const enterHref = await c2Card.locator('.cg-enter').getAttribute('href');
     const enterText = (await c2Card.locator('.cg-enter').textContent())?.trim();
-    check(enterText === 'この絵の中に入る' && new RegExp(`/w/${firstId}/\\?via=concierge$`).test(enterHref || ''), `${name}: 「${enterText}」→ ${enterHref}`);
+    check(enterText === '絵の世界をのぞく' && new RegExp(`/w/${firstId}/\\?via=concierge$`).test(enterHref || ''), `${name}: 「${enterText}」→ ${enterHref}`);
+    const enterNote = (await c2Card.locator('.cg-enter-note').textContent())?.trim();
+    check(enterNote === '色が動き出し、作家の言葉が流れます（約 2 分）', `${name}: C2 の主ボタンの直下に 1 行（${enterNote}）`);
     const heights = await c2Card.locator('.cg-enter, .cg-other, .cg-all').evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
     check(heights.length === 3 && heights.every((x) => x >= 44), `${name}: 3 つの選択（高さ ${heights.map(Math.round).join('/')}px）`);
     const foot = await page.locator('.cg2-foot button').allTextContents();
@@ -203,7 +205,7 @@ async function entranceCase(name, viewport) {
       const sideways = await page.locator('.cg2').evaluate((el) => [el.scrollWidth, el.clientWidth]);
       check(sideways[0] <= sideways[1], `${name}: C2 は横にスクロールしない（${sideways.join(' / ')}）`);
     } else {
-      check(await inView(page, c2Card.locator('.cg-enter')), `${name}: C2 の「この絵の中に入る」が最初から見える`);
+      check(await inView(page, c2Card.locator('.cg-enter')), `${name}: C2 の「絵の世界をのぞく」が最初から見える`);
     }
     await shot('c2');
     await c2Card.locator('.cg-all').scrollIntoViewIfNeeded();
@@ -238,13 +240,51 @@ async function entranceCase(name, viewport) {
     await c2.waitFor({ timeout: 3000 });
     await page.waitForTimeout(1800);
 
-    // 「この絵の中に入る」→ S0 の帯（?via=concierge）
+    // 「絵の世界をのぞく」→ 同じページ（/）で物語モード T0 が始まる（E-12）。C2 は下に残る。history は積まない
+    const lenBefore = await page.evaluate(() => history.length);
+    check(await c2Card.locator('.cg-enter-vr').isHidden(), `${name}: VR が使えない端末では C2 に「VR でのぞく」が出ない`);
     await c2Card.locator('.cg-enter').click();
-    await page.waitForURL(new RegExp(`/w/${secondId}/\\?via=concierge$`), { timeout: 10000 });
+    await page.waitForSelector('#stage:not([hidden])', { timeout: 15000 });
+    await page.waitForTimeout(3000);
+    const here = await page.evaluate(() => ({ path: location.pathname, len: history.length, cg2: history.state?.cg2 === 1, c2: !!document.querySelector('.cg2:not([hidden]) .cg-card') }));
+    check(here.path === '/' && here.len === lenBefore && here.cg2 && here.c2, `${name}: 「絵の世界をのぞく」で同じページのまま物語モードへ（${JSON.stringify(here)}）`);
+    check(await page.locator('#stage canvas').count() === 1, `${name}: C2 の上で物語モード（T0）`);
+    const stageOnTop = await page.evaluate(() => { const el = document.elementFromPoint(innerWidth / 2, innerHeight / 2); return !!el?.closest('#stage'); });
+    check(stageOnTop, `${name}: 体験の画面が C2 の上に重なる`);
+    await shot('c2-t0');
+    // 閉じる → 作品ページ（?via=concierge&after=1）の帯「絵の中から戻ってきました」
+    await page.click('.hud .close');
+    await page.waitForURL(new RegExp(`/w/${secondId}/\\?via=concierge&after=1$`), { timeout: 10000 });
+    const afterBand = page.locator('.via-band[data-kind="after"]');
+    await afterBand.waitFor({ timeout: 5000 });
+    const afterText = (await afterBand.textContent())?.replace(/\s+/g, '');
+    const hasRooms = await page.locator('.rooms').count() > 0;
+    check(/絵の中から戻ってきました/.test(afterText || '') && /もう一度のぞく/.test(afterText || '') && /部屋で見る/.test(afterText || '') === hasRooms && /ギャラリー全体を見る/.test(afterText || ''), `${name}: 閉じると作品ページの帯（${afterText}）`);
+    const s0Enter = [(await page.locator('#enter').textContent())?.trim(), (await page.locator('.actions .cg-enter-note').textContent())?.trim()];
+    check(s0Enter[0] === '絵の世界をのぞく' && s0Enter[1] === '色が動き出し、作家の言葉が流れます（約 2 分）', `${name}: 作品ページの「${s0Enter[0]}」とその下の 1 行（${s0Enter[1]}）`);
+    check(await page.locator('#enter-vr').isHidden(), `${name}: 作品ページも VR が使えない端末では「VR でのぞく」が出ない`);
+    await afterBand.scrollIntoViewIfNeeded();
+    await shot('s0-after');
+    // 「部屋で見る」→ 部屋の帯へスクロール
+    if (hasRooms) {
+      await afterBand.locator('a[data-action="rooms"]').click();
+      await page.waitForTimeout(1200);
+      check(await page.evaluate(() => { const r = document.querySelector('.rooms').getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }), `${name}: 「部屋で見る」で部屋の帯が見える`);
+    }
+    // 「もう一度のぞく」→ 物語モード
+    await afterBand.locator('a[data-action="again"]').click();
+    await page.waitForSelector('#stage:not([hidden])', { timeout: 15000 });
+    await page.waitForTimeout(1500);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(500);
+    check(await page.locator('#stage').evaluate((el) => el.hidden), `${name}: 「もう一度のぞく」で入り、Esc で作品ページに戻る`);
+
+    // 帯の「今日のあなたへの 1 点」（?via=concierge、after なし）
+    await page.goto(`http://localhost:${PORT}/w/${secondId}/?via=concierge`, { waitUntil: 'load' });
     const band = page.locator('.via-band');
     await band.waitFor({ timeout: 5000 });
     const bandText = (await band.textContent())?.replace(/\s+/g, '');
-    check(/今日のあなたへの1点/.test(bandText || '') && /別のにする/.test(bandText || '') && /ギャラリー全体を見る/.test(bandText || ''), `${name}: 「この絵の中に入る」→ S0 の帯（${bandText}）`);
+    check(/今日のあなたへの1点/.test(bandText || '') && /別のにする/.test(bandText || '') && /ギャラリー全体を見る/.test(bandText || ''), `${name}: 「絵の世界をのぞく」→ S0 の帯（${bandText}）`);
     const bandAbove = await page.evaluate(() => { const b = document.querySelector('.via-band'), a = document.querySelector('.actions'), p = document.querySelector('.painting'); return !!b && !!a && !!p && b.getBoundingClientRect().top < a.getBoundingClientRect().top && b.getBoundingClientRect().top > p.getBoundingClientRect().top; });
     check(bandAbove, `${name}: 帯は絵の下、「入る」の上`);
     await band.scrollIntoViewIfNeeded();

@@ -5,7 +5,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const t = (obj, lang) => (obj && (obj[lang] || obj.ja || obj.en)) || '';
 
 const UI_JA = {
-  enter: '入る', enter_vr: 'VR で入る', rooms: '部屋で見る', contact: '作家に連絡', share: '共有', others: '他の作品',
+  enter: '絵の世界をのぞく', enter_vr: 'VR でのぞく', enter_note: '色が動き出し、作家の言葉が流れます（約 2 分）', rooms: '部屋で見る', contact: '作家に連絡', share: '共有', others: '他の作品',
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
   room_cat_studio: '一人暮らしの部屋', room_cat_house: '広い家のリビング',
   rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明が見られます',
@@ -77,9 +77,10 @@ ${FONTS}
   </header>
   <div class="actions">
     <button class="btn primary" id="enter" data-i18n="enter"${space.audio?.voice ? ` data-voice="../../works/${id}/${esc(space.audio.voice)}"` : ''}>${UI_JA.enter}</button>
-    <button class="btn" id="enter-vr" data-i18n="enter_vr" hidden>${UI_JA.enter_vr}</button>
+    <button class="btn" id="enter-vr" data-i18n="enter_vr" hidden style="display:none">${UI_JA.enter_vr}</button>
     <button class="btn ghost" id="share" data-i18n="share">${UI_JA.share}</button>
     ${contact}
+    <p class="cg-enter-note" data-i18n="enter_note" style="flex-basis:100%;margin:-4px 0 0;font-size:11px;letter-spacing:.1em;color:var(--ink-2)">${UI_JA.enter_note}</p>
   </div>
   ${rooms ? `<section class="rooms"><h2 class="eyebrow"><span>Rooms</span><span data-i18n="rooms">${UI_JA.rooms}</span></h2><div class="strip">${rooms}</div><p class="rooms-hint"><span data-i18n="tap_for_size">${UI_JA.tap_for_size}</span><span data-i18n="rooms_note">${UI_JA.rooms_note}</span></p></section>` : ''}
   ${story}
@@ -108,7 +109,7 @@ function readConfig() {
 // ja と en を data-lang で持つ（en は最初は隠す。page.ts が端末の言語で出し分ける。他の言語は en に落ちる）
 const jaEn = (ja, en) => `<span lang="ja" data-lang="ja">${esc(ja)}</span>${en ? `<span lang="en" data-lang="en" hidden>${esc(en)}</span>` : ''}`;
 
-// キャラクターの表情 1 枚（<picture>）。ファイル名は固定：作家が差し替える（scripts/concierge-assets.mjs が <表情>-full / -bust を作る）
+// キャラクターの表情 1 枚（<picture>）。どの画面も上半身（-bust）。全身（-full）はいまは使わない（11-06 作家：チャットの UI に人は小さめ）。ファイル名は固定：作家が差し替える（scripts/concierge-assets.mjs）
 // 横向き（スマホの横、PC の幅 900px 以上）は全身（full）を縦いっぱいに、それ以外は上半身（bust）。選ぶのは media query（JS ではない）
 // WebP を先に、PNG を fallback に。画像は public/concierge/artist/（女の子に確定。11-06 作家）
 // src/concierge/index.ts の faceEl() と同じ形にする
@@ -116,7 +117,7 @@ export const FULL_MQ = '(orientation: landscape) and (max-height: 500px), (orien
 export function facePicture(face, prefix, { on = false, priority = false } = {}) {
   const b = `${prefix}concierge/artist/${face}`;
   const set = (v, ext) => `${b}-${v}.${ext} 1x, ${b}-${v}@2x.${ext} 2x`;
-  return `<picture class="cg-face${on ? ' is-on' : ''}" data-face="${face}"><source media="${FULL_MQ}" type="image/webp" srcset="${set('full', 'webp')}"><source media="${FULL_MQ}" srcset="${set('full', 'png')}"><source type="image/webp" srcset="${set('bust', 'webp')}"><img src="${b}-bust.png" srcset="${set('bust', 'png')}" width="512" height="412" alt=""${priority ? ' fetchpriority="high"' : ' loading="lazy"'}></picture>`;
+  return `<picture class="cg-face${on ? ' is-on' : ''}" data-face="${face}"><source type="image/webp" srcset="${set('bust', 'webp')}"><img src="${b}-bust.png" srcset="${set('bust', 'png')}" width="512" height="412" alt=""${priority ? ' fetchpriority="high"' : ' loading="lazy"'}></picture>`;
 }
 
 // 受付 /index.html（docs/ENTRANCE.md 3 節）。絵は出さない。見出し・キャラクター・最初の 2 文・選択肢・入力欄は JS の前に HTML で出す

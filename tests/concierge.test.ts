@@ -5,6 +5,7 @@ import { onRequestGet } from '../functions/api/recommend/config.js';
 import { glowColor } from '../src/concierge/index';
 import { galleryPage } from '../scripts/generate/pages.js';
 import { nextStage, stageMs, presentSchedule, STAGE_MS, FAST_MS, type Stage } from '../src/concierge/stages';
+import { vrEntryAllowed, bandFor, afterUrl } from '../src/concierge/enter';
 
 afterEach(() => { vi.restoreAllMocks(); });
 
@@ -157,5 +158,54 @@ describe('受付の最初の画面はボタンだけ（11-06 作家）', () => {
     expect(html).toContain('これ、どうかな。');
     expect(html).toContain('今日は、どんな絵を探してる？');
     expect(html).toContain('How about this one?');
+  });
+});
+
+// E-12：C2 から一気に絵の中へ。終わったら作品ページ（?via=concierge&after=1）の帯、VR ボタンの出し分け
+describe('作品ページの帯（bandFor）', () => {
+  const q = (s: string) => new URLSearchParams(s);
+  it('受付から来ていなければ帯は無い', () => {
+    expect(bandFor(q(''), true)).toBeNull();
+    expect(bandFor(q('via=gallery'), true)).toBeNull();
+    expect(bandFor(q('after=1'), true)).toBeNull();
+  });
+  it('via=concierge だけなら「今日のあなたへの 1 点」＋「別のにする」「ギャラリー全体を見る」', () => {
+    const b = bandFor(q('via=concierge'), true)!;
+    expect(b.kind).toBe('via');
+    expect(b.head).toBe('cg_card_head');
+    expect(b.items.map((i) => i.key)).toEqual(['cg_other', 'cg_all']);
+  });
+  it('after=1 なら「絵の中から戻ってきました」＋「もう一度のぞく」「部屋で見る」「ギャラリー全体を見る」', () => {
+    const b = bandFor(q('via=concierge&after=1'), true)!;
+    expect(b.kind).toBe('after');
+    expect(b.head).toBe('cg_after_head');
+    expect(b.items.map((i) => i.action)).toEqual(['again', 'rooms', 'gallery']);
+  });
+  it('部屋の画像が無い作品では「部屋で見る」を出さない', () => {
+    expect(bandFor(q('via=concierge&after=1'), false)!.items.map((i) => i.action)).toEqual(['again', 'gallery']);
+  });
+  it('after が 1 以外なら通常の帯', () => {
+    expect(bandFor(q('via=concierge&after=0'), true)!.kind).toBe('via');
+  });
+  it('終わったあとの URL は /w/<id>/?via=concierge&after=1', () => {
+    expect(afterUrl('w/harmoney/', 'https://example.com/catalog.json')).toBe('https://example.com/w/harmoney/?via=concierge&after=1');
+  });
+});
+
+describe('「VR でのぞく」の出し分け（vrEntryAllowed）', () => {
+  const quest = 'Mozilla/5.0 (X11; Linux x86_64; Quest 3) AppleWebKit/537.36 (KHTML, like Gecko) OculusBrowser/35.0 Chrome/126.0 VR Safari/537.36';
+  const android = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Mobile Safari/537.36';
+  const mac = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
+  it('Quest のブラウザで immersive-vr が使えるときだけ出す', () => {
+    expect(vrEntryAllowed(true, quest, false)).toBe(true);
+    expect(vrEntryAllowed(false, quest, false)).toBe(false);
+  });
+  it('Android Chrome（Cardboard で true を返すことがある）や PC では出さない', () => {
+    expect(vrEntryAllowed(true, android, false)).toBe(false);
+    expect(vrEntryAllowed(true, mac, false)).toBe(false);
+  });
+  it('?vr=1 の強制は UA を問わないが、immersive-vr が使えないときは出さない', () => {
+    expect(vrEntryAllowed(true, mac, true)).toBe(true);
+    expect(vrEntryAllowed(false, mac, true)).toBe(false);
   });
 });

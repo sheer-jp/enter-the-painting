@@ -181,6 +181,7 @@ body.paper:has(.cg) { overflow: hidden; overscroll-behavior: none; }
 .cg-form button { appearance: none; flex: none; min-width: 64px; min-height: 44px; padding: 0 16px; border: 1px solid var(--ink); border-radius: 22px; background: var(--ink); color: var(--bg); font-size: 13px; letter-spacing: .16em; cursor: pointer; }
 .cg-form button:disabled { opacity: .4; cursor: default; }
 .cg [hidden] { display: none !important; }
+.btn[hidden] { display: none !important; }   /* 「VR でのぞく」は VR 端末のときだけ（hidden を display:inline-flex に負けさせない） */
 @keyframes cg-in { from { opacity: 0; transform: translateY(6px); } }
 /* 会話が始まったら（最初の選択か「自分のことばで書く」）キャラクターを小さくして文字を読みやすく。キーボードが出たらさらに小さく（11-06 作家）
    おすすめは別の画面 C2（concierge.css） */

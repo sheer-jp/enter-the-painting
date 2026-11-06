@@ -1,6 +1,7 @@
 // 作品ページ / 受付 / ギャラリーの小さなスクリプト。言語の切り替えと「入る」。受付の会話と体験は import() で読む
 import { detectLang, rememberLang, applyLang, fillLangSelect, t, type Lang } from './i18n';
 import { Soundscape } from './audio/Soundscape';
+import { vrAvailable, bandFor } from './concierge/enter';
 import './ui/page.css';
 
 const workId = document.querySelector<HTMLMetaElement>('meta[name="work"]')?.content || null;
@@ -33,15 +34,7 @@ function toast(msg: string) {
   document.body.appendChild(el); setTimeout(() => el.remove(), 1800);
 }
 
-// 「VR で入る」は Quest のブラウザだけ（Android Chrome が Cardboard で true を返すことがあるため）
-async function vrAvailable(): Promise<boolean> {
-  const xr = (navigator as Navigator & { xr?: { isSessionSupported(m: string): Promise<boolean> } }).xr;
-  if (!xr) return false;
-  try {
-    const ok = await xr.isSessionSupported('immersive-vr');
-    return ok && (forceVr || /OculusBrowser|Quest/i.test(navigator.userAgent));
-  } catch { return false; }
-}
+// 「VR でのぞく」は Quest のブラウザだけ（判定は concierge/enter.ts の vrEntryAllowed。受付の C2 と同じ条件）
 
 // 受付（/。docs/ENTRANCE.md 3 節）：会話のコードは import() で読む（体験バンドルは読まない）
 // 読み込み前の操作（選択肢 / 送る）は止めておき、読めたらもう一度起こす
@@ -90,28 +83,44 @@ if (wall) {
 }
 
 if (workId) {
+  const enter = document.getElementById('enter') as HTMLButtonElement;
+  const enterVr = document.getElementById('enter-vr') as HTMLButtonElement;
   // 受付から来たとき（?via=concierge）：絵の下・「入る」の上に細い帯（docs/ENTRANCE.md 3.1）
-  if (url.searchParams.get('via') === 'concierge') {
+  // C2 から絵の中に入って戻ってきたとき（&after=1）は「絵の中から戻ってきました」＋「もう一度のぞく」「部屋で見る」「ギャラリー全体を見る」（E-12）
+  const rooms = document.querySelector<HTMLElement>('.rooms');
+  const bandDef = bandFor(url.searchParams, !!rooms);
+  if (bandDef) {
     const assetRoot = document.querySelector<HTMLMetaElement>('meta[name="asset-base"]')?.content ?? '../../';
     const band = document.createElement('div');
     band.className = 'via-band';
+    band.dataset.kind = bandDef.kind;
     const label = document.createElement('span');
-    label.dataset.i18n = 'cg_card_head'; label.textContent = t('cg_card_head', lang);
-    const other = document.createElement('a');
-    other.dataset.i18n = 'cg_other'; other.textContent = t('cg_other', lang);
-    other.href = `${assetRoot}?retry=${encodeURIComponent(workId)}`;
-    const all = document.createElement('a');
-    all.dataset.i18n = 'cg_all'; all.textContent = t('cg_all', lang);
-    all.href = `${assetRoot}gallery/?from=${encodeURIComponent(workId)}`;
+    label.dataset.i18n = bandDef.head; label.textContent = t(bandDef.head, lang);
     const links = document.createElement('span');
     links.className = 'via-links';
-    links.append(other, all);
+    for (const it of bandDef.items) {
+      const a = document.createElement('a');
+      a.dataset.i18n = it.key; a.textContent = t(it.key, lang);
+      a.dataset.action = it.action;
+      if (it.action === 'retry') a.href = `${assetRoot}?retry=${encodeURIComponent(workId)}`;
+      else if (it.action === 'gallery') a.href = `${assetRoot}gallery/?from=${encodeURIComponent(workId)}`;
+      else {
+        // 「もう一度のぞく」「部屋で見る」はページ内の操作（帯の見た目をそろえるため <a> のまま）
+        a.href = it.action === 'rooms' ? '#rooms' : '#';
+        a.setAttribute('role', 'button');
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (it.action === 'rooms') rooms?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+          else if (!enter.disabled) start(false);
+        });
+      }
+      links.appendChild(a);
+    }
     band.append(label, links);
     document.querySelector('.actions')?.before(band);
   }
-  const enter = document.getElementById('enter') as HTMLButtonElement;
-  const enterVr = document.getElementById('enter-vr') as HTMLButtonElement;
-  vrAvailable().then((ok) => { if (ok) enterVr.hidden = false; });
+  // .btn の display が hidden 属性を上書きするので、HTML では inline の display:none で隠している（E-12 で判明）
+  vrAvailable(forceVr).then((ok) => { if (ok) { enterVr.hidden = false; enterVr.style.display = ''; } });
   const start = async (vr: boolean) => {
     enter.disabled = true; enterVr.disabled = true;
     const label = enter.textContent; enter.textContent = t('loading', lang) + '…';

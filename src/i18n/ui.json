@@ -1,7 +1,7 @@
 {
   "enter": {
-    "ja": "入る",
-    "en": "Enter",
+    "ja": "絵の世界をのぞく",
+    "en": "Step into the painting",
     "zh-Hans": "进入",
     "zh-Hant": "進入",
     "ko": "들어가기",
@@ -12,8 +12,8 @@
     "pt": "Entrar"
   },
   "enter_vr": {
-    "ja": "VR で入る",
-    "en": "Enter in VR",
+    "ja": "VR でのぞく",
+    "en": "Step in with VR",
     "zh-Hans": "以 VR 进入",
     "zh-Hant": "以 VR 進入",
     "ko": "VR로 들어가기",
@@ -528,8 +528,8 @@
     "pt": "A pensar"
   },
   "rec_enter": {
-    "ja": "この絵の中に入る",
-    "en": "Enter this painting",
+    "ja": "絵の世界をのぞく",
+    "en": "Step into the painting",
     "zh-Hans": "进入这幅画",
     "zh-Hant": "進入這幅畫",
     "ko": "이 그림 속으로 들어가기",
@@ -846,5 +846,21 @@
   "cg_reopen": {
     "ja": "おすすめをもう一度見る",
     "en": "See the suggestion again"
+  },
+  "cg_after_head": {
+    "ja": "絵の中から戻ってきました",
+    "en": "Back from inside the painting"
+  },
+  "cg_after_again": {
+    "ja": "もう一度のぞく",
+    "en": "Step in again"
+  },
+  "cg_after_rooms": {
+    "ja": "部屋で見る",
+    "en": "See it in a room"
+  },
+  "enter_note": {
+    "ja": "色が動き出し、作家の言葉が流れます（約 2 分）",
+    "en": "The colors begin to move and the artist's words drift by (about 2 min)"
   }
 }
