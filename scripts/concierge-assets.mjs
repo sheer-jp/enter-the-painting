@@ -7,6 +7,10 @@
 // 出す：<名前>-full（全身）と <名前>-bust（上半身：上から 58% の高さ、横は中央 72% を切り出す）を、1x（幅 512）と @2x（幅 1024）、PNG と WebP で
 //      ページは WebP を先に読み、PNG は fallback（<picture>）。差し替えるときは必ずこのスクリプトで全部を作り直す
 //      frames.json：コマ列（docs/ENTRANCE.md 3.3）。元にそろっているコマ列だけを書く（コマが無ければ {}。ページは何もしない）
+//      形は ["a", "b"]（1 コマ 120ms）か { "seq": [...], "ms": 160 | [120, 160, ...] }（コマごとの時間）。ページはどちらも読む
+//      コマ列の中の表情の名前（listening / smile / present）は「いまの表情の止まっているコマ」に置き換えて再生する（index.ts の play）
+// 11-07（A-1）：nod / tilt / tilt2 / think / happy を追加。元は Codex 生成の 1254×1254（concept/concierge-v6-frames/）を
+//      smile（01-welcome-hands）の足元（下端と下 100 行の重心）に整数の平行移動で合わせて cutouts/ に置いたもの（拡縮なし。ずれは 0.03% 以内、happy-2 は跳ねるので上下はそのまま）
 import sharp from 'sharp';
 import { readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, basename, extname } from 'node:path';
@@ -23,7 +27,17 @@ const SEQUENCES = {
   blink: ['listening', 'blink', 'listening'],
   wave: ['present', 'wave-1', 'wave-2', 'wave-1', 'present'],
   smileDeep: ['smile', 'smile-2'],
+  nod: { seq: ['listening', 'nod-1', 'nod-2', 'nod-1', 'listening'], ms: 160 },
+  // かしげる：1 コマ 120ms では「ぴくっ」としか見えないので、かしげたコマを 0.8 秒保つ
+  tilt: { seq: ['listening', 'tilt-1', 'listening'], ms: [120, 800, 120] },
+  tilt2: { seq: ['listening', 'tilt-2', 'listening'], ms: [120, 800, 120] },
+  think: ['think-1', 'think-2', 'think-1'],
+  happy: { seq: ['present', 'happy-1', 'happy-2', 'happy-1', 'present'], ms: [120, 120, 160, 120, 120] },
 };
+const seqOf = (d) => (Array.isArray(d) ? d : d.seq);
+// WebP の質：15 枚（表情 3 + コマ 12）の合計を 2.5MB 以内に（11-07 A-1）。q80 / alpha 90 では 3.3MB。
+// コマだけ下げると入れ替えの瞬間に画質が跳ねるので、全部を同じ質に（2x の顔の拡大で差は見えない）
+const WEBP = { quality: 72, alphaQuality: 70, effort: 6 };
 
 const files = readdirSync(src).filter((f) => /\.png$/i.test(f));
 const named = new Map();   // 出力の名前 → 元のファイル
@@ -48,14 +62,14 @@ for (const [name, f] of named) {
       img = img.resize({ width });
       const base = join(out, `${name}-${variant}${suffix}`);
       const png = await img.clone().png({ palette: true, colors: 128, dither: 0.6, effort: 10, compressionLevel: 9 }).toFile(`${base}.png`);
-      const webp = await img.clone().webp({ quality: 80, alphaQuality: 90, effort: 6 }).toFile(`${base}.webp`);
+      const webp = await img.clone().webp(WEBP).toFile(`${base}.webp`);
       total += webp.size;
       if (name === 'smile' && variant === 'bust') firstLoad += webp.size;
       console.log(`${name}-${variant}${suffix}  ← ${f}  png ${(png.size / 1024).toFixed(0)}KB  webp ${(webp.size / 1024).toFixed(0)}KB`);
     }
   }
 }
-const frames = Object.fromEntries(Object.entries(SEQUENCES).filter(([, seq]) => seq.every((n) => named.has(n))));
+const frames = Object.fromEntries(Object.entries(SEQUENCES).filter(([, seq]) => seqOf(seq).every((n) => named.has(n))));
 writeFileSync(join(out, 'frames.json'), JSON.stringify(frames, null, 2) + '\n');
 console.log(`frames.json：${Object.keys(frames).join(', ') || '（コマなし）'}`);
 console.log(`WebP の合計 ${(total / 1024).toFixed(0)}KB、最初に読む smile の上半身 ${(firstLoad / 1024).toFixed(0)}KB`);

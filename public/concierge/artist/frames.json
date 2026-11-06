@@ -14,5 +14,60 @@
   "smileDeep": [
     "smile",
     "smile-2"
-  ]
+  ],
+  "nod": {
+    "seq": [
+      "listening",
+      "nod-1",
+      "nod-2",
+      "nod-1",
+      "listening"
+    ],
+    "ms": 160
+  },
+  "tilt": {
+    "seq": [
+      "listening",
+      "tilt-1",
+      "listening"
+    ],
+    "ms": [
+      120,
+      800,
+      120
+    ]
+  },
+  "tilt2": {
+    "seq": [
+      "listening",
+      "tilt-2",
+      "listening"
+    ],
+    "ms": [
+      120,
+      800,
+      120
+    ]
+  },
+  "think": [
+    "think-1",
+    "think-2",
+    "think-1"
+  ],
+  "happy": {
+    "seq": [
+      "present",
+      "happy-1",
+      "happy-2",
+      "happy-1",
+      "present"
+    ],
+    "ms": [
+      120,
+      120,
+      160,
+      120,
+      120
+    ]
+  }
 }

@@ -8,12 +8,66 @@ import { LAST_REC_KEY, type LastRec } from './last';
 import { nextStage, stageMs, type Stage } from './stages';
 import { vrAvailable, afterUrl } from './enter';
 import { Soundscape } from '../audio/Soundscape';
+import { splitPhrases } from '../text/phrases';
 import './concierge.css';
 
 declare global { interface Window { __ETP_FAST?: boolean } }   // テストで 3 段の待ち時間を縮める
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 export type Face = 'listening' | 'smile' | 'present';
+const FACES = ['listening', 'smile', 'present'] as const;
+const IDLE_MOTIONS = ['nod', 'tilt', 'tilt2'];   // 待っている・聞いているあいだの小さな動き
+
+// ───── コマ列の定義（frames.json の 1 項目）。["a", "b"]（1 コマ ms 既定）か { "seq": [...], "ms": 160 | [120, 160, ...] } ─────
+export const FRAME_MS = 120;
+export type FrameDef = { seq: string[]; ms: number[] };
+export function parseFrameDef(v: unknown, defMs = FRAME_MS): FrameDef | null {
+  const o = Array.isArray(v) ? { seq: v, ms: undefined } : v && typeof v === 'object' ? v as { seq?: unknown; ms?: unknown } : null;
+  if (!o || !Array.isArray(o.seq) || !o.seq.length || !o.seq.every((x) => typeof x === 'string' && /^[a-z0-9-]+$/i.test(x))) return null;
+  const seq = o.seq as string[];
+  const okMs = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x) && x >= 30 && x <= 3000;
+  const base = okMs(o.ms) ? o.ms : defMs;
+  const ms = seq.map((_, i) => (Array.isArray(o.ms) && okMs(o.ms[i]) ? o.ms[i] as number : base));
+  return { seq, ms };
+}
+
+// ───── 文節の改行（P-14。docs/DESIGN.md「改行の決まり」）。日本語は文節ごとに inline-block の span、改行は文節の間だけ ─────
+// 文節の並び。改行（\n）はそれだけの要素として返す（span の外に置く）
+export function phraseRuns(text: string, lang: string): string[] {
+  const out: string[] = [];
+  text.split('\n').forEach((ln, i) => {
+    if (i) out.push('\n');
+    // 文節の端の空白は別の要素に（inline-block の端の空白は行末の処理で消え、「New Chapter」が「NewChapter」になるため）
+    if (ln) for (const ph of splitPhrases(ln, lang)) {
+      const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(ph)!;
+      for (const x of [m[1], m[2], m[3]]) if (x) out.push(x);
+    }
+  });
+  return out;
+}
+// ストリーミングで、文が確定したところまでの長さ（最後の句読点か改行のあと。続く閉じ括弧も含める）
+export function settledLength(text: string): number {
+  let k = -1;
+  for (let i = text.length - 1; i >= 0; i--) if (/[。、，．！？!?…\n]/.test(text[i])) { k = i; break; }
+  if (k < 0) return 0;
+  k++;
+  while (k < text.length && /[」』）)\]】〉》〕”’]/.test(text[k])) k++;
+  return k;
+}
+// 要素の中身を文節の span にする（日本語以外は文字列のまま）。done が偽なら、確定していない終わりの部分は文字列のまま
+export function fillPhrases(el: HTMLElement, text: string, lang: string, done = true) {
+  if (!lang.startsWith('ja')) { el.textContent = text; return; }
+  const n = done ? text.length : settledLength(text);
+  el.textContent = '';
+  for (const ph of phraseRuns(text.slice(0, n), lang)) {
+    if (/^\s+$/.test(ph)) { el.append(ph); continue; }   // 改行・空白は span の外の文字（空白は折り返しの位置にもなる）
+    const s = document.createElement('span');
+    s.className = 'cg-ph';
+    s.textContent = ph;
+    el.appendChild(s);
+  }
+  if (n < text.length) el.append(text.slice(n));
+}
 
 const FIRST_BYTE_MS = 20000;          // 最初の文字がこれだけ来なければルールだけの版へ（モデルの思考で最初の文が遅れることがある）
 const PASS_KEY = 'etp.passphrase';    // 合言葉を覚える localStorage の鍵（通ったときだけ保存）
@@ -160,7 +214,9 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     return el;
   }
   let face: Face = 'smile';
-  function setFace(f: Face) {
+  // keepThinking：考え中の「…」を出すとき（thinking / ponder）だけ真。それ以外で表情を変えたら考え中は終わり
+  function setFace(f: Face, keepThinking = false) {
+    if (!keepThinking) setThinking(false);
     if (f === face) return;
     face = f;
     const next = faceEl(f);
@@ -176,12 +232,24 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   setTimeout(() => { faceEl('listening'); faceEl('present'); }, 1200);   // 最初の表示を邪魔しないよう、少し後に先読み
 
   // ───── コマのアニメーション（docs/ENTRANCE.md 3.3）。frames.json とコマの画像があるときだけ。無ければ待機の呼吸（CSS）だけ ─────
-  // frames.json：{ "blink": ["listening", "blink", "listening"], "wave": [...], "smileDeep": ["smile", "smile-2"] }。1 コマ 120ms
-  const FRAME_MS = 120;
-  const sequences: Record<string, string[]> = {};   // 全コマを読み込めたものだけ
+  // frames.json：{ "blink": ["listening", "blink", "listening"], "nod": { "seq": [...], "ms": 160 }, ... }（parseFrameDef）。既定は 1 コマ 120ms
+  // コマ列の中の表情の名前（listening / smile / present）は、いまの「止まっているコマ」（data-rest。smileDeep のあとは smile-2）に置き換えて再生する
+  // 動かし方（11-07 A-1、作家「もっとアニメーションっぽく」）：
+  //   待っている・聞いている（smile / listening）：6〜12 秒ごとに nod / tilt / tilt2 のどれか（同じものは続けない）。listening はまばたきも
+  //   入力中：3 秒ごとに nod。考え中（「…」）：think の 1 コマ目で止め、2 秒ごとに think（まばたき）。おすすめ：happy → wave。「別のにする」：tilt
+  const sequences: Record<string, FrameDef> = {};   // 全コマを読み込めたものだけ
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   let frameTimer = 0;
   let blinkTimer = 0;
+  let idleTimer = 0;
+  let typeTimer = 0;
+  let thinkTimer = 0;
+  let playingPic: HTMLElement | null = null;   // いまコマ列を再生しているキャラクター
+  let thinkPic: HTMLElement | null = null;     // 考え中の顔にしているキャラクター
+  let thinkingNow = false;
+  let lastIdle = '';
   const swapName = (url: string, name: string) => url.replace(/\/([^/\s]+?)-(full|bust)((?:@2x)?\.(?:png|webp))/g, `/${name}-$2$3`);
+  const restOf = (pic: HTMLElement) => pic.dataset.rest || pic.dataset.face!;
   function setFrame(pic: HTMLElement, name: string) {
     if (pic.dataset.frame === name || (!pic.dataset.frame && name === pic.dataset.face)) return;
     pic.dataset.frame = name;
@@ -190,35 +258,104 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     img.srcset = swapName(img.srcset, name);
     img.src = swapName(img.src, name);
   }
-  function play(seqName: string, hold: boolean) {
-    const seq = sequences[seqName];
-    const pic = faces.querySelector<HTMLElement>('.cg-face.is-on');
-    if (!seq || !pic || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // いま見えているキャラクター：C2 が出ていれば C2 の上の写し（受付の窓は C2 の下に隠れている）、無ければ受付の窓
+  const visiblePic = () => (!c2.hidden ? c2Host.querySelector<HTMLElement>('.cg-face') : faces.querySelector<HTMLElement>('.cg-face.is-on'));
+  // 再生中のコマ列を止めて、止まっているコマに戻す
+  function stopFrames() {
     clearTimeout(frameTimer);
+    if (playingPic) setFrame(playingPic, restOf(playingPic));
+    playingPic = null;
+  }
+  function play(seqName: string, o: { hold?: boolean; then?: () => void } = {}): boolean {
+    const def = sequences[seqName];
+    const pic = visiblePic();
+    if (!def || !pic || reduced()) return false;
+    stopFrames();
+    playingPic = pic;
+    const rest = restOf(pic);
+    const seq = def.seq.map((n) => ((FACES as readonly string[]).includes(n) ? rest : n));
     let i = 0;
     const step = () => {
-      if (!pic.classList.contains('is-on')) { setFrame(pic, pic.dataset.face!); return; }
+      if (!pic.isConnected || !pic.classList.contains('is-on')) { playingPic = null; setFrame(pic, pic.dataset.face!); return; }
       setFrame(pic, seq[i]);
+      const ms = def.ms[i];
       i++;
-      if (i < seq.length) frameTimer = window.setTimeout(step, FRAME_MS);
-      else if (!hold) frameTimer = window.setTimeout(() => setFrame(pic, pic.dataset.face!), FRAME_MS);
+      if (i < seq.length) { frameTimer = window.setTimeout(step, ms); return; }
+      frameTimer = window.setTimeout(() => {
+        if (o.hold) pic.dataset.rest = seq[seq.length - 1];   // 最後のコマで止める
+        else setFrame(pic, restOf(pic));
+        playingPic = null;
+        o.then?.();
+      }, ms);
     };
     step();
+    return true;
   }
   function scheduleBlink() {
     clearTimeout(blinkTimer);
     if (!sequences.blink) return;
-    blinkTimer = window.setTimeout(() => { if (face === 'listening') { play('blink', false); scheduleBlink(); } }, 4000 + Math.random() * 3000);
+    blinkTimer = window.setTimeout(() => {
+      if (face !== 'listening') return;
+      if (!playingPic && !thinkingNow && c2.hidden) play('blink');
+      scheduleBlink();
+    }, 4000 + Math.random() * 3000);
+  }
+  // 待っている・聞いているあいだの小さな動き（6〜12 秒ごと）。条件に合わないときは見送って次を待つ
+  function scheduleIdle() {
+    clearTimeout(idleTimer);
+    if (reduced()) return;
+    idleTimer = window.setTimeout(() => {
+      if (c2.hidden && (face === 'smile' || face === 'listening') && !thinkingNow && !typeTimer && !playingPic && !document.hidden) {
+        const pool = IDLE_MOTIONS.filter((n) => sequences[n] && n !== lastIdle);
+        const n = pool[Math.floor(Math.random() * pool.length)];
+        if (n && play(n)) lastIdle = n;
+      }
+      scheduleIdle();
+    }, 6000 + Math.random() * 6000);
+  }
+  // 入力中（入力欄にフォーカスがあり、文字がある）：すぐに 1 回、そのあと 3 秒ごとに nod
+  const typingNow = () => document.activeElement === input && !!input.value && mode === 'talk' && !busy && c2.hidden;
+  function stopTyping() { clearTimeout(typeTimer); typeTimer = 0; }
+  function onTyping() {
+    if (!typingNow() || !sequences.nod) { stopTyping(); return; }
+    if (typeTimer) return;
+    const tick = () => {
+      if (!typingNow()) { stopTyping(); return; }
+      if (!playingPic) play('nod');
+      typeTimer = window.setTimeout(tick, 3000);
+    };
+    typeTimer = window.setTimeout(tick, 0);
+  }
+  // 考え中（「…」の吹き出し・「…考え中」の行のあいだ）：think の 1 コマ目で止め、2 秒ごとに think（まばたき）
+  function startThink(pic: HTMLElement) {
+    if (!sequences.think || reduced()) return;
+    clearInterval(thinkTimer);
+    stopFrames();
+    thinkPic = pic;
+    pic.dataset.rest = sequences.think.seq[0];
+    setFrame(pic, pic.dataset.rest);
+    thinkTimer = window.setInterval(() => { if (!playingPic) play('think', { hold: true }); }, 2000);
+  }
+  function setThinking(on: boolean) {
+    if (on === thinkingNow) return;
+    thinkingNow = on;
+    if (on) { stopTyping(); const pic = visiblePic(); if (pic) startThink(pic); return; }
+    clearInterval(thinkTimer);
+    stopFrames();
+    if (thinkPic) { thinkPic.dataset.rest = thinkPic.dataset.face!; setFrame(thinkPic, thinkPic.dataset.face!); }
+    thinkPic = null;
   }
   // 表情が切り替わったとき：前のコマを戻し、表情に応じたコマ列を 1 回
   function onFace(f: Face, pic: HTMLElement) {
-    clearTimeout(frameTimer);
-    faces.querySelectorAll<HTMLElement>('.cg-face').forEach((el) => { if (el !== pic) setFrame(el, el.dataset.face!); });
+    stopFrames();
+    faces.querySelectorAll<HTMLElement>('.cg-face').forEach((el) => { if (el !== pic) { delete el.dataset.rest; setFrame(el, el.dataset.face!); } });
+    pic.dataset.rest = f;
     setFrame(pic, f);
+    if (thinkingNow) { const v = visiblePic(); if (v) startThink(v); return; }   // 考え中に表情が切り替わった（画像の読み込み待ちのあと）
     if (f === 'listening') scheduleBlink();
     else clearTimeout(blinkTimer);
-    if (f === 'present') play('wave', false);
-    if (f === 'smile') play('smileDeep', true);   // 最後のコマで止める
+    if (f === 'present') { if (!play('happy', { then: () => play('wave') })) play('wave'); }   // うれしそうに → 手を振る
+    if (f === 'smile') play('smileDeep', { hold: true });   // 最後のコマで止める
   }
   // frames.json を読み、各コマ列の画像を先に読み込む（いま使っている解像度・上半身/全身の分だけ）。無い・壊れているときは何もしない
   fetch(faceBase + 'frames.json')
@@ -228,19 +365,26 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       const first = faces.querySelector<HTMLImageElement>('.cg-face img')!;
       if (!first.complete) await new Promise((res) => { first.addEventListener('load', res, { once: true }); first.addEventListener('error', res, { once: true }); });
       const sample = first.currentSrc || first.src;
-      for (const [k, seq] of Object.entries(defs as Record<string, unknown>)) {
-        if (!Array.isArray(seq) || !seq.length || !seq.every((x) => typeof x === 'string' && /^[a-z0-9-]+$/i.test(x))) continue;
-        const ok = await Promise.all((seq as string[]).map((n) => new Promise<boolean>((res) => {
+      const loaded = new Map<string, Promise<boolean>>();   // 同じコマを 2 回読まない
+      const load = (n: string) => {
+        if (!loaded.has(n)) loaded.set(n, new Promise<boolean>((res) => {
           const im = new Image();
           im.onload = () => res(true); im.onerror = () => res(false);
           im.src = swapName(sample, n);
-        })));
-        if (ok.every(Boolean)) sequences[k] = seq as string[];
+        }));
+        return loaded.get(n)!;
+      };
+      for (const [k, raw] of Object.entries(defs as Record<string, unknown>)) {
+        const def = parseFrameDef(raw, FRAME_MS);
+        if (!def) continue;
+        const ok = await Promise.all([...new Set(def.seq)].map(load));
+        if (ok.every(Boolean)) sequences[k] = def;
       }
       if (face === 'listening') scheduleBlink();
+      scheduleIdle();
+      onTyping();
     })
     .catch(() => { /* コマが無くても待機の呼吸だけで成り立つ */ });
-
   // ───── 文言 ─────
   function labelUi() {
     const key = mode === 'pass' ? 'cg_pass_placeholder' : 'cg_placeholder';
@@ -296,13 +440,25 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     }
     const w = thread.querySelector<HTMLElement>('.cg-write');
     if (w) swapText(w, c?.ui_write?.[lang], c?.ui_write?.en);
+    thread.querySelectorAll<HTMLElement>('.cg-greet.cg-line, .cg-opt, .cg-openers-cap').forEach(phrasify);
     labelPresent();
+  }
+  // HTML にある日本語の文（あいさつ・選択肢・案内・ひとこと）を文節の span に。ja / en の span があれば ja の span の中だけ
+  // swapText で元の HTML に戻したあとにも呼ぶ（何度呼んでもよい）
+  function phrasify(el: HTMLElement) {
+    const leaves = el.querySelectorAll<HTMLElement>('span[data-lang="ja"]');
+    if (leaves.length) { leaves.forEach((s) => { if (!s.querySelector('.cg-ph')) fillPhrases(s, s.textContent || '', 'ja'); }); return; }
+    if (!lang.startsWith('ja') || el.querySelector('.cg-ph') || el.children.length) return;
+    // 他の言語から日本語に戻したなど、文字だけのとき。ボタン（flex）は文節が横に並ばないよう、包む span を 1 つ挟む
+    const text = el.textContent || '';
+    if (el.tagName === 'BUTTON') { const w = h('span'); fillPhrases(w, text, 'ja'); el.replaceChildren(w); } else fillPhrases(el, text, 'ja');
   }
   // おすすめの画面のひとこと（present_line）。C2 の中で差し替えた後の「では、こちらは」のときは触らない
   function labelPresent() {
     if (c2Line.dataset.other) return;
     const c = catalog as UiCatalog | null;
     swapText(c2Line, c?.present_line?.[lang], c?.present_line?.en);
+    phrasify(c2Line);
   }
   labelUi();
   const langSelect = document.getElementById('lang') as HTMLSelectElement | null;
@@ -311,7 +467,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   // ───── 会話の吹き出し（キャラクターは左、自分は右。1 吹き出しずつ） ─────
   const scrollEnd = () => { thread.scrollTop = thread.scrollHeight; };
   function line(who: 'ai' | 'me', text: string): HTMLParagraphElement {
-    const p = h('p', `cg-line cg-${who} cg-new`, text);
+    const p = h('p', `cg-line cg-${who} cg-new`);
+    if (who === 'ai') fillPhrases(p, text, lang); else p.textContent = text;
     thread.appendChild(p);
     scrollEnd();
     return p;
@@ -329,7 +486,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     p.append(dotsEl(), h('span', 'cg-vh', t('rec_thinking', lang)));
     thread.appendChild(p);
     scrollEnd();
-    setFace('listening');
+    setFace('listening', true);
+    setThinking(true);
     return p;
   }
   // 「…考え中」の小さな行（3 段の 2 段目は会話の下、C2 の上では重ねて出す）
@@ -339,7 +497,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     p.append(dotsEl(), h('span', '', t('rec_thinking', lang)));
     into.appendChild(p);
     if (into === thread) scrollEnd();
-    setFace('listening');
+    setFace('listening', true);
+    setThinking(true);
     return p;
   }
   const hideOpeners = () => thread.querySelector('.cg-openers')?.remove();
@@ -364,6 +523,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     input.value = '';
     setInputEnabled(true);
     labelUi();
+    stopTyping();
     setFace('smile');
     scrollEnd();
     thread.querySelector<HTMLButtonElement>('.cg-opt')?.focus({ preventScroll: true });
@@ -423,6 +583,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     setFace('smile');
     const box = h('div', 'cg-choices cg-new');
     const none = h('button', 'cg-opt', t('cg_pass_none', lang));
+    phrasify(none);
     none.type = 'button';
     none.addEventListener('click', () => {
       box.remove();
@@ -517,7 +678,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
                 if (wait.parentElement === thread) { wait.replaceWith(out); setFace('smile'); } else thread.appendChild(out);
               }
               acc += d.text;
-              out.textContent = splitRecommendation(acc).prose;
+              fillPhrases(out, splitRecommendation(acc).prose, lang, false);   // 確定した文から文節の span に
               scrollEnd();
             }
           }
@@ -530,12 +691,14 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       if (my !== sess) return false;
       console.warn('AI に届かない。ルールだけの版にする', e);
       wait.remove();
+      setThinking(false);
       if (out && !splitRecommendation(acc).prose) out.remove();
       toRules(true);
       return false;
     }
     clearTimeout(timer);
     const split = splitRecommendation(acc);
+    if (out) fillPhrases(out, split.prose, lang);   // 言い終わり：残りも文節に
     // ツール呼び出しで受けたおすすめを優先し、無ければ文の中の JSON を拾う（保険）
     const json = toolRec || split.json;
     const prose = split.prose || (json ? reasonText(json, lang) : '');
@@ -547,6 +710,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       if (!c?.works.length) { offline(); return false; }
       if (out && !out.textContent) out.remove();
       else if (!out) wait.remove();
+      if (wait.parentElement === thread || !wait.isConnected) setThinking(false);
       const r = resolveRecommendation(json, c);
       const w = c.works.find((x) => x.id === r.id)!;
       // 使ったことば：AI が選んだ語のうち、その作品の moods にあるものだけ
@@ -557,6 +721,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     }
     // 最大の往復まで来てもおすすめが出なかった：次の送信は Function が 400 にするので、先にルールだけの版へ
     wait.remove();
+    setThinking(false);
     const maxTurns = ((await catalogReady)?.turns?.[1] ?? 3) + (extra || extraUsed ? 1 : 0);
     if (my !== sess) return false;
     if (messages.filter((m) => m.role === 'user').length >= maxTurns) { toRules(false); return false; }
@@ -584,6 +749,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
         const b = h('button', 'cg-opt', t(q.label + v, lang));
         b.type = 'button';
         b.dataset.value = v;
+        phrasify(b);
         b.addEventListener('click', () => {
           (answers as Record<string, string>)[q.key] = v;
           box.remove();
@@ -649,6 +815,8 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     const pic = faceEl('present').cloneNode(true) as HTMLElement;
     pic.querySelectorAll('source[media]').forEach((s) => s.remove());
     pic.className = 'cg-face is-on';
+    delete pic.dataset.rest;
+    setFrame(pic, 'present');   // 写したときに途中のコマ（手を振る途中など）だったら戻す
     c2Host.replaceChildren(pic);
     c2.hidden = false;
     c2.scrollTop = 0;
@@ -723,7 +891,9 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     const card = h('div', `cg-card${swap ? ' is-swap' : ''}`);
     card.dataset.work = w.id;
     card.style.setProperty('--glow-c', glowColor(w.palette?.[0]));
-    card.append(h('h2', 'cg-card-head', t('cg_card_head', lang)));
+    const head = h('h2', 'cg-card-head');
+    fillPhrases(head, t('cg_card_head', lang), lang);
+    card.append(head);
     // キャンバス：表は絵、裏は紙白の面。回転は CSS（.cg-canvas の animation）
     const stageEl = h('div', 'cg-stage');
     // 絵をタップしても入れる（11-06 作家）。主ボタンと同じ流れ。ホバーで手の形に
@@ -759,7 +929,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
       cap.appendChild(h('span', '', sizeText(w)));
     }
     rise(cap);
-    if (info.reason) rise(h('p', 'cg-reason', info.reason));
+    if (info.reason) { const r = h('p', 'cg-reason'); fillPhrases(r, info.reason, lang); rise(r); }
     if (info.moods.length) {
       const m = h('p', 'cg-moods');
       m.append(h('span', 'cg-moods-label', t('cg_moods', lang)));
@@ -777,7 +947,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     });
     rise(enter);
     // ボタンの直下に、何が起きるかを 1 行（初めての人に「のぞく」の中身を伝える。11-06 作家）
-    rise(h('p', 'cg-enter-note', t('enter_note', lang)));
+    { const n = h('p', 'cg-enter-note'); fillPhrases(n, t('enter_note', lang), lang); rise(n); }
     // 「VR でのぞく」：VR が使える端末（Quest のブラウザ）のときだけ、その下に小さく
     const enterVr = h('button', 'cg-enter-vr', t('enter_vr', lang));
     enterVr.type = 'button';
@@ -790,17 +960,17 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     const all = h('a', 'cg-btn cg-all', t('cg_all', lang));
     all.href = withQuery('gallery/', 'from', w.id);
     rise(all);
-    rise(h('p', 'cg-note', t('rec_note', lang)));
+    { const n = h('p', 'cg-note'); fillPhrases(n, t('rec_note', lang), lang); rise(n); }
     // 下に小さく「会話に戻る」と「もう一度、話す」
     const foot = h('div', 'cg2-foot');
     foot.append(smallButton('cg-again cg-back-talk', 'cg_back', backFromC2), againButton());
     rise(foot);
 
-    c2.querySelector('.cg2-wait')?.remove();
+    if (c2.querySelector('.cg2-wait')) { c2.querySelector('.cg2-wait')!.remove(); setThinking(false); }
     const old = c2.querySelector('.cg-card');
     if (old) old.replaceWith(card); else c2.querySelector('.cg2-in')!.appendChild(card);
     // ひとこと：C2 が立ち上がるときは present_line（作家の 1 文）、C2 の中で差し替えたら「では、こちらはどうでしょう」
-    if (inC2) { c2Line.textContent = t('cg_other_line', lang); c2Line.dataset.other = '1'; }
+    if (inC2) { fillPhrases(c2Line, t('cg_other_line', lang), lang); c2Line.dataset.other = '1'; }
     else { delete c2Line.dataset.other; labelPresent(); }
     if (inC2) c2.scrollTo({ top: 0, behavior: 'smooth' });
     else openC2(true);
@@ -869,7 +1039,9 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (!next) return;
     if (!quiet) line('ai', t('cg_other_line', lang));   // 会話の記録にも残す（「会話に戻る」で読める）
     const w = c.works.find((x) => x.id === next)!;
+    const inC2 = stage === 'present';
     showCard(c, { id: next, alt: null }, { reason: defaultReason(w), moods: pickMoods(w, lang).slice(0, 2) }, true);
+    if (inC2 && !quiet) play('tilt');   // 「では、こちらは」と首をかしげる
   }
 
   // まだ出していない作品のうち、3 軸でいちばん近いもの。全部出したら最初からやり直す
@@ -929,7 +1101,9 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     if (mode !== 'talk' || !input.value) return;
     if (messages.length === 0) hideOpeners();
     if (!busy) setFace('listening');
+    onTyping();
   });
+  input.addEventListener('blur', stopTyping);
 
   // ───── 作品ページの「別のにする」から戻った（?retry=<id>）：会話は復元せず、別の絵を考える ─────
   if (opts.retry) {

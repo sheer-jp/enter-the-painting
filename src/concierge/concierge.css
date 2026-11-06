@@ -115,3 +115,10 @@
 .cg-enter-vr { margin-top: -6px; min-height: 44px; padding: 0 14px; border: 0; background: none; color: var(--ink-2); font-family: var(--sans); font-size: 12px; letter-spacing: .16em; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 5px; cursor: pointer; }
 .cg-enter-vr:hover { color: var(--ink); text-decoration-color: currentColor; }
 .cg-enter-vr[hidden] { display: none; }
+
+/* 文節の改行（P-14。docs/DESIGN.md「改行の決まり」）：日本語は文節ごとに inline-block の span（.cg-ph）にし、改行は文節の間だけ。
+   吹き出しの overflow-wrap: anywhere（page.css）はそのまま受け継ぐ：文節が 1 行より長いときだけ、その文節の中で折り返す（はみ出さない）。
+   inline-block の幅は親の幅で決まるので、文節が残りの幅に入らなければ文節ごと次の行へ送られる */
+.cg-ph { display: inline-block; max-width: 100%; text-indent: 0; }
+/* 選択肢のボタン（flex）：文節を包む span が縮められるように */
+.cg-opt > span { min-width: 0; }
