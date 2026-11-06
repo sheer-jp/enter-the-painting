@@ -81,7 +81,7 @@ V0（11-06 夕方）に、作家の判断を反映した版。この文書が入
 
 ### 3.3 キャラクター（11-06 夜の判断を反映）
 
-- **2 セットを見比べる**：`public/concierge/artist/`（作家のメタファーの女の子。既定）と `public/concierge/cat/`（猫のギャラリスト、最初のタッチのまま）。URL の `?chara=cat` / `?chara=artist` で切り替え、`localStorage`（`etp.chara`）に覚える。UI にボタンは置かない。作家が見比べて決めたら片方に寄せる（U-12）
+- **決定（11-06 夜）：女の子（`public/concierge/artist/`）に確定**。作家「女の子のキャラのほうがかわいい」。猫（`concept/concierge-cat-v2/`）は比較用として概念フォルダに残し、サイトからは外す。`?chara=` の切り替えも外す（U-12 済）
 - **画像**：全身の透過 PNG が元（女の子は第 5 案 `concept/concierge-v5/cutouts/`：水彩イラストのタッチ、黒に寄せた髪、黒目、白いロングワンピースに絵の具。猫は `concept/concierge-cat-v2/cutouts/`）。背景は Mac の Vision で抜く（カップルウィッシュリストの `character-cutout.swift`）
 - **上半身版は切り出し**（生成し直さない）：全身から上 58%・横中央 72% を `*-bust.png`。スマホ縦と PC の通常は bust、横向き・幅 900px 以上は full を縦いっぱい。1x 512 / 2x 1024、`scripts/concierge-assets.mjs` で作る
 - **ポーズ**：`listening` ← 聞く、`smile` ← 手を合わせる、`present` ← 手を上げる。切り替えは 300ms クロスフェード
