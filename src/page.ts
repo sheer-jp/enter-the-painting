@@ -1,5 +1,5 @@
 // 作品ページ / 受付 / ギャラリーの小さなスクリプト。言語の切り替えと「入る」。受付の会話と体験は import() で読む
-import { detectLang, rememberLang, applyLang, fillLangSelect, t, type Lang } from './i18n';
+import { detectLang, rememberLang, applyLang, fillLangSelect, ensureLang, isLangReady, t, type Lang } from './i18n';
 import { Soundscape } from './audio/Soundscape';
 import { vrAvailable, bandFor } from './concierge/enter';
 import './ui/page.css';
@@ -7,7 +7,12 @@ import './ui/page.css';
 const workId = document.querySelector<HTMLMetaElement>('meta[name="work"]')?.content || null;
 let lang: Lang = detectLang();
 
-function setLang(l: Lang) { lang = l; rememberLang(l); applyLang(document, l); }
+// 日本語・英語はすぐ。ほかの言語は文言を読んでから当てる（英語を一瞬挟まない。読めなければ英語）
+function setLang(l: Lang) {
+  lang = l; rememberLang(l);
+  if (isLangReady(l)) applyLang(document, l);
+  else void ensureLang(l).then(() => { if (lang === l) applyLang(document, l); });
+}
 setLang(lang);
 const select = document.getElementById('lang') as HTMLSelectElement | null;
 if (select) fillLangSelect(select, lang, setLang);
@@ -193,7 +198,7 @@ if (workId) {
     let loading: Promise<[unknown, typeof import('./ui/lightbox')]> | null = null;
     const load = () => (loading ||= Promise.all([
       fetch(`${assetBase}works/${workId}/generated/space.json`).then((r) => { if (!r.ok) throw new Error('space.json ' + r.status); return r.json(); }),
-      import('./ui/lightbox'),
+      import('./ui/lightbox').then(async (m) => { await ensureLang(lang); return m; }),
     ]).catch((e) => { loading = null; throw e; }));
     const imgs = figs.map((f) => f.querySelector('img')!);
     const open = async (i: number) => {

@@ -1,7 +1,7 @@
 // 受付（docs/ENTRANCE.md 3 節）。上にキャラクター、下に会話。おすすめの 1 点は別の画面（C2）に 3 段で出す（3.5）
 // 見出し・キャラクター・最初の 2 文・選択肢・入力欄・C2 の枠は HTML にあり（pages.js）、ここは会話を動かすだけ
 // 会話はこのタブのメモリにだけ持ち、どこにも保存しない。保存するのは合言葉（通ったときだけ）と、直前のおすすめ（sessionStorage）
-import { t, pick, applyLang, titlePair, type Lang } from '../i18n';
+import { t, pick, applyLang, titlePair, onLangLoaded, type Lang } from '../i18n';
 import { recommendByRules, targetAxes, axisDistance, pickMoods, buildReason, type Answers, type Catalog, type CatalogWork } from '../recommend/rules';
 import { splitRecommendation, resolveRecommendation, parseRecommendEvent, reasonText, type RecJson } from '../recommend/parse';
 import { LAST_REC_KEY, type LastRec } from './last';
@@ -553,6 +553,7 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   labelUi();
   const langSelect = document.getElementById('lang') as HTMLSelectElement | null;
   langSelect?.addEventListener('change', () => { lang = langSelect.value as Lang; labelUi(); labelOpeners(); });
+  onLangLoaded((l) => { if (l === lang) { labelUi(); labelOpeners(); } });   // 日英以外の文言が届いたら貼り直す
 
   // ───── 会話の吹き出し（キャラクターは左、自分は右。1 吹き出しずつ） ─────
   // 会話は末尾に合わせる。迎えの状態（ボタンだけ。is-talk が無い）は先頭に：低い画面（390×664）で最初の 1 文が窓の下に隠れないように（AUDIT-1 P1-2）

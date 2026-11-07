@@ -1,6 +1,6 @@
 import { defineConfig, type Plugin } from 'vite';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-import { readdirSync, existsSync, statSync, mkdirSync, copyFileSync } from 'node:fs';
+import { readdirSync, existsSync, statSync, mkdirSync, copyFileSync, readFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 
 // works/<id>/ の絵と generated/ を dist/works/<id>/ にコピーする（dev ではそのまま root から配信される）
@@ -36,6 +36,34 @@ function copyWorks(): Plugin {
   };
 }
 
+// UI 文言は日本語と英語だけをページ用 JS に入れ、ほかの言語は dist/i18n/<lang>.json に分ける（11-07 作家「うちは日本語と英語が一番」）。
+// 正本は src/i18n/ui.json のまま。dev とテストでは全言語が入る（apply: 'build'）。言語の名前（lang_names）は選択欄に要るので全部残す
+function splitUi(): Plugin {
+  const CORE = new Set(['ja', 'en']);
+  const uiPath = resolve('src/i18n/ui.json');
+  return {
+    name: 'split-ui',
+    apply: 'build',
+    enforce: 'pre',
+    transform(code, id) {
+      if (id.split('?')[0] !== uiPath) return null;
+      const all = JSON.parse(code) as Record<string, Record<string, string>>;
+      const core: Record<string, Record<string, string>> = {};
+      for (const [k, v] of Object.entries(all)) core[k] = k === 'lang_names' ? v : Object.fromEntries(Object.entries(v).filter(([l]) => CORE.has(l)));
+      return { code: JSON.stringify(core), map: null };
+    },
+    generateBundle() {
+      const all = JSON.parse(readFileSync(uiPath, 'utf8')) as Record<string, Record<string, string>>;
+      const byLang: Record<string, Record<string, string>> = {};
+      for (const [k, v] of Object.entries(all)) {
+        if (k === 'lang_names') continue;
+        for (const [l, s] of Object.entries(v)) if (!CORE.has(l)) (byLang[l] ||= {})[k] = s;
+      }
+      for (const [l, dict] of Object.entries(byLang)) this.emitFile({ type: 'asset', fileName: `i18n/${l}.json`, source: JSON.stringify(dict) });
+    },
+  };
+}
+
 // 受付 index.html、ギャラリー gallery/index.html、w/<id>/index.html を MPA の入力にする
 function workPages(): Record<string, string> {
   const inputs: Record<string, string> = { main: resolve('index.html') };
@@ -55,7 +83,7 @@ function workPages(): Record<string, string> {
 export default defineConfig(({ command, isPreview }) => ({
   // ホスティングのパスに依存しないよう相対にする（独自ドメインでも project site でも動く）
   base: './',
-  plugins: [...(command === 'serve' && !isPreview ? [basicSsl()] : []), copyWorks()],
+  plugins: [...(command === 'serve' && !isPreview ? [basicSsl()] : []), splitUi(), copyWorks()],
   build: {
     target: 'es2022',
     rollupOptions: { input: workPages() },

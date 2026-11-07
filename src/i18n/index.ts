@@ -12,6 +12,28 @@ export function t(key: string, lang: Lang, vars?: Record<string, string | number
   return s;
 }
 
+// 日本語と英語以外の UI 文言は dist/i18n/<lang>.json から後で読む（vite.config.ts の splitUi）。dev とテストは全言語が入っているので読まない
+const langWaiters = new Map<Lang, Promise<void>>();
+const langListeners = new Set<(l: Lang) => void>();
+export const isLangReady = (lang: Lang): boolean => !!UI.language?.[lang];
+export function onLangLoaded(cb: (l: Lang) => void): void { langListeners.add(cb); }
+export function ensureLang(lang: Lang): Promise<void> {
+  if (isLangReady(lang)) return Promise.resolve();
+  let w = langWaiters.get(lang);
+  if (!w) {
+    const here = import.meta.url;   // ページ用 JS は /assets/ にある。base: './' でも置き場に依存しない
+    w = fetch(new URL('../i18n/' + lang + '.json', here))
+      .then((r) => { if (!r.ok) throw new Error('i18n ' + r.status); return r.json() as Promise<Record<string, string>>; })
+      .then((dict) => {
+        for (const [k, s] of Object.entries(dict)) (UI[k] ||= {})[lang] = s;
+        langListeners.forEach((cb) => cb(lang));
+      })
+      .catch((e) => { langWaiters.delete(lang); console.warn('言語を読めない（英語で表示）', lang, e); });
+    langWaiters.set(lang, w);
+  }
+  return w;
+}
+
 // 多言語の値から、閲覧者の言語のものを取る（無ければ en → ja）
 export function pick<T extends Partial<Record<Lang, string>>>(obj: T | null | undefined, lang: Lang): string {
   if (!obj) return '';

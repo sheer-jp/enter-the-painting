@@ -4,7 +4,7 @@ import { Fluid, placementFor, type Quality } from '../fluid/Fluid';
 import { Soundscape } from '../audio/Soundscape';
 import { buildHud } from './hud';
 import { StoryMode } from '../story/StoryMode';
-import type { Lang } from '../i18n';
+import { ensureLang, type Lang } from '../i18n';
 import type { Space } from './types';
 
 export interface RunOptions {
@@ -21,7 +21,7 @@ export async function run(o: RunOptions): Promise<void> {
   // 作品ページは /w/<id>/ にあるので既定は ../../。別の場所に置くとき（アーティファクトなど）は meta で差し替える
   const assetBase = document.querySelector<HTMLMetaElement>('meta[name="asset-base"]')?.content ?? '../../';
   const base = `${assetBase}works/${o.workId}/`;
-  const space: Space = await fetch(base + 'generated/space.json').then((r) => { if (!r.ok) throw new Error('space.json ' + r.status); return r.json(); });
+  const [space] = await Promise.all([fetch(base + 'generated/space.json').then((r) => { if (!r.ok) throw new Error('space.json ' + r.status); return r.json() as Promise<Space>; }), ensureLang(o.lang)]);   // 日英以外の文言も読み終えてから HUD を作る
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const stage = document.getElementById('stage')!;
   const prevFocus = document.activeElement as HTMLElement | null;

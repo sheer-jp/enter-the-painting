@@ -779,18 +779,6 @@
     "it": "Vorrei un quadro rosso",
     "pt": "Quero um quadro vermelho"
   },
-  "d0536712ecab": {
-    "ja": "青い絵が見たい",
-    "en": "Show me something blue",
-    "zh-Hans": "想看蓝色的画",
-    "zh-Hant": "想看藍色的畫",
-    "ko": "파란 그림이 보고 싶어",
-    "fr": "Montre-moi du bleu",
-    "de": "Zeig mir was Blaues",
-    "es": "Enséñame algo azul",
-    "it": "Fammi vedere qualcosa di blu",
-    "pt": "Mostra-me algo azul"
-  },
   "276c920d12c4": {
     "ja": "緑のある絵がいい",
     "en": "Something with green",
@@ -838,18 +826,6 @@
     "es": "Algo con dorado",
     "it": "Qualcosa con un tocco d’oro",
     "pt": "Algo com dourado"
-  },
-  "285826d88e42": {
-    "ja": "白っぽくて淡い絵がいい",
-    "en": "Something pale and airy",
-    "zh-Hans": "想要偏白、淡淡的画",
-    "zh-Hant": "想要偏白、淡淡的畫",
-    "ko": "하얗고 연한 그림이 좋아",
-    "fr": "Clair et tout en douceur",
-    "de": "Hell und zart",
-    "es": "Algo claro y suave",
-    "it": "Qualcosa di chiaro e tenue",
-    "pt": "Algo claro e suave"
   },
   "8b0b935a0772": {
     "ja": "カラフルな絵が見たい",
@@ -1055,18 +1031,6 @@
     "it": "Uno in più per la mia collezione",
     "pt": "Mais um para a minha coleção"
   },
-  "bc2bc6dc5c97": {
-    "ja": "予算は小さめで探したい",
-    "en": "Something on a small budget",
-    "zh-Hans": "预算不多，想找找看",
-    "zh-Hant": "預算不多，想找找看",
-    "ko": "적은 예산으로 찾고 싶어",
-    "fr": "Avec un petit budget",
-    "de": "Mit kleinem Budget",
-    "es": "Con poco presupuesto",
-    "it": "Con un budget piccolo",
-    "pt": "Com um orçamento pequeno"
-  },
   "353bb0329b82": {
     "ja": "抽象画は初めて",
     "en": "New to abstract art",
@@ -1091,18 +1055,6 @@
     "it": "Amo la pittura materica",
     "pt": "Adoro tinta espessa e texturada"
   },
-  "4739797ea80d": {
-    "ja": "繊細な線のある絵が好き",
-    "en": "I like delicate lines",
-    "zh-Hans": "喜欢有细腻线条的画",
-    "zh-Hant": "喜歡有細膩線條的畫",
-    "ko": "섬세한 선이 있는 그림이 좋아",
-    "fr": "J’aime les lignes délicates",
-    "de": "Ich mag feine Linien",
-    "es": "Me gustan las líneas delicadas",
-    "it": "Mi piacciono le linee sottili",
-    "pt": "Gosto de linhas delicadas"
-  },
   "0681dd2bfae6": {
     "ja": "ドットや丸い形が好き",
     "en": "I love dots and round shapes",
@@ -1126,42 +1078,6 @@
     "es": "Algo con aire japonés",
     "it": "Qualcosa dal gusto giapponese",
     "pt": "Algo com ar japonês"
-  },
-  "49f9541da8a7": {
-    "ja": "海や空を思わせる絵を",
-    "en": "Something like the sea or sky",
-    "zh-Hans": "让人想起大海或天空的画",
-    "zh-Hant": "讓人想起大海或天空的畫",
-    "ko": "바다나 하늘이 떠오르는 그림을",
-    "fr": "Comme la mer ou le ciel",
-    "de": "Wie Meer oder Himmel",
-    "es": "Como el mar o el cielo",
-    "it": "Come il mare o il cielo",
-    "pt": "Como o mar ou o céu"
-  },
-  "4f1030095512": {
-    "ja": "森や植物を思わせる絵を",
-    "en": "Something like a forest or plants",
-    "zh-Hans": "让人想起森林或植物的画",
-    "zh-Hant": "讓人想起森林或植物的畫",
-    "ko": "숲이나 식물이 떠오르는 그림을",
-    "fr": "Comme une forêt ou des plantes",
-    "de": "Wie Wald oder Pflanzen",
-    "es": "Como un bosque o plantas",
-    "it": "Come un bosco o delle piante",
-    "pt": "Como uma floresta ou plantas"
-  },
-  "9bdb6a174d85": {
-    "ja": "夜空みたいな絵を",
-    "en": "Something like the night sky",
-    "zh-Hans": "像夜空一样的画",
-    "zh-Hant": "像夜空一樣的畫",
-    "ko": "밤하늘 같은 그림을",
-    "fr": "Comme un ciel de nuit",
-    "de": "Wie ein Nachthimmel",
-    "es": "Como un cielo nocturno",
-    "it": "Come un cielo notturno",
-    "pt": "Como um céu noturno"
   },
   "b0dbc6125833": {
     "ja": "元気な子どもみたいな絵を",
@@ -1259,42 +1175,6 @@
     "it": "Calore per l’inverno",
     "pt": "Aconchego para o inverno"
   },
-  "fcd7527a0f4f": {
-    "ja": "三つくらい候補を見せて",
-    "en": "Show me a few options",
-    "zh-Hans": "给我看三幅左右吧",
-    "zh-Hant": "給我看三幅左右吧",
-    "ko": "후보 세 개쯤 보여 줘",
-    "fr": "Montre-moi trois options",
-    "de": "Zeig mir so drei Vorschläge",
-    "es": "Enséñame unas tres opciones",
-    "it": "Fammi vedere tre proposte",
-    "pt": "Mostra-me umas três opções"
-  },
-  "2f0a200c9b2a": {
-    "ja": "いちばん人気の絵は？",
-    "en": "Which one is most popular?",
-    "zh-Hans": "最受欢迎的是哪幅？",
-    "zh-Hant": "最受歡迎的是哪幅？",
-    "ko": "제일 인기 있는 그림은?",
-    "fr": "Lequel est le plus populaire ?",
-    "de": "Welches ist am beliebtesten?",
-    "es": "¿Cuál es el más popular?",
-    "it": "Qual è il più amato?",
-    "pt": "Qual é o mais popular?"
-  },
-  "fc93e9c4f679": {
-    "ja": "作家のいちばんのおすすめは？",
-    "en": "What's the artist's own favorite?",
-    "zh-Hans": "画家最推荐哪幅？",
-    "zh-Hant": "畫家最推薦哪幅？",
-    "ko": "작가가 제일 추천하는 건?",
-    "fr": "Le coup de cœur de l’artiste ?",
-    "de": "Der Liebling der Künstlerin?",
-    "es": "¿El favorito de la artista?",
-    "it": "Il preferito dell’artista?",
-    "pt": "O favorito da artista?"
-  },
   "2059f1c7b21d": {
     "ja": "質問に答えていくから選んで",
     "en": "Ask me questions and pick for me",
@@ -1306,5 +1186,125 @@
     "es": "Pregúntame y elige tú",
     "it": "Fammi domande e scegli tu",
     "pt": "Faz-me perguntas e escolhe tu"
+  },
+  "f91547e45a3d": {
+    "ja": "決めきれないことがある",
+    "en": "There's something I can't decide",
+    "zh-Hans": "有件事我拿不定主意",
+    "zh-Hant": "有件事我拿不定主意",
+    "ko": "결정 못 한 일이 있어",
+    "fr": "Je n’arrive pas à me décider",
+    "de": "Ich kann mich nicht entscheiden",
+    "es": "Hay algo que no logro decidir",
+    "it": "C’è una cosa che non riesco a decidere",
+    "pt": "Há algo que não consigo decidir"
+  },
+  "6598ea0f8338": {
+    "ja": "一歩踏み出す勇気がほしい",
+    "en": "I need courage to take a step",
+    "zh-Hans": "想要迈出一步的勇气",
+    "zh-Hant": "想要踏出一步的勇氣",
+    "ko": "한 걸음 내딛을 용기가 필요해",
+    "fr": "Il me faut du courage pour avancer",
+    "de": "Mut für den nächsten Schritt",
+    "es": "Quiero valor para dar un paso",
+    "it": "Vorrei il coraggio di fare un passo",
+    "pt": "Quero coragem para dar um passo"
+  },
+  "cbc6725e624a": {
+    "ja": "もっと上を目指したい",
+    "en": "I want to aim higher",
+    "zh-Hans": "想要追求更高的目标",
+    "zh-Hant": "想要追求更高的目標",
+    "ko": "더 높은 곳을 향하고 싶어",
+    "fr": "Je veux viser plus haut",
+    "de": "Ich will höher hinaus",
+    "es": "Quiero apuntar más alto",
+    "it": "Voglio puntare più in alto",
+    "pt": "Quero apontar mais alto"
+  },
+  "d81c94cebfcb": {
+    "ja": "自分の道を決めたい",
+    "en": "I want to choose my own path",
+    "zh-Hans": "想决定自己要走的路",
+    "zh-Hant": "想決定自己要走的路",
+    "ko": "내 길을 정하고 싶어",
+    "fr": "Je veux choisir mon chemin",
+    "de": "Ich will meinen Weg wählen",
+    "es": "Quiero elegir mi camino",
+    "it": "Voglio scegliere la mia strada",
+    "pt": "Quero escolher o meu caminho"
+  },
+  "444e618ff2eb": {
+    "ja": "赤い太陽みたいな絵を",
+    "en": "Something like a red sun",
+    "zh-Hans": "像红色太阳一样的画",
+    "zh-Hant": "像紅色太陽一樣的畫",
+    "ko": "붉은 태양 같은 그림",
+    "fr": "Comme un soleil rouge",
+    "de": "Wie eine rote Sonne",
+    "es": "Como un sol rojo",
+    "it": "Come un sole rosso",
+    "pt": "Como um sol vermelho"
+  },
+  "65f62364501a": {
+    "ja": "緑の勢いがある絵を",
+    "en": "Something with bold greens",
+    "zh-Hans": "绿色充满力量的画",
+    "zh-Hant": "綠色充滿力量的畫",
+    "ko": "초록빛 기운이 넘치는 그림",
+    "fr": "Des verts pleins d’élan",
+    "de": "Etwas mit kräftigem Grün",
+    "es": "Con verdes llenos de fuerza",
+    "it": "Con verdi pieni di slancio",
+    "pt": "Com verdes cheios de força"
+  },
+  "f25d26bca8ae": {
+    "ja": "感情のままに描かれた絵を",
+    "en": "Painted straight from feeling",
+    "zh-Hans": "随情感挥洒而成的画",
+    "zh-Hant": "隨情感揮灑而成的畫",
+    "ko": "감정 그대로 그린 그림",
+    "fr": "Peint au gré des émotions",
+    "de": "Direkt aus dem Gefühl gemalt",
+    "es": "Pintado desde la emoción",
+    "it": "Dipinto d’istinto",
+    "pt": "Pintado a partir da emoção"
+  },
+  "f0d2d02e3234": {
+    "ja": "デジタルっぽい絵が好き",
+    "en": "I like a digital look",
+    "zh-Hans": "喜欢有数码感的画",
+    "zh-Hant": "喜歡有數位感的畫",
+    "ko": "디지털 느낌의 그림이 좋아",
+    "fr": "J’aime le côté numérique",
+    "de": "Ich mag den digitalen Look",
+    "es": "Me gusta el aire digital",
+    "it": "Mi piace l’aria digitale",
+    "pt": "Gosto do ar digital"
+  },
+  "3f87b72f9691": {
+    "ja": "絵のことはよく知らない",
+    "en": "I don't know much about art",
+    "zh-Hans": "我不太懂画",
+    "zh-Hant": "我不太懂畫",
+    "ko": "그림은 잘 몰라",
+    "fr": "Je ne m’y connais pas trop",
+    "de": "Ich kenne mich nicht aus",
+    "es": "No sé mucho de arte",
+    "it": "Non me ne intendo molto",
+    "pt": "Não percebo muito de arte"
+  },
+  "c6d28d093acb": {
+    "ja": "話しながら決めたい",
+    "en": "I'd like to talk it through",
+    "zh-Hans": "想边聊边决定",
+    "zh-Hant": "想邊聊邊決定",
+    "ko": "이야기하면서 정하고 싶어",
+    "fr": "Je préfère en parler d’abord",
+    "de": "Lass uns darüber reden",
+    "es": "Prefiero hablarlo contigo",
+    "it": "Preferisco parlarne insieme",
+    "pt": "Prefiro falar sobre isso"
   }
 }
