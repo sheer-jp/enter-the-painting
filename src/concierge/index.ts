@@ -230,14 +230,15 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
   let catalog: Catalog | null = null;
   // 売れた絵は候補から外す（「別のにする」とルールだけの版も）。販売状況を取れないときは全作品のまま
   const statusCtrl = new AbortController();
-  setTimeout(() => statusCtrl.abort(), 2000);
+  setTimeout(() => statusCtrl.abort(), 7000);
   const statusReady: Promise<SoldStatuses> = fetch('/api/works-status', { signal: statusCtrl.signal })
     .then((r) => (r.ok ? r.json() as Promise<{ statuses?: SoldStatuses }> : null)).then((d) => d?.statuses ?? {}).catch(() => ({}));
-  const catalogReady = fetch(catalogHref)
+  // 選択肢の文はカタログが届いたらすぐ出す（販売状況を待たない）。おすすめを出すときは catalogReady で販売状況まで待つ
+  const catalogLoaded = fetch(catalogHref)
     .then((r) => { if (!r.ok) throw new Error('catalog ' + r.status); return r.json() as Promise<Catalog>; })
-    .then(async (c) => (c && Array.isArray(c.works) ? dropSold(c, await statusReady) : c))
     .then((c) => { catalog = c && Array.isArray(c.works) ? c : null; labelOpeners(); return catalog; })
     .catch((e) => { console.warn('カタログを読めない', e); return null; });
+  const catalogReady: Promise<Catalog | null> = catalogLoaded.then(async (c) => { if (!c) return c; catalog = dropSold(c, await statusReady); return catalog; });
 
   // ───── 表情（listening / smile / present）。300ms のクロスフェードは CSS。reduced-motion では即時 ─────
   const faceBase = abs('concierge/artist/');   // キャラクターは女の子に確定（11-06 作家）

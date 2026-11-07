@@ -130,7 +130,7 @@ async function handle(req, env) {
     return json(502, { error: 'upstream' }, cors);
   }
   // 売れた絵はすすめない。販売状況を取れないときは全作品のまま（会話を止めない）
-  try { catalog = withoutSold(catalog, await fetchStatuses()); } catch (e) { console.error('販売状況を取れない', String(e)); }
+  try { catalog = withoutSold(catalog, await fetchStatuses(3000)); } catch (e) { console.error('販売状況を取れない', String(e)); }
   const turns = Array.isArray(catalog.turns) && catalog.turns.length === 2 ? catalog.turns : [2, 4];
   // 上限は 1 回だけ超えてよい（受付の「別のにする」で AI に「別の絵を」の 1 往復を足すため。docs/ENTRANCE.md 3.1）
   if (validateRequest(body, [turns[0], turns[1] + 1])) return json(400, { error: 'bad_request' }, cors);
