@@ -13,7 +13,7 @@
 - 名前を「絵と出会う / Meet the Painting」に。https://meet.sheerarts.com を開通、GitHub を sheer-jp/meet-the-painting に改名、QR と OGP を作り直し。旧 pages.dev も動く
 - UI 文言は日英だけ同梱（受付 JS 約 32KB → 22.5KB）。選択肢からできないことを外した。F4 以下は広い部屋に出さない。語りのあとは文が終わってから 10 秒で遷移。F 号の併記。ギャラリーの「絵の中に入れます」をやめた。作品ページに作品の一文（10 言語）
 - 動画 V4（2:59）：問題提起から始まる原稿に書き直し、案内役の章を 39 秒に
-- 購入まで：作品ページに価格と購入ボタン（Stripe の決済リンク。Harmoney は ¥198,000 で新規作成）、売れたら SOLD／ご予約済み（`/api/works-status` で sheerarts.com を中継）
+- 購入まで：作品ページに価格と購入ボタン（Stripe の決済リンク。Harmoney は ¥198,000 で新規作成）、売れたら SOLD／ご予約済み（`/api/works-status` で sheerarts.com を中継）。売れた絵は案内役の候補から外す
 
 **決めた**
 - DECISIONS 63・64

@@ -284,11 +284,20 @@ describe('functions/_lib/relay.js', () => {
   });
 });
 
-import { pickStatuses } from '../functions/api/works-status.js';
+import { pickStatuses, withoutSold } from '../functions/_lib/works-status.js';
 describe('販売状況の中継', () => {
   it('必要な欄だけを通す。形が違うものは空', () => {
     expect(pickStatuses({ statuses: { 頂: { status: 'SOLD', soldOut: true, secret: 'x' }, 本能: { status: '', soldOut: false } } })).toEqual({ 頂: { status: 'SOLD', soldOut: true }, 本能: { status: '', soldOut: false } });
     expect(pickStatuses(null)).toEqual({});
     expect(pickStatuses({ statuses: 'x' })).toEqual({});
+  });
+  it('売れた絵をカタログから外す。全部売れていたら外さない。元は変えない', () => {
+    const c = { turns: [3, 4], works: [{ id: 'a', title: { ja: '頂' } }, { id: 'b', title: { ja: '本能' } }] };
+    expect(withoutSold(c, { 頂: { status: 'SOLD', soldOut: true } }).works.map((w: { id: string }) => w.id)).toEqual(['b']);
+    expect(c.works.length).toBe(2);
+    expect(withoutSold(c, { 頂: { soldOut: true }, 本能: { soldOut: true } })).toBe(c);
+    expect(withoutSold(c, {})).toBe(c);
+    const sys = buildTool(withoutSold(catalog, { Harmoney: { soldOut: false } }));
+    expect(sys).toBeTruthy();
   });
 });

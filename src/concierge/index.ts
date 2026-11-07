@@ -165,6 +165,13 @@ type UiCatalog = Catalog & {
   ui_write?: Partial<Record<Lang, string>>;
 };
 
+export type SoldStatuses = Record<string, { soldOut?: boolean } | undefined>;
+// 売れた絵を除く。全部売れていたら除かない（元のカタログは変えない）
+export function dropSold<T extends { works: { title?: { ja?: string } }[] }>(c: T, st: SoldStatuses): T {
+  const left = c.works.filter((w) => !st[w.title?.ja ?? '']?.soldOut);
+  return left.length && left.length < c.works.length ? { ...c, works: left } : c;
+}
+
 export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void {
   if (root.dataset.mounted) return;
   root.dataset.mounted = '1';
@@ -221,8 +228,14 @@ export function mountConcierge(root: HTMLElement, opts: ConciergeOptions): void 
     .catch(() => false);
 
   let catalog: Catalog | null = null;
+  // 売れた絵は候補から外す（「別のにする」とルールだけの版も）。販売状況を取れないときは全作品のまま
+  const statusCtrl = new AbortController();
+  setTimeout(() => statusCtrl.abort(), 2000);
+  const statusReady: Promise<SoldStatuses> = fetch('/api/works-status', { signal: statusCtrl.signal })
+    .then((r) => (r.ok ? r.json() as Promise<{ statuses?: SoldStatuses }> : null)).then((d) => d?.statuses ?? {}).catch(() => ({}));
   const catalogReady = fetch(catalogHref)
     .then((r) => { if (!r.ok) throw new Error('catalog ' + r.status); return r.json() as Promise<Catalog>; })
+    .then(async (c) => (c && Array.isArray(c.works) ? dropSold(c, await statusReady) : c))
     .then((c) => { catalog = c && Array.isArray(c.works) ? c : null; labelOpeners(); return catalog; })
     .catch((e) => { console.warn('カタログを読めない', e); return null; });
 

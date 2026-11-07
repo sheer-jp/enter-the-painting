@@ -2,6 +2,7 @@
 // サイト本体と同じ origin の /api/recommend。会話はどこにも保存しない。要求の本文や会話をログに出さない
 import { buildBody, validateRequest, FALLBACK_BETA, supportsFallbacks } from '../_lib/prompt.js';
 import { relayEvents, sse } from '../_lib/relay.js';
+import { fetchStatuses, withoutSold } from '../_lib/works-status.js';
 
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const CATALOG_TTL = 600_000;      // カタログを isolate の中に持つ時間（ミリ秒）
@@ -128,6 +129,8 @@ async function handle(req, env) {
     console.error('catalog の取得に失敗', String(e));
     return json(502, { error: 'upstream' }, cors);
   }
+  // 売れた絵はすすめない。販売状況を取れないときは全作品のまま（会話を止めない）
+  try { catalog = withoutSold(catalog, await fetchStatuses()); } catch (e) { console.error('販売状況を取れない', String(e)); }
   const turns = Array.isArray(catalog.turns) && catalog.turns.length === 2 ? catalog.turns : [2, 4];
   // 上限は 1 回だけ超えてよい（受付の「別のにする」で AI に「別の絵を」の 1 往復を足すため。docs/ENTRANCE.md 3.1）
   if (validateRequest(body, [turns[0], turns[1] + 1])) return json(400, { error: 'bad_request' }, cors);
