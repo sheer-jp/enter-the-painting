@@ -17,6 +17,12 @@ setLang(lang);
 const select = document.getElementById('lang') as HTMLSelectElement | null;
 if (select) fillLangSelect(select, lang, setLang);
 
+// 作品の一文：日本語は文節の間だけで改行（docs/DESIGN.md「改行の決まり」）
+const statementJa = document.querySelector<HTMLElement>('.statement [data-lang="ja"]');
+if (statementJa) void import('./text/phrases').then(({ splitPhrases }) => {
+  statementJa.replaceChildren(...splitPhrases(statementJa.textContent || '', 'ja').map((ph) => { const s = document.createElement('span'); s.textContent = ph; s.style.display = 'inline-block'; return s; }));
+});
+
 const url = new URL(location.href);
 const fromQr = url.searchParams.get('from') === 'qr';
 const forceVr = url.searchParams.get('vr') === '1';

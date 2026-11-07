@@ -328,7 +328,8 @@ main.gw { position: relative; }
   /* G-1：スマホは選んだものだけを縦に */
   .gw[data-size="s"] .gw-item:not([data-size="s"]), .gw[data-size="m"] .gw-item:not([data-size="m"]), .gw[data-size="l"] .gw-item:not([data-size="l"]) { display: none; }
   .gw[data-size] .gw-item:first-child { order: 0; }
-  .gw-filter { justify-content: center; }
+  .gw-filter { justify-content: center; gap: 5px; flex-wrap: nowrap; }
+  .gw-chip { padding: 0 10px; font-size: 11px; letter-spacing: .06em; white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) { .gw-item { transition: none; } }
 
