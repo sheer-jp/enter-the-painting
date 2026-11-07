@@ -31,7 +31,7 @@
 - **部屋で見る**：AI 生成の部屋に実物の写真を射影合成（絵は生成モデルに入れない）。小さな絵は壁に掛けず、机やサイドボードの**卓上イーゼル**、棚への**立てかけ**で置く（`docs/PLACEMENT.md` 6 節）。暗い部屋は使わない。拡大表示では**絵をドラッグして部屋の中で動かせる**（大きさは縮尺のまま。壁の範囲だけ、家具の手前には出ない）
 - **計測**：会話の回数と作品ごとの閲覧を KV で数える（`/stats.html`）。Cloudflare Web Analytics
 - **SNS カード・ファビコン**：`npm run generate` が合成（白い壁に 6 点、作品ごとの 1 点）
-- **提出動画**：`_meta/development/enter-the-painting/video/`（V2 まで。V3 を制作予定）
+- **提出動画**：`_meta/development/enter-the-painting/video/v4/`（2:59、BGM「花を手向ける」、字幕入り。声は未収録）
 
 ### コマンド
 

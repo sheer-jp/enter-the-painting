@@ -63,7 +63,7 @@ SHEER Gallery は傘の名前として残す（画面の見出しはそのまま
 | 段階 | 中身 | 状態 |
 | --- | --- | --- |
 | 1 | 作品の一文、説明文の方向、できないことの削除、F 号、10 秒の余韻 | 配置済み（fa94f26） |
-| 2 | 提出動画 V4（新しい構成と原稿、`docs/VIDEO.md` 7 節） | 制作中。題名は案 A で仮置き |
+| 2 | 提出動画 V4（新しい構成と原稿、`docs/VIDEO.md` 7 節） | 完成（`_meta/development/enter-the-painting/video/v4/`、2:59）。声は未収録 |
 | 3 | 名前：タイトル・OGP・SNS カード・manifest・README・受付の見出しの下 | 反映済み。画面の見出しは SHEER Gallery のまま |
 | 4 | meet.sheerarts.com、GitHub 改名、QR の作り直し | 済み（11-07） |
 | 5 | 受付の最初の文を新しい方向へ（「長く暮らす一枚」に触れる）、購入への導線（sheerarts.com の Available Works） | 提案 |
