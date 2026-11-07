@@ -48,6 +48,8 @@ main.work { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-a
 .painting img:hover { transform: scale(1.01); }
 .titling { margin: 40px 0 0; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
 .titling h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 4vw, 38px); letter-spacing: .08em; margin: 0; line-height: 1.3; text-wrap: balance; }
+.statement { margin: 18px 0 0; font-family: var(--serif); font-size: 15px; line-height: 2; letter-spacing: .05em; color: var(--ink); max-width: 36em; }   /* 作品の一文：この絵の意味と、絵の世界での動き（11-07 作家） */
+.statement + .meta { margin-top: 14px; }
 .titling h1 .t-sub { font-size: .85em; color: var(--ink-2); margin-left: .6em; }
 .titling h1 .t-sub.latin { font-family: var(--latin); font-weight: 300; font-style: italic; letter-spacing: .06em; }
 .titling h1 .t-main.latin { font-family: var(--latin); font-weight: 400; font-style: normal; letter-spacing: .04em; }   /* 11-07 作家：日本語以外では英語を主、日本語を従 */
@@ -314,7 +316,6 @@ main.gw { position: relative; }
 .gw-more, .gw-scroll { display: none; }
 .gw.is-scroll .gw-more { display: block; position: absolute; right: max(12px, env(safe-area-inset-right)); top: 50%; font-family: var(--latin); font-size: 28px; font-weight: 300; color: var(--ink-2); opacity: .45; pointer-events: none; }
 .gw.is-scroll .gw-scroll { display: block; max-width: 1180px; width: 100%; margin: -40px auto 0; text-align: right; font-size: 11px; letter-spacing: .14em; color: var(--ink-2); }
-.gw-tap { display: none; }
 @media (max-width: 767.98px) {
   .gw-wall { flex-direction: column; align-items: center; overflow: visible; gap: 64px; padding: 56px 0 72px; margin: 0; background: none; }
   .gw-item { width: 100%; scroll-snap-align: none; }   /* スマホは柄を見せる：全部幅いっぱい（11-06 深夜、作家）。実寸比は PC だけ */
@@ -324,12 +325,10 @@ main.gw { position: relative; }
   .gw.is-scroll .gw-more, .gw.is-scroll .gw-scroll { display: none; }
   /* P-10：最初の作品の下に 1 回だけ「絵をタップすると、絵の中に入れます」。?from= で先頭が入れ替わっても order で最初の作品の下 */
   .gw-item:first-child { order: -2; }
-  /* G-1：スマホは選んだものだけを縦に。案内は見えている最初の作品（.is-lead）の下 */
+  /* G-1：スマホは選んだものだけを縦に */
   .gw[data-size="s"] .gw-item:not([data-size="s"]), .gw[data-size="m"] .gw-item:not([data-size="m"]), .gw[data-size="l"] .gw-item:not([data-size="l"]) { display: none; }
   .gw[data-size] .gw-item:first-child { order: 0; }
-  .gw[data-size] .gw-item.is-lead { order: -2; }
   .gw-filter { justify-content: center; }
-  .gw-tap { display: block; order: -1; margin: -48px 0 0; font-size: 12px; letter-spacing: .1em; color: var(--ink-2); text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) { .gw-item { transition: none; } }
 

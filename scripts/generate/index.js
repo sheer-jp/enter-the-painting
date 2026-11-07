@@ -116,7 +116,7 @@ async function generateWork(id) {
   texts.push(...roomTexts);
   // 技法・号数・部屋の場所の名前（E-15）。work.json / rooms/*.json の { ja, en } を 10 言語に。文字列（古い形）は訳さずそのまま
   const isMulti = (v) => v && typeof v === 'object' && typeof v.ja === 'string' && v.ja;
-  const labels = [work.medium, work.size_label, ...rooms.map((r) => r.label)].filter(isMulti);
+  const labels = [work.medium, work.size_label, work.statement, ...rooms.map((r) => r.label)].filter(isMulti);
   texts.push(...new Map(labels.map((x) => [x.ja, { ja: x.ja, en: x.en }])).values());
   const tr = await translateAll(texts, join(gen, 'translations.json'));
   const multi = (v) => isMulti(v) ? { ...tr(v.ja), ja: v.ja, ...(v.en ? { en: v.en } : {}) } : (v ?? null);
@@ -159,6 +159,7 @@ async function generateWork(id) {
     story: stories.ja ? { ...tr(stories.ja), ja: stories.ja } : null,
     size_label: multi(work.size_label || null),
     medium: multi(work.medium || null),
+    statement: multi(work.statement || null),   // 作品の一文（この絵の意味と、絵の世界での動き。作家の語りから）
     rooms, availability: work.availability || null, contact: work.contact || null,
     generated_at: new Date().toISOString(),
   };

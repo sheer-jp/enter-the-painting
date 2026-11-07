@@ -392,16 +392,16 @@ try {
   check(items === 6, `gallery: 作品 ${items} 点`);
   const footText = (await page.locator('footer').textContent())?.trim();
   check(footText === '© SHEER', `gallery: フッターは「© SHEER」だけ（${footText}）`);
-  // G-1：大きさの絞り込み。フランス語のチップ、「小」で 18 × 14 の 3 点だけ残り、壁の並びは変わらない、?size=s
+  // G-1：大きさの絞り込み。フランス語のチップ、「小」で F0〜F4 の 4 点だけ残り、壁の並びは変わらない、?size=s
   const chipText = (await page.locator('.gw-chip[data-size="s"]').textContent())?.trim();
-  check(chipText === 'Petites (moins de 30 cm)', `gallery: フランス語設定でチップもフランス語（${chipText}）`);
+  check(chipText === 'Petites (moins de 35 cm)', `gallery: フランス語設定でチップもフランス語（${chipText}）`);
   const order = () => page.locator('.gw-item').evaluateAll((els) => els.map((el) => `${el.dataset.id}@${Math.round(el.getBoundingClientRect().left)}`).join(','));
   const before = await order();
   await page.click('.gw-chip[data-size="s"]');
   await page.waitForTimeout(400);
   const faded = await page.locator('.gw-item').evaluateAll((els) => els.map((el) => `${el.dataset.size}:${getComputedStyle(el).opacity}`));
-  check(faded.filter((f) => f === 's:1').length === 3 && faded.filter((f) => f.endsWith(':0.25')).length === 3 && await order() === before && new URL(page.url()).searchParams.get('size') === 's' && await page.locator('.gw-chip[data-size="s"]').getAttribute('aria-pressed') === 'true',
-    `gallery: 「小」で 3 点だけ残り、並びは同じ、?size=s（${faded.join(' ')}）`);
+  check(faded.filter((f) => f === 's:1').length === 4 && faded.filter((f) => f.endsWith(':0.25')).length === 2 && await order() === before && new URL(page.url()).searchParams.get('size') === 's' && await page.locator('.gw-chip[data-size="s"]').getAttribute('aria-pressed') === 'true',
+    `gallery: 「小」で 4 点だけ残り、並びは同じ、?size=s（${faded.join(' ')}）`);
   check(errors.length === 0, `gallery: エラー ${errors.length}`);
   await browser.close();
   await entranceCase('pc', { width: 1280, height: 800 });

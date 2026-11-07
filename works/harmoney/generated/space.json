@@ -171,6 +171,10 @@
     "it": "Acrilico su tela",
     "pt": "Acrílico sobre tela"
   },
+  "statement": {
+    "ja": "いろんな色が奏で合い、溶け合い、踊りながら、どこかで釣り合っている絵です。好きな音楽を流しながら描きました。絵の世界では、音楽のように色が流れます。",
+    "en": "Colors play together, melt together, and dance, yet somehow stay in balance. Painted with my favorite music on. In its world, the colors flow like music."
+  },
   "rooms": [
     {
       "name": "sq-sofa",
@@ -461,5 +465,5 @@
   ],
   "availability": "available",
   "contact": null,
-  "generated_at": "2026-11-06T19:29:11.285Z"
+  "generated_at": "2026-11-07T01:47:28.990Z"
 }

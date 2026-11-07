@@ -245,23 +245,23 @@ describe('ギャラリーの大きさの区分（G-1）', async () => {
   const { sizeClass, longSide, galleryWallPage } = await import('../scripts/generate/pages.js');
   it('長辺で小・中・大', () => {
     expect(sizeClass(18)).toBe('s');
-    expect(sizeClass(29.9)).toBe('s');
-    expect(sizeClass(30)).toBe('m');
+    expect(sizeClass(33.3)).toBe('s');   // F4
+    expect(sizeClass(41)).toBe('m');    // F6
     expect(sizeClass(53)).toBe('m');
-    expect(sizeClass(59.9)).toBe('m');
-    expect(sizeClass(60)).toBe('l');
+    expect(sizeClass(60.6)).toBe('m');  // F12
+    expect(sizeClass(61)).toBe('l');
     expect(sizeClass(65.2)).toBe('l');
     expect(longSide([53, 65.2])).toBe(65.2);
   });
   const works = [
     { id: 'big', title: { ja: '大' }, size_cm: [53, 65.2] },
-    { id: 'mid', title: { ja: '中' }, size_cm: [33.3, 24.2] },
+    { id: 'mid', title: { ja: '中' }, size_cm: [41, 31.8] },
     { id: 'tiny', title: { ja: '小' }, size_cm: [18, 14] },
   ];
   const html = galleryWallPage({ works, baseUrl: 'https://example.com' });
   it('長辺の昇順に並び、data-size と data-long が付く（元の配列は変えない）', () => {
     const ids = [...html.matchAll(/class="gw-item" data-id="([^"]+)" data-size="([sml])" data-long="([\d.]+)"/g)].map((m) => `${m[1]}:${m[2]}:${m[3]}`);
-    expect(ids).toEqual(['tiny:s:18', 'mid:m:33.3', 'big:l:65.2']);
+    expect(ids).toEqual(['tiny:s:18', 'mid:m:41', 'big:l:65.2']);
     expect(works[0].id).toBe('big');
   });
   it('チップ 4 つ。該当 0 の区分は disabled', () => {

@@ -147,6 +147,10 @@
     "it": "Tecnica mista su compensato di tiglio",
     "pt": "Técnica mista sobre contraplacado de tília"
   },
+  "statement": {
+    "ja": "新しい扉を開いて、次の章を楽しもう、という黄色い絵です。ぽこぽことした半立体のドットに挑戦しました。絵の世界では、ドットが弾むように流れます。",
+    "en": "A yellow painting about opening a new door and enjoying the next chapter. A first try at raised, bubbly dots. In its world, the dots bounce along the flow."
+  },
   "rooms": [
     {
       "name": "desk-easel",
@@ -564,5 +568,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T19:29:14.893Z"
+  "generated_at": "2026-11-07T01:47:31.601Z"
 }

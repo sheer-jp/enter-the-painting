@@ -9,7 +9,7 @@ const UI_JA = {
   size: '寸法', medium: '技法', available: '販売中', sold: '売約済み', not_for_sale: '非売',
   room_cat_studio: '一人暮らしの部屋', room_cat_house: '広い家',   // 11-07 FIX-A：玄関・靴箱の部屋にも付くので「リビング」を外す（ui.json は別途）
   rooms_note: '部屋は AI 生成のイメージ。絵は実物の写真。寸法は目安', story_note: '小さな物語', language: '言語', tap_for_size: '画像をタップすると、寸法と詳しい説明。絵をドラッグして、好きな場所に置けます',
-  gallery_title: 'ギャラリー', tagline: '絵の中に入る', privacy: '© SHEER',   // 11-07 P-17：フッターは「© SHEER」だけ（計測の断りは public/stats.html と README）
+  gallery_title: 'ギャラリー', tagline: '絵の世界に浸る', privacy: '© SHEER',   // 11-07 P-17：フッターは「© SHEER」だけ（計測の断りは public/stats.html と README）
   statement: '小さな絵の、奥へ。', statement_en: 'Into the depth of a small painting.',
 };
 // Google Fonts（AUDIT-1 P1-3）：Noto Sans JP は 300 / 400 だけ（500 は CSS で使っていない）。Shippori Mincho の 600 は絵の中の文字（.float-text）。
@@ -53,7 +53,7 @@ const headOg = ({ type = 'website', title, description, image, url }) => `<meta 
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${image}">`;
-const RECEPTION_DESC = '彩り美しい抽象画の世界を届けます。会話で、今日のあなたへの 1 点を。';
+const RECEPTION_DESC = '話しながら、長く一緒に暮らせる一枚に出会えるオンラインギャラリー。';
 
 // 属性の訳（AUDIT-1 P1-6）：page.ts の applyLang が data-i18n-attr の鍵で差し替える。vars は data-i18n-vars（JSON。多言語の値は閲覧者の言語を取る）
 const i18nAttr = (spec, vars) => ` data-i18n-attr="${spec}"${vars ? ` data-i18n-vars="${esc(JSON.stringify(vars))}"` : ''}`;
@@ -100,8 +100,8 @@ export function workPage({ work, space, baseUrl, allWorks }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(pageTitle)}</title>
-<meta name="description" content="${esc(title)}（${w} × ${h} cm）。この絵の中に入れます。">
-${headOg({ type: 'article', title: pageTitle, description: `${w} × ${h} cm — この絵の中に入れます / Enter the painting`, image: ogImg, url })}
+<meta name="description" content="${esc(title)}（${w} × ${h} cm）。作家の思いを聞きながら、この絵の世界に浸れます。">
+${headOg({ type: 'article', title: pageTitle, description: `${w} × ${h} cm — 作家の思いを聞きながら、この絵の世界に浸る / Step into the world of this painting`, image: ogImg, url })}
 <meta name="work" content="${id}">
 ${headIcons('../../')}
 ${FONTS}
@@ -116,7 +116,8 @@ ${FONTS}
   </figure>
   <header class="titling">
     <h1 data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><span class="t-main">${esc(title)}</span>${titleEn && titleEn !== title ? `<span class="t-sub latin">${esc(titleEn)}</span>` : '<span class="t-sub" hidden></span>'}</h1>
-    <p class="meta">${work.year ? `<span>${esc(work.year)}</span>` : ''}<span>${w} × ${h} cm</span>${(space.medium || work.medium) ? `<span>${multi(asMulti(space.medium || work.medium))}</span>` : ''}${avail}</p>
+    ${space.statement ? `<p class="statement">${multi(asMulti(space.statement))}</p>` : ''}
+    <p class="meta">${work.year ? `<span>${esc(work.year)}</span>` : ''}<span>${fLabel(space.size_label || work.size_label) ? `${fLabel(space.size_label || work.size_label)} ・ ` : ''}${w} × ${h} cm</span>${(space.medium || work.medium) ? `<span>${multi(asMulti(space.medium || work.medium))}</span>` : ''}${avail}</p>
   </header>
   <div class="actions">
     <button class="btn primary" id="enter" data-i18n="enter"${space.audio?.voice ? ` data-voice="../../works/${id}/${esc(space.audio.voice)}"` : ''}>${UI_JA.enter}</button>
@@ -192,7 +193,7 @@ export function galleryPage({ works, baseUrl }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>${esc(jaEnTitle(title.ja, title.en))}</title>
-<meta name="description" content="${esc(title.ja)}。気分を話すと、あなたへの 1 点をおすすめします。絵の中に入れるギャラリー">
+<meta name="description" content="${esc(title.ja)}。話しながら、長く一緒に暮らせる一枚に出会えるオンラインギャラリー">
 ${headOg({ title: jaEnTitle(title.ja, title.en) || SITE_NAME, description: RECEPTION_DESC, image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/` })}
 ${headIcons('')}
 <meta name="recommend-api" content="${esc(process.env.RECOMMEND_API ?? '/api/recommend')}">
@@ -239,7 +240,10 @@ ${FONTS}
 // ギャラリー /gallery/index.html（docs/ENTRANCE.md 4 節）。白い壁に実寸比で並べる。おすすめ（?from=<id>）は page.ts が先頭に出す
 // G-1：大きさの区分（長辺 cm）。小 = 30 未満（F0〜F4）、中 = 30〜60（F6〜F12）、大 = 60 以上（F15〜）
 export const longSide = (sizeCm) => Math.max(...(sizeCm || [0]));
-export function sizeClass(longCm) { return longCm < 30 ? 's' : longCm < 60 ? 'm' : 'l'; }
+// 小 = F0〜F4（長辺 33.3 まで）、中 = F6〜F12（60.6 まで）、大 = F15〜（65.2 から）。11-07 作家の区分に合わせる
+export function sizeClass(longCm) { return longCm < 35 ? 's' : longCm < 61 ? 'm' : 'l'; }
+// 号数の表示（「F15 号」→「F15」。言語によらず同じ）
+export const fLabel = (label) => { const s = typeof label === 'string' ? label : label?.ja || label?.en || ''; return /F\s*\d+/.exec(s)?.[0].replace(/\s/g, '') || ''; };
 const SIZE_CHIPS = [['all', 'すべて', 'gw_size_all'], ['s', '小', 'gw_size_s'], ['m', '中', 'gw_size_m'], ['l', '大', 'gw_size_l']];
 
 export function galleryWallPage({ works: input, baseUrl }) {
@@ -260,18 +264,17 @@ export function galleryWallPage({ works: input, baseUrl }) {
     <a class="gw-item" data-id="${esc(w.id)}" data-size="${sizeClass(longSide(w.size_cm))}" data-long="${longSide(w.size_cm)}" href="../w/${esc(w.id)}/?via=gallery" style="--wcm:${cw};--hcm:${ch};--rel:${(cw / maxW).toFixed(3)}">
       <span class="gw-foryou" data-i18n="gw_for_you" hidden>あなたへの 1 点</span>
       <img src="../works/${esc(w.id)}/generated/painting_1024.jpg" srcset="${smallSrcset(`../works/${esc(w.id)}/generated/`)}" sizes="${gwSizes(cw, maxH)}" alt="" loading="lazy" width="${Math.round(cw * 10)}" height="${Math.round(ch * 10)}" style="aspect-ratio:${cw}/${ch}">
-      <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${cw} × ${ch} cm</span></span>
+      <span class="gw-cap" data-title-ja="${esc(title)}" data-title-en="${esc(titleEn)}"><b class="t-main">${esc(title)}</b>${titleEn && titleEn !== title ? `<i class="t-sub latin">${esc(titleEn)}</i>` : '<i class="t-sub" hidden></i>'}<span>${fLabel(w.size_label) ? `${fLabel(w.size_label)} ・ ` : ''}${cw} × ${ch} cm</span></span>
     </a>`;
-  }).join('') + `
-    <p class="gw-tap" data-i18n="gw_tap">絵をタップすると、絵の中に入れます</p>`;
+  }).join('') + ``;
   return `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ギャラリー / Gallery — ${SITE_NAME}</title>
-<meta name="description" content="白い壁に、絵を実物の寸法の比で並べたギャラリー。選ぶと絵の中に入れます">
-${headOg({ title: `ギャラリー — ${SITE_NAME}`, description: '白い壁に、絵を実物の寸法の比で並べたギャラリー。選ぶと絵の中に入れます', image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/gallery/` })}
+<meta name="description" content="白い壁に、絵を実物の寸法の比で並べたギャラリー">
+${headOg({ title: `ギャラリー — ${SITE_NAME}`, description: '白い壁に、絵を実物の寸法の比で並べたギャラリー', image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/gallery/` })}
 ${headIcons('../')}
 ${FONTS}
 <link rel="stylesheet" href="../src/ui/page.css">

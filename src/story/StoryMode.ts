@@ -7,11 +7,12 @@ import type { Hud } from '../experience/hud';
 import type { Space } from '../experience/types';
 import { ScreenText } from '../text/FloatingText';
 import { pick, t, type Lang } from '../i18n';
+import { screenTextTiming } from '../text/timing';
 import { mountRoomArt, coverBox, canMove, popWorthy, mountDragPop, type RoomArt, type DragPop } from '../ui/roomArt';
 import { Particles } from '../space/Particles';
 
-// T3 の最短の長さ（秒）。docs/EXPERIENCE.md 3 節 T3「数値」。声があるときは声の長さが優先
-const T3_MIN_S = 40;
+// 文が終わったあと、流れを味わう時間（秒）。11-07 作家「文の長さは作品で違うので、終わってから 10 秒ほど楽しんで遷移。離脱させない」。docs/EXPERIENCE.md 3 節 T3
+const AFTER_TEXT_S = 10;
 
 export interface StoryCtx {
   renderer: THREE.WebGLRenderer | null; fluid: Fluid | null; space: Space; sound: Soundscape; hud: Hud; lang: Lang;
@@ -477,9 +478,6 @@ export class StoryMode {
     await this.enter();
     // T3 流れと語り
     this.stage = 'T3';
-    // 文が先に終わっても、流れは最短 T3_MIN_S 続ける（11-07 T-1 で文が速くなり、絵の中の時間が短くなりすぎたため）。一時停止の時間は数えない
-    this.pausedTotal = 0;
-    const t3Start = performance.now();
     setTimeout(() => sound.drone(-22, 3), 4000);
     const roomReady = this.loadRoom();
     const voiceUrl = space.audio.voice ? this.ctx.base + space.audio.voice : null;
@@ -490,6 +488,12 @@ export class StoryMode {
       // 200ms 待って再生できているかを見る
       await wait(250);
       voiceOk = sound.voiceTime() >= 0 && sound.voiceDuration() > 0;
+    }
+    // 時間の弧（頂の「渦 → 静かに戻る」）は、語りの長さ + 余韻に合わせて縮める（文が速くなり、固定の 50 秒では山に届かない）
+    if (fluid && space.fluid?.arc) {
+      const talk = voiceOk ? sound.voiceDuration() : msgs.reduce((a, m) => { const s = screenTextTiming(pick(m, lang)); return a + s.rise + s.hold + s.dissolve + s.gap; }, 0);
+      const total = talk + AFTER_TEXT_S;
+      fluid.setParams({ arc: { peak_s: total * 0.4, calm_s: total * 0.95 } });
     }
     for (let i = 0; i < msgs.length && this.running; i++) {
       const m = msgs[i];
@@ -502,9 +506,11 @@ export class StoryMode {
       await this.text.show(pick(m, lang), { reduced });
     }
     if (voiceOk) await voiceEnded;
-    // 最短の流れ：流体があるときだけ（静止画モードは止まった絵を待たせない）。文が全部終わったあとの「次へ」で T4 へ
+    // 余韻の流れ：流体があるときだけ（静止画モードは止まった絵を待たせない）。「次へ」で T4 へ
     this.floorSkip = false;
-    while (this.running && !voiceOk && fluid && !this.floorSkip && this.activeSince(t3Start) < T3_MIN_S * 1000) await wait(100);
+    this.pausedTotal = 0;
+    const tailStart = performance.now();
+    while (this.running && fluid && !this.floorSkip && this.activeSince(tailStart) < AFTER_TEXT_S * 1000) await wait(100);
     // T4 余韻：最後の文字が終わると同時に、シューッと引きながら流れが止まり、元の絵へ戻る（一時停止は T3 だけ。残っていれば解く）
     if (this.paused) this.setPaused(false);
     this.stage = 'T4';

@@ -100,12 +100,9 @@ if (wall) {
     if (!/^[sml]$/.test(size) || chips.find((c) => c.dataset.size === size)?.disabled) size = 'all';
     if (size === 'all') delete gw.dataset.size; else gw.dataset.size = size;
     chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.size === size)));
-    let lead = false;
     items.forEach((el) => {
       const on = size === 'all' || el.dataset.size === size;
       el.inert = !on;   // 薄い作品はタップもフォーカスもしない
-      // スマホ：P-10 の「絵をタップすると…」を、見えている最初の作品の下に
-      el.classList.toggle('is-lead', on && !lead); if (on) lead = true;
     });
     if (push) {
       if (size === 'all') url.searchParams.delete('size'); else url.searchParams.set('size', size);

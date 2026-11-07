@@ -147,6 +147,10 @@
     "it": "Tecnica mista su compensato di tiglio",
     "pt": "Técnica mista sobre contraplacado de tília"
   },
+  "statement": {
+    "ja": "自分の中の迷路から、「この道を行く」と自分で決める絵です。デジタルのような線を、手で描きました。絵の世界では、細い筋が走り、ときどき一本の道が通ります。",
+    "en": "A painting about finding your way out of your own maze and deciding: this is my path. Digital-looking lines, drawn by hand. In its world, fine lines race across, and now and then a single path comes through."
+  },
   "rooms": [
     {
       "name": "desk-easel",
@@ -564,5 +568,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T19:29:10.418Z"
+  "generated_at": "2026-11-07T01:47:28.289Z"
 }

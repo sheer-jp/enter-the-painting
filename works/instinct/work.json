@@ -60,5 +60,9 @@
       "grain": 0.03
     },
     "radius_m": 2.5
+  },
+  "statement": {
+    "ja": "何かを描こうとしたのではなく、揺れ動く感情のまま、本能的に生まれた絵です。絵の世界でも、色は形にならないまま揺らめき続けます。",
+    "en": "Not a painting of anything: it came from instinct, out of shifting emotions. In its world, the colors keep flickering without ever taking shape."
   }
 }

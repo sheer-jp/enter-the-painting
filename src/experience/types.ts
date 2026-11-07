@@ -7,7 +7,7 @@ export interface Space {
   flow: { texture: string; strength: number; edge_density: number };
   relief?: { texture: string };               // 絵の具の厚みの初期値（docs/FLUID_LOOK.md）
   bright_center?: [number, number];           // 最も明るい主要色の重心（UV、v は下 → 上）。入りの渦の中心
-  fluid: { vorticity: number; speed: number; quality: 'high' | 'medium' | 'low'; restore: number; drive?: number; tempo?: number; look?: Partial<Look> };
+  fluid: { vorticity: number; speed: number; quality: 'high' | 'medium' | 'low'; restore: number; drive?: number; tempo?: number; look?: Partial<Look>; arc?: { peak_s: number; calm_s: number } };
   space: { radius_m: number; melt_distance_m: number };
   audio: { voice: string | null; ambient: 'calm' | 'wind' | 'water' | 'drone' | 'none' };
   messages: ({ at: number } & Multi)[];

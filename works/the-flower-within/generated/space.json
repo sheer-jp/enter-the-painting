@@ -147,6 +147,10 @@
     "it": "Tecnica mista su compensato di tiglio",
     "pt": "Técnica mista sobre contraplacado de tília"
   },
+  "statement": {
+    "ja": "花は美しいだけでなく、厳しい環境で咲き誇る強さも持っています。小さな画面に重みのある、和の色がにじむ絵です。絵の世界では、色がゆっくりとにじみ合います。",
+    "en": "A flower is not only beautiful; it is strong enough to bloom in harsh places. A small painting with real weight, and Japanese-toned colors seeping through. In its world, the colors slowly bleed into one another."
+  },
   "rooms": [
     {
       "name": "desk-easel",
@@ -564,5 +568,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-06T19:29:15.752Z"
+  "generated_at": "2026-11-07T01:47:32.309Z"
 }
