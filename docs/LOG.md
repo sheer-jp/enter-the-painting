@@ -13,6 +13,7 @@
 - 名前を「絵と出会う / Meet the Painting」に。https://meet.sheerarts.com を開通、GitHub を sheer-jp/meet-the-painting に改名、QR と OGP を作り直し。旧 pages.dev も動く
 - UI 文言は日英だけ同梱（受付 JS 約 32KB → 22.5KB）。選択肢からできないことを外した。F4 以下は広い部屋に出さない。語りのあとは文が終わってから 10 秒で遷移。F 号の併記。ギャラリーの「絵の中に入れます」をやめた。作品ページに作品の一文（10 言語）
 - 動画 V4（2:59）：問題提起から始まる原稿に書き直し、案内役の章を 39 秒に
+- 購入まで：作品ページに価格と購入ボタン（Stripe の決済リンク。Harmoney は ¥198,000 で新規作成）、売れたら SOLD／ご予約済み（`/api/works-status` で sheerarts.com を中継）
 
 **決めた**
 - DECISIONS 63・64
@@ -23,8 +24,8 @@
 - Cloudflare の DNS は wrangler の権限では書けない。ダッシュボードで作業する
 
 **次にやる**
-- 作家：作品の一文の確認、「出会った絵」を端末に残すか、ナレーション、F20 級の作品、Quest と iPhone の実機、QR を読む確認
-- 受付の最初の文を新しい方向へ、購入への導線（sheerarts.com の Available Works）
+- 作家：スプレッドシートに Harmoney を追加（SOLD の判定に必要）、Harmoney の商品画像、金沢展 5 点の発送の文面、作品の一文の確認、「出会った絵」を端末に残すか、ナレーション、F20 級の作品、Quest と iPhone の実機、QR を読む確認
+- 受付の最初の文を新しい方向へ
 
 ---
 
