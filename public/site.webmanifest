@@ -1,6 +1,6 @@
 {
-  "name": "SHEER Gallery",
-  "short_name": "SHEER Gallery",
+  "name": "絵と出会う / Meet the Painting",
+  "short_name": "絵と出会う",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

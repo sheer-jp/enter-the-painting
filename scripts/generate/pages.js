@@ -33,7 +33,7 @@ const langSel = () => `<label class="lang"><span data-i18n="language">${UI_JA.la
 
 // ja と en が同じ（または en が無い）なら 1 回だけ。違えば「ja / en」（11-07 作家：「SHEER Gallery / SHEER Gallery」と同じ語を 2 回並べない）
 export const jaEnTitle = (ja, en) => (en && en !== ja ? `${ja} / ${en}` : (ja || en || ''));
-export const SITE_NAME = 'SHEER Gallery';
+export const SITE_NAME = '絵と出会う / Meet the Painting';   // 11-07 作家が決定（docs/CONCEPT.md）。SHEER Gallery は全体の名前として見出しに残す
 // ファビコン・マニフェスト（E-16）。prefix は受付 ''、ギャラリー '../'、作品 '../../'（base: './' の相対で、置き場のパスに依存しない）
 const headIcons = (prefix) => `<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
 <link rel="icon" href="${prefix}favicon-32.png" sizes="32x32" type="image/png">
@@ -192,9 +192,9 @@ export function galleryPage({ works, baseUrl }) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>${esc(jaEnTitle(title.ja, title.en))}</title>
+<title>${esc(SITE_NAME)}</title>
 <meta name="description" content="${esc(title.ja)}。話しながら、長く一緒に暮らせる一枚に出会えるオンラインギャラリー">
-${headOg({ title: jaEnTitle(title.ja, title.en) || SITE_NAME, description: RECEPTION_DESC, image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/` })}
+${headOg({ title: SITE_NAME, description: RECEPTION_DESC, image: `${baseUrl}/og/gallery.png`, url: `${baseUrl}/` })}
 ${headIcons('')}
 <meta name="recommend-api" content="${esc(process.env.RECOMMEND_API ?? '/api/recommend')}">
 <!-- 受付の背景の壁（AUDIT-1 P1-4）。src/ui/page.css の .cg-host::before と同じ画像・同じ境目（640px）にそろえる -->
@@ -206,7 +206,7 @@ ${FONTS}
 <body class="paper">
 <main class="cg" id="concierge">
   <header class="cg-top">
-    <h1 class="cg-title">${jaEn(title.ja, title.en)}</h1>
+    <h1 class="cg-title">${jaEn(title.ja, title.en)}<span class="cg-name">${jaEn('絵と出会う', 'Meet the Painting')}</span></h1>
     <div class="cg-tools">${langSel()}</div>
   </header>
   <figure class="cg-host">

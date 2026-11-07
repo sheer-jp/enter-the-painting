@@ -5,7 +5,7 @@
 //
 // 書体 fonts/ShipporiMincho-subset.ttf は Google Fonts の部分集合（ASCII + × — 全角空白 ・ + 作品の題名の字）。
 // 題名が増えたら取り直す（ブラウザの UA を付けないと TTF が返る）：
-//   T=$(node -e "const fs=require('fs');let s='';for(let c=32;c<127;c++)s+=String.fromCharCode(c);s+='×—　・';for(const d of fs.readdirSync('works')){try{s+=JSON.parse(fs.readFileSync('works/'+d+'/work.json')).title.ja}catch{}}console.log(encodeURIComponent([...new Set(s)].join('')))")
+//   T=$(node -e "const fs=require('fs');let s='';for(let c=32;c<127;c++)s+=String.fromCharCode(c);s+='×—　・絵と出会う';for(const d of fs.readdirSync('works')){try{s+=JSON.parse(fs.readFileSync('works/'+d+'/work.json')).title.ja}catch{}}console.log(encodeURIComponent([...new Set(s)].join('')))")
 //   curl -s "https://fonts.googleapis.com/css2?family=Shippori+Mincho&text=$T"   # → src: url(...) の TTF を fonts/ に保存
 import sharp from 'sharp';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
@@ -205,7 +205,7 @@ function shadowSvg(boxes, { blur = 7, dy = 5, opacity = 0.16 } = {}) {
 }
 
 const wall = () => sharp({ create: { width: OG_W, height: OG_H, channels: 3, background: '#ffffff' } });
-const brandSvg = () => textSvg('SHEER Gallery', 64, 78, 26, { letterSpacing: 0.04 });
+const brandSvg = () => textSvg('絵と出会う  Meet the Painting by SHEER', 64, 78, 26, { letterSpacing: 0.04 });
 
 /** 絵（実物の写真）を w×h に縮小する。縦横比はそもそも写真と同じなので歪まない */
 const paintingAt = (path, w, h) => sharp(path).resize(w, h, { fit: 'fill' }).toBuffer();
@@ -264,7 +264,7 @@ export async function writeIcons(root) {
   // PWA 用の 192 / 512（監査 11-07：manifest に無かった）
   for (const n of [192, 512]) await sharp(svg, { density: (72 * n) / 32 }).resize(n, n).flatten({ background: '#ffffff' }).removeAlpha().png().toFile(join(pub, `icon-${n}.png`));
   const manifest = {
-    name: 'SHEER Gallery', short_name: 'SHEER Gallery', start_url: './', scope: './', display: 'standalone',
+    name: '絵と出会う / Meet the Painting', short_name: '絵と出会う', start_url: './', scope: './', display: 'standalone',
     background_color: '#ffffff', theme_color: '#ffffff',
     icons: [
       { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' },
