@@ -17,14 +17,15 @@ export async function vrAvailable(forceVr: boolean): Promise<boolean> {
 // - via=concierge：「今日のあなたへの 1 点」＋「別のにする」「ギャラリー全体を見る」
 // - via=concierge&after=1（C2 から絵の中に入って戻ってきた）：「絵の中から戻ってきました」＋「もう一度のぞく」「部屋で見る」「ギャラリー全体を見る」
 // 部屋の画像が無い作品では「部屋で見る」を出さない
-export type BandItem = { key: string; action: 'retry' | 'gallery' | 'again' | 'rooms' };
+export type BandItem = { key: string; action: 'retry' | 'gallery' | 'again' | 'rooms' | 'buy' };
 export type Band = { kind: 'via' | 'after'; head: string; items: BandItem[] } | null;
 
-export function bandFor(params: URLSearchParams, hasRooms: boolean): Band {
+export function bandFor(params: URLSearchParams, hasRooms: boolean, hasBuy = false): Band {
   if (params.get('via') !== 'concierge') return null;
   if (params.get('after') === '1') {
     const items: BandItem[] = [{ key: 'cg_after_again', action: 'again' }];
     if (hasRooms) items.push({ key: 'cg_after_rooms', action: 'rooms' });
+    if (hasBuy) items.push({ key: 'buy', action: 'buy' });   // 語りのあと、そのまま迎えられるように（11-07 作家）
     items.push({ key: 'cg_all', action: 'gallery' });
     return { kind: 'after', head: 'cg_after_head', items };
   }

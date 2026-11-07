@@ -1186,5 +1186,41 @@
     "es": "Reanudar",
     "it": "Riprendi",
     "pt": "Retomar"
+  },
+  "buy": {
+    "ja": "この絵を購入する",
+    "en": "Buy this painting",
+    "zh-Hans": "购买这幅画",
+    "zh-Hant": "購買這幅畫",
+    "ko": "이 그림 구매하기",
+    "fr": "Acheter ce tableau",
+    "de": "Dieses Bild kaufen",
+    "es": "Comprar este cuadro",
+    "it": "Acquista questo dipinto",
+    "pt": "Comprar este quadro"
+  },
+  "buy_tax": {
+    "ja": "税込",
+    "en": "tax included",
+    "zh-Hans": "含税",
+    "zh-Hant": "含稅",
+    "ko": "세금 포함",
+    "fr": "TTC",
+    "de": "inkl. Steuern",
+    "es": "impuestos incluidos",
+    "it": "tasse incluse",
+    "pt": "impostos incluídos"
+  },
+  "buy_note": {
+    "ja": "一点ものの原画です。東京から配送します。送料は、国内は着払い、海外は別途ご案内します。",
+    "en": "An original, one of a kind. Shipped from Tokyo. Within Japan, shipping is paid on delivery; for overseas orders, we will send the shipping cost separately.",
+    "zh-Hans": "这是独一无二的原作，从东京发货。日本国内运费到付，海外运费另行通知。",
+    "zh-Hant": "這是獨一無二的原作，從東京出貨。日本國內運費到付，海外運費另行通知。",
+    "ko": "단 한 점뿐인 원화입니다. 도쿄에서 배송합니다. 일본 내 배송비는 착불이며, 해외 배송비는 별도로 안내합니다.",
+    "fr": "Une œuvre originale, pièce unique. Expédiée depuis Tokyo. Au Japon, les frais de port sont payés à la livraison ; à l’étranger, ils sont communiqués séparément.",
+    "de": "Ein einzigartiges Original. Versand aus Tokio. In Japan zahlst du den Versand bei Lieferung; für das Ausland teilen wir die Kosten separat mit.",
+    "es": "Una obra original y única. Se envía desde Tokio. En Japón, el envío se paga al recibirla; para otros países, se indica el coste aparte.",
+    "it": "Un originale, pezzo unico. Spedito da Tokyo. In Giappone la spedizione si paga alla consegna; per l’estero il costo viene comunicato a parte.",
+    "pt": "Um original, peça única. Enviado de Tóquio. No Japão, o envio é pago na entrega; para o estrangeiro, o custo é indicado à parte."
   }
 }

@@ -86,6 +86,7 @@
 | 62 | 絵の中の文字は Shippori Mincho 600、`clamp(26px, 4.4vmin+10px, 48px)`、墨色に白のにじみ。1 文は 0.5s で現れ、0.12s×文字数（2.2〜4.5s）留まり、0.4s で消える。T3 は最短 40 秒（文が先に終わっても流れは続く） | 作家「もっとテンポよく切り替わる方がいい。文字が細くて目に入ってこない。太くて大きく」。速くした分、流れの時間が短くなりすぎないよう最短を置く | 11-07 |
 | 63 | 名前は「絵と出会う / Meet the Painting」。SHEER Gallery は全体の名前。絵の中に入ることは手段のひとつで、案内役と同じ重さ（`docs/CONCEPT.md`） | 作家「絵の中に入るは手段。作家がいない場所で魅力を伝える問題を解く」。gallery.sheerarts.com の SHEER GALLERY（歩ける VR）と混ざらないよう別の名前に | 11-07 |
 | 64 | 公開 URL は https://meet.sheerarts.com（サブドメイン）。GitHub は sheer-jp/meet-the-painting。Pages のプロジェクト名は変えない（改名の機能が無い）。DECISIONS 55 の「gallery. か /gallery/ か」はこれで決着（gallery. は歩ける VR が使用中） | 作家の承認。本体サイトは Vercel なのでパスにすると中継が要る | 11-07 |
+| 65 | 作品ページから購入まで行ける：`work.json` の `buy`（`url` と `price_jpy`）で価格と「この絵を購入する」を出す。決済は sheerarts.com と同じ Stripe の決済リンク（1 点物）。URL の無い作品には出さない。Harmoney は ¥198,000（税込、Euphoria と同じ）。案内役は金額を言わず、作品ページへ案内する | 作家「コンセプト的に購入まで行けた方が良さそう」 | 11-07 |
 
 ## 未決定（期限つき）
 

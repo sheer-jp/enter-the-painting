@@ -64,5 +64,9 @@
   "statement": {
     "ja": "いろんな色が奏で合い、溶け合い、踊りながら、どこかで釣り合っている絵です。好きな音楽を流しながら描きました。絵の世界では、音楽のように色が流れます。",
     "en": "Colors play together, melt together, and dance, yet somehow stay in balance. Painted with my favorite music on. In its world, the colors flow like music."
+  },
+  "buy": {
+    "price_jpy": 198000,
+    "url": "https://buy.stripe.com/aFa5kF2uXg11e1y7Xaa3u0f"
   }
 }

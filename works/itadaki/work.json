@@ -74,5 +74,9 @@
   "statement": {
     "ja": "もっと上へ、頂へ行くぞ、という強気な絵です。火を思わせる赤に、20 色以上を重ねました。絵の世界では、色が渦を巻いてのぼり、やがて静かに元の絵へ戻ります。",
     "en": "A bold painting that says: higher, to the summit. Over twenty colors are layered onto a fiery red. In its world, the colors swirl upward, then quietly settle back into the painting."
+  },
+  "buy": {
+    "price_jpy": 110000,
+    "url": "https://buy.stripe.com/6oUaEZfhJ7uv5v2gtGa3u00"
   }
 }

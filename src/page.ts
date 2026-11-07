@@ -135,7 +135,9 @@ if (workId) {
   // 受付から来たとき（?via=concierge）：絵の下・「入る」の上に細い帯（docs/ENTRANCE.md 3.1）
   // C2 から絵の中に入って戻ってきたとき（&after=1）は「絵の中から戻ってきました」＋「もう一度のぞく」「部屋で見る」「ギャラリー全体を見る」（E-12）
   const rooms = document.querySelector<HTMLElement>('.rooms');
-  const bandDef = bandFor(url.searchParams, !!rooms);
+  const buyLink = document.querySelector<HTMLAnchorElement>('a#buy');
+  buyLink?.addEventListener('click', () => stat('buy_click', workId));
+  const bandDef = bandFor(url.searchParams, !!rooms, !!buyLink);
   if (bandDef) {
     const assetRoot = document.querySelector<HTMLMetaElement>('meta[name="asset-base"]')?.content ?? '../../';
     const band = document.createElement('div');
@@ -149,7 +151,8 @@ if (workId) {
       const a = document.createElement('a');
       a.dataset.i18n = it.key; a.textContent = t(it.key, lang);
       a.dataset.action = it.action;
-      if (it.action === 'retry') a.href = `${assetRoot}?retry=${encodeURIComponent(workId)}`;
+      if (it.action === 'buy' && buyLink) { a.href = buyLink.href; a.target = '_blank'; a.rel = 'noopener'; a.addEventListener('click', () => stat('buy_click', workId)); }
+      else if (it.action === 'retry') a.href = `${assetRoot}?retry=${encodeURIComponent(workId)}`;
       else if (it.action === 'gallery') a.href = `${assetRoot}gallery/?from=${encodeURIComponent(workId)}`;
       else {
         // 「もう一度のぞく」「部屋で見る」はページ内の操作（帯の見た目をそろえるため <a> のまま）

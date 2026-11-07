@@ -64,5 +64,9 @@
   "statement": {
     "ja": "自分の中の迷路から、「この道を行く」と自分で決める絵です。デジタルのような線を、手で描きました。絵の世界では、細い筋が走り、ときどき一本の道が通ります。",
     "en": "A painting about finding your way out of your own maze and deciding: this is my path. Digital-looking lines, drawn by hand. In its world, fine lines race across, and now and then a single path comes through."
+  },
+  "buy": {
+    "price_jpy": 22000,
+    "url": "https://buy.stripe.com/dRm5kFb1tbKLbTqb9ma3u02"
   }
 }

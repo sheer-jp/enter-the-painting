@@ -64,5 +64,9 @@
   "statement": {
     "ja": "何かを描こうとしたのではなく、揺れ動く感情のまま、本能的に生まれた絵です。絵の世界でも、色は形にならないまま揺らめき続けます。",
     "en": "Not a painting of anything: it came from instinct, out of shifting emotions. In its world, the colors keep flickering without ever taking shape."
+  },
+  "buy": {
+    "price_jpy": 55000,
+    "url": "https://buy.stripe.com/4gM7sN5H91675v22CQa3u07"
   }
 }

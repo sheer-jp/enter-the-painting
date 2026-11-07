@@ -48,6 +48,11 @@ main.work { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-a
 .painting img:hover { transform: scale(1.01); }
 .titling { margin: 40px 0 0; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
 .titling h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 4vw, 38px); letter-spacing: .08em; margin: 0; line-height: 1.3; text-wrap: balance; }
+.buy { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.buy-price { margin: 0 0 12px; font-family: var(--serif); font-size: 20px; letter-spacing: .04em; color: var(--ink); }
+.buy-price small { margin-left: 4px; font-size: 12px; color: var(--ink-2); }
+.buy .btn { min-height: 52px; border-radius: 26px; }
+.buy-note { margin: 10px 0 0; font-size: 12px; line-height: 1.8; letter-spacing: .04em; color: var(--ink-2); }
 .statement { margin: 18px 0 0; font-family: var(--serif); font-size: 15px; line-height: 2; letter-spacing: .05em; color: var(--ink); max-width: 36em; }   /* 作品の一文：この絵の意味と、絵の世界での動き（11-07 作家） */
 .statement + .meta { margin-top: 14px; }
 .titling h1 .t-sub { font-size: .85em; color: var(--ink-2); margin-left: .6em; }
