@@ -1222,5 +1222,41 @@
     "es": "Una obra original y única. Se envía desde Tokio. En Japón, el envío se paga al recibirla; para otros países, se indica el coste aparte.",
     "it": "Un originale, pezzo unico. Spedito da Tokyo. In Giappone la spedizione si paga alla consegna; per l’estero il costo viene comunicato a parte.",
     "pt": "Um original, peça única. Enviado de Tóquio. No Japão, o envio é pago na entrega; para o estrangeiro, o custo é indicado à parte."
+  },
+  "sold_tag": {
+    "ja": "SOLD",
+    "en": "SOLD",
+    "zh-Hans": "SOLD",
+    "zh-Hant": "SOLD",
+    "ko": "SOLD",
+    "fr": "SOLD",
+    "de": "SOLD",
+    "es": "SOLD",
+    "it": "SOLD",
+    "pt": "SOLD"
+  },
+  "reserved_tag": {
+    "ja": "ご予約済み",
+    "en": "Reserved",
+    "zh-Hans": "已预订",
+    "zh-Hant": "已預訂",
+    "ko": "예약됨",
+    "fr": "Réservé",
+    "de": "Reserviert",
+    "es": "Reservado",
+    "it": "Riservato",
+    "pt": "Reservado"
+  },
+  "sold_note": {
+    "ja": "この絵は、お迎え先が決まりました。",
+    "en": "This painting has found its home.",
+    "zh-Hans": "这幅画已经找到了归宿。",
+    "zh-Hant": "這幅畫已經找到了歸宿。",
+    "ko": "이 그림은 머물 곳을 찾았습니다.",
+    "fr": "Ce tableau a trouvé sa maison.",
+    "de": "Dieses Bild hat sein Zuhause gefunden.",
+    "es": "Este cuadro ya ha encontrado su hogar.",
+    "it": "Questo dipinto ha trovato la sua casa.",
+    "pt": "Este quadro já encontrou a sua casa."
   }
 }

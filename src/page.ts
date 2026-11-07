@@ -23,6 +23,31 @@ if (statementJa) void import('./text/phrases').then(({ splitPhrases }) => {
   statementJa.replaceChildren(...splitPhrases(statementJa.textContent || '', 'ja').map((ph) => { const s = document.createElement('span'); s.textContent = ph; s.style.display = 'inline-block'; return s; }));
 });
 
+// 販売状況：売れた作品に印を付け、購入ボタンを下げる（/api/works-status。取れないときは何もしない。1 点物の決済リンクは Stripe の側で止まる）
+const soldTargets = document.querySelectorAll<HTMLElement>('.gw-cap[data-title-ja], .other[data-title-ja]');
+const buyBox = document.querySelector<HTMLElement>('.buy[data-title]');
+if (soldTargets.length || buyBox) {
+  const tag = (s: { status: string }) => {
+    const el = document.createElement('span');
+    el.className = 'sold-tag';
+    el.dataset.i18n = s.status === 'SOLD' ? 'sold_tag' : 'reserved_tag';
+    el.textContent = t(el.dataset.i18n, lang);
+    return el;
+  };
+  void fetch('/api/works-status').then((r) => (r.ok ? r.json() : null)).then((d: { statuses?: Record<string, { status: string; soldOut: boolean }> } | null) => {
+    const st = d?.statuses;
+    if (!st) return;
+    soldTargets.forEach((el) => { const s = st[el.dataset.titleJa || '']; if (s?.soldOut) el.appendChild(tag(s)); });
+    const s = buyBox && st[buyBox.dataset.title || ''];
+    if (buyBox && s?.soldOut) {
+      const note = document.createElement('p');
+      note.className = 'buy-sold-note'; note.dataset.i18n = 'sold_note'; note.textContent = t('sold_note', lang);
+      buyBox.replaceChildren(tag(s), note);
+      document.querySelector('.via-band a[data-action="buy"]')?.remove();
+    }
+  }).catch(() => {});
+}
+
 const url = new URL(location.href);
 const fromQr = url.searchParams.get('from') === 'qr';
 const forceVr = url.searchParams.get('vr') === '1';

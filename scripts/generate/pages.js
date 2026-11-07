@@ -124,7 +124,7 @@ ${FONTS}
     <button class="btn" id="enter-vr" data-i18n="enter_vr" hidden style="display:none">${UI_JA.enter_vr}</button>
     ${contact}
     <p class="cg-enter-note" data-i18n="enter_note">${UI_JA.enter_note}</p>
-    ${work.buy?.url ? `<div class="buy">
+    ${work.buy?.url ? `<div class="buy" data-title="${esc(title)}">
       <p class="buy-price">¥${Number(work.buy.price_jpy).toLocaleString('en-US')}<small>（<span data-i18n="buy_tax">${UI_JA.buy_tax}</span>）</small></p>
       <a class="btn" id="buy" href="${esc(work.buy.url)}" target="_blank" rel="noopener" data-i18n="buy">${UI_JA.buy}</a>
       <p class="buy-note" data-i18n="buy_note">${UI_JA.buy_note}</p>

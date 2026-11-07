@@ -403,6 +403,18 @@ try {
   check(faded.filter((f) => f === 's:1').length === 4 && faded.filter((f) => f.endsWith(':0.25')).length === 2 && await order() === before && new URL(page.url()).searchParams.get('size') === 's' && await page.locator('.gw-chip[data-size="s"]').getAttribute('aria-pressed') === 'true',
     `gallery: 「小」で 4 点だけ残り、並びは同じ、?size=s（${faded.join(' ')}）`);
   check(errors.length === 0, `gallery: エラー ${errors.length}`);
+  // 販売状況：売れた作品に印が付き、購入ボタンが下がる。売れていない作品はそのまま
+  await page.route('**/api/works-status', (r) => r.fulfill({ json: { statuses: { 頂: { status: 'SOLD', soldOut: true }, 本能: { status: '入金待ち', soldOut: true }, Harmoney: { status: '', soldOut: false } } } }));
+  const origin = new URL(page.url()).origin;
+  await page.goto(`${origin}/w/itadaki/?via=concierge&after=1&lang=ja`, { waitUntil: 'load' });
+  await page.waitForSelector('.buy .sold-tag', { timeout: 5000 });
+  check(await page.locator('a#buy').count() === 0 && await page.locator('.via-band a[data-action="buy"]').count() === 0 && (await page.locator('.buy .sold-tag').innerText()).trim() === 'SOLD', '販売状況：売れた作品は SOLD で購入ボタンが無い');
+  await page.goto(`${origin}/w/harmoney/?lang=ja`, { waitUntil: 'load' });
+  await page.waitForTimeout(500);
+  check(await page.locator('a#buy').count() === 1 && await page.locator('.buy .sold-tag').count() === 0, '販売状況：売れていない作品は購入ボタンのまま');
+  await page.goto(`${origin}/gallery/?lang=ja`, { waitUntil: 'load' });
+  await page.waitForSelector('.gw-cap .sold-tag', { timeout: 5000 });
+  check(await page.locator('.gw-cap .sold-tag').count() === 2, `販売状況：ギャラリーの印 ${await page.locator('.gw-cap .sold-tag').allInnerTexts()}`);
   await browser.close();
   await entranceCase('pc', { width: 1280, height: 800 });
   await entranceCase('sp', { width: 375, height: 667 });

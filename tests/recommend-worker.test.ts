@@ -283,3 +283,12 @@ describe('functions/_lib/relay.js', () => {
     expect(sse({ done: true })).toBe('data: {"done":true}\n\n');
   });
 });
+
+import { pickStatuses } from '../functions/api/works-status.js';
+describe('販売状況の中継', () => {
+  it('必要な欄だけを通す。形が違うものは空', () => {
+    expect(pickStatuses({ statuses: { 頂: { status: 'SOLD', soldOut: true, secret: 'x' }, 本能: { status: '', soldOut: false } } })).toEqual({ 頂: { status: 'SOLD', soldOut: true }, 本能: { status: '', soldOut: false } });
+    expect(pickStatuses(null)).toEqual({});
+    expect(pickStatuses({ statuses: 'x' })).toEqual({});
+  });
+});
