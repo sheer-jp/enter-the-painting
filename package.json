@@ -1,5 +1,5 @@
 {
-  "name": "enter-the-painting",
+  "name": "meet-the-painting",
   "version": "1.0.0",
   "description": "小さな抽象画の持ち主が QR を読む（またはオンラインギャラリーで選ぶ）と、その絵の世界の中に入れる Web アプリ。",
   "main": "index.js",
@@ -17,15 +17,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sheer-jp/enter-the-painting.git"
+    "url": "git+https://github.com/sheer-jp/meet-the-painting.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sheer-jp/enter-the-painting/issues"
+    "url": "https://github.com/sheer-jp/meet-the-painting/issues"
   },
-  "homepage": "https://github.com/sheer-jp/enter-the-painting#readme",
+  "homepage": "https://github.com/sheer-jp/meet-the-painting#readme",
   "type": "module",
   "private": "true",
   "dependencies": {

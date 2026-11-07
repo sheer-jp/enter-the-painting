@@ -84,6 +84,6 @@ npx wrangler pages secret put ANTHROPIC_API_KEY --project-name enter-the-paintin
 
 ## 状態
 
-2026-11-03：Day 1〜2 相当を実装。生成パイプライン、GPU 流体（等距離円筒、MacCormack、原画回帰、シュワシュワ）、物語モード（T0〜T5、文字、音、一時停止、静止画フォールバック）、VR 空間モード（S1〜S5。実機未確認）、作品ページとギャラリー、10 言語の UI、Playwright のスモーク。GitHub Pages は作家が Settings で有効化する必要あり。サブドメインは `enter.sheerarts.com` を提案中。リモートは https://github.com/sheer-jp/enter-the-painting（public）。
+2026-11-03：Day 1〜2 相当を実装。生成パイプライン、GPU 流体（等距離円筒、MacCormack、原画回帰、シュワシュワ）、物語モード（T0〜T5、文字、音、一時停止、静止画フォールバック）、VR 空間モード（S1〜S5。実機未確認）、作品ページとギャラリー、10 言語の UI、Playwright のスモーク。GitHub Pages は作家が Settings で有効化する必要あり。サブドメインは `enter.sheerarts.com` を提案中。リモートは https://github.com/sheer-jp/meet-the-painting（public、11-07 に改名）。
 
 2026-11-06：入口を作り直し中（`docs/ENTRANCE.md`、タスク E）。受付が先、白い壁のギャラリー `/gallery/`、Worker → Pages Functions とツール `recommend_work`（済）。置き場は Cloudflare Pages（https://enter-the-painting.pages.dev/ 、GitHub Pages は使わない）。D5-2 は取り下げ。

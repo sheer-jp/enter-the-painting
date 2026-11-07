@@ -53,7 +53,7 @@ SHEER Gallery は傘の名前として残す（画面の見出しはそのまま
 | --- | --- | --- | --- |
 | 公開 URL | enter-the-painting.pages.dev | **meet.sheerarts.com** を同じ Pages に足す | DNS は Cloudflare 管理なので数分。`lyric.` `pulse.` `timer.` と同じ形。古い URL も動き続ける |
 | Pages のプロジェクト名 | enter-the-painting | **変えない** | 改名の機能が無く、作り直しになる（鍵と KV の再設定）。公開 URL を替えれば見えない |
-| GitHub | sheer-jp/enter-the-painting | **sheer-jp/meet-the-painting** に改名 | 古い URL は GitHub が転送する。手元のフォルダ名は別に変える |
+| GitHub | sheer-jp/meet-the-painting（11-07 改名済み） | — | 古い URL は GitHub が転送する。手元のフォルダ名は apps/enter-the-painting のまま |
 | QR | pages.dev 宛て | 新しい URL で作り直す | `BASE_URL=... npm run generate`。**印刷の前に必ず** |
 
 提出フォームに既に URL を登録しているなら、古い URL が動き続けるので壊れない。

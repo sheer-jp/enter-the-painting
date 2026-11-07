@@ -11,7 +11,7 @@
 | 絵の前で一緒に過ごす | 浸る | 絵の世界（GPU 流体。PC・スマホ・VR） |
 | 飾る場所を一緒に考える | 暮らしを想像する | 部屋で見る、絵を動かす（部屋は AI 生成、絵は実物の写真） |
 
-考え方の正は [docs/CONCEPT.md](docs/CONCEPT.md)。リポジトリ名と公開 URL は旧名（enter-the-painting）のまま。
+考え方の正は [docs/CONCEPT.md](docs/CONCEPT.md)。旧名は Enter the Painting（古い GitHub の URL は転送される）。Cloudflare Pages のプロジェクト名は `enter-the-painting` のまま（改名の機能が無いため）。
 
 ## 権利
 
