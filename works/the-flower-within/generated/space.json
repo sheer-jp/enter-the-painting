@@ -149,7 +149,15 @@
   },
   "statement": {
     "ja": "花は美しいだけでなく、厳しい環境で咲き誇る強さも持っています。小さな画面に重みのある、和の色がにじむ絵です。絵の世界では、色がゆっくりとにじみ合います。",
-    "en": "A flower is not only beautiful; it is strong enough to bloom in harsh places. A small painting with real weight, and Japanese-toned colors seeping through. In its world, the colors slowly bleed into one another."
+    "en": "A flower is not only beautiful; it is strong enough to bloom in harsh places. A small painting with real weight, and Japanese-toned colors seeping through. In its world, the colors slowly bleed into one another.",
+    "zh-Hans": "花不只是美丽，它还有在严酷环境中盛放的力量。这是一幅尺寸不大却很有分量、渗透着和风色彩的画。在画的世界里，色彩缓缓地相互晕染。",
+    "zh-Hant": "花不只是美麗，它還有在嚴酷環境中盛開的力量。這是一幅尺寸不大卻很有分量、滲透著和風色彩的畫。在畫的世界裡，色彩緩緩地相互暈染。",
+    "ko": "꽃은 아름답기만 한 것이 아니라, 혹독한 환경에서도 활짝 피어나는 강인함을 지니고 있습니다. 작은 화면에 무게가 실린, 일본 전통의 색이 번지는 그림입니다. 그림의 세계에서는 색이 천천히 서로 번져 갑니다.",
+    "fr": "Une fleur n’est pas seulement belle : elle a aussi la force de s’épanouir dans des lieux rudes. Une petite peinture qui a du poids, où affleurent des couleurs japonaises. Dans son monde, les couleurs se fondent lentement les unes dans les autres.",
+    "de": "Eine Blume ist nicht nur schön; sie hat auch die Kraft, an rauen Orten zu blühen. Ein kleines Bild mit echtem Gewicht, durch das japanisch anmutende Farben schimmern. In seiner Welt verlaufen die Farben langsam ineinander.",
+    "es": "Una flor no es solo hermosa: también tiene la fuerza para florecer en lugares duros. Un cuadro pequeño pero con peso, donde se filtran colores de aire japonés. En su mundo, los colores se funden lentamente unos con otros.",
+    "it": "Un fiore non è solo bello: ha anche la forza di sbocciare in luoghi difficili. Un piccolo dipinto di grande peso, da cui affiorano colori dal gusto giapponese. Nel suo mondo, i colori si sfumano lentamente l’uno nell’altro.",
+    "pt": "Uma flor não é apenas bela: tem também a força de florescer em lugares duros. Uma pintura pequena, mas com peso, onde transparecem cores de inspiração japonesa. No seu mundo, as cores esbatem-se lentamente umas nas outras."
   },
   "rooms": [
     {
@@ -568,5 +576,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-07T01:47:32.309Z"
+  "generated_at": "2026-11-07T01:51:57.535Z"
 }

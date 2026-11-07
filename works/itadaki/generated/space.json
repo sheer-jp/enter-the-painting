@@ -157,7 +157,15 @@
   },
   "statement": {
     "ja": "もっと上へ、頂へ行くぞ、という強気な絵です。火を思わせる赤に、20 色以上を重ねました。絵の世界では、色が渦を巻いてのぼり、やがて静かに元の絵へ戻ります。",
-    "en": "A bold painting that says: higher, to the summit. Over twenty colors are layered onto a fiery red. In its world, the colors swirl upward, then quietly settle back into the painting."
+    "en": "A bold painting that says: higher, to the summit. Over twenty colors are layered onto a fiery red. In its world, the colors swirl upward, then quietly settle back into the painting.",
+    "zh-Hans": "这是一幅气势十足的画，仿佛在说：再往上，向着山顶前进。在如火般的红色上，我叠加了二十多种颜色。在画的世界里，色彩盘旋着向上升腾，随后安静地回到原来的画中。",
+    "zh-Hant": "這是一幅氣勢十足的畫，彷彿在說：再往上，向著山頂前進。在如火般的紅色上，我疊加了二十多種顏色。在畫的世界裡，色彩盤旋著向上升騰，隨後安靜地回到原來的畫中。",
+    "ko": "더 위로, 정상을 향해 가겠다는 강한 기세의 그림입니다. 불을 떠올리게 하는 붉은색 위에 20가지 이상의 색을 겹쳤습니다. 그림의 세계에서는 색이 소용돌이치며 올라가다가, 이윽고 조용히 원래의 그림으로 돌아옵니다.",
+    "fr": "Une peinture audacieuse qui dit : plus haut, vers le sommet. J’ai superposé plus de vingt couleurs sur un rouge de feu. Dans son monde, les couleurs montent en tourbillonnant, puis retombent doucement dans la peinture.",
+    "de": "Ein kühnes Bild, das sagt: höher hinauf, dem Gipfel entgegen. Auf ein feuriges Rot habe ich über zwanzig Farben geschichtet. In seiner Welt steigen die Farben wirbelnd auf und kehren dann leise ins Bild zurück.",
+    "es": "Una pintura audaz que dice: más arriba, hacia la cumbre. Sobre un rojo de fuego superpuse más de veinte colores. En su mundo, los colores suben en remolino y luego vuelven en silencio al cuadro.",
+    "it": "Un dipinto audace che dice: più in alto, verso la vetta. Su un rosso di fuoco ho sovrapposto più di venti colori. Nel suo mondo, i colori salgono in un vortice e poi tornano piano nel dipinto.",
+    "pt": "Uma pintura ousada que diz: mais alto, rumo ao cume. Sobre um vermelho de fogo, sobrepus mais de vinte cores. No seu mundo, as cores sobem em remoinho e depois regressam, em silêncio, à pintura."
   },
   "rooms": [
     {
@@ -361,5 +369,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-07T01:47:30.914Z"
+  "generated_at": "2026-11-07T01:51:56.228Z"
 }

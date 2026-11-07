@@ -149,7 +149,15 @@
   },
   "statement": {
     "ja": "何かを描こうとしたのではなく、揺れ動く感情のまま、本能的に生まれた絵です。絵の世界でも、色は形にならないまま揺らめき続けます。",
-    "en": "Not a painting of anything: it came from instinct, out of shifting emotions. In its world, the colors keep flickering without ever taking shape."
+    "en": "Not a painting of anything: it came from instinct, out of shifting emotions. In its world, the colors keep flickering without ever taking shape.",
+    "zh-Hans": "我并不是想画某个具体的东西，而是顺着起伏不定的情绪，凭本能画出了这幅画。在画的世界里，色彩同样摇曳不止，始终没有成形。",
+    "zh-Hant": "我並不是想畫某個具體的東西，而是順著起伏不定的情緒，憑本能畫出了這幅畫。在畫的世界裡，色彩同樣搖曳不止，始終沒有成形。",
+    "ko": "무언가를 그리려 한 것이 아니라, 흔들리는 감정 그대로 본능적으로 태어난 그림입니다. 그림의 세계에서도 색은 형태를 이루지 못한 채 계속 일렁입니다.",
+    "fr": "Je n’ai pas cherché à peindre quelque chose : cette peinture est née d’instinct, au fil d’émotions changeantes. Dans son monde aussi, les couleurs ne cessent de vaciller sans jamais prendre forme.",
+    "de": "Kein Bild von etwas Bestimmtem: Es ist aus Instinkt entstanden, aus wechselnden Gefühlen heraus. In seiner Welt flackern die Farben weiter, ohne je Gestalt anzunehmen.",
+    "es": "No quise pintar nada en concreto: este cuadro nació por instinto, de emociones cambiantes. En su mundo, los colores siguen parpadeando sin llegar a tomar forma.",
+    "it": "Non ho cercato di dipingere qualcosa: questo dipinto è nato d’istinto, da emozioni in continuo mutamento. Anche nel suo mondo i colori continuano a tremolare senza mai prendere forma.",
+    "pt": "Não quis pintar nada em concreto: esta pintura nasceu do instinto, de emoções em constante mudança. No seu mundo, as cores continuam a tremeluzir sem nunca ganharem forma."
   },
   "rooms": [
     {
@@ -568,5 +576,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-07T01:47:29.941Z"
+  "generated_at": "2026-11-07T01:51:55.215Z"
 }

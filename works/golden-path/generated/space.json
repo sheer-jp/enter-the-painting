@@ -149,7 +149,15 @@
   },
   "statement": {
     "ja": "自分の中の迷路から、「この道を行く」と自分で決める絵です。デジタルのような線を、手で描きました。絵の世界では、細い筋が走り、ときどき一本の道が通ります。",
-    "en": "A painting about finding your way out of your own maze and deciding: this is my path. Digital-looking lines, drawn by hand. In its world, fine lines race across, and now and then a single path comes through."
+    "en": "A painting about finding your way out of your own maze and deciding: this is my path. Digital-looking lines, drawn by hand. In its world, fine lines race across, and now and then a single path comes through.",
+    "zh-Hans": "这幅画讲的是从自己心中的迷宫里走出来，亲自决定“我走这条路”。那些看起来像数码的线条，是我用手画出来的。在画的世界里，细细的线条飞速掠过，偶尔会有一条路贯通其中。",
+    "zh-Hant": "這幅畫談的是從自己心中的迷宮走出來，親自決定「我走這條路」。那些看起來像數位的線條，是我用手畫出來的。在畫的世界裡，細細的線條飛快掠過，偶爾會有一條路貫穿其中。",
+    "ko": "자신 안의 미로에서 빠져나와 \"이 길로 가겠다\"고 스스로 정하는 그림입니다. 디지털처럼 보이는 선을 손으로 그렸습니다. 그림의 세계에서는 가느다란 선이 내달리고, 때때로 한 줄기 길이 열립니다.",
+    "fr": "Une peinture sur le fait de sortir de ton propre labyrinthe et de décider toi-même : « je prends ce chemin ». Des lignes qui ont l’air numériques, tracées à la main. Dans son monde, de fines lignes filent à toute allure et, de temps en temps, un seul chemin les traverse.",
+    "de": "Ein Bild darüber, aus deinem eigenen Labyrinth herauszufinden und selbst zu entscheiden: „Das ist mein Weg.“ Linien, die digital wirken, von Hand gezeichnet. In seiner Welt rasen feine Linien dahin, und hin und wieder zieht ein einzelner Weg hindurch.",
+    "es": "Una pintura sobre salir del laberinto que llevas dentro y decidir por tu cuenta: «este es mi camino». Líneas que parecen digitales, dibujadas a mano. En su mundo, líneas finas corren de un lado a otro y, de vez en cuando, un único camino se abre paso.",
+    "it": "Un dipinto sull’uscire dal proprio labirinto interiore e decidere da sé: «questa è la mia strada». Linee che sembrano digitali, disegnate a mano. Nel suo mondo, sottili linee corrono veloci e, ogni tanto, un’unica strada le attraversa.",
+    "pt": "Uma pintura sobre sair do labirinto que há em ti e decidir por ti próprio: «este é o meu caminho». Linhas com ar digital, desenhadas à mão. No seu mundo, linhas finas correm de um lado para o outro e, de vez em quando, um único caminho atravessa-as."
   },
   "rooms": [
     {
@@ -568,5 +576,5 @@
   ],
   "availability": null,
   "contact": null,
-  "generated_at": "2026-11-07T01:47:28.289Z"
+  "generated_at": "2026-11-07T01:51:53.556Z"
 }
