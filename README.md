@@ -19,7 +19,7 @@
 
 ## 状態
 
-**公開中**：https://enter-the-painting.pages.dev/ （Cloudflare Pages + Pages Functions。AI ハッカソン提出に向けて作り込み中）。計画は `docs/`、作業ログは `docs/LOG.md`、決めたことは `docs/DECISIONS.md`。
+**公開中**：https://meet.sheerarts.com/ （Cloudflare Pages + Pages Functions。旧 URL の enter-the-painting.pages.dev も動く。AI ハッカソン提出に向けて作り込み中）。計画は `docs/`、作業ログは `docs/LOG.md`、決めたことは `docs/DECISIONS.md`。
 
 ### いま動いているもの（11-07）
 
@@ -38,7 +38,7 @@
 ```bash
 npm install
 npm run generate     # works/<id>/ から流れ場・主要色・翻訳・部屋の合成・QR・OGP・作品ページを生成
-BASE_URL=https://enter-the-painting.pages.dev npm run generate   # 配置する前はこちら（QR・OGP の URL を配置先に）
+BASE_URL=https://meet.sheerarts.com npm run generate   # 配置する前はこちら（QR・OGP の URL を配置先に）
 npm run dev          # https://localhost:5173/ （LAN の HTTPS。スマホ / Quest から確認）
 npm test && npm run build && npm run smoke
 CLOUDFLARE_ACCOUNT_ID=<アカウント ID> npx wrangler pages deploy   # generate と build のあと。Cloudflare Pages に配置（サイト + functions/）

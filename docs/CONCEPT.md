@@ -1,6 +1,6 @@
 # コンセプトの整理（2026-11-07、作家の言葉から）
 
-**名前は「絵と出会う / Meet the Painting」に決定**（11-07 作家）。URL と GitHub は作家の判断待ち。
+**名前は「絵と出会う / Meet the Painting」に決定**（11-07 作家）。URL は https://meet.sheerarts.com 、GitHub は sheer-jp/meet-the-painting。
 
 ## 1. 大きな問題（これを最初に出す）
 
@@ -51,10 +51,10 @@ SHEER Gallery は傘の名前として残す（画面の見出しはそのまま
 
 | 対象 | いま | 提案 | 手間と影響 |
 | --- | --- | --- | --- |
-| 公開 URL | enter-the-painting.pages.dev | **meet.sheerarts.com** を同じ Pages に足す | DNS は Cloudflare 管理なので数分。`lyric.` `pulse.` `timer.` と同じ形。古い URL も動き続ける |
+| 公開 URL | **https://meet.sheerarts.com**（11-07 開通） | — | サブドメイン。`lyric.` `pulse.` `timer.` と同じ形。古い pages.dev も動き続ける |
 | Pages のプロジェクト名 | enter-the-painting | **変えない** | 改名の機能が無く、作り直しになる（鍵と KV の再設定）。公開 URL を替えれば見えない |
 | GitHub | sheer-jp/meet-the-painting（11-07 改名済み） | — | 古い URL は GitHub が転送する。手元のフォルダ名は apps/enter-the-painting のまま |
-| QR | pages.dev 宛て | 新しい URL で作り直す | `BASE_URL=... npm run generate`。**印刷の前に必ず** |
+| QR | meet.sheerarts.com 宛てに作り直し済み | — | `BASE_URL=https://meet.sheerarts.com npm run generate` |
 
 提出フォームに既に URL を登録しているなら、古い URL が動き続けるので壊れない。
 
@@ -65,5 +65,5 @@ SHEER Gallery は傘の名前として残す（画面の見出しはそのまま
 | 1 | 作品の一文、説明文の方向、できないことの削除、F 号、10 秒の余韻 | 配置済み（fa94f26） |
 | 2 | 提出動画 V4（新しい構成と原稿、`docs/VIDEO.md` 7 節） | 制作中。題名は案 A で仮置き |
 | 3 | 名前：タイトル・OGP・SNS カード・manifest・README・受付の見出しの下 | 反映済み。画面の見出しは SHEER Gallery のまま |
-| 4 | meet.sheerarts.com、GitHub 改名、QR の作り直し | **作家の判断待ち** |
+| 4 | meet.sheerarts.com、GitHub 改名、QR の作り直し | 済み（11-07） |
 | 5 | 受付の最初の文を新しい方向へ（「長く暮らす一枚」に触れる）、購入への導線（sheerarts.com の Available Works） | 提案 |
